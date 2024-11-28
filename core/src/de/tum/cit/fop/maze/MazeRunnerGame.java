@@ -49,7 +49,7 @@ public class MazeRunnerGame extends Game {
 
         // Play some background music
         // Background sound
-        Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
+        Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3")); // TODO: Change this bg music first
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
 
@@ -82,7 +82,7 @@ public class MazeRunnerGame extends Game {
      * Loads the character animation from the character.png file.
      */
     private void loadCharacterAnimation() {
-        Texture walkSheet = new Texture(Gdx.files.internal("character.png"));
+        Texture walkSheet = new Texture(Gdx.files.internal("character.png")); // TODO: Redesign our character
 
         int frameWidth = 16;
         int frameHeight = 32;
@@ -92,8 +92,9 @@ public class MazeRunnerGame extends Game {
         Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
 
         // Add all frames to the animation
+        int framesXOffset = 0; // define how many frames of X to shift to start extracting our character on "character.png"
         for (int col = 0; col < animationFrames; col++) {
-            walkFrames.add(new TextureRegion(walkSheet, col * frameWidth, 0, frameWidth, frameHeight));
+            walkFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, 0, frameWidth, frameHeight));
         }
 
         characterDownAnimation = new Animation<>(0.1f, walkFrames);
