@@ -23,6 +23,9 @@ public class GameScreen implements Screen {
     float spriteY;
     private boolean isMoving;
 
+    float worldWidth = 2000;  // Replace with your actual world width
+    float worldHeight = 1500; // Replace with your actual world height
+
     /**
      * Constructor for GameScreen. Sets up the camera and font.
      *
@@ -100,8 +103,8 @@ public class GameScreen implements Screen {
 
         // Move text in a circular path to have an example of a moving object
         sinusInput += delta;
-        float textX = (float) (Math.sin(sinusInput) * 100);
-        float textY = (float) (Math.cos(sinusInput) * 100);
+        float textX = (float) (1000 + Math.sin(sinusInput) * 100);
+        float textY = (float) (750 + Math.cos(sinusInput) * 100);
 
 
 
@@ -111,6 +114,8 @@ public class GameScreen implements Screen {
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
 
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
+
+        game.getSpriteBatch().draw(game.getBackgroundTexture(), 0, 0);
 
         // Render the text
         font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
@@ -135,7 +140,17 @@ public class GameScreen implements Screen {
             );
         }
 
+        //float worldWidth = viewport.getWorldWidth();
+        //float worldHeight = viewport.getWorldHeight();
+
+
+
+
         camera.position.set(spriteX, spriteY, 0);
+        camera.position.x = Math.max(camera.viewportWidth / 2 * camera.zoom,
+                Math.min(worldWidth - camera.viewportWidth / 2 * camera.zoom, camera.position.x));
+        camera.position.y = Math.max(camera.viewportHeight / 2 * camera.zoom,
+                Math.min(worldHeight - camera.viewportHeight / 2 * camera.zoom, camera.position.y));
         camera.update();
         game.getSpriteBatch().end(); // Important to call this after drawing everything
     }

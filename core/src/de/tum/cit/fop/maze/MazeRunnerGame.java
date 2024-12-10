@@ -31,6 +31,8 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> characterDownAnimation;
     private Animation<TextureRegion> characterIdleAnimation;
 
+    Texture backgroundTexture;
+
 
     /**
      * Constructor for MazeRunnerGame.
@@ -50,6 +52,7 @@ public class MazeRunnerGame extends Game {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         this.loadCharacterAnimation(); // Load character animation
+        backgroundTexture = new Texture("background.png");
 
         // Play some background music
         // Background sound
@@ -132,6 +135,10 @@ public class MazeRunnerGame extends Game {
 
     public Animation<TextureRegion> getCharacterIdleAnimation() {
         return characterIdleAnimation;
+    }
+
+    public Texture getBackgroundTexture() {
+        return backgroundTexture;
     }
 
     public SpriteBatch getSpriteBatch() {
