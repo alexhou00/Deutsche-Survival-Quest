@@ -19,6 +19,10 @@ public class GameScreen implements Screen {
 
     private float sinusInput = 0f;
 
+    float spriteX = 0f;
+    float spriteY = 0f;
+    private boolean isMoving;
+
     /**
      * Constructor for GameScreen. Sets up the camera and font.
      *
@@ -34,8 +38,51 @@ public class GameScreen implements Screen {
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
+
+
+        isMoving = false;
+
     }
 
+    public boolean getIsMoving() {
+        return isMoving;
+    }
+
+    private void handleInput() {
+        float speed = 4f;
+        // float delta = Gdx.graphics.getDeltaTime();
+        boolean rightPressed = Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D);
+        boolean leftPressed = Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A);
+        boolean upPressed = Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W);
+        boolean downPressed = Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S);
+
+
+        if (rightPressed || leftPressed || upPressed || downPressed) {
+            isMoving = true;
+            if (rightPressed) {
+                spriteX += speed;
+            }
+            if (leftPressed) {
+                spriteX -= speed;
+            }
+            if (upPressed) {
+                spriteY += speed;
+            }
+            if (downPressed) {
+                spriteY -= speed;
+            }
+        }
+        else{
+            isMoving = false;
+        }
+
+
+        /*if (Gdx.input.isTouched()) {
+            touchPos.set(Gdx.input.getX(), Gdx.input.getY());
+            viewport.unproject(touchPos);
+            bucketSprite.setCenterX(touchPos.x);
+        }*/
+    }
 
     // Screen interface methods with necessary functionality
     @Override
@@ -45,6 +92,8 @@ public class GameScreen implements Screen {
             game.goToMenu();
         }
 
+
+
         ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
 
         camera.update(); // Update the camera
@@ -53,6 +102,10 @@ public class GameScreen implements Screen {
         sinusInput += delta;
         float textX = (float) (camera.position.x + Math.sin(sinusInput) * 100);
         float textY = (float) (camera.position.y + Math.cos(sinusInput) * 100);
+
+
+
+        handleInput();
 
         // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
@@ -65,8 +118,8 @@ public class GameScreen implements Screen {
         // Draw the character next to the text :) / We can reuse sinusInput here
         game.getSpriteBatch().draw(
                 game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
-                textX - 96,
-                textY - 64,
+                spriteX, //textX - 96,
+                spriteY, // textY - 64,
                 64,
                 128
         );

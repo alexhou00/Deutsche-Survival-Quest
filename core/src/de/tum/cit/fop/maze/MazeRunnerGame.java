@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
@@ -90,14 +91,22 @@ public class MazeRunnerGame extends Game {
 
         // libGDX internal Array instead of ArrayList because of performance
         Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> idleFrame = new Array<>(TextureRegion.class);
 
         // Add all frames to the animation
         int framesXOffset = 0; // define how many frames of X to shift to start extracting our character on "character.png"
         for (int col = 0; col < animationFrames; col++) {
             walkFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, 0, frameWidth, frameHeight));
         }
+        idleFrame.add(new TextureRegion(walkSheet, 0, 0, frameWidth, frameHeight));
 
         characterDownAnimation = new Animation<>(0.1f, walkFrames);
+        /*if (gameScreen.getIsMoving()){
+
+        }
+        else{
+            characterDownAnimation = new Animation<>(0.1f, idleFrame);
+        }*/
     }
 
     /**
