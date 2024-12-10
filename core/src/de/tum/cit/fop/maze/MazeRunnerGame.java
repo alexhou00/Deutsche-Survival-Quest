@@ -29,6 +29,8 @@ public class MazeRunnerGame extends Game {
 
     // Character animation downwards
     private Animation<TextureRegion> characterDownAnimation;
+    private Animation<TextureRegion> characterIdleAnimation;
+
 
     /**
      * Constructor for MazeRunnerGame.
@@ -38,6 +40,7 @@ public class MazeRunnerGame extends Game {
     public MazeRunnerGame(NativeFileChooser fileChooser) {
         super();
     }
+
 
     /**
      * Called when the game is created. Initializes the SpriteBatch and Skin.
@@ -100,13 +103,11 @@ public class MazeRunnerGame extends Game {
         }
         idleFrame.add(new TextureRegion(walkSheet, 0, 0, frameWidth, frameHeight));
 
-        characterDownAnimation = new Animation<>(0.1f, walkFrames);
-        /*if (gameScreen.getIsMoving()){
 
-        }
-        else{
-            characterDownAnimation = new Animation<>(0.1f, idleFrame);
-        }*/
+
+        characterDownAnimation = new Animation<>(0.1f, walkFrames);
+        characterIdleAnimation = new Animation<>(0.1f, idleFrame);
+
     }
 
     /**
@@ -127,6 +128,10 @@ public class MazeRunnerGame extends Game {
 
     public Animation<TextureRegion> getCharacterDownAnimation() {
         return characterDownAnimation;
+    }
+
+    public Animation<TextureRegion> getCharacterIdleAnimation() {
+        return characterIdleAnimation;
     }
 
     public SpriteBatch getSpriteBatch() {

@@ -19,8 +19,8 @@ public class GameScreen implements Screen {
 
     private float sinusInput = 0f;
 
-    float spriteX = 0f;
-    float spriteY = 0f;
+    float spriteX;
+    float spriteY;
     private boolean isMoving;
 
     /**
@@ -36,6 +36,9 @@ public class GameScreen implements Screen {
         camera.setToOrtho(false);
         camera.zoom = 0.75f;
 
+        spriteX = camera.position.x;
+        spriteY = camera.position.y;
+
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
 
@@ -44,9 +47,6 @@ public class GameScreen implements Screen {
 
     }
 
-    public boolean getIsMoving() {
-        return isMoving;
-    }
 
     private void handleInput() {
         float speed = 4f;
@@ -115,14 +115,26 @@ public class GameScreen implements Screen {
         // Render the text
         font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
 
-        // Draw the character next to the text :) / We can reuse sinusInput here
-        game.getSpriteBatch().draw(
-                game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
-                spriteX, //textX - 96,
-                spriteY, // textY - 64,
-                64,
-                128
-        );
+        if (isMoving){
+            // Draw the character next to the text :) / We can reuse sinusInput here
+            game.getSpriteBatch().draw(
+                    game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
+                    spriteX,
+                    spriteY,
+                    64,
+                    128
+            );
+        }
+        else{
+            game.getSpriteBatch().draw(
+                    game.getCharacterIdleAnimation().getKeyFrame(sinusInput, true),
+                    spriteX,
+                    spriteY,
+                    64,
+                    128
+            );
+        }
+
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
     }
