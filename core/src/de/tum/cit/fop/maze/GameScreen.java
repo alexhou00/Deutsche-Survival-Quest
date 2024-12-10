@@ -100,8 +100,8 @@ public class GameScreen implements Screen {
 
         // Move text in a circular path to have an example of a moving object
         sinusInput += delta;
-        float textX = (float) (camera.position.x + Math.sin(sinusInput) * 100);
-        float textY = (float) (camera.position.y + Math.cos(sinusInput) * 100);
+        float textX = (float) (Math.sin(sinusInput) * 100);
+        float textY = (float) (Math.cos(sinusInput) * 100);
 
 
 
@@ -135,7 +135,8 @@ public class GameScreen implements Screen {
             );
         }
 
-
+        camera.position.set(spriteX, spriteY, 0);
+        camera.update();
         game.getSpriteBatch().end(); // Important to call this after drawing everything
     }
 
