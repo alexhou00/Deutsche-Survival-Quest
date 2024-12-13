@@ -9,6 +9,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
 
+import static java.lang.Math.round;
+
 /**
  * The GameScreen class is responsible for rendering the gameplay screen.
  * It handles the game logic and rendering of the game elements.
@@ -163,6 +165,12 @@ public class GameScreen extends InputAdapter implements Screen {
         // Render the text
         font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
 
+        float windowWidth = Gdx.graphics.getWidth();
+        float windowHeight = Gdx.graphics.getHeight();
+
+        font.draw(game.getSpriteBatch(), "spriteX:" + round(spriteX, 2), - windowWidth/2 + 20 + camera.position.x, -20 + windowHeight/2 + camera.position.y);
+        font.draw(game.getSpriteBatch(), "spriteY:" + round(spriteY, 2), - windowWidth/2 + 20 + camera.position.x, -30 - 20 + windowHeight/2 + camera.position.y);
+
         if (isMoving){  // Character Walking Animation
             // Draw the character next to the text :) / We can reuse sinusInput here
             game.getSpriteBatch().draw(
@@ -224,4 +232,12 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     // Additional methods and logic can be added as needed for the game screen
+    public static float round(float value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (float) tmp / factor;
+    }
 }
