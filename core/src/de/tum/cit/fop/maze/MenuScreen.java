@@ -12,6 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The MenuScreen class is responsible for displaying the main menu of the game.
@@ -20,6 +26,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 public class MenuScreen implements Screen {
 
     private final Stage stage;
+    private Map<String, TextButton> buttons;
 
     /**
      * Constructor for MenuScreen. Sets up the camera, viewport, stage, and UI elements.
@@ -29,6 +36,9 @@ public class MenuScreen implements Screen {
     public MenuScreen(MazeRunnerGame game) {
         var camera = new OrthographicCamera();
         camera.zoom = 1.5f; // Set camera zoom for a closer view
+        camera.update();
+
+        this.show();
 
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
         stage = new Stage(viewport, game.getSpriteBatch()); // Create a stage for UI elements
@@ -38,17 +48,32 @@ public class MenuScreen implements Screen {
         stage.addActor(table); // Add the table to the stage
 
         // Add a label as a title
-        table.add(new Label("German Assimilation Game", game.getSkin(), "title")).padBottom(80).row();
+        table.add(new Label("Deutsche Survival Quest", game.getSkin(), "title")).padBottom(80).row();
 
         // Create and add a button to go to the game screen
+        /*
         TextButton goToGameButton = new TextButton("Go To Game", game.getSkin());
         table.add(goToGameButton).width(300).row();
         goToGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                System.out.println("Button is pressed");
+                game.goToGame(); // Change to the game screen when button is pressed
+            }
+        });*/
+        buttons = new HashMap<>();
+        buttons.put("goToGameButton", new TextButton("Go To Game", game.getSkin()));
+        Gdx.app.log("MenuScreen","MenuScreen is created.");
+        TextButton goToGameButton = buttons.get("goToGameButton");
+        table.add(goToGameButton).width(300).row();
+        goToGameButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.log("MenuScreen", "Go To Game button pressed");
                 game.goToGame(); // Change to the game screen when button is pressed
             }
         });
+        Gdx.app.log("MenuScreen", "ChangeListener is added.");
     }
 
     @Override

@@ -67,7 +67,8 @@ public class MazeRunnerGame extends Game {
      * Switches to the menu screen.
      */
     public void goToMenu() {
-        this.setScreen(new MenuScreen(this)); // Set the current screen to MenuScreen
+        menuScreen = new MenuScreen(this);
+        this.setScreen(menuScreen); // Set the current screen to MenuScreen
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
             gameScreen = null;

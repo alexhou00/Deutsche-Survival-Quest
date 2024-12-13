@@ -28,7 +28,7 @@ public class GameScreen extends InputAdapter implements Screen {
     float worldWidth = 2000;  // Replace with your actual world width
     float worldHeight = 1500; // Replace with your actual world height
 
-    private float targetZoom;
+    private float targetZoom; // targetZoom stores the intermediate zoom value so that we can zoom smoothly
     private static final float ZOOM_SPEED = 0.1f; // Controls how quickly the camera adjusts to the target zoom
     private static final float MIN_ZOOM_LEVEL = 0.3f; // MIN is actually zoom in
     private static final float MAX_ZOOM_LEVEL = 1.5f; // MAX is actually zoom out
@@ -64,24 +64,28 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
 
+    // scrolling is automatically detected (for zooming)
     @Override
     public boolean scrolled(float amountX, float amountY) {
         targetZoom += amountY * 0.1f; // Adjust sensitivity as needed
         targetZoom = MathUtils.clamp(targetZoom, MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL); // Clamp zoom level
+        Gdx.app.log("GameScreen", "mouse scrolled to adjust zoom");
         return true; // Return true to indicate the event was handled
     }
 
     private void handleInput() {
-        float speed = 240f;
+        float speed = 240f; // final speed is speed * FPS (delta), since the speed should be independent of the FPS
         float delta = Gdx.graphics.getDeltaTime();
+
+        // define keys pressed
         boolean rightPressed = Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D);
         boolean leftPressed = Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A);
         boolean upPressed = Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W);
         boolean downPressed = Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S);
 
-
+        // handle keys for player movement
         if (rightPressed || leftPressed || upPressed || downPressed) {
-            isMoving = true;
+            isMoving = true; // to have the player continues with the animation
             if (rightPressed) {
                 spriteX += speed * delta;
             }
@@ -96,16 +100,19 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         }
         else{
-            isMoving = false;
+            isMoving = false; // to have the player stop the animation
         }
 
 
-        /*if (Gdx.input.isTouched()) {
+        /*
+        if (Gdx.input.isTouched()) {
             touchPos.set(Gdx.input.getX(), Gdx.input.getY());
             viewport.unproject(touchPos);
             bucketSprite.setCenterX(touchPos.x);
         }*/
 
+
+        // Handle keys input for zooming
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) { // "+" key
             targetZoom -= 0.02f;
         }
@@ -137,14 +144,14 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.update(); // Update the camera
 
         // Move text in a circular path to have an example of a moving object
-        sinusInput += delta;
+        sinusInput += delta;  // sinusInput is like `time`, storing the time for animation
         float textX = (float) (1000 + Math.sin(sinusInput) * 100);
         float textY = (float) (750 + Math.cos(sinusInput) * 100);
 
         Gdx.input.setInputProcessor(this);
 
         updateZoom(delta); // Smoothly adjust zoom
-        handleInput();
+        handleInput(); // handle the keys input
 
         // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
@@ -156,7 +163,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // Render the text
         font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
 
-        if (isMoving){
+        if (isMoving){  // Character Walking Animation
             // Draw the character next to the text :) / We can reuse sinusInput here
             game.getSpriteBatch().draw(
                     game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
@@ -166,7 +173,7 @@ public class GameScreen extends InputAdapter implements Screen {
                     128
             );
         }
-        else{
+        else{ // Character Idle Animation
             game.getSpriteBatch().draw(
                     game.getCharacterIdleAnimation().getKeyFrame(sinusInput, true),
                     spriteX,
@@ -180,8 +187,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //float worldHeight = viewport.getWorldHeight();
 
 
-
-
+        // make sure the camera follows the player
         camera.position.set(spriteX, spriteY, 0);
         camera.position.x = Math.max(camera.viewportWidth / 2 * camera.zoom,
                 Math.min(worldWidth - camera.viewportWidth / 2 * camera.zoom, camera.position.x));
