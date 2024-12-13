@@ -86,19 +86,33 @@ public class GameScreen extends InputAdapter implements Screen {
         boolean downPressed = Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S);
 
         // handle keys for player movement
+        int spriteWidth = 16;
+        int spriteHeight = 32;
         if (rightPressed || leftPressed || upPressed || downPressed) {
             isMoving = true; // to have the player continues with the animation
             if (rightPressed) {
                 spriteX += speed * delta;
+                if (spriteX > worldWidth - spriteWidth) {
+                    spriteX = worldWidth - spriteWidth;
+                }
             }
             if (leftPressed) {
                 spriteX -= speed * delta;
+                if (spriteX < 0) {
+                    spriteX = 0;
+                }
             }
             if (upPressed) {
                 spriteY += speed * delta;
+                if (spriteY > worldHeight - spriteHeight) {
+                    spriteY = worldHeight - spriteHeight;
+                }
             }
             if (downPressed) {
                 spriteY -= speed * delta;
+                if (spriteY < 0) {
+                    spriteY = 0;
+                }
             }
         }
         else{
