@@ -60,6 +60,7 @@ public class MenuScreen implements Screen {
                 System.out.println("Button is pressed");
                 game.goToGame(); // Change to the game screen when button is pressed
             }
+
         });*/
         buttons = new HashMap<>();
         buttons.put("goToGameButton", new TextButton("Go To Game", game.getSkin()));
