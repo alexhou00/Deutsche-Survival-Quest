@@ -151,72 +151,68 @@ public class GameScreen extends InputAdapter implements Screen {
         // Check for escape key press to go back to the menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.goToMenu();
+        } else {
+            ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
+            camera.update(); // Update the camera
+
+            // Move text in a circular path to have an example of a moving object
+            sinusInput += delta;  // sinusInput is like `time`, storing the time for animation
+            float textX = (float) (1000 + Math.sin(sinusInput) * 100);
+            float textY = (float) (750 + Math.cos(sinusInput) * 100);
+
+            Gdx.input.setInputProcessor(this);
+
+            updateZoom(delta); // Smoothly adjust zoom
+            handleInput(); // handle the keys input
+
+            // Set up and begin drawing with the sprite batch
+            game.getSpriteBatch().setProjectionMatrix(camera.combined);
+
+            game.getSpriteBatch().begin(); // Important to call this before drawing anything
+
+            game.getSpriteBatch().draw(game.getBackgroundTexture(), 0, 0);
+
+            // Render the text
+            font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
+
+            float windowWidth = Gdx.graphics.getWidth();
+            float windowHeight = Gdx.graphics.getHeight();
+
+            font.draw(game.getSpriteBatch(), "spriteX:" + round(spriteX, 2), -windowWidth / 2 + 20 + camera.position.x, -20 + windowHeight / 2 + camera.position.y);
+            font.draw(game.getSpriteBatch(), "spriteY:" + round(spriteY, 2), -windowWidth / 2 + 20 + camera.position.x, -30 - 20 + windowHeight / 2 + camera.position.y);
+
+            if (isMoving) {  // Character Walking Animation
+                // Draw the character next to the text :) / We can reuse sinusInput here
+                game.getSpriteBatch().draw(
+                        game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
+                        spriteX,
+                        spriteY,
+                        64,
+                        128
+                );
+            } else { // Character Idle Animation
+                game.getSpriteBatch().draw(
+                        game.getCharacterIdleAnimation().getKeyFrame(sinusInput, true),
+                        spriteX,
+                        spriteY,
+                        64,
+                        128
+                );
+            }
+
+            //float worldWidth = viewport.getWorldWidth();
+            //float worldHeight = viewport.getWorldHeight();
+
+
+            // make sure the camera follows the player
+            camera.position.set(spriteX, spriteY, 0);
+            camera.position.x = Math.max(camera.viewportWidth / 2 * camera.zoom,
+                    Math.min(worldWidth - camera.viewportWidth / 2 * camera.zoom, camera.position.x));
+            camera.position.y = Math.max(camera.viewportHeight / 2 * camera.zoom,
+                    Math.min(worldHeight - camera.viewportHeight / 2 * camera.zoom, camera.position.y));
+            camera.update();
+            game.getSpriteBatch().end(); // Important to call this after drawing everything
         }
-
-
-
-        ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
-
-        camera.update(); // Update the camera
-
-        // Move text in a circular path to have an example of a moving object
-        sinusInput += delta;  // sinusInput is like `time`, storing the time for animation
-        float textX = (float) (1000 + Math.sin(sinusInput) * 100);
-        float textY = (float) (750 + Math.cos(sinusInput) * 100);
-
-        Gdx.input.setInputProcessor(this);
-
-        updateZoom(delta); // Smoothly adjust zoom
-        handleInput(); // handle the keys input
-
-        // Set up and begin drawing with the sprite batch
-        game.getSpriteBatch().setProjectionMatrix(camera.combined);
-
-        game.getSpriteBatch().begin(); // Important to call this before drawing anything
-
-        game.getSpriteBatch().draw(game.getBackgroundTexture(), 0, 0);
-
-        // Render the text
-        font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
-
-        float windowWidth = Gdx.graphics.getWidth();
-        float windowHeight = Gdx.graphics.getHeight();
-
-        font.draw(game.getSpriteBatch(), "spriteX:" + round(spriteX, 2), - windowWidth/2 + 20 + camera.position.x, -20 + windowHeight/2 + camera.position.y);
-        font.draw(game.getSpriteBatch(), "spriteY:" + round(spriteY, 2), - windowWidth/2 + 20 + camera.position.x, -30 - 20 + windowHeight/2 + camera.position.y);
-
-        if (isMoving){  // Character Walking Animation
-            // Draw the character next to the text :) / We can reuse sinusInput here
-            game.getSpriteBatch().draw(
-                    game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
-                    spriteX,
-                    spriteY,
-                    64,
-                    128
-            );
-        }
-        else{ // Character Idle Animation
-            game.getSpriteBatch().draw(
-                    game.getCharacterIdleAnimation().getKeyFrame(sinusInput, true),
-                    spriteX,
-                    spriteY,
-                    64,
-                    128
-            );
-        }
-
-        //float worldWidth = viewport.getWorldWidth();
-        //float worldHeight = viewport.getWorldHeight();
-
-
-        // make sure the camera follows the player
-        camera.position.set(spriteX, spriteY, 0);
-        camera.position.x = Math.max(camera.viewportWidth / 2 * camera.zoom,
-                Math.min(worldWidth - camera.viewportWidth / 2 * camera.zoom, camera.position.x));
-        camera.position.y = Math.max(camera.viewportHeight / 2 * camera.zoom,
-                Math.min(worldHeight - camera.viewportHeight / 2 * camera.zoom, camera.position.y));
-        camera.update();
-        game.getSpriteBatch().end(); // Important to call this after drawing everything
     }
 
     @Override
