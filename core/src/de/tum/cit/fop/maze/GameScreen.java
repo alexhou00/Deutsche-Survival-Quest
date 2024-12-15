@@ -9,13 +9,14 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 
 /**
  * The GameScreen class is responsible for rendering the gameplay screen.
  * It handles the game logic and rendering of the game elements.
+ * By extending InputAdapter, we can override the scroll method to detect mouse scroll (for zooming)
  */
 public class GameScreen extends InputAdapter implements Screen {
 
@@ -23,18 +24,26 @@ public class GameScreen extends InputAdapter implements Screen {
     private final OrthographicCamera camera;
     private final BitmapFont font;
 
-    private float sinusInput = 0f;
+    private float sinusInput = 0f;  // work as a timer to create a smooth movement with trig
 
-    float spriteX;
-    float spriteY;
-    private boolean isMoving;
+    // some variables for the player character (sprite)
+    float spriteX; // world x of the sprite
+    float spriteY; // world y of the sprite
+    float spriteCenterX; // origin is the center of the sprite (rather than top-bottom corner)
+    float spriteCenterY;
+    private boolean isMoving; // to see if the player needs the walking animation
 
-    private final float spriteWidth = 16;
-    private final float spriteHeight = 32;
+    private static final float SPRITE_WIDTH = 16; // the width of the sprite's frame in pixels in the original image file
+    private static final float SPRITE_HEIGHT = 32; // the height of the sprite's frame in pixels in the original image file
+    private static final float SPRITE_HITBOX_WIDTH = 14; // the width of the sprite's non-transparent part (=hitbox) in pixels in the original image file
+    private static final float SPRITE_HITBOX_HEIGHT = 22; // the height of the sprite's non-transparent part (=hitbox) in pixels in the original image file
+    private static final float SPRITE_SCREEN_WIDTH = 64;  // the actual size of the sprite drawn on the screen
+    private static final float SPRITE_SCREEN_HEIGHT = 128;// the actual size of the sprite on the screen
 
-    float worldWidth = 2000;  // Replace with your actual world width
-    float worldHeight = 1500; // Replace with your actual world height
+    float worldWidth;
+    float worldHeight;
 
+    // For zooming
     private float targetZoom; // targetZoom stores the intermediate zoom value so that we can zoom smoothly
     private static final float ZOOM_SPEED = 0.1f; // Controls how quickly the camera adjusts to the target zoom
     private static final float MIN_ZOOM_LEVEL = 0.8f; // MIN is actually zoom in
@@ -54,14 +63,17 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.zoom = 0.8f;
         targetZoom = 1.0f; // create a smooth little zooming animation when start
 
-        spriteX = camera.position.x;
-        spriteY = camera.position.y;
+        spriteCenterX = camera.position.x;
+        spriteCenterY = camera.position.y;
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
 
 
         isMoving = false;
+
+        worldWidth = 2000;
+        worldHeight = 1500;
 
     }
 
@@ -81,47 +93,52 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     private void handleInput() {
-        float speed = 240f; // final speed is speed * FPS (delta), since the speed should be independent of the FPS
+        // final speed is speed * FPS (delta), since the speed should be independent of the FPS
+        float speedOrthogonal = 240f; // normal speed when moving either vertically or horizontally
+        float speedDiagonal = speedOrthogonal / 1.414f; // moving diagonally should divide the speed by sqrt(2)
         float delta = Gdx.graphics.getDeltaTime();
 
-        // define keys pressed
+        // define keys pressed to handle keys for player movement; both WASD and the arrow keys are used
         boolean rightPressed = Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D);
         boolean leftPressed = Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A);
         boolean upPressed = Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W);
         boolean downPressed = Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S);
+        int horizontal = (rightPressed ? 1 : 0) - (leftPressed ? 1 : 0); // -1, 0, 1 for left, not moving, right resp.
+        int vertical = (upPressed ? 1 : 0) - (downPressed ? 1 : 0); // -1, 0, 1 for down, not moving, up resp.
 
-        // handle keys for player movement
-        if (rightPressed || leftPressed || upPressed || downPressed) {
-            isMoving = true; // to have the player continues with the animation
-            if (rightPressed) {
-                spriteX += speed * delta;
-                // collision with the borders
-                if (spriteX > worldWidth - spriteWidth) {
-                    spriteX = worldWidth - spriteWidth; // TODO: make the spriteX (and spriteY) in the center of the character instead of left-bottom corner
-                }
-            }
-            if (leftPressed) {
-                spriteX -= speed * delta;
-                if (spriteX < 0) {
-                    spriteX = 0;
-                }
-            }
-            if (upPressed) {
-                spriteY += speed * delta;
-                if (spriteY > worldHeight - spriteHeight) {
-                    spriteY = worldHeight - spriteHeight;
-                }
-            }
-            if (downPressed) {
-                spriteY -= speed * delta;
-                if (spriteY < 0) {
-                    spriteY = 0;
-                }
-            }
+        // to have the player stop the animation if none of the keys are pressed or continues with the animation otherwise
+        isMoving = rightPressed || leftPressed || upPressed || downPressed;
+
+        // change the player's coordinates
+        if (horizontal != 0 && vertical != 0) { // both hor. and ver. have speed -> move diagonal
+            spriteCenterX += horizontal * speedDiagonal * delta; // horizontal is the direction (could be zero and hence no movement)
+            spriteCenterY += vertical * speedDiagonal * delta;
         }
-        else{
-            isMoving = false; // to have the player stop the animation
+        else{ // move vertically or horizontally
+            spriteCenterX += horizontal * speedOrthogonal * delta;
+            spriteCenterY += vertical * speedOrthogonal * delta;
         }
+
+        // Actual size of the non-transparent part shown on the screen
+        float SPRITE_HITBOX_SCREEN_WIDTH = SPRITE_SCREEN_WIDTH * SPRITE_HITBOX_WIDTH / SPRITE_WIDTH;
+        float SPRITE_HITBOX_SCREEN_HEIGHT = SPRITE_SCREEN_HEIGHT * SPRITE_HITBOX_HEIGHT / SPRITE_HEIGHT;
+        // collision with the borders
+        if (spriteCenterX > worldWidth - SPRITE_HITBOX_SCREEN_WIDTH / 2) { // Prevent sprite from moving beyond right world boundary
+            spriteCenterX = worldWidth - SPRITE_HITBOX_SCREEN_WIDTH / 2;
+        }
+        if (spriteCenterX < SPRITE_HITBOX_SCREEN_WIDTH / 2) { // left world boundary
+            spriteCenterX = SPRITE_HITBOX_SCREEN_WIDTH / 2;
+        }
+        if (spriteCenterY > worldHeight - SPRITE_HITBOX_SCREEN_HEIGHT / 2) { // top world boundary
+            spriteCenterY = worldHeight - SPRITE_HITBOX_SCREEN_HEIGHT / 2;
+        }
+        if (spriteCenterY < SPRITE_HITBOX_SCREEN_HEIGHT / 2) { // bottom world boundary
+            spriteCenterY = SPRITE_HITBOX_SCREEN_HEIGHT / 2;
+        }
+
+        // update spriteX and spriteY to render the sprite
+        spriteX = spriteCenterX - SPRITE_SCREEN_WIDTH / 2;
+        spriteY = spriteCenterY - SPRITE_SCREEN_HEIGHT / 2;
 
 
         /*
@@ -139,12 +156,6 @@ public class GameScreen extends InputAdapter implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) { // "-" key
             targetZoom += 0.02f;
         }
-
-        /*// Mouse scroll wheel controls
-        float scrollAmount = Gdx.input.
-        if (scrollAmount != 0) {
-            camera.zoom += scrollAmount * 0.1f; // Adjust sensitivity as needed
-        }*/
 
         targetZoom = MathUtils.clamp(targetZoom, MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL); // Clamp to avoid extreme zoom level
     }
@@ -191,10 +202,11 @@ public class GameScreen extends InputAdapter implements Screen {
             final float Y_OFFSET = 30;
 
             // Variables to show, stored in a map (LinkedHashMap preserves the order)
-            Map<String, Float> variablesToShow = new HashMap<>();
-            variablesToShow.put("spriteX", spriteX);
-            variablesToShow.put("spriteY", spriteY);
+            Map<String, Float> variablesToShow = new LinkedHashMap<>();
+            variablesToShow.put("spriteCenterX", spriteCenterX);
+            variablesToShow.put("spriteCenterY", spriteCenterY);
             variablesToShow.put("camera zoom", camera.zoom);
+            variablesToShow.put("view port", camera.viewportWidth);
 
             int currentLine = 0;
             for (Map.Entry<String, Float> entry : variablesToShow.entrySet()) {
@@ -204,9 +216,6 @@ public class GameScreen extends InputAdapter implements Screen {
                 currentLine++;
             }
 
-            // font.draw(game.getSpriteBatch(), "spriteX: " + round(spriteX, 2), windowX + BORDER_OFFSET + camera.position.x, -BORDER_OFFSET + windowY + camera.position.y);
-            // font.draw(game.getSpriteBatch(), "spriteY: " + round(spriteY, 2), windowX + BORDER_OFFSET + camera.position.x, -30 - BORDER_OFFSET + windowY + camera.position.y);
-            // font.draw(game.getSpriteBatch(), "Camera Zoom: " + round(camera.zoom, 2), windowX + BORDER_OFFSET + camera.position.x, -60 - BORDER_OFFSET + windowY + camera.position.y);
 
             if (isMoving) {  // Character Walking Animation
                 // Draw the character next to the text :) / We can reuse sinusInput here
@@ -214,25 +223,25 @@ public class GameScreen extends InputAdapter implements Screen {
                         game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
                         spriteX,
                         spriteY,
-                        64,
-                        128
+                        SPRITE_SCREEN_WIDTH,
+                        SPRITE_SCREEN_HEIGHT
                 ); // width and height are size on the screen
             } else { // Character Idle Animation
                 game.getSpriteBatch().draw(
                         game.getCharacterIdleAnimation().getKeyFrame(sinusInput, true),
                         spriteX,
                         spriteY,
-                        64,
-                        128
+                        SPRITE_SCREEN_WIDTH,
+                        SPRITE_SCREEN_HEIGHT
                 );
             }
 
-            //float worldWidth = viewport.getWorldWidth();
-            //float worldHeight = viewport.getWorldHeight();
+
 
 
             // make sure the camera follows the player
-            camera.position.set(spriteX, spriteY, 0); // TODO: make sure the camera follows the center point of the player
+            // camera.viewportWidth is the window width; camera.viewportHeight is the window height
+            camera.position.set(spriteCenterX, spriteCenterY, 0);
             camera.position.x = Math.max(camera.viewportWidth / 2 * camera.zoom,
                     Math.min(worldWidth - camera.viewportWidth / 2 * camera.zoom, camera.position.x));
             camera.position.y = Math.max(camera.viewportHeight / 2 * camera.zoom,
