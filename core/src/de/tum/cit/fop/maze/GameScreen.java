@@ -97,8 +97,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private void handleInput() {
         // final speed is speed * FPS (delta), since the speed should be independent of the FPS
-        float speedOrthogonal = 240f; // normal speed when moving either vertically or horizontally
-        float speedDiagonal = speedOrthogonal / 1.414f; // moving diagonally should divide the speed by sqrt(2)
+        float speedOrthogonal; // normal speed when moving either vertically or horizontally
+        float speedDiagonal; // moving diagonally should divide the speed by sqrt(2)
         float delta = Gdx.graphics.getDeltaTime();
 
         // define keys pressed to handle keys for player movement; both WASD and the arrow keys are used
@@ -111,6 +111,16 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // to have the player stop the animation if none of the keys are pressed or continues with the animation otherwise
         isMoving = rightPressed || leftPressed || upPressed || downPressed;
+
+
+        // speed is doubled when SHIFT is hold
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
+            speedOrthogonal = 480f;
+        }
+        else { // otherwise normal speed
+            speedOrthogonal = 240f;
+        }
+        speedDiagonal = speedOrthogonal / 1.414f; // moving diagonally should divide the speed by sqrt(2)
 
         // change the player's coordinates
         if (horizontal != 0 && vertical != 0) { // both hor. and ver. have speed -> move diagonal
