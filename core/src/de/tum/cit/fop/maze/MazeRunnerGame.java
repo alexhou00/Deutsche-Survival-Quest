@@ -58,6 +58,7 @@ public class MazeRunnerGame extends Game {
         // Play some background music
         // Background sound
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3")); // TODO: Change this bg music first
+        //TODO: create another milder new background music for MenuScreen
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
 
