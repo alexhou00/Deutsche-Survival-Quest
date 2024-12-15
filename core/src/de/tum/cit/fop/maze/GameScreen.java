@@ -9,7 +9,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
 
-import static java.lang.Math.round;
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * The GameScreen class is responsible for rendering the gameplay screen.
@@ -27,12 +29,15 @@ public class GameScreen extends InputAdapter implements Screen {
     float spriteY;
     private boolean isMoving;
 
+    private final float spriteWidth = 16;
+    private final float spriteHeight = 32;
+
     float worldWidth = 2000;  // Replace with your actual world width
     float worldHeight = 1500; // Replace with your actual world height
 
     private float targetZoom; // targetZoom stores the intermediate zoom value so that we can zoom smoothly
     private static final float ZOOM_SPEED = 0.1f; // Controls how quickly the camera adjusts to the target zoom
-    private static final float MIN_ZOOM_LEVEL = 0.3f; // MIN is actually zoom in
+    private static final float MIN_ZOOM_LEVEL = 0.8f; // MIN is actually zoom in
     private static final float MAX_ZOOM_LEVEL = 1.5f; // MAX is actually zoom out
 
     /**
@@ -86,14 +91,13 @@ public class GameScreen extends InputAdapter implements Screen {
         boolean downPressed = Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S);
 
         // handle keys for player movement
-        int spriteWidth = 16;
-        int spriteHeight = 32;
         if (rightPressed || leftPressed || upPressed || downPressed) {
             isMoving = true; // to have the player continues with the animation
             if (rightPressed) {
                 spriteX += speed * delta;
+                // collision with the borders
                 if (spriteX > worldWidth - spriteWidth) {
-                    spriteX = worldWidth - spriteWidth;
+                    spriteX = worldWidth - spriteWidth; // TODO: make the spriteX (and spriteY) in the center of the character instead of left-bottom corner
                 }
             }
             if (leftPressed) {
@@ -178,8 +182,31 @@ public class GameScreen extends InputAdapter implements Screen {
             float windowWidth = Gdx.graphics.getWidth();
             float windowHeight = Gdx.graphics.getHeight();
 
-            font.draw(game.getSpriteBatch(), "spriteX:" + round(spriteX, 2), -windowWidth / 2 + 20 + camera.position.x, -20 + windowHeight / 2 + camera.position.y);
-            font.draw(game.getSpriteBatch(), "spriteY:" + round(spriteY, 2), -windowWidth / 2 + 20 + camera.position.x, -30 - 20 + windowHeight / 2 + camera.position.y);
+            // Show all the variables in the top-left corner here
+            // Calculate the window's origin adjusted by the camera's (current) zoom
+            float windowX = (-windowWidth / 2) * camera.zoom;
+            float windowY = (windowHeight / 2) * camera.zoom;
+
+            final float BORDER_OFFSET = 20;
+            final float Y_OFFSET = 30;
+
+            // Variables to show, stored in a map (LinkedHashMap preserves the order)
+            Map<String, Float> variablesToShow = new HashMap<>();
+            variablesToShow.put("spriteX", spriteX);
+            variablesToShow.put("spriteY", spriteY);
+            variablesToShow.put("camera zoom", camera.zoom);
+
+            int currentLine = 0;
+            for (Map.Entry<String, Float> entry : variablesToShow.entrySet()) {
+                String varName = entry.getKey();
+                float displayedValue = entry.getValue();
+                font.draw(game.getSpriteBatch(), String.format("%s: %.2f", varName, displayedValue), windowX + BORDER_OFFSET + camera.position.x, windowY - BORDER_OFFSET + camera.position.y - Y_OFFSET * currentLine);
+                currentLine++;
+            }
+
+            // font.draw(game.getSpriteBatch(), "spriteX: " + round(spriteX, 2), windowX + BORDER_OFFSET + camera.position.x, -BORDER_OFFSET + windowY + camera.position.y);
+            // font.draw(game.getSpriteBatch(), "spriteY: " + round(spriteY, 2), windowX + BORDER_OFFSET + camera.position.x, -30 - BORDER_OFFSET + windowY + camera.position.y);
+            // font.draw(game.getSpriteBatch(), "Camera Zoom: " + round(camera.zoom, 2), windowX + BORDER_OFFSET + camera.position.x, -60 - BORDER_OFFSET + windowY + camera.position.y);
 
             if (isMoving) {  // Character Walking Animation
                 // Draw the character next to the text :) / We can reuse sinusInput here
@@ -189,7 +216,7 @@ public class GameScreen extends InputAdapter implements Screen {
                         spriteY,
                         64,
                         128
-                );
+                ); // width and height are size on the screen
             } else { // Character Idle Animation
                 game.getSpriteBatch().draw(
                         game.getCharacterIdleAnimation().getKeyFrame(sinusInput, true),
@@ -205,7 +232,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
             // make sure the camera follows the player
-            camera.position.set(spriteX, spriteY, 0);
+            camera.position.set(spriteX, spriteY, 0); // TODO: make sure the camera follows the center point of the player
             camera.position.x = Math.max(camera.viewportWidth / 2 * camera.zoom,
                     Math.min(worldWidth - camera.viewportWidth / 2 * camera.zoom, camera.position.x));
             camera.position.y = Math.max(camera.viewportHeight / 2 * camera.zoom,
@@ -242,12 +269,5 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     // Additional methods and logic can be added as needed for the game screen
-    public static float round(float value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
 
-        long factor = (long) Math.pow(10, places);
-        value = value * factor;
-        long tmp = Math.round(value);
-        return (float) tmp / factor;
-    }
 }
