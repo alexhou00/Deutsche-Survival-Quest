@@ -33,6 +33,7 @@ public class MazeRunnerGame extends Game {
 
     Texture backgroundTexture;
 
+    Music backgroundMusic;
 
     /**
      * Constructor for MazeRunnerGame.
@@ -56,7 +57,7 @@ public class MazeRunnerGame extends Game {
 
         // Play some background music
         // Background sound
-        Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3")); // TODO: Change this bg music first
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3")); // TODO: Change this bg music first
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
 
@@ -131,6 +132,13 @@ public class MazeRunnerGame extends Game {
         getScreen().dispose(); // Dispose the current screen
         spriteBatch.dispose(); // Dispose the spriteBatch
         skin.dispose(); // Dispose the skin
+    }
+
+    public void muteBGM(){
+        backgroundMusic.setVolume(0);
+    }
+    public void normalizeBGM(){
+        backgroundMusic.setVolume(1f);
     }
 
     // Getter methods

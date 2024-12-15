@@ -31,7 +31,9 @@ public class GameScreen extends InputAdapter implements Screen {
     float spriteY; // world y of the sprite
     float spriteCenterX; // origin is the center of the sprite (rather than top-bottom corner)
     float spriteCenterY;
+
     private boolean isMoving; // to see if the player needs the walking animation
+    private boolean isMuted;
 
     private static final float SPRITE_WIDTH = 16; // the width of the sprite's frame in pixels in the original image file
     private static final float SPRITE_HEIGHT = 32; // the height of the sprite's frame in pixels in the original image file
@@ -71,6 +73,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
         isMoving = false;
+        isMuted = false;
 
         worldWidth = 2000;
         worldHeight = 1500;
@@ -158,6 +161,17 @@ public class GameScreen extends InputAdapter implements Screen {
         }
 
         targetZoom = MathUtils.clamp(targetZoom, MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL); // Clamp to avoid extreme zoom level
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.M)) { // Press 'M' to mute/unmute
+            isMuted = !isMuted;
+            if (isMuted) {
+                game.muteBGM();
+            } else {
+                game.normalizeBGM();
+            }
+            Gdx.app.log("GameScreen", "Mute toggled: " + (isMuted ? "ON" : "OFF"));
+        }
+
     }
 
     // Screen interface methods with necessary functionality
@@ -206,7 +220,6 @@ public class GameScreen extends InputAdapter implements Screen {
             variablesToShow.put("spriteCenterX", spriteCenterX);
             variablesToShow.put("spriteCenterY", spriteCenterY);
             variablesToShow.put("camera zoom", camera.zoom);
-            variablesToShow.put("view port", camera.viewportWidth);
 
             int currentLine = 0;
             for (Map.Entry<String, Float> entry : variablesToShow.entrySet()) {
