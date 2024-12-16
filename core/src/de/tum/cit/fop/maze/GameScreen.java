@@ -11,20 +11,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
 
-
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import com.badlogic.gdx.utils.ObjectMap;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -52,12 +40,11 @@ public class GameScreen extends InputAdapter implements Screen {
     private float targetZoom; // targetZoom stores the intermediate zoom value so that we can zoom smoothly
 
     private Player player;
-    private TiledMap tile;
+    private Tiles tiles;
 
     private OrthogonalTiledMapRenderer mapRenderer;
     private TiledMap tiledMap;
 
-    int TILE_SIZE = 16;
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
@@ -79,16 +66,13 @@ public class GameScreen extends InputAdapter implements Screen {
         isMuted = false;
 
         player = new Player(700, 500, 16, 32, 14, 22, 64, 128, 1, false);
-        System.out.println("Here");
-        this.tile = new TiledMap();
-        System.out.println("Here2");
-
         // Load tiled map
-        tiledMap = loadTiledMap("maps/level-5.properties", Gdx.files.internal("basictiles.png").path());
+        tiles = new Tiles();
+        tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("basictiles.png").path(), 40, 40);
 
         // Set up map renderer
-
-        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  WORLD_WIDTH / 20f / TILE_SIZE); // Scale tiles (20 is the number of tiles of the width // so like unitScale is times how many (16 x 2 in this case)
+        int horizontalTilesCount = 20; // number of tiles on the width
+        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) WORLD_WIDTH / (TILE_SIZE * horizontalTilesCount)); // Scale tiles (20 is the number of tiles of the width // so like unitScale is times how many (16 x 2 in this case)
 
     }
 
@@ -128,7 +112,6 @@ public class GameScreen extends InputAdapter implements Screen {
             }
             Gdx.app.log("GameScreen", "Mute toggled: " + (isMuted ? "ON" : "OFF"));
         }
-
     }
 
     // Screen interface methods with necessary functionality
@@ -154,8 +137,6 @@ public class GameScreen extends InputAdapter implements Screen {
             // All the player functionalities are here
             player.update(delta);
 
-            // tile.render();
-
 
             // Set up and begin drawing with the sprite batch
             game.getSpriteBatch().setProjectionMatrix(camera.combined);
@@ -175,30 +156,14 @@ public class GameScreen extends InputAdapter implements Screen {
             // Render the text
             font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
 
-            float windowWidth = Gdx.graphics.getWidth();
-            float windowHeight = Gdx.graphics.getHeight();
-
             // Show all the variables in the top-left corner here
-            // Calculate the window's origin adjusted by the camera's (current) zoom
-            float windowX = (-windowWidth / 2) * camera.zoom;
-            float windowY = (windowHeight / 2) * camera.zoom;
-
-            final float BORDER_OFFSET = 20;
-            final float Y_OFFSET = 30;
-
             // Variables to show, stored in a map (LinkedHashMap preserves the order)
             Map<String, Float> variablesToShow = new LinkedHashMap<>();
             variablesToShow.put("player.x", player.getX());
             variablesToShow.put("player.y", player.getY());
             variablesToShow.put("camera zoom", camera.zoom);
 
-            int currentLine = 0;
-            for (Map.Entry<String, Float> entry : variablesToShow.entrySet()) {
-                String varName = entry.getKey();
-                float displayedValue = entry.getValue();
-                font.draw(game.getSpriteBatch(), String.format("%s: %.2f", varName, displayedValue), windowX + BORDER_OFFSET + camera.position.x, windowY - BORDER_OFFSET + camera.position.y - Y_OFFSET * currentLine);
-                currentLine++;
-            }
+            drawVariables(variablesToShow);
 
 
             if (player.isMoving()) {  // Character Walking Animation
@@ -219,8 +184,6 @@ public class GameScreen extends InputAdapter implements Screen {
                         player.getHeightOnScreen()
                 );
             }
-
-
 
 
             // make sure the camera follows the player
@@ -262,63 +225,24 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     // Additional methods and logic can be added as needed for the game screen
+    private void drawVariables(Map<String, Float> variablesToShow) {
+        float windowWidth = Gdx.graphics.getWidth();
+        float windowHeight = Gdx.graphics.getHeight();
 
-    private TiledMap loadTiledMap(String mapFilePath, String tileSheetPath) {
-        // Load tile sheet
-        var tileSheet = new Texture(tileSheetPath);
-        int tileCols = tileSheet.getWidth() / TILE_SIZE;
-        int tileRows = tileSheet.getHeight() / TILE_SIZE;
+        // Calculate the window's origin adjusted by the camera's (current) zoom
+        float windowX = (-windowWidth / 2) * camera.zoom;
+        float windowY = (windowHeight / 2) * camera.zoom;
 
-        // Create tiles based on tile sheet
-        StaticTiledMapTile[] tiles = new StaticTiledMapTile[tileCols * tileRows];
-        for (int y = 0; y < tileRows; y++) {
-            for (int x = 0; x < tileCols; x++) {
-                tiles[y * tileCols + x] = new StaticTiledMapTile(new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE));
-            }
+        final float BORDER_OFFSET = 20;
+        final float Y_OFFSET = 30;
+
+        int currentLine = 0;
+        for (Map.Entry<String, Float> entry : variablesToShow.entrySet()) {
+            String varName = entry.getKey();
+            float displayedValue = entry.getValue();
+            font.draw(game.getSpriteBatch(), String.format("%s: %.2f", varName, displayedValue), windowX + BORDER_OFFSET + camera.position.x, windowY - BORDER_OFFSET + camera.position.y - Y_OFFSET * currentLine);
+            currentLine++;
         }
-
-        // Parse properties file
-        ObjectMap<String, Integer> mapData = parsePropertiesFile(mapFilePath);
-
-        // Create a TiledMap
-        TiledMap map = new TiledMap();
-        TiledMapTileLayer layer = new TiledMapTileLayer(100, 100, TILE_SIZE, TILE_SIZE); // put our width/height here
-        int i = 0;
-        // Populate the layer with tiles
-        for (String key : mapData.keys()) {
-            String[] parts = key.split(",");
-            int x = Integer.parseInt(parts[1]);
-            int y = Integer.parseInt(parts[0]);
-            int tileValue = mapData.get(key);
-
-            TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-            cell.setTile(tiles[tileValue]);
-            layer.setCell(x, y, cell);
-            i++;
-            System.out.println(i);
-        }
-
-        map.getLayers().add(layer);
-        Gdx.app.log("Tiles", "Tiled Map loaded");
-        return map;
-    }
-
-    private ObjectMap<String, Integer> parsePropertiesFile(String filePath) {
-        ObjectMap<String, Integer> mapData = new ObjectMap<>();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (!line.contains("=")) continue;
-                String[] parts = line.split("=");
-                mapData.put(parts[0], Integer.parseInt(parts[1]));
-                Gdx.app.log("Tiles", "Parsed: " + parts[0] + " = " + parts[1]);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return mapData;
     }
 
 }
