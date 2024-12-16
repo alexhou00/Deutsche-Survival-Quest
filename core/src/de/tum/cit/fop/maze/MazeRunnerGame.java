@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 
+import javax.swing.plaf.TextUI;
+
 /**
  * The MazeRunnerGame class represents the core of the Maze Runner game.
  * It manages the screens and global resources like SpriteBatch and Skin.
@@ -101,6 +103,7 @@ public class MazeRunnerGame extends Game {
      */
     private void loadCharacterAnimation() {
         Texture walkSheet = new Texture(Gdx.files.internal("character.png")); // TODO: Redesign our character
+
 
         int frameWidth = 16;
         int frameHeight = 32;

@@ -4,10 +4,27 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
+
+
+import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.utils.ObjectMap;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -35,6 +52,12 @@ public class GameScreen extends InputAdapter implements Screen {
     private float targetZoom; // targetZoom stores the intermediate zoom value so that we can zoom smoothly
 
     private Player player;
+    private TiledMap tile;
+
+    private OrthogonalTiledMapRenderer mapRenderer;
+    private TiledMap tiledMap;
+
+    int TILE_SIZE = 16;
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
@@ -56,6 +79,16 @@ public class GameScreen extends InputAdapter implements Screen {
         isMuted = false;
 
         player = new Player(700, 500, 16, 32, 14, 22, 64, 128, 1, false);
+        System.out.println("Here");
+        this.tile = new TiledMap();
+        System.out.println("Here2");
+
+        // Load tiled map
+        tiledMap = loadTiledMap("maps/level-5.properties", Gdx.files.internal("basictiles.png").path());
+
+        // Set up map renderer
+
+        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  WORLD_WIDTH / 20f / TILE_SIZE); // Scale tiles (20 is the number of tiles of the width // so like unitScale is times how many (16 x 2 in this case)
 
     }
 
@@ -110,7 +143,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
             // Move text in a circular path to have an example of a moving object
             sinusInput += delta;  // sinusInput is like `time`, storing the time for animation
-            float textX = (float) (1000 + Math.sin(sinusInput) * 100);
+            float textX = (float) (0 + Math.sin(sinusInput) * 100);
             float textY = (float) (750 + Math.cos(sinusInput) * 100);
 
             Gdx.input.setInputProcessor(this);
@@ -121,12 +154,23 @@ public class GameScreen extends InputAdapter implements Screen {
             // All the player functionalities are here
             player.update(delta);
 
+            // tile.render();
+
+
             // Set up and begin drawing with the sprite batch
             game.getSpriteBatch().setProjectionMatrix(camera.combined);
 
             game.getSpriteBatch().begin(); // Important to call this before drawing anything
 
             game.getSpriteBatch().draw(game.getBackgroundTexture(), 0, 0);
+
+            game.getSpriteBatch().end();
+
+            // mapRenderer use another rendering batch, so we have to end the ones first, render the map, and then begin our spriteBatch again
+            mapRenderer.setView(camera);
+            mapRenderer.render();
+
+            game.getSpriteBatch().begin();
 
             // Render the text
             font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
@@ -218,5 +262,63 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     // Additional methods and logic can be added as needed for the game screen
+
+    private TiledMap loadTiledMap(String mapFilePath, String tileSheetPath) {
+        // Load tile sheet
+        var tileSheet = new Texture(tileSheetPath);
+        int tileCols = tileSheet.getWidth() / TILE_SIZE;
+        int tileRows = tileSheet.getHeight() / TILE_SIZE;
+
+        // Create tiles based on tile sheet
+        StaticTiledMapTile[] tiles = new StaticTiledMapTile[tileCols * tileRows];
+        for (int y = 0; y < tileRows; y++) {
+            for (int x = 0; x < tileCols; x++) {
+                tiles[y * tileCols + x] = new StaticTiledMapTile(new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE));
+            }
+        }
+
+        // Parse properties file
+        ObjectMap<String, Integer> mapData = parsePropertiesFile(mapFilePath);
+
+        // Create a TiledMap
+        TiledMap map = new TiledMap();
+        TiledMapTileLayer layer = new TiledMapTileLayer(100, 100, TILE_SIZE, TILE_SIZE); // put our width/height here
+        int i = 0;
+        // Populate the layer with tiles
+        for (String key : mapData.keys()) {
+            String[] parts = key.split(",");
+            int x = Integer.parseInt(parts[1]);
+            int y = Integer.parseInt(parts[0]);
+            int tileValue = mapData.get(key);
+
+            TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+            cell.setTile(tiles[tileValue]);
+            layer.setCell(x, y, cell);
+            i++;
+            System.out.println(i);
+        }
+
+        map.getLayers().add(layer);
+        Gdx.app.log("Tiles", "Tiled Map loaded");
+        return map;
+    }
+
+    private ObjectMap<String, Integer> parsePropertiesFile(String filePath) {
+        ObjectMap<String, Integer> mapData = new ObjectMap<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.contains("=")) continue;
+                String[] parts = line.split("=");
+                mapData.put(parts[0], Integer.parseInt(parts[1]));
+                Gdx.app.log("Tiles", "Parsed: " + parts[0] + " = " + parts[1]);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return mapData;
+    }
 
 }
