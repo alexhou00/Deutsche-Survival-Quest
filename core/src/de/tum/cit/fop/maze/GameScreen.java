@@ -52,6 +52,7 @@ public class GameScreen extends InputAdapter implements Screen {
     float windowWidth = Gdx.graphics.getWidth();
     float windowHeight = Gdx.graphics.getHeight();
 
+    private ObjectRenderer hudObjectRenderer;
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
@@ -70,6 +71,9 @@ public class GameScreen extends InputAdapter implements Screen {
         // Create and configure the HUD camera
         hudCamera = new OrthographicCamera();
         hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        // Load textures for HUD
+        hudObjectRenderer = new ObjectRenderer("objects.png");
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
@@ -228,6 +232,9 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // shapeRenderer use another rendering batch, so we have to end the batch first, and start it again
         hudBatch.begin();
+        hudObjectRenderer.drawHearts(hudBatch, player.getLives(), 128, windowHeight - 106f, 32, 2);
+
+        /* Health bar
         // Draw health bar
         float healthBarWidth = 180f;
         float healthBarHeight = 20f;
@@ -246,7 +253,7 @@ public class GameScreen extends InputAdapter implements Screen {
         shapeRenderer.setColor(Color.RED);
         shapeRenderer.rect(healthBarX, healthBarY, healthBarWidth * healthPercentage, healthBarHeight);
 
-        shapeRenderer.end();
+        shapeRenderer.end();*/
         hudBatch.end();
     }
 
