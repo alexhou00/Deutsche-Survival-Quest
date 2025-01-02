@@ -3,8 +3,11 @@ package de.tum.cit.fop.maze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
@@ -27,7 +30,10 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final MazeRunnerGame game;
     private final OrthographicCamera camera;
+    private OrthographicCamera hudCamera; // HUD camera
+
     private final BitmapFont font;
+    private final ShapeRenderer shapeRenderer; // For drawing shapes like health bars
 
     private float sinusInput = 0f;  // work as a timer to create a smooth movement with trig
 
@@ -42,6 +48,9 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private OrthogonalTiledMapRenderer mapRenderer;
     private TiledMap tiledMap;
+
+    float windowWidth = Gdx.graphics.getWidth();
+    float windowHeight = Gdx.graphics.getHeight();
 
 
     /**
@@ -58,10 +67,15 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.zoom = 0.8f;
         targetZoom = 1.0f; // create a smooth little zooming animation when start (0.8 -> 1.0)
 
+        // Create and configure the HUD camera
+        hudCamera = new OrthographicCamera();
+        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
 
         isMuted = false;
+        shapeRenderer = new ShapeRenderer();
 
         // Load tiled map
         tiles = new Tiles();
@@ -73,7 +87,7 @@ public class GameScreen extends InputAdapter implements Screen {
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles (20 is the number of tiles of the width // so like unitScale is times how many
 
 
-        player = new Player(0, 1, 16, 32, 13, 21, 64, 128, 1, false, tiles.layer);
+        player = new Player(0, 1, 16, 32, 13, 21, 64, 128, 6, false, tiles.layer);
 
     }
 
@@ -157,17 +171,6 @@ public class GameScreen extends InputAdapter implements Screen {
             // Render the text
             font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
 
-            // Show all the variables in the top-left corner here
-            // Variables to show, stored in a map (LinkedHashMap preserves the order)
-            Map<String, Float> variablesToShow = new LinkedHashMap<>();
-            variablesToShow.put("player.x", player.getX());
-            variablesToShow.put("player.y", player.getY());
-            variablesToShow.put("camera zoom", camera.zoom);
-            variablesToShow.put("player.speed", player.getSpeed());
-
-            drawVariables(variablesToShow);
-
-
             if (player.isMoving()) {  // Character Walking Animation
                 // Draw the character next to the text :) / We can reuse sinusInput here
                 game.getSpriteBatch().draw(
@@ -198,11 +201,60 @@ public class GameScreen extends InputAdapter implements Screen {
             camera.update();
             game.getSpriteBatch().end(); // Important to call this after drawing everything
         }
+
+        renderHUD();
     }
+
+    private void renderHUD() {
+        SpriteBatch hudBatch = game.getSpriteBatch();
+        hudBatch.setProjectionMatrix(hudCamera.combined);
+        hudBatch.begin();
+
+        font.draw(hudBatch, "This is the HUD", 20, Gdx.graphics.getHeight() - 20);
+        font.draw(hudBatch, "Score: " + Math.round(sinusInput), 20f, Gdx.graphics.getHeight() - 50f);
+        font.draw(hudBatch, "Lives:", 20f, windowHeight - 80f);
+
+        // Show all the variables in the bottom-left corner here
+        // Variables to show, stored in a map (LinkedHashMap preserves the order)
+        Map<String, Float> variablesToShow = new LinkedHashMap<>();
+        variablesToShow.put("player.x", player.getX());
+        variablesToShow.put("player.y", player.getY());
+        variablesToShow.put("camera zoom", camera.zoom);
+        variablesToShow.put("player.speed", player.getSpeed());
+
+        drawVariables(variablesToShow);
+
+        hudBatch.end();
+
+        // shapeRenderer use another rendering batch, so we have to end the batch first, and start it again
+        hudBatch.begin();
+        // Draw health bar
+        float healthBarWidth = 180f;
+        float healthBarHeight = 20f;
+        float healthBarX = 128f;
+        float healthBarY = windowHeight - 104f;
+        float healthPercentage = (float) player.getLives() / MAX_PLAYER_LIVES;
+
+        shapeRenderer.setProjectionMatrix(hudCamera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        // Background bar
+        shapeRenderer.setColor(Color.DARK_GRAY);
+        shapeRenderer.rect(healthBarX, healthBarY, healthBarWidth, healthBarHeight);
+
+        // Foreground bar
+        shapeRenderer.setColor(Color.RED);
+        shapeRenderer.rect(healthBarX, healthBarY, healthBarWidth * healthPercentage, healthBarHeight);
+
+        shapeRenderer.end();
+        hudBatch.end();
+    }
+
 
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false);
+        hudCamera.setToOrtho(false, width, height); // Adjust HUD camera to new screen size
     }
 
     @Override
@@ -228,9 +280,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     // Additional methods and logic can be added as needed for the game screen
     private void drawVariables(Map<String, Float> variablesToShow) {
-        float windowWidth = Gdx.graphics.getWidth();
-        float windowHeight = Gdx.graphics.getHeight();
-
+        SpriteBatch hudBatch = game.getSpriteBatch();
         // Calculate the window's origin adjusted by the camera's (current) zoom
         float windowX = (-windowWidth / 2) * camera.zoom;
         float windowY = (windowHeight / 2) * camera.zoom;
@@ -242,7 +292,7 @@ public class GameScreen extends InputAdapter implements Screen {
         for (Map.Entry<String, Float> entry : variablesToShow.entrySet()) {
             String varName = entry.getKey();
             float displayedValue = entry.getValue();
-            font.draw(game.getSpriteBatch(), String.format("%s: %.2f", varName, displayedValue), windowX + BORDER_OFFSET + camera.position.x, windowY - BORDER_OFFSET + camera.position.y - Y_OFFSET * currentLine);
+            font.draw(hudBatch, String.format("%s: %.2f", varName, displayedValue), BORDER_OFFSET, BORDER_OFFSET + variablesToShow.size() * Y_OFFSET - Y_OFFSET * currentLine);
             currentLine++;
         }
     }
