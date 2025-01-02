@@ -9,4 +9,6 @@ public class Constants {
     public static final float MAX_ZOOM_LEVEL = 1.3f; // MAX is actually zoom out
 
     public static final int TILE_SIZE = 16;
+
+    public static int TILE_SCREEN_SIZE = TILE_SIZE;
 }

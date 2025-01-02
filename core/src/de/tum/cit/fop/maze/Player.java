@@ -2,34 +2,40 @@ package de.tum.cit.fop.maze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
 import static de.tum.cit.fop.maze.Constants.*;
 
 public class Player extends Character {
     private boolean hasKey;
     private boolean isMoving;
+    private TiledMapTileLayer collisionLayer;
+
+    private static final float BASE_SPEED = 240f;
+    private static final float BOOST_MULTIPLIER = 2f;
 
     /**
      * Constructor for Player. This is our main character
+     * x: world x of the sprite (origin is the center of the sprite); y: world y of the sprite (origin is the center of the sprite)
      *
-     * @param x world x of the sprite (origin is the center of the sprite)
-     * @param y world y of the sprite (origin is the center of the sprite)
+     * @param tileX world x position in tiles where the player is initially spawn
+     * @param tileY world y position in tiles where the player is initially spawn
      * @param width the width of the sprite's frame in pixels in the original image file
      * @param height the height of the sprite's frame in pixels in the original image file
      * @param hitboxWidth the width of the sprite's non-transparent part (=hitbox) in pixels in the original image file
      * @param hitboxHeight the height of the sprite's non-transparent part (=hitbox) in pixels in the original image file
-     * @param widthOnScreen the actual size of the sprite drawn on the screen
+     * @param widthOnScreen the actual size of the sprite (frame) drawn on the screen
      * @param heightOnScreen the actual size of the sprite on the screen
      */
-    public Player(int x, int y, int width, int height, int hitboxWidth, int hitboxHeight, int widthOnScreen, int heightOnScreen, int lives, boolean hasKey) {
-        super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
+    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, int widthOnScreen, int heightOnScreen, int lives, boolean hasKey, TiledMapTileLayer collisionLayer) {
+        super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
         this.hasKey = hasKey;
         this.isMoving = false;
-        this.speed = 240f;  // normal speed when moving either vertically or horizontally
+        this.speed = BASE_SPEED;  // normal speed when moving either vertically or horizontally
+        this.collisionLayer = collisionLayer;
     }
 
     private void handleInput() {
-        float speedDiagonal; // moving diagonally should divide the speed by sqrt(2)
         float delta = Gdx.graphics.getDeltaTime();
 
         // define keys pressed to handle keys for player movement; both WASD and the arrow keys are used
@@ -41,32 +47,43 @@ public class Player extends Character {
         int vertical = (upPressed ? 1 : 0) - (downPressed ? 1 : 0); // -1, 0, 1 for down, not moving, up resp.
 
         // to have the player stop the animation if none of the keys are pressed or continues with the animation otherwise
-        isMoving = rightPressed || leftPressed || upPressed || downPressed;
+        isMoving = horizontal != 0 || vertical != 0;
 
-        // speed is doubled when SHIFT is hold
+        // speed is doubled (times the `BOOST_MULTIPLIER`) when SHIFT key is hold
         // final speed is speed * FPS (delta), since the speed should be independent of the FPS
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
-            speed = 480f;
-        }
-        else { // otherwise normal speed
-            speed = 240f;
-        }
-        speedDiagonal = speed / 1.414f; // moving diagonally should divide the speed by sqrt(2)
+        float speed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)
+                ? BASE_SPEED * BOOST_MULTIPLIER
+                : BASE_SPEED;
+
+        // both hor. and ver. have speed -> move diagonal
+        // (moving diagonally should divide the speed by sqrt(2))
+        float moveSpeed = (horizontal != 0 && vertical != 0) ? speed / ((float) Math.sqrt(2)) : speed; // if (horizontal != 0 && vertical != 0) -> move either vertically or horizontally
 
         // change the player's coordinates
-        if (horizontal != 0 && vertical != 0) { // both hor. and ver. have speed -> move diagonal
-            x += horizontal * speedDiagonal * delta; // horizontal is the direction (could be zero and hence no movement)
-            y += vertical * speedDiagonal * delta;
-        }
-        else{ // move vertically or horizontally
-            x += horizontal * speed * delta;
-            y += vertical * speed * delta;
+        float newX = x + horizontal * moveSpeed * delta; // `horizontal` is the direction (could be zero and hence no movement)
+        float newY = y + vertical * moveSpeed * delta;
+
+
+        // Checks if the player can move to a given position by verifying collisions at the four corners of the player's hitbox.
+
+        // horizontally
+        if (!checkCollision(newX, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2) &&
+                !checkCollision(newX, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
+                !checkCollision(newX, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
+                !checkCollision(newX, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2)) {
+            x = newX;
         }
 
-        // Actual size of the non-transparent part shown on the screen
-        float hitboxWidthOnScreen = widthOnScreen * hitboxWidth / width;
-        float hitboxHeightOnScreen = heightOnScreen * hitboxHeight / height;
-        // collision with the borders
+        // vertically
+        if (!checkCollision(x, newY, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2) &&
+                !checkCollision(x, newY, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
+                !checkCollision(x, newY, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
+                !checkCollision(x, newY, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2)) {
+            y = newY;
+        }
+
+
+        // collision with the world boundaries
         if (x > WORLD_WIDTH - hitboxWidthOnScreen / 2) { // Prevent sprite from moving beyond right world boundary
             x = WORLD_WIDTH - hitboxWidthOnScreen / 2;
         }
@@ -81,7 +98,7 @@ public class Player extends Character {
         }
 
         if (rightPressed || leftPressed || upPressed || downPressed){
-            Gdx.app.log("Player", "x: " + x + "; y: " + y);
+            // Gdx.app.log("Player", "x: " + x + "; y: " + y);
         }
 
         /*
@@ -91,6 +108,27 @@ public class Player extends Character {
             bucketSprite.setCenterX(touchPos.x);
         }*/
 
+    }
+
+    public boolean isColliding(int tileX, int tileY) {
+        // Get the cell at the specified tile position
+        TiledMapTileLayer.Cell cell = collisionLayer.getCell(tileX, tileY);
+
+        // Check if the cell exists and if it has the "collidable" property (like walls)
+        if (cell != null && cell.getTile() != null) {
+            Object collidable = cell.getTile().getProperties().get("collidable");
+            if (collidable != null && collidable.equals(true)) {
+                Gdx.app.log("Player", "collided tile position " + tileX + ", " + tileY);
+                return true;
+            }
+        }
+        return false; // No collision by default
+    }
+
+    private boolean checkCollision(float x, float y, float offsetX, float offsetY) {
+        int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
+        int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
+        return isColliding(tileX, tileY);
     }
 
     // getters and setters

@@ -16,6 +16,8 @@ import static de.tum.cit.fop.maze.Constants.TILE_SIZE;
 
 public class Tiles {
 
+    public TiledMapTileLayer layer;
+
     public TiledMap loadTiledMap(String mapFilePath, String tileSheetPath, int mapWidthInTiles, int mapHeightInTiles) {
         // Load tile sheet
         var tileSheet = new Texture(tileSheetPath);
@@ -27,6 +29,15 @@ public class Tiles {
         for (int y = 0; y < tileRows; y++) {
             for (int x = 0; x < tileCols; x++) {
                 tiles[y * tileCols + x] = new StaticTiledMapTile(new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE));
+
+                // the "collidable" property for specific tiles (e.g., Walls, Traps)
+                if (y * tileCols + x == 0) { // Tile 0: Wall
+                    tiles[y * tileCols + x].getProperties().put("collidable", true);
+                } else if (y * tileCols + x == 3) { // Tile 3: Trap
+                    tiles[y * tileCols + x].getProperties().put("collidable", true);
+                } else {
+                    tiles[y * tileCols + x].getProperties().put("collidable", false);
+                }
             }
         }
 
@@ -35,13 +46,13 @@ public class Tiles {
 
         // Create a TiledMap
         TiledMap map = new TiledMap();
-        TiledMapTileLayer layer = new TiledMapTileLayer(mapWidthInTiles, mapHeightInTiles, TILE_SIZE, TILE_SIZE); // put our width/height here
+        layer = new TiledMapTileLayer(mapWidthInTiles, mapHeightInTiles, TILE_SIZE, TILE_SIZE); // put our width/height here
         // Populate the layer with tiles
         try{
             for (String key : mapData.keys()) {
                 String[] parts = key.split(",");
-                int x = Integer.parseInt(parts[1]);
-                int y = Integer.parseInt(parts[0]);
+                int x = Integer.parseInt(parts[0]);
+                int y = Integer.parseInt(parts[1]);
                 int tileValue = mapData.get(key);
 
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();

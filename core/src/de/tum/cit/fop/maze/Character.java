@@ -7,6 +7,8 @@ public abstract class Character extends InputAdapter {
     protected int lives;
     protected float x, y, velX, velY, speed;
     protected float width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen;
+    float hitboxWidthOnScreen;
+    float hitboxHeightOnScreen;
     protected Rectangle rectangle;
 
     public Character(int x, int y, int width, int height, int hitboxWidth, int hitboxHeight, int widthOnScreen, int heightOnScreen, int lives) {
@@ -23,6 +25,9 @@ public abstract class Character extends InputAdapter {
         this.hitboxHeight = hitboxHeight;
         this.widthOnScreen = widthOnScreen;
         this.heightOnScreen = heightOnScreen;
+        // Actual size of the non-transparent part shown on the screen
+        this.hitboxWidthOnScreen = (float) widthOnScreen * hitboxWidth / width;
+        this.hitboxHeightOnScreen = (float) heightOnScreen * hitboxHeight / height;
 
     }
 

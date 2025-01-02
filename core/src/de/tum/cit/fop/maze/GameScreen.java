@@ -4,9 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
@@ -65,14 +63,17 @@ public class GameScreen extends InputAdapter implements Screen {
 
         isMuted = false;
 
-        player = new Player(700, 500, 16, 32, 14, 22, 64, 128, 1, false);
         // Load tiled map
         tiles = new Tiles();
         tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("basictiles.png").path(), 40, 40);
 
         // Set up map renderer
         int horizontalTilesCount = 20; // number of tiles on the width
-        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) WORLD_WIDTH / (TILE_SIZE * horizontalTilesCount)); // Scale tiles (20 is the number of tiles of the width // so like unitScale is times how many (16 x 2 in this case)
+        TILE_SCREEN_SIZE = WORLD_WIDTH / horizontalTilesCount;
+        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles (20 is the number of tiles of the width // so like unitScale is times how many
+
+
+        player = new Player(0, 1, 16, 32, 13, 21, 64, 128, 1, false, tiles.layer);
 
     }
 
