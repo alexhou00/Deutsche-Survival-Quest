@@ -163,6 +163,7 @@ public class GameScreen extends InputAdapter implements Screen {
             variablesToShow.put("player.x", player.getX());
             variablesToShow.put("player.y", player.getY());
             variablesToShow.put("camera zoom", camera.zoom);
+            variablesToShow.put("player.speed", player.getSpeed());
 
             drawVariables(variablesToShow);
 

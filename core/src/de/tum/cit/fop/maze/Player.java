@@ -10,9 +10,12 @@ public class Player extends Character {
     private boolean hasKey;
     private boolean isMoving;
     private TiledMapTileLayer collisionLayer;
+    float targetVelX, targetVelY;
+    int lastHorizontalDirection = 0, lastVerticalDirection = 0;
 
-    private static final float BASE_SPEED = 240f;
+    private static final float BASE_SPEED = 240f; // normal speed when moving either vertically or horizontally
     private static final float BOOST_MULTIPLIER = 2f;
+    private static final float SMOOTH_FACTOR = 5f;
 
     /**
      * Constructor for Player. This is our main character
@@ -31,7 +34,7 @@ public class Player extends Character {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
         this.hasKey = hasKey;
         this.isMoving = false;
-        this.speed = BASE_SPEED;  // normal speed when moving either vertically or horizontally
+        // this.speed = BASE_SPEED;  // normal speed when moving either vertically or horizontally
         this.collisionLayer = collisionLayer;
     }
 
@@ -43,25 +46,56 @@ public class Player extends Character {
         boolean leftPressed = Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A);
         boolean upPressed = Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W);
         boolean downPressed = Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S);
-        int horizontal = (rightPressed ? 1 : 0) - (leftPressed ? 1 : 0); // -1, 0, 1 for left, not moving, right resp.
-        int vertical = (upPressed ? 1 : 0) - (downPressed ? 1 : 0); // -1, 0, 1 for down, not moving, up resp.
+        boolean boostPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
+
+        // Determine movement direction
+        // int horizontalInput, verticalInput; they will be -1, 0, or 1 depending on the direction
+        int horizontalInput = (rightPressed ? 1 : 0) - (leftPressed ? 1 : 0); // -1, 0, 1 for left, not moving, right resp.
+        int verticalInput = (upPressed ? 1 : 0) - (downPressed ? 1 : 0); // -1, 0, 1 for down, not moving, up resp.
+        // update the last direction of movement based on key presses
+        if (rightPressed) lastHorizontalDirection = 1;
+        if (leftPressed) lastHorizontalDirection = -1;
+        if (upPressed) lastVerticalDirection = 1;
+        if (downPressed) lastVerticalDirection = -1;
 
         // to have the player stop the animation if none of the keys are pressed or continues with the animation otherwise
-        isMoving = horizontal != 0 || vertical != 0;
+        isMoving = (velX > 5 || velY >5);  // horizontalInput != 0 || verticalInput != 0;
 
         // speed is doubled (times the `BOOST_MULTIPLIER`) when SHIFT key is hold
         // final speed is speed * FPS (delta), since the speed should be independent of the FPS
-        float speed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)
-                ? BASE_SPEED * BOOST_MULTIPLIER
-                : BASE_SPEED;
+        if (horizontalInput == 0) {
+            targetVelX = 0;
+        }
+        else{
+            targetVelX = boostPressed ? BASE_SPEED * BOOST_MULTIPLIER : BASE_SPEED;
+        }
+        if (verticalInput == 0){
+            targetVelY = 0;
+        }
+        else{
+            targetVelY = boostPressed ? BASE_SPEED * BOOST_MULTIPLIER : BASE_SPEED;
+        }
+
+        // gradually adjust the actual velocities towards the target velocities for smooth movement
+        velX += (targetVelX - velX) * SMOOTH_FACTOR * delta;
+        velY += (targetVelY - velY) * SMOOTH_FACTOR * delta;
+
+        // reset last movement direction if the velocity drops below the threshold
+        if (velX < 5) lastHorizontalDirection = 0;
+        if (velY < 5) lastVerticalDirection = 0;
 
         // both hor. and ver. have speed -> move diagonal
         // (moving diagonally should divide the speed by sqrt(2))
-        float moveSpeed = (horizontal != 0 && vertical != 0) ? speed / ((float) Math.sqrt(2)) : speed; // if (horizontal != 0 && vertical != 0) -> move either vertically or horizontally
+        float actualVelX = velX, actualVelY = velY;
+        if (horizontalInput != 0 && verticalInput != 0){ // move diagonally
+            actualVelX = velX / ((float) Math.sqrt(2));
+            actualVelY = velY / ((float) Math.sqrt(2));
+        }
 
-        // change the player's coordinates
-        float newX = x + horizontal * moveSpeed * delta; // `horizontal` is the direction (could be zero and hence no movement)
-        float newY = y + vertical * moveSpeed * delta;
+        // update the player's coordinates
+        float newX = x + lastHorizontalDirection * actualVelX * delta; // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
+        float newY = y + lastVerticalDirection * actualVelY * delta;
+        speed = (float) Math.sqrt(actualVelX * actualVelX + actualVelY * actualVelY);
 
 
         // Checks if the player can move to a given position by verifying collisions at the four corners of the player's hitbox.
@@ -71,7 +105,10 @@ public class Player extends Character {
                 !checkCollision(newX, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
                 !checkCollision(newX, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
                 !checkCollision(newX, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2)) {
-            x = newX;
+            x = newX; // update position if no collision
+        }
+        else{
+            targetVelX *= 0.5f; // reduce velocity when collides
         }
 
         // vertically
@@ -80,6 +117,9 @@ public class Player extends Character {
                 !checkCollision(x, newY, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
                 !checkCollision(x, newY, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2)) {
             y = newY;
+        }
+        else{
+            targetVelY *= 0.5f;
         }
 
 
