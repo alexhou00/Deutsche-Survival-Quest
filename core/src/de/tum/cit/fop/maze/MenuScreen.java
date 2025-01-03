@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -23,6 +24,8 @@ import java.util.*;
 public class MenuScreen implements Screen {
 
     private final Stage stage;
+    MazeRunnerGame game;
+    Texture backgroundTexture;
     private Map<String, TextButton> buttons;
 
     /**
@@ -31,14 +34,18 @@ public class MenuScreen implements Screen {
      * @param game The main game class, used to access global resources and methods.
      */
     public MenuScreen(MazeRunnerGame game) {
+        this.game = game;
+
         var camera = new OrthographicCamera();
-        camera.zoom = 1.5f; // Set camera zoom for a closer view
+        // camera.zoom = 1.5f; // Set camera zoom for a closer view
         camera.update();
 
         this.show();
 
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
         stage = new Stage(viewport, game.getSpriteBatch()); // Create a stage for UI elements
+
+        backgroundTexture = new Texture("background.png");
 
         Table table = new Table(); // Create a table for layout
         table.setFillParent(true); // Make the table fill the stage
@@ -108,6 +115,12 @@ public class MenuScreen implements Screen {
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear the screen
+
+        // Begin the SpriteBatch and draw the background texture
+        game.getSpriteBatch().begin();
+        game.getSpriteBatch().draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        game.getSpriteBatch().end();
+
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f)); // Update the stage
         stage.draw(); // Draw the stage
     }
