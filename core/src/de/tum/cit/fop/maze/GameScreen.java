@@ -3,12 +3,12 @@ package de.tum.cit.fop.maze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
 
@@ -51,6 +51,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final ObjectRenderer hudObjectRenderer; // Hearts and other objects on the HUD
 
+    private final SpotlightEffect spotlightEffect;
+
     /**
      * Constructor for GameScreen. Sets up the camera and font.
      * This will be our main screen while playing the game. So it manages everything while gaming.
@@ -88,6 +90,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
         player = new Player(0, 1, 16, 32, 12, 19, 64f, 128f, 6.5f, false, tiles.layer);
 
+        spotlightEffect = new SpotlightEffect();
+        spotlightEffect.create();
     }
 
     /**
@@ -183,6 +187,7 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.update();
         game.getSpriteBatch().end(); // Important to call this after drawing everything
 
+        // renderSpotlightEffect(player.x, player.y, 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
         renderHUD();
     }
 
@@ -287,6 +292,25 @@ public class GameScreen extends InputAdapter implements Screen {
         hudBatch.end();
     }
 
+    private void renderSpotlightEffect(float x, float y, float spotlightRadius) {
+        float[] screenCoordinates = getScreenCoordinates(x, y);
+        float xOnScreen = screenCoordinates[0];
+        float yOnScreen = screenCoordinates[1];
+        spotlightEffect.render(xOnScreen, yOnScreen, spotlightRadius);
+    }
+
+    /**
+     * Gets the actual screen coordinates of a character.
+     * This method calculates the screen position based on the camera's position
+     * and the given world position.
+     *
+     * @return A float array with two elements: [x, y], representing the actual coordinates on the screen.
+     */
+    private float[] getScreenCoordinates(float x, float y) {
+        // Convert world position to screen position using the camera's combined matrix
+        Vector3 screenCoordinates = camera.project(new Vector3(x, y, 0));
+        return new float[]{screenCoordinates.x, screenCoordinates.y};
+    }
 
     @Override
     public void resize(int width, int height) {
@@ -338,6 +362,11 @@ public class GameScreen extends InputAdapter implements Screen {
             currentLine++;
         }
     }
+
+    public OrthographicCamera getCamera() {
+        return camera;
+    }
+
 
     // Additional methods and logic can be added as needed for the game screen
 
