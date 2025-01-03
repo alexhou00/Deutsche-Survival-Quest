@@ -16,20 +16,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static de.tum.cit.fop.maze.Constants.TILE_SCREEN_SIZE;
-import static de.tum.cit.fop.maze.Constants.TILE_SIZE;
+import static de.tum.cit.fop.maze.Constants.*;
 
 public class Tiles {
 
     public TiledMapTileLayer layer;
+    /** Coordinates of the entrance tile in world coordinates. */
     public Map<String, Float> entrancePosition;
+    /** List of positions of the exit tiles in world coordinates. (there might be more than one exit) */
     public List<Map<String, Float>> exitPositions;
 
+    /**
+     * Constructor: initializes the Tiles object with default values.
+     */
     public Tiles() {
         entrancePosition = new HashMap<>();
         exitPositions = new ArrayList<>();
     }
 
+    /**
+     * Loads a tiled map from the specified map and tile sheet files.
+     *
+     * @param mapFilePath       Path to the map properties file.
+     * @param tileSheetPath     Path to the tile sheet image.
+     * @param mapWidthInTiles   Width of the map in tiles.
+     * @param mapHeightInTiles  Height of the map in tiles.
+     * @return The created {@link TiledMap} object.
+     */
     public TiledMap loadTiledMap(String mapFilePath, String tileSheetPath, int mapWidthInTiles, int mapHeightInTiles) {
         // Load tile sheet
         var tileSheet = new Texture(tileSheetPath);
@@ -70,6 +83,7 @@ public class Tiles {
         // Create a TiledMap
         TiledMap map = new TiledMap();
         layer = new TiledMapTileLayer(mapWidthInTiles, mapHeightInTiles, TILE_SIZE, TILE_SIZE); // put our width/height here
+
         // Populate the layer with tiles
         try{
             for (String key : mapData.keys()) {
@@ -82,10 +96,11 @@ public class Tiles {
                 cell.setTile(tiles[tileValue]);
                 layer.setCell(x, y, cell);
 
-                if (tileValue == 1){
+                // Set entrance and exit positions when the entrances and exits are met
+                if (tileValue == 1){ // Tile 1: Entrance
                     entrancePosition = tilePositionToWorldCoordinates(x, y);
                 }
-                if (tileValue == 2){
+                if (tileValue == 2){ // Tile 2: Exit
                     Map<String, Float> exitPosition = tilePositionToWorldCoordinates(x, y);
                     exitPositions.add(exitPosition);
                 }
@@ -101,6 +116,12 @@ public class Tiles {
         return map;
     }
 
+    /**
+     * Parses the properties file for the tile map.
+     *
+     * @param filePath Path to the properties file.
+     * @return An {@link ObjectMap} containing map data.
+     */
     private ObjectMap<String, Integer> parsePropertiesFile(String filePath) {
         ObjectMap<String, Integer> mapData = new ObjectMap<>();
 
@@ -119,6 +140,13 @@ public class Tiles {
         return mapData;
     }
 
+    /**
+     * Converts tile position to world coordinates.
+     *
+     * @param tileX X-coordinate of the tile (unit: in tiles)
+     * @param tileY Y-coordinate of the tile (unit: in tiles)
+     * @return A map containing "x" and "y" world coordinates (in pixels).
+     */
     private Map<String, Float> tilePositionToWorldCoordinates(int tileX, int tileY) {
         float x = (tileX + 0.5f) * TILE_SCREEN_SIZE;
         float y = (tileY + 0.5f) * TILE_SCREEN_SIZE;

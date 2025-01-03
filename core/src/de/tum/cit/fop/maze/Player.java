@@ -8,6 +8,9 @@ import com.badlogic.gdx.math.MathUtils;
 import static de.tum.cit.fop.maze.Constants.*;
 import static java.lang.Math.abs;
 
+/**
+ * Represents the main player character in the maze game, handling movement, collision, and state.
+ */
 public class Player extends Character {
     private boolean hasKey;
     private boolean isMoving;
@@ -16,21 +19,26 @@ public class Player extends Character {
     int lastHorizontalDirection = 0, lastVerticalDirection = 0;
 
     private static final float BASE_SPEED = 240f; // normal speed when moving either vertically or horizontally
-    private static final float BOOST_MULTIPLIER = 2f;
-    private static final float SMOOTH_FACTOR = 5f;
+    private static final float BOOST_MULTIPLIER = 2f; // the speed will be multiplied by this number when SHIFT key is pressed
+    private static final float SMOOTH_FACTOR = 5f; // the lower the value, the smoother it gets (and needs more time to stop )
 
     /**
-     * Constructor for Player. This is our main character
-     * x: world x of the sprite (origin is the center of the sprite); y: world y of the sprite (origin is the center of the sprite)
+     * Constructor for Player. This is our main character <br>
      *
-     * @param tileX world x position in tiles where the player is initially spawn
-     * @param tileY world y position in tiles where the player is initially spawn
-     * @param width the width of the sprite's frame in pixels in the original image file
-     * @param height the height of the sprite's frame in pixels in the original image file
-     * @param hitboxWidth the width of the sprite's non-transparent part (=hitbox) in pixels in the original image file
-     * @param hitboxHeight the height of the sprite's non-transparent part (=hitbox) in pixels in the original image file
-     * @param widthOnScreen the actual size of the sprite (frame) drawn on the screen
-     * @param heightOnScreen the actual size of the sprite on the screen
+     * <li> A hitbox is a imaginary, rectangular bounding box that is exactly on our sprite
+     *  They are used to determine if two or more game objects are colliding with each other
+     *  </li>
+     * @param tileX             world x position in tiles where the player is initially spawn
+     * @param tileY             world y position in tiles where the player is initially spawn
+     * @param width             the width of the sprite's frame in pixels in the original image file
+     * @param height            the height of the sprite's frame in pixels in the original image file
+     * @param hitboxWidth       the width of the sprite's hitbox in pixels in the original image file
+     * @param hitboxHeight      the height of the sprite's hitbox in pixels in the original image file
+     * @param widthOnScreen     the actual size of the sprite (frame) drawn on the screen
+     * @param heightOnScreen    the actual size of the sprite on the screen
+     * @param lives             Number of lives the player starts with.
+     * @param hasKey            Whether the player starts with the key.
+     * @param collisionLayer    The layer used for collision detection.
      */
     public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, boolean hasKey, TiledMapTileLayer collisionLayer) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
@@ -66,26 +74,24 @@ public class Player extends Character {
 
         // speed is doubled (times the `BOOST_MULTIPLIER`) when SHIFT key is hold
         // final speed is speed * FPS (delta), since the speed should be independent of the FPS
-        if (horizontalInput == 0) targetVelX = 0;
-        else targetVelX = boostPressed ? (lastHorizontalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastHorizontalDirection * BASE_SPEED);
+        if (horizontalInput == 0) targetVelX = 0; // remember that velocities are signed, and the sign indicates the direction
+        else targetVelX = boostPressed ? (lastHorizontalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastHorizontalDirection * BASE_SPEED); // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
         if (verticalInput == 0) targetVelY = 0;
         else targetVelY = boostPressed ? (lastVerticalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastVerticalDirection * BASE_SPEED);
 
-        // test if the updated coordinates is not constrained
-        float newXTest = x + velX * delta; // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
+        // predict new positions for collision checking
+        float newXTest = x + velX * delta;
         float newYTest = y + velY * delta;
 
         // Checks if the player can move to a given position by verifying collisions at the four corners of the player's hitbox.
         boolean canMoveHorizontally = canMoveTo(newXTest, y);
         boolean canMoveVertically = canMoveTo(x, newYTest);
 
-        // both hor. and ver. have speed -> move diagonal
-        // (moving diagonally should divide the speed by sqrt(2))
-        if (horizontalInput != 0 && verticalInput != 0 && canMoveVertically){ // pressing diagonally keys and not touching horizontal walls
-            targetVelX = targetVelX / 1.414f;
-        }
-        if (horizontalInput != 0 && verticalInput != 0 && canMoveHorizontally){
-            targetVelY = targetVelY / 1.414f;
+        // both hor. and ver. are pressed -> move diagonal
+        // Adjust speed for diagonal movement (moving diagonally should divide the speed by sqrt(2))
+        if (horizontalInput != 0 && verticalInput != 0) {
+            if (canMoveVertically) targetVelX /= 1.414f; // but not touching horizontal walls
+            if (canMoveHorizontally) targetVelY /= 1.414f; // but not touching vertical walls
         }
 
         // gradually adjust the actual velocities towards the target velocities for smooth movement
@@ -127,6 +133,13 @@ public class Player extends Character {
         }
     }
 
+    /**
+     * Checks if the player can move to a given position because of the wall blocks.
+     *
+     * @param x The x-coordinate to check.
+     * @param y The y-coordinate to check.
+     * @return True if the position is valid, false otherwise.
+     */
     public boolean canMoveTo(float x, float y){
         return isNotTouching(x, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2) &&
                 isNotTouching(x, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
@@ -134,12 +147,30 @@ public class Player extends Character {
                 isNotTouching(x, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2);
     }
 
+    /**
+     * Checks if a specific corner of the player's hitbox is touching a collidable tile.
+     *
+     * @param x       The world x-coordinate to check
+     * @param y       The world y-coordinate to check
+     * @param offsetX The x offset for the corner (offset from the center to the left or right)
+     * @param offsetY The y offset for the corner (offset from the center to the top or bottom)
+     * @return True if the corner is not touching a collidable tile, false otherwise
+     */
     private boolean isNotTouching(float x, float y, float offsetX, float offsetY) {
         int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
         int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
         return !isColliding(tileX, tileY, offsetX>0, offsetY>0);
     }
 
+    /**
+     * Checks if a specific tile is collidable.
+     *
+     * @param tileX  The x-coordinate (in tiles) of the tile.
+     * @param tileY  The y-coordinate (in tiles) of the tile.
+     * @param isRight True if checking the right side of the player's hitbox, false if checking the left side.
+     * @param isUp    True if checking the upper side of the player's hitbox, false if checking the lower side.
+     * @return True if the tile is collidable, false otherwise.
+     */
     public boolean isColliding(int tileX, int tileY, boolean isRight, boolean isUp) {
         // Get the cell at the specified tile position
         TiledMapTileLayer.Cell cell = collisionLayer.getCell(tileX, tileY);
@@ -165,6 +196,12 @@ public class Player extends Character {
         this.hasKey = hasKey;
     }
 
+    /**
+     * Updates the player's state based on the elapsed time.
+     * First we handle the movement based on our keyboard input
+     *
+     * @param delta The time in seconds since the last update.
+     */
     @Override
     void update(float delta) {
         handleMovement();

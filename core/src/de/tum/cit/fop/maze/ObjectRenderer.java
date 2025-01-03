@@ -9,7 +9,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import static de.tum.cit.fop.maze.Constants.MAX_PLAYER_LIVES;
 
 /**
- * The Object class handles rendering of static or reusable game objects such as hearts for the HUD.
+ * The ObjectRenderer class handles rendering of static or reusable game objects
+ * such as hearts for the HUD or the arrow that points at the exit.
  */
 public class ObjectRenderer {
 

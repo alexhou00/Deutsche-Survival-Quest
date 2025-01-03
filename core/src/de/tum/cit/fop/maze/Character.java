@@ -3,14 +3,39 @@ package de.tum.cit.fop.maze;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Rectangle;
 
-public abstract class Character extends InputAdapter {
+/**
+ * Represents a generic character in the maze game, such as our player or any moving enemy. <br>
+ * This class provides basic properties and behaviors for characters,
+ * such as position, velocity, dimensions, and lifecycle methods.
+ * It is intended to be extended by specific character.
+ */
+public abstract class Character {
     protected float lives;
+    /** velX and velY stand for velocity X and velocity Y, resp.
+     * velocities are horizontal/vertical components of the speed vector
+     * speed is the overall magnitude of speed
+     * */
     protected float x, y, velX, velY, speed;
     protected float width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen;
+    /** The width/height of the visible hitbox on the screen. */
     float hitboxWidthOnScreen;
     float hitboxHeightOnScreen;
     protected Rectangle rectangle;
 
+
+    /**
+     * Constructs a new Character instance with specified parameters.
+     *
+     * @param x World x-coordinate of the character's initial position (origin is the center of the sprite)
+     * @param y World y-coordinate of the character's initial position. (origin is the center of the sprite)
+     * @param width The width of the character.
+     * @param height The height of the character.
+     * @param hitboxWidth The width of the character's hitbox.
+     * @param hitboxHeight The height of the character's hitbox.
+     * @param widthOnScreen The width of the character as displayed on screen.
+     * @param heightOnScreen The height of the character as displayed on screen.
+     * @param lives The number of lives the character starts with.
+     */
     public Character(int x, int y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives) {
         this.lives = lives;
         this.rectangle = new Rectangle();
@@ -52,6 +77,11 @@ public abstract class Character extends InputAdapter {
         return x;
     }
 
+    /**
+     * Calculates the x-coordinate of the character's origin (the center of the character).
+     *
+     * @return The x-coordinate of the origin.
+     */
     public float getOriginX(){
         return x - widthOnScreen / 2;
     }
@@ -63,7 +93,11 @@ public abstract class Character extends InputAdapter {
     public float getY() {
         return y;
     }
-
+    /**
+     * Calculates the y-coordinate of the character's origin (the center of the character).
+     *
+     * @return The y-coordinate of the origin.
+     */
     public float getOriginY(){
         return y - heightOnScreen / 2;
     }

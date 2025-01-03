@@ -6,7 +6,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -23,39 +22,38 @@ import static de.tum.cit.fop.maze.Constants.*;
 
 
 /**
- * The GameScreen class is responsible for rendering the gameplay screen.
- * It handles the game logic and rendering of the game elements.
+ * The GameScreen class is responsible for rendering the gameplay screen. <br>
+ * It handles the game logic and rendering of the game elements. <br>
  * By extending InputAdapter, we can override the scroll method to detect mouse scroll (for zooming)
  */
 public class GameScreen extends InputAdapter implements Screen {
 
     private final MazeRunnerGame game;
     private final OrthographicCamera camera;
-    private final OrthographicCamera hudCamera; // HUD camera
+    private final OrthographicCamera hudCamera; // HUD camera. HUD uses another camera so that it does not follow the player and is fixed on the screen.
 
     private final BitmapFont font;
     private final ShapeRenderer shapeRenderer; // For drawing shapes like health bars
 
-    private float sinusInput = 0f;  // work as a timer to create a smooth movement with trig
-
-    // private boolean isMoving; // to see if the player needs the walking animation
+    private float sinusInput = 0f;  // work as a timer to create a smooth animation with trig functions
     private boolean isMuted;
 
     // For zooming
     private float targetZoom; // targetZoom stores the intermediate zoom value so that we can zoom smoothly
 
     private final Player player;
-    Tiles tiles;
+    Tiles tiles; // Tile system for the map
 
     private final OrthogonalTiledMapRenderer mapRenderer;
 
     float windowWidth = Gdx.graphics.getWidth();
     float windowHeight = Gdx.graphics.getHeight();
 
-    private final ObjectRenderer hudObjectRenderer;
+    private final ObjectRenderer hudObjectRenderer; // Hearts and other objects on the HUD
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
+     * This will be our main screen while playing the game. So it manages everything while gaming.
      *
      * @param game The main game class, used to access global resources and methods.
      */
@@ -92,13 +90,21 @@ public class GameScreen extends InputAdapter implements Screen {
 
     }
 
+    /**
+     * Updates the camera's zoom smoothly based on the target zoom level.
+     *
+     * @param delta Time elapsed since the last frame.
+     */
     private void updateZoom(float delta) {
         // Gradually adjust the camera's zoom level towards the target zoom
         camera.zoom += (targetZoom - camera.zoom) * ZOOM_SPEED;
     }
 
 
-    // scrolling is automatically detected (for zooming)
+    /**
+     * Handles mouse scroll events to adjust zoom levels.
+     * scrolling is automatically detected (for zooming)
+     */
     @Override
     public boolean scrolled(float amountX, float amountY) {
         targetZoom += amountY * 0.1f; // Adjust sensitivity as needed
@@ -107,6 +113,9 @@ public class GameScreen extends InputAdapter implements Screen {
         return true; // Return true to indicate the event was handled
     }
 
+    /**
+     * Handles user input for something throughout the whole game, like zooming and muting.
+     */
     private void handleInput() {
         // Handle keys input for zooming
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) { // "+" key
@@ -136,86 +145,104 @@ public class GameScreen extends InputAdapter implements Screen {
         // Check for escape key press to go back to the menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.goToMenu();
-        } else {
-            ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
-            camera.update(); // Update the camera
-
-            // Move text in a circular path to have an example of a moving object
-            sinusInput += delta;  // sinusInput is like `time`, storing the time for animation
-            float textX = (float) (0 + Math.sin(sinusInput) * 100);
-            float textY = (float) (750 + Math.cos(sinusInput) * 100);
-
-            Gdx.input.setInputProcessor(this);
-
-            updateZoom(delta); // Smoothly adjust zoom
-            handleInput(); // handle the keys input
-
-            // All the player functionalities are here
-            player.update(delta);
-
-
-            // Set up and begin drawing with the sprite batch
-            game.getSpriteBatch().setProjectionMatrix(camera.combined);
-
-            game.getSpriteBatch().begin(); // Important to call this before drawing anything
-
-            game.getSpriteBatch().draw(game.getBackgroundTexture(), 0, 0);
-
-            game.getSpriteBatch().end();
-
-            // mapRenderer use another rendering batch, so we have to end the ones first, render the map, and then begin our spriteBatch again
-            mapRenderer.setView(camera);
-            mapRenderer.render();
-
-            game.getSpriteBatch().begin();
-
-            // Render the text
-            font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
-
-            if (player.isMoving()) {  // Character Walking Animation
-                // Draw the character next to the text :) / We can reuse sinusInput here
-                game.getSpriteBatch().draw(
-                        game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
-                        player.getOriginX(),
-                        player.getOriginY(),
-                        player.getWidthOnScreen(),
-                        player.getHeightOnScreen()
-                ); // width and height are size on the screen
-            } else { // Character Idle Animation
-                game.getSpriteBatch().draw(
-                        game.getCharacterIdleAnimation().getKeyFrame(sinusInput, true),
-                        player.getOriginX(),
-                        player.getOriginY(),
-                        player.getWidthOnScreen(),
-                        player.getHeightOnScreen()
-                );
-            }
-
-            // Draw arrow that points at the exit
-            Map<String, Float> exitPosition = tiles.exitPositions.get(0); // TODO: (future) if there are multiple exit, create a function that finds the closest one
-            float exitX = exitPosition.get("x");
-            float exitY = exitPosition.get("y");
-            float angle = (float) Math.toDegrees(Math.atan2(exitY - player.y, exitX - player.x)); // atan2 is a useful version of atan;
-            angle = (angle + 270) % 360; // rotate counter-clockwise by 90 deg to fit the system of LibGDX and ensure the angle is within [0, 360)
-            hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
-
-            // make sure the camera follows the player
-            // camera.viewportWidth is the window width; camera.viewportHeight is the window height
-            camera.position.set(player.getX(), player.getY(), 0);
-            camera.position.x = Math.max(camera.viewportWidth / 2 * camera.zoom,
-                    Math.min(WORLD_WIDTH - camera.viewportWidth / 2 * camera.zoom, camera.position.x));
-            camera.position.y = Math.max(camera.viewportHeight / 2 * camera.zoom,
-                    Math.min(WORLD_HEIGHT - camera.viewportHeight / 2 * camera.zoom, camera.position.y));
-            camera.update();
-            game.getSpriteBatch().end(); // Important to call this after drawing everything
+            return;
         }
+
+        ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
+        camera.update(); // Update the camera
+
+        // Move text in a circular path to have an example of a moving object
+        sinusInput += delta;  // sinusInput is like `time`, storing the time for animation
+        Gdx.input.setInputProcessor(this);
+
+        updateZoom(delta); // Smoothly adjust zoom
+        handleInput(); // handle the keys input
+        player.update(delta); // ALL the player functionalities are here
+
+        renderGameWorld();
+
+        game.getSpriteBatch().begin();
+        // Render the text
+        float textX = (float) (0 + Math.sin(sinusInput) * 100);
+        float textY = (float) (750 + Math.cos(sinusInput) * 100);
+        font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
+
+        renderPlayer();
+
+        // Draw arrow that points at the exit
+        float angle = getAngle();
+        if (angle > 0) hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
+
+        // make sure the camera follows the player
+        // camera.viewportWidth is the window width; camera.viewportHeight is the window height
+        camera.position.set(player.getX(), player.getY(), 0);
+        camera.position.x = Math.max(camera.viewportWidth / 2 * camera.zoom,
+                Math.min(WORLD_WIDTH - camera.viewportWidth / 2 * camera.zoom, camera.position.x));
+        camera.position.y = Math.max(camera.viewportHeight / 2 * camera.zoom,
+                Math.min(WORLD_HEIGHT - camera.viewportHeight / 2 * camera.zoom, camera.position.y));
+        camera.update();
+        game.getSpriteBatch().end(); // Important to call this after drawing everything
 
         renderHUD();
     }
 
+    private float getAngle() {
+        Map<String, Float> exitPosition = tiles.exitPositions.get(0); // TODO: (future) if there are multiple exit, create a function that finds the closest one
+        if (exitPosition != null) {
+            float exitX = exitPosition.get("x");
+            float exitY = exitPosition.get("y");
+            float angle = (float) Math.toDegrees(Math.atan2(exitY - player.y, exitX - player.x)); // atan2 is a useful version of atan;
+            angle = (angle + 270) % 360; // rotate counter-clockwise by 90 deg to fit the system of LibGDX and ensure the angle is within [0, 360)
+            return angle;
+        }
+        return -1;
+    }
+
+    /**
+     * Renders the game world, including the map and background.
+     */
+    private void renderGameWorld(){
+        // Set up and begin drawing with the sprite batch
+        game.getSpriteBatch().setProjectionMatrix(camera.combined);
+        game.getSpriteBatch().begin(); // Important to call this before drawing anything
+        game.getSpriteBatch().draw(game.getBackgroundTexture(), 0, 0);
+        game.getSpriteBatch().end();
+
+        // mapRenderer use another rendering batch, so we have to end the ones first, render the map, and then begin our spriteBatch again outside of this function
+        mapRenderer.setView(camera);
+        mapRenderer.render();
+    }
+
+    /**
+     * Renders the player's character based on movement state.
+     */
+    private void renderPlayer(){
+        if (player.isMoving()) {  // Character Walking Animation
+            // Draw the character next to the text :) / We can reuse sinusInput here
+            game.getSpriteBatch().draw(
+                    game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
+                    player.getOriginX(),
+                    player.getOriginY(),
+                    player.getWidthOnScreen(),
+                    player.getHeightOnScreen()
+            ); // width and height are size on the screen
+        } else { // Character Idle Animation
+            game.getSpriteBatch().draw(
+                    game.getCharacterIdleAnimation().getKeyFrame(sinusInput, true),
+                    player.getOriginX(),
+                    player.getOriginY(),
+                    player.getWidthOnScreen(),
+                    player.getHeightOnScreen()
+            );
+        }
+    }
+
+    /**
+     * Renders the Heads-Up Display (HUD), including player stats and health.
+     */
     private void renderHUD() {
         SpriteBatch hudBatch = game.getSpriteBatch();
-        hudBatch.setProjectionMatrix(hudCamera.combined);
+        hudBatch.setProjectionMatrix(hudCamera.combined); // HUD uses its own camera so that it does not follow the player and the position is fixed on the screen.
         hudBatch.begin();
 
         font.draw(hudBatch, "This is the HUD", 20, Gdx.graphics.getHeight() - 20);
@@ -287,14 +314,19 @@ public class GameScreen extends InputAdapter implements Screen {
 
     @Override
     public void dispose() {
+        shapeRenderer.dispose();
+        mapRenderer.dispose();
+        hudObjectRenderer.dispose();
     }
 
-    // Additional methods and logic can be added as needed for the game screen
+    /**
+     * Draws a list of variables and their values on the HUD.
+     * Used for debugging.
+     *
+     * @param variablesToShow A map of variable names and their corresponding values.
+     */
     private void drawVariables(Map<String, Float> variablesToShow) {
         SpriteBatch hudBatch = game.getSpriteBatch();
-        // Calculate the window's origin adjusted by the camera's (current) zoom
-        float windowX = (-windowWidth / 2) * camera.zoom;
-        float windowY = (windowHeight / 2) * camera.zoom;
 
         final float BORDER_OFFSET = 20;
         final float Y_OFFSET = 30;
@@ -307,5 +339,7 @@ public class GameScreen extends InputAdapter implements Screen {
             currentLine++;
         }
     }
+
+    // Additional methods and logic can be added as needed for the game screen
 
 }
