@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -44,6 +45,7 @@ public class GameScreen extends InputAdapter implements Screen {
     private float targetZoom; // targetZoom stores the intermediate zoom value so that we can zoom smoothly
 
     private final Player player;
+    Tiles tiles;
 
     private final OrthogonalTiledMapRenderer mapRenderer;
 
@@ -80,12 +82,10 @@ public class GameScreen extends InputAdapter implements Screen {
         shapeRenderer = new ShapeRenderer();
 
         // Load tiled map
-        Tiles tiles = new Tiles();
+        tiles = new Tiles();
         TiledMap tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("basictiles.png").path(), 40, 40);
 
         // Set up map renderer
-        int horizontalTilesCount = 20; // number of tiles on the width
-        TILE_SCREEN_SIZE = WORLD_WIDTH / horizontalTilesCount;
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles (20 is the number of tiles of the width // so like unitScale is times how many
 
         player = new Player(0, 1, 16, 32, 12, 19, 64f, 128f, 6.5f, false, tiles.layer);
@@ -191,6 +191,13 @@ public class GameScreen extends InputAdapter implements Screen {
                 );
             }
 
+            // Draw arrow that points at the exit
+            Map<String, Float> exitPosition = tiles.exitPositions.get(0); // TODO: (future) if there are multiple exit, create a function that finds the closest one
+            float exitX = exitPosition.get("x");
+            float exitY = exitPosition.get("y");
+            float angle = (float) Math.toDegrees(Math.atan2(exitY - player.y, exitX - player.x)); // atan2 is a useful version of atan;
+            angle = (angle + 270) % 360; // rotate counter-clockwise by 90 deg to fit the system of LibGDX and ensure the angle is within [0, 360)
+            hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
 
             // make sure the camera follows the player
             // camera.viewportWidth is the window width; camera.viewportHeight is the window height
@@ -222,6 +229,7 @@ public class GameScreen extends InputAdapter implements Screen {
         variablesToShow.put("player.y", player.getY());
         variablesToShow.put("camera zoom", camera.zoom);
         variablesToShow.put("player.speed", player.getSpeed());
+        variablesToShow.put("angle", 0f);
 
         drawVariables(variablesToShow);
 
@@ -230,7 +238,6 @@ public class GameScreen extends InputAdapter implements Screen {
         // hudObjectRenderer use another rendering batch, so we have to end the batch first, and start it again
         hudBatch.begin();
         hudObjectRenderer.drawHearts(hudBatch, player.getLives(), 128, windowHeight - 106f, 32, 2);
-
         /* Health bar
         // Draw health bar
         float healthBarWidth = 180f;

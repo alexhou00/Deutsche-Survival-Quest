@@ -2,6 +2,7 @@ package de.tum.cit.fop.maze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -14,15 +15,22 @@ public class ObjectRenderer {
 
     private final Texture texture;
     private final TextureRegion fullHeartRegion, threeQuartersHeartRegion, halfHeartRegion, oneQuarterHeartRegion, emptyHeartRegion;
+    private final TextureRegion arrowRegion;
+
+    private final Sprite arrow;
 
     public ObjectRenderer(String texturePath) {
         // Load the texture and create a region for the heart
         texture = new Texture(Gdx.files.internal(texturePath));
+
         fullHeartRegion = extractHeart(texture, 64); // Extract heart from texture
         threeQuartersHeartRegion = extractHeart(texture, 80);
         halfHeartRegion = extractHeart(texture, 96);
         oneQuarterHeartRegion = extractHeart(texture, 112);
         emptyHeartRegion = extractHeart(texture, 128);
+
+        arrowRegion = new TextureRegion(texture, 490, 10, 20, 10);
+        arrow = new Sprite(arrowRegion);
     }
 
     private TextureRegion extractHeart(Texture texture, int x) {
@@ -69,10 +77,24 @@ public class ObjectRenderer {
         }
     }
 
+    public void drawArrow(SpriteBatch batch, float degrees, float x, float y) {
+        float scale = 1.5f;
+        arrow.setOrigin(arrow.getWidth() / 2, -45 / scale);
+        arrow.setPosition(x - arrow.getWidth() / 2, y + 45 / scale);
+        arrow.setRotation(degrees);
+        arrow.setScale(scale);
+        arrow.draw(batch);
+    }
+
     /**
      * Disposes of the texture to free resources.
      */
     public void dispose() {
         texture.dispose();
+    }
+
+
+    public Sprite getArrow() {
+        return arrow;
     }
 }

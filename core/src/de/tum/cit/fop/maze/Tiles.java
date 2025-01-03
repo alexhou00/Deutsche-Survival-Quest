@@ -11,12 +11,24 @@ import com.badlogic.gdx.utils.ObjectMap;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import static de.tum.cit.fop.maze.Constants.TILE_SCREEN_SIZE;
 import static de.tum.cit.fop.maze.Constants.TILE_SIZE;
 
 public class Tiles {
 
     public TiledMapTileLayer layer;
+    public Map<String, Float> entrancePosition;
+    public List<Map<String, Float>> exitPositions;
+
+    public Tiles() {
+        entrancePosition = new HashMap<>();
+        exitPositions = new ArrayList<>();
+    }
 
     public TiledMap loadTiledMap(String mapFilePath, String tileSheetPath, int mapWidthInTiles, int mapHeightInTiles) {
         // Load tile sheet
@@ -69,6 +81,14 @@ public class Tiles {
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
                 cell.setTile(tiles[tileValue]);
                 layer.setCell(x, y, cell);
+
+                if (tileValue == 1){
+                    entrancePosition = tilePositionToWorldCoordinates(x, y);
+                }
+                if (tileValue == 2){
+                    Map<String, Float> exitPosition = tilePositionToWorldCoordinates(x, y);
+                    exitPositions.add(exitPosition);
+                }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             Gdx.app.error("Tiles", "Error loading tiles: ", e);
@@ -77,6 +97,7 @@ public class Tiles {
 
         map.getLayers().add(layer);
         Gdx.app.log("Tiles", "Tiled Map loaded");
+        Gdx.app.log("Tiles", "entrance position: " + entrancePosition);
         return map;
     }
 
@@ -89,13 +110,22 @@ public class Tiles {
                 if (!line.contains("=")) continue;
                 String[] parts = line.split("=");
                 mapData.put(parts[0], Integer.parseInt(parts[1]));
-                Gdx.app.log("Tiles", "Parsed: " + parts[0] + " = " + parts[1]);
+                if (parts[1].equals("1")) Gdx.app.log("Tiles", "Parsed: " + parts[0] + " = " + parts[1]);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return mapData;
+    }
+
+    private Map<String, Float> tilePositionToWorldCoordinates(int tileX, int tileY) {
+        float x = (tileX + 0.5f) * TILE_SCREEN_SIZE;
+        float y = (tileY + 0.5f) * TILE_SCREEN_SIZE;
+        Map<String, Float> pos = new HashMap<>();
+        pos.put("x", x);
+        pos.put("y", y);
+        return pos;
     }
 
 }

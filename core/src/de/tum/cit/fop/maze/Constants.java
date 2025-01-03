@@ -10,7 +10,9 @@ public class Constants {
 
     public static final int TILE_SIZE = 16;
 
-    public static int TILE_SCREEN_SIZE = TILE_SIZE;
+    static int horizontalTilesCount = 20; // number of tiles on the width
+    public static int TILE_SCREEN_SIZE = WORLD_WIDTH / horizontalTilesCount;
+    // public static int TILE_SCREEN_SIZE = TILE_SIZE;
 
     public static final int MAX_PLAYER_LIVES = 10;
 }
