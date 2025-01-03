@@ -254,9 +254,8 @@ public class GameScreen extends InputAdapter implements Screen {
         Map<String, Float> variablesToShow = new LinkedHashMap<>();
         variablesToShow.put("player.x", player.getX());
         variablesToShow.put("player.y", player.getY());
-        variablesToShow.put("camera zoom", camera.zoom);
         variablesToShow.put("player.speed", player.getSpeed());
-        variablesToShow.put("angle", 0f);
+        variablesToShow.put("camera zoom", camera.zoom);
 
         drawVariables(variablesToShow);
 
