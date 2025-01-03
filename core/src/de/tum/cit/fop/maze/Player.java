@@ -6,6 +6,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 
 import static de.tum.cit.fop.maze.Constants.*;
+import static java.lang.Math.abs;
 
 public class Player extends Character {
     private boolean hasKey;
@@ -31,7 +32,7 @@ public class Player extends Character {
      * @param widthOnScreen the actual size of the sprite (frame) drawn on the screen
      * @param heightOnScreen the actual size of the sprite on the screen
      */
-    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, int widthOnScreen, int heightOnScreen, int lives, boolean hasKey, TiledMapTileLayer collisionLayer) {
+    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, int lives, boolean hasKey, TiledMapTileLayer collisionLayer) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
         this.hasKey = hasKey;
         this.isMoving = false;
@@ -61,26 +62,18 @@ public class Player extends Character {
         if (downPressed) lastVerticalDirection = -1;
 
         // to have the player stop the animation if none of the keys are pressed or continues with the animation otherwise
-        isMoving = (velX > 5 || velY >5);  // horizontalInput != 0 || verticalInput != 0;
+        isMoving = (abs(velX) > 5 || abs(velY) >5);  // horizontalInput != 0 || verticalInput != 0;
 
         // speed is doubled (times the `BOOST_MULTIPLIER`) when SHIFT key is hold
         // final speed is speed * FPS (delta), since the speed should be independent of the FPS
         if (horizontalInput == 0) targetVelX = 0;
-        else targetVelX = boostPressed ? BASE_SPEED * BOOST_MULTIPLIER : BASE_SPEED;
+        else targetVelX = boostPressed ? (lastHorizontalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastHorizontalDirection * BASE_SPEED);
         if (verticalInput == 0) targetVelY = 0;
-        else targetVelY = boostPressed ? BASE_SPEED * BOOST_MULTIPLIER : BASE_SPEED;
-
-        // gradually adjust the actual velocities towards the target velocities for smooth movement
-        velX += (targetVelX - velX) * SMOOTH_FACTOR * delta;
-        velY += (targetVelY - velY) * SMOOTH_FACTOR * delta;
-
-        // reset last movement direction if the velocity drops below the threshold
-        if (velX < 5) lastHorizontalDirection = 0;
-        if (velY < 5) lastVerticalDirection = 0;
+        else targetVelY = boostPressed ? (lastVerticalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastVerticalDirection * BASE_SPEED);
 
         // test if the updated coordinates is not constrained
-        float newXTest = x + lastHorizontalDirection * velX * delta; // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
-        float newYTest = y + lastVerticalDirection * velY * delta;
+        float newXTest = x + velX * delta; // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
+        float newYTest = y + velY * delta;
 
         // Checks if the player can move to a given position by verifying collisions at the four corners of the player's hitbox.
         boolean canMoveHorizontally = canMoveTo(newXTest, y);
@@ -88,18 +81,26 @@ public class Player extends Character {
 
         // both hor. and ver. have speed -> move diagonal
         // (moving diagonally should divide the speed by sqrt(2))
-        float actualVelX = velX;
-        float actualVelY = velY;
-        if (horizontalInput != 0 && verticalInput != 0 && canMoveHorizontally && canMoveVertically){ // move diagonally
-            actualVelX = velX / ((float) Math.sqrt(2));
-            actualVelY = velY / ((float) Math.sqrt(2));
+        if (horizontalInput != 0 && verticalInput != 0 && canMoveVertically){ // pressing diagonally keys and not touching horizontal walls
+            targetVelX = targetVelX / 1.414f;
+        }
+        if (horizontalInput != 0 && verticalInput != 0 && canMoveHorizontally){
+            targetVelY = targetVelY / 1.414f;
         }
 
+        // gradually adjust the actual velocities towards the target velocities for smooth movement
+        velX += (targetVelX - velX) * SMOOTH_FACTOR * delta;
+        velY += (targetVelY - velY) * SMOOTH_FACTOR * delta;
+
+        // reset last movement direction if the velocity drops below the threshold
+        if (abs(velX) < 5) lastHorizontalDirection = 0;
+        if (abs(velY) < 5) lastVerticalDirection = 0;
+
         // update the player's coordinates
-        float newX = x + lastHorizontalDirection * actualVelX * delta; // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
-        float newY = y + lastVerticalDirection * actualVelY * delta;
-        speed = (float) Math.sqrt(actualVelX * actualVelX * (canMoveHorizontally ? 1 : 0) // pythagoras theorem
-                                + actualVelY * actualVelY * (canMoveVertically ? 1 : 0)); // hor/ver component of the vel is 0 if canMove on that axis is false
+        float newX = x + velX * delta; // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
+        float newY = y + velY * delta;
+        speed = (float) Math.sqrt(velX * velX * (canMoveHorizontally ? 1 : 0) // pythagoras theorem
+                                + velY * velY * (canMoveVertically ? 1 : 0)); // hor/ver component of the vel is 0 if canMove on that axis is false
 
         // horizontally
         if (canMoveHorizontally) {

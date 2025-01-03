@@ -28,15 +28,26 @@ public class Tiles {
         StaticTiledMapTile[] tiles = new StaticTiledMapTile[tileCols * tileRows];
         for (int y = 0; y < tileRows; y++) {
             for (int x = 0; x < tileCols; x++) {
-                tiles[y * tileCols + x] = new StaticTiledMapTile(new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE));
+                int index = y * tileCols + x;
+                tiles[index] = new StaticTiledMapTile(new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE));
+
+                /* this is for replacing the code below to avoid a long chain of else-if conditions
+                // outside the loop
+                Set<Integer> collidableTiles = new HashSet<>(Arrays.asList(0, 3));
+
+
+                // inside here
+                    boolean isCollidable = collidableTiles.contains(index);
+                    tiles[index].getProperties().put("collidable", isCollidable);
+                */
 
                 // the "collidable" property for specific tiles (e.g., Walls, Traps)
-                if (y * tileCols + x == 0) { // Tile 0: Wall
-                    tiles[y * tileCols + x].getProperties().put("collidable", true);
-                } else if (y * tileCols + x == 3) { // Tile 3: Trap
-                    tiles[y * tileCols + x].getProperties().put("collidable", true);
+                if (index == 0) { // Tile 0: Wall
+                    tiles[index].getProperties().put("collidable", true);
+                } else if (index == 3) { // Tile 3: Trap
+                    tiles[index].getProperties().put("collidable", true);
                 } else {
-                    tiles[y * tileCols + x].getProperties().put("collidable", false);
+                    tiles[index].getProperties().put("collidable", false);
                 }
             }
         }

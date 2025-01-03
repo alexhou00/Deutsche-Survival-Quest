@@ -11,7 +11,7 @@ public abstract class Character extends InputAdapter {
     float hitboxHeightOnScreen;
     protected Rectangle rectangle;
 
-    public Character(int x, int y, int width, int height, int hitboxWidth, int hitboxHeight, int widthOnScreen, int heightOnScreen, int lives) {
+    public Character(int x, int y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, int lives) {
         this.lives = lives;
         this.rectangle = new Rectangle();
         this.velX = 0;

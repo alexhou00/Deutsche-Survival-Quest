@@ -91,7 +91,7 @@ public class GameScreen extends InputAdapter implements Screen {
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles (20 is the number of tiles of the width // so like unitScale is times how many
 
 
-        player = new Player(0, 1, 16, 32, 13, 21, 64, 128, 6, false, tiles.layer);
+        player = new Player(0, 1, 16, 32, 12, 19, 64f, 128f, 6, false, tiles.layer);
 
     }
 
