@@ -13,14 +13,22 @@ import static de.tum.cit.fop.maze.Constants.MAX_PLAYER_LIVES;
 public class ObjectRenderer {
 
     private final Texture texture;
-    private final TextureRegion fullHeartRegion, emptyHeartRegion;
+    private final TextureRegion fullHeartRegion, threeQuartersHeartRegion, halfHeartRegion, oneQuarterHeartRegion, emptyHeartRegion;
 
     public ObjectRenderer(String texturePath) {
         // Load the texture and create a region for the heart
         texture = new Texture(Gdx.files.internal(texturePath));
-        fullHeartRegion = new TextureRegion(texture, 64, 2, 14, 13); // Extract heart from texture
-        emptyHeartRegion = new TextureRegion(texture, 128, 2, 14, 13);
+        fullHeartRegion = extractHeart(texture, 64); // Extract heart from texture
+        threeQuartersHeartRegion = extractHeart(texture, 80);
+        halfHeartRegion = extractHeart(texture, 96);
+        oneQuarterHeartRegion = extractHeart(texture, 112);
+        emptyHeartRegion = extractHeart(texture, 128);
     }
+
+    private TextureRegion extractHeart(Texture texture, int x) {
+        return new TextureRegion(texture, x, 2, 14, 13);
+    }
+
 
     /**
      * Draws hearts on the HUD to represent player lives.
@@ -32,12 +40,32 @@ public class ObjectRenderer {
      * @param spacing    Space between hearts.
      * @param scale      enlarge / shrink scale
      */
-    public void drawHearts(SpriteBatch batch, int lives, float startX, float startY, float spacing, float scale) {
-        for (int i = 0; i < lives; i++) {
+    public void drawHearts(SpriteBatch batch, float lives, float startX, float startY, float spacing, float scale) {
+        int livesInt = (int) lives;
+        float livesDecimal = lives - livesInt;
+
+        // Draw full hearts
+        for (int i = 0; i < livesInt; i++) {
             batch.draw(fullHeartRegion, startX + i * spacing, startY, 14 * scale, 13 * scale);
         }
-        for (int i=MAX_PLAYER_LIVES; i>lives; i--) {
-            batch.draw(emptyHeartRegion, startX + (i-1) * spacing, startY, 14 * scale, 13 * scale);
+
+        // Draw partial heart if needed
+        if (livesDecimal > 0) {
+            TextureRegion partialHeart;
+            if (livesDecimal >= 0.75) {
+                partialHeart = threeQuartersHeartRegion;
+            } else if (livesDecimal >= 0.5) {
+                partialHeart = halfHeartRegion;
+            } else {
+                partialHeart = oneQuarterHeartRegion;
+            }
+            batch.draw(partialHeart, startX + livesInt * spacing, startY, 14 * scale, 13 * scale);
+        }
+
+
+        // Draw empty hearts
+        for (int i = (int)Math.ceil(lives); i < MAX_PLAYER_LIVES; i++) {
+            batch.draw(emptyHeartRegion, startX + i * spacing, startY, 14 * scale, 13 * scale);
         }
     }
 

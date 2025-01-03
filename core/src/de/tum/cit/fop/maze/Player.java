@@ -32,7 +32,7 @@ public class Player extends Character {
      * @param widthOnScreen the actual size of the sprite (frame) drawn on the screen
      * @param heightOnScreen the actual size of the sprite on the screen
      */
-    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, int lives, boolean hasKey, TiledMapTileLayer collisionLayer) {
+    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, boolean hasKey, TiledMapTileLayer collisionLayer) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
         this.hasKey = hasKey;
         this.isMoving = false;

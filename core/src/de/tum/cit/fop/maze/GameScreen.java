@@ -30,7 +30,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final MazeRunnerGame game;
     private final OrthographicCamera camera;
-    private OrthographicCamera hudCamera; // HUD camera
+    private final OrthographicCamera hudCamera; // HUD camera
 
     private final BitmapFont font;
     private final ShapeRenderer shapeRenderer; // For drawing shapes like health bars
@@ -43,16 +43,14 @@ public class GameScreen extends InputAdapter implements Screen {
     // For zooming
     private float targetZoom; // targetZoom stores the intermediate zoom value so that we can zoom smoothly
 
-    private Player player;
-    private Tiles tiles;
+    private final Player player;
 
-    private OrthogonalTiledMapRenderer mapRenderer;
-    private TiledMap tiledMap;
+    private final OrthogonalTiledMapRenderer mapRenderer;
 
     float windowWidth = Gdx.graphics.getWidth();
     float windowHeight = Gdx.graphics.getHeight();
 
-    private ObjectRenderer hudObjectRenderer;
+    private final ObjectRenderer hudObjectRenderer;
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
@@ -82,16 +80,15 @@ public class GameScreen extends InputAdapter implements Screen {
         shapeRenderer = new ShapeRenderer();
 
         // Load tiled map
-        tiles = new Tiles();
-        tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("basictiles.png").path(), 40, 40);
+        Tiles tiles = new Tiles();
+        TiledMap tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("basictiles.png").path(), 40, 40);
 
         // Set up map renderer
         int horizontalTilesCount = 20; // number of tiles on the width
         TILE_SCREEN_SIZE = WORLD_WIDTH / horizontalTilesCount;
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles (20 is the number of tiles of the width // so like unitScale is times how many
 
-
-        player = new Player(0, 1, 16, 32, 12, 19, 64f, 128f, 6, false, tiles.layer);
+        player = new Player(0, 1, 16, 32, 12, 19, 64f, 128f, 6.5f, false, tiles.layer);
 
     }
 
@@ -230,7 +227,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         hudBatch.end();
 
-        // shapeRenderer use another rendering batch, so we have to end the batch first, and start it again
+        // hudObjectRenderer use another rendering batch, so we have to end the batch first, and start it again
         hudBatch.begin();
         hudObjectRenderer.drawHearts(hudBatch, player.getLives(), 128, windowHeight - 106f, 32, 2);
 

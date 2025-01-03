@@ -4,14 +4,14 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Rectangle;
 
 public abstract class Character extends InputAdapter {
-    protected int lives;
+    protected float lives;
     protected float x, y, velX, velY, speed;
     protected float width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen;
     float hitboxWidthOnScreen;
     float hitboxHeightOnScreen;
     protected Rectangle rectangle;
 
-    public Character(int x, int y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, int lives) {
+    public Character(int x, int y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives) {
         this.lives = lives;
         this.rectangle = new Rectangle();
         this.velX = 0;
@@ -41,10 +41,10 @@ public abstract class Character extends InputAdapter {
 
     abstract void dispose();
 
-    public int getLives() {
+    public float getLives() {
         return lives;
     }
-    public void setLives(int lives) {
+    public void setLives(float lives) {
         this.lives = lives;
     }
 
