@@ -3,6 +3,7 @@ package de.tum.cit.fop.maze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.MathUtils;
 
 import static de.tum.cit.fop.maze.Constants.*;
 
@@ -38,7 +39,7 @@ public class Player extends Character {
         this.collisionLayer = collisionLayer;
     }
 
-    private void handleInput() {
+    private void handleMovement() {
         float delta = Gdx.graphics.getDeltaTime();
 
         // define keys pressed to handle keys for player movement; both WASD and the arrow keys are used
@@ -52,6 +53,7 @@ public class Player extends Character {
         // int horizontalInput, verticalInput; they will be -1, 0, or 1 depending on the direction
         int horizontalInput = (rightPressed ? 1 : 0) - (leftPressed ? 1 : 0); // -1, 0, 1 for left, not moving, right resp.
         int verticalInput = (upPressed ? 1 : 0) - (downPressed ? 1 : 0); // -1, 0, 1 for down, not moving, up resp.
+
         // update the last direction of movement based on key presses
         if (rightPressed) lastHorizontalDirection = 1;
         if (leftPressed) lastHorizontalDirection = -1;
@@ -63,18 +65,10 @@ public class Player extends Character {
 
         // speed is doubled (times the `BOOST_MULTIPLIER`) when SHIFT key is hold
         // final speed is speed * FPS (delta), since the speed should be independent of the FPS
-        if (horizontalInput == 0) {
-            targetVelX = 0;
-        }
-        else{
-            targetVelX = boostPressed ? BASE_SPEED * BOOST_MULTIPLIER : BASE_SPEED;
-        }
-        if (verticalInput == 0){
-            targetVelY = 0;
-        }
-        else{
-            targetVelY = boostPressed ? BASE_SPEED * BOOST_MULTIPLIER : BASE_SPEED;
-        }
+        if (horizontalInput == 0) targetVelX = 0;
+        else targetVelX = boostPressed ? BASE_SPEED * BOOST_MULTIPLIER : BASE_SPEED;
+        if (verticalInput == 0) targetVelY = 0;
+        else targetVelY = boostPressed ? BASE_SPEED * BOOST_MULTIPLIER : BASE_SPEED;
 
         // gradually adjust the actual velocities towards the target velocities for smooth movement
         velX += (targetVelX - velX) * SMOOTH_FACTOR * delta;
@@ -84,10 +78,19 @@ public class Player extends Character {
         if (velX < 5) lastHorizontalDirection = 0;
         if (velY < 5) lastVerticalDirection = 0;
 
+        // test if the updated coordinates is not constrained
+        float newXTest = x + lastHorizontalDirection * velX * delta; // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
+        float newYTest = y + lastVerticalDirection * velY * delta;
+
+        // Checks if the player can move to a given position by verifying collisions at the four corners of the player's hitbox.
+        boolean canMoveHorizontally = canMoveTo(newXTest, y);
+        boolean canMoveVertically = canMoveTo(x, newYTest);
+
         // both hor. and ver. have speed -> move diagonal
         // (moving diagonally should divide the speed by sqrt(2))
-        float actualVelX = velX, actualVelY = velY;
-        if (horizontalInput != 0 && verticalInput != 0){ // move diagonally
+        float actualVelX = velX;
+        float actualVelY = velY;
+        if (horizontalInput != 0 && verticalInput != 0 && canMoveHorizontally && canMoveVertically){ // move diagonally
             actualVelX = velX / ((float) Math.sqrt(2));
             actualVelY = velY / ((float) Math.sqrt(2));
         }
@@ -95,16 +98,11 @@ public class Player extends Character {
         // update the player's coordinates
         float newX = x + lastHorizontalDirection * actualVelX * delta; // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
         float newY = y + lastVerticalDirection * actualVelY * delta;
-        speed = (float) Math.sqrt(actualVelX * actualVelX + actualVelY * actualVelY);
-
-
-        // Checks if the player can move to a given position by verifying collisions at the four corners of the player's hitbox.
+        speed = (float) Math.sqrt(actualVelX * actualVelX * (canMoveHorizontally ? 1 : 0) // pythagoras theorem
+                                + actualVelY * actualVelY * (canMoveVertically ? 1 : 0)); // hor/ver component of the vel is 0 if canMove on that axis is false
 
         // horizontally
-        if (!checkCollision(newX, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2) &&
-                !checkCollision(newX, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
-                !checkCollision(newX, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
-                !checkCollision(newX, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2)) {
+        if (canMoveHorizontally) {
             x = newX; // update position if no collision
         }
         else{
@@ -112,45 +110,36 @@ public class Player extends Character {
         }
 
         // vertically
-        if (!checkCollision(x, newY, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2) &&
-                !checkCollision(x, newY, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
-                !checkCollision(x, newY, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
-                !checkCollision(x, newY, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2)) {
+        if (canMoveVertically) {
             y = newY;
         }
         else{
             targetVelY *= 0.5f;
         }
 
-
-        // collision with the world boundaries
-        if (x > WORLD_WIDTH - hitboxWidthOnScreen / 2) { // Prevent sprite from moving beyond right world boundary
-            x = WORLD_WIDTH - hitboxWidthOnScreen / 2;
-        }
-        if (x < hitboxWidthOnScreen / 2) { // left world boundary
-            x = hitboxWidthOnScreen / 2;
-        }
-        if (y > WORLD_HEIGHT - hitboxHeightOnScreen / 2) { // top world boundary
-            y = WORLD_HEIGHT - hitboxHeightOnScreen / 2;
-        }
-        if (y < hitboxHeightOnScreen / 2) { // bottom world boundary
-            y = hitboxHeightOnScreen / 2;
-        }
+        // Constrain Player to World Boundaries
+        x = MathUtils.clamp(x, hitboxWidthOnScreen / 2, WORLD_WIDTH - hitboxWidthOnScreen / 2);
+        y = MathUtils.clamp(y, hitboxHeightOnScreen / 2, WORLD_HEIGHT - hitboxHeightOnScreen / 2);
 
         if (rightPressed || leftPressed || upPressed || downPressed){
             // Gdx.app.log("Player", "x: " + x + "; y: " + y);
         }
-
-        /*
-        if (Gdx.input.isTouched()) {
-            touchPos.set(Gdx.input.getX(), Gdx.input.getY());
-            viewport.unproject(touchPos);
-            bucketSprite.setCenterX(touchPos.x);
-        }*/
-
     }
 
-    public boolean isColliding(int tileX, int tileY) {
+    public boolean canMoveTo(float x, float y){
+        return isNotTouching(x, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2) &&
+                isNotTouching(x, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
+                isNotTouching(x, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
+                isNotTouching(x, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2);
+    }
+
+    private boolean isNotTouching(float x, float y, float offsetX, float offsetY) {
+        int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
+        int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
+        return !isColliding(tileX, tileY, offsetX>0, offsetY>0);
+    }
+
+    public boolean isColliding(int tileX, int tileY, boolean isRight, boolean isUp) {
         // Get the cell at the specified tile position
         TiledMapTileLayer.Cell cell = collisionLayer.getCell(tileX, tileY);
 
@@ -158,17 +147,13 @@ public class Player extends Character {
         if (cell != null && cell.getTile() != null) {
             Object collidable = cell.getTile().getProperties().get("collidable");
             if (collidable != null && collidable.equals(true)) {
-                Gdx.app.log("Player", "collided tile position " + tileX + ", " + tileY);
+                String horizontalDesc = isRight ? "right" : "left";
+                String verticalDesc = isUp ? "upper" : "lower";
+                Gdx.app.log("Player", "Player's " + verticalDesc + "-" + horizontalDesc + " corner collided with tile at position " + tileX + ", " + tileY);
                 return true;
             }
         }
         return false; // No collision by default
-    }
-
-    private boolean checkCollision(float x, float y, float offsetX, float offsetY) {
-        int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
-        int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
-        return isColliding(tileX, tileY);
     }
 
     // getters and setters
@@ -181,7 +166,7 @@ public class Player extends Character {
 
     @Override
     void update(float delta) {
-        handleInput();
+        handleMovement();
     }
 
     @Override
