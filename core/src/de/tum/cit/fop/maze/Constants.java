@@ -8,7 +8,7 @@ public class Constants {
     public static final float MIN_ZOOM_LEVEL = 0.6f; // MIN is actually zoom in
     public static final float MAX_ZOOM_LEVEL = 1.3f; // MAX is actually zoom out
 
-    public static final int TILE_SIZE = 16;
+    public static final int TILE_SIZE = 32;
 
     static int horizontalTilesCount = 20; // number of tiles on the width
     public static int TILE_SCREEN_SIZE = WORLD_WIDTH / horizontalTilesCount;
