@@ -14,10 +14,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import org.w3c.dom.Text;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The MenuScreen class is responsible for displaying the main menu of the game.
@@ -62,18 +59,49 @@ public class MenuScreen implements Screen {
             }
 
         });*/
-        buttons = new HashMap<>();
-        buttons.put("goToGameButton", new TextButton("Go To Game", game.getSkin()));
+
+        final float BUTTON_WIDTH = 300f; // Button width
+        final float BUTTON_PADDING = 10f; // Vertical padding
+
+        buttons = new LinkedHashMap<>();
+        buttons.put("startGameButton", new TextButton("Start Game", game.getSkin()));
+        buttons.put("selectLevelButton", new TextButton("Select Level", game.getSkin()));
+        buttons.put("exitGameButton", new TextButton("Exit Game", game.getSkin()));
+
         Gdx.app.log("MenuScreen","MenuScreen is created.");
-        TextButton goToGameButton = buttons.get("goToGameButton");
-        table.add(goToGameButton).width(300).row();
-        goToGameButton.addListener(new ChangeListener() {
+
+        // Add buttons to the table with padding
+        for (Map.Entry<String, TextButton> entry : buttons.entrySet()) {
+            TextButton button = entry.getValue();
+            table.add(button).width(BUTTON_WIDTH).padBottom(BUTTON_PADDING).row();
+        }
+
+        // Set up listeners
+        buttons.get("startGameButton").addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Gdx.app.log("MenuScreen", "Go To Game button pressed");
+                Gdx.app.log("MenuScreen", "Start Game button pressed");
                 game.goToGame(); // Change to the game screen when button is pressed
             }
         });
+
+        buttons.get("selectLevelButton").addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.log("MenuScreen", "Select Level button pressed");
+
+            }
+        });
+
+        buttons.get("exitGameButton").addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.log("MenuScreen", "Exit Game button pressed");
+                Gdx.app.exit();
+                System.exit(-1);
+            }
+        });
+
         Gdx.app.log("MenuScreen", "ChangeListener is added.");
     }
 
