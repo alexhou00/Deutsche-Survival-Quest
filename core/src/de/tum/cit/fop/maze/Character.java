@@ -1,6 +1,5 @@
 package de.tum.cit.fop.maze;
 
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Rectangle;
 
 /**
@@ -18,9 +17,9 @@ public abstract class Character {
     protected float x, y, velX, velY, speed;
     protected float width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen;
     /** The width/height of the visible hitbox on the screen. */
-    float hitboxWidthOnScreen;
-    float hitboxHeightOnScreen;
-    protected Rectangle rectangle;
+    protected float hitboxWidthOnScreen;
+    protected float hitboxHeightOnScreen;
+    protected Rectangle hitbox;
 
 
     /**
@@ -38,7 +37,6 @@ public abstract class Character {
      */
     public Character(int x, int y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives) {
         this.lives = lives;
-        this.rectangle = new Rectangle();
         this.velX = 0;
         this.velY = 0;
         this.speed = 0;
@@ -53,6 +51,8 @@ public abstract class Character {
         // Actual size of the non-transparent part shown on the screen
         this.hitboxWidthOnScreen = (float) widthOnScreen * hitboxWidth / width;
         this.hitboxHeightOnScreen = (float) heightOnScreen * hitboxHeight / height;
+
+        this.hitbox = null;
 
     }
 
@@ -178,11 +178,12 @@ public abstract class Character {
         this.heightOnScreen = heightOnScreen;
     }
 
-    public Rectangle getRectangle() {
-        return rectangle;
+    public Rectangle getHitbox() {
+        hitbox = new Rectangle(x - hitboxWidthOnScreen / 2, y - hitboxWidthOnScreen / 2, hitboxWidthOnScreen, hitboxHeightOnScreen);
+        return hitbox;
     }
 
-    public void setRectangle(Rectangle rectangle) {
-        this.rectangle = rectangle;
+    public boolean isTouching(Character other) {
+        return this.getHitbox().overlaps(other.getHitbox());
     }
 }
