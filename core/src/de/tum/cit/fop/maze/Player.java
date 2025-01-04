@@ -142,17 +142,15 @@ public class Player extends Character {
      */
     public boolean canMoveTo(float x, float y){
         String property = "collidable";
-        return isNotTouching(x, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, property) &&
-                isNotTouching(x, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, property) &&
-                isNotTouching(x, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, property) &&
-                isNotTouching(x, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, property);
+        return !pointIsTouchingTileAt(x, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, property) &&
+                !pointIsTouchingTileAt(x, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, property) &&
+                !pointIsTouchingTileAt(x, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, property) &&
+                !pointIsTouchingTileAt(x, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, property);
     }
 
-    public boolean isTouching(float x, float y, String property){
-        return !isNotTouching(x, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, property) &&
-                !isNotTouching(x, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, property) &&
-                !isNotTouching(x, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, property) &&
-                !isNotTouching(x, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, property);
+    /** the center of the player is touching tile that has the property */
+    public boolean isTouchingTile(String property){
+        return pointIsTouchingTileAt(x, y, 0, 0, property);
     }
 
     /**
@@ -164,10 +162,10 @@ public class Player extends Character {
      * @param offsetY The y offset for the corner (offset from the center to the top or bottom)
      * @return True if the corner is not touching a collidable tile, false otherwise
      */
-    private boolean isNotTouching(float x, float y, float offsetX, float offsetY, String property) {
+    private boolean pointIsTouchingTileAt(float x, float y, float offsetX, float offsetY, String property) {
         int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
         int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
-        return !isColliding(tileX, tileY, offsetX>0, offsetY>0, property);
+        return isColliding(tileX, tileY, offsetX>0, offsetY>0, property);
     }
 
     /**
@@ -185,8 +183,8 @@ public class Player extends Character {
 
         // Check if the cell exists and if it has the "collidable" property (like walls)
         if (cell != null && cell.getTile() != null) {
-            Object collidable = cell.getTile().getProperties().get(property);
-            if (collidable != null && collidable.equals(true)) {
+            Object propertyToCheck = cell.getTile().getProperties().get(property);
+            if (propertyToCheck != null && propertyToCheck.equals(true)) {
                 String horizontalDesc = isRight ? "right" : "left";
                 String verticalDesc = isUp ? "upper" : "lower";
                 Gdx.app.log("Player", "Player's " + verticalDesc + "-" + horizontalDesc + " corner collided with tile at position " + tileX + ", " + tileY);

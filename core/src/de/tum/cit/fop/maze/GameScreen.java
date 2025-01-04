@@ -28,7 +28,7 @@ import static de.tum.cit.fop.maze.Constants.*;
 public class GameScreen extends InputAdapter implements Screen {
 
     private final MazeRunnerGame game;
-    public String map;
+
     private final OrthographicCamera camera;
     private final OrthographicCamera hudCamera; // HUD camera. HUD uses another camera so that it does not follow the player and is fixed on the screen.
 
@@ -80,17 +80,19 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Load tiled map
         tiles = new Tiles();
-        TiledMap tiledMap = tiles.loadTiledMap("maps/level 1 map.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
-        if (game.getGameLevel()==2){
-            tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
+
+        TiledMap tiledMap = null;
+        switch (game.getGameLevel()) {
+            case 1 -> tiledMap = tiles.loadTiledMap("maps/level 1 map.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
+            case 2 -> tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
         }
+
         // Set up map renderer
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many
 
-        player = new Player(0, 1, 16, 32, 12, 19, 64f, 128f, 6.5f, false, tiles.layer);
+        player = new Player(tiles.entranceTileX, tiles.entranceTileY, 16, 32, 12, 19, 64f, 128f, 6.5f, false, tiles.layer);
 
         spotlightEffect = new SpotlightEffect();
-        // spotlightEffect.create();
     }
 
     /**
@@ -117,13 +119,9 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
 
-
-
     /**
      * Handles user input for something throughout the whole game, like zooming and muting.
      */
-
-
     private void handleInput() {
         // Handle keys input for zooming
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) { // "+" key
@@ -169,19 +167,13 @@ public class GameScreen extends InputAdapter implements Screen {
 
         renderGameWorld();
 
-        game.ExitToNextLevel(player);
+        game.checkExitToNextLevel(player);
 
         game.getSpriteBatch().begin();
-        // Render the text
-        float textX = (float) (0 + Math.sin(sinusInput) * 100);
-        float textY = (float) (750 + Math.cos(sinusInput) * 100);
-        font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
 
+        renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
         renderPlayer();
-
-        // Draw arrow that points at the exit
-        float angle = getAngle();
-        if (angle > 0) hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
+        renderArrow();
 
         moveCamera();
 
@@ -218,6 +210,11 @@ public class GameScreen extends InputAdapter implements Screen {
         mapRenderer.render();
     }
 
+    private void renderText(float textX, float textY, String text) {
+        // Render the text
+        font.draw(game.getSpriteBatch(), text, textX, textY);
+    }
+
     /**
      * Renders the player's character based on movement state.
      */
@@ -240,6 +237,12 @@ public class GameScreen extends InputAdapter implements Screen {
                     player.getHeightOnScreen()
             );
         }
+    }
+
+    private void renderArrow(){
+        // Draw arrow that points at the exit
+        float angle = getAngle();
+        if (angle > 0) hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
     }
 
     /**

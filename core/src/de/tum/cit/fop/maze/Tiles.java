@@ -23,14 +23,22 @@ public class Tiles {
     public TiledMapTileLayer layer;
     /** Coordinates of the entrance tile in world coordinates. */
     public Map<String, Float> entrancePosition;
+    public int entranceTileX;
+    public int entranceTileY;
     /** List of positions of the exit tiles in world coordinates. (there might be more than one exit) */
     public List<Map<String, Float>> exitPositions;
+
+    public static final int WALL = 1;
+    public static final int ENTRANCE = 13;
+    public static final int EXIT = 20;
 
     /**
      * Constructor: initializes the Tiles object with default values.
      */
     public Tiles() {
         entrancePosition = new HashMap<>();
+        entranceTileX = 0;
+        entranceTileY = 0;
         exitPositions = new ArrayList<>();
     }
 
@@ -44,12 +52,12 @@ public class Tiles {
      * @return The created {@link TiledMap} object.
      */
     public TiledMap loadTiledMap(String mapFilePath, String tileSheetPath, int mapWidthInTiles, int mapHeightInTiles) {
-        // Load tile sheet
+        // Load the tile sheet
         var tileSheet = new Texture(tileSheetPath);
         int tileCols = tileSheet.getWidth() / TILE_SIZE;
         int tileRows = tileSheet.getHeight() / TILE_SIZE;
 
-        // Create tiles based on tile sheet
+        // Create tiles based on the tile sheet
         StaticTiledMapTile[] tiles = new StaticTiledMapTile[tileCols * tileRows];
         for (int y = 0; y < tileRows; y++) {
             for (int x = 0; x < tileCols; x++) {
@@ -67,7 +75,7 @@ public class Tiles {
                 */
 
                 // the "collidable" property for specific tiles (e.g., Walls, Traps)
-                if (index == 1) { // Tile 0: Wall
+                if (index == WALL) { // Tile 0: Wall
                     tiles[index].getProperties().put("collidable", true);
                 } else if (index == 3) { // Tile 3: Trap
                     tiles[index].getProperties().put("collidable", true);
@@ -75,7 +83,7 @@ public class Tiles {
                     tiles[index].getProperties().put("collidable", false);
                 }
 
-                if (index == 20){
+                if (index == EXIT){
                     tiles[index].getProperties().put("isExit", true);}
             }
 
@@ -101,10 +109,12 @@ public class Tiles {
                 layer.setCell(x, y, cell);
 
                 // Set entrance and exit positions when the entrances and exits are met
-                if (tileValue == 13){ // Tile 1: Entrance
+                if (tileValue == ENTRANCE){ // Tile 1: Entrance
                     entrancePosition = tilePositionToWorldCoordinates(x, y);
+                    entranceTileX = x;
+                    entranceTileY = y;
                 }
-                if (tileValue == 20){ // Tile 2: Exit
+                if (tileValue == EXIT){ // Tile 2: Exit
                     Map<String, Float> exitPosition = tilePositionToWorldCoordinates(x, y);
                     exitPositions.add(exitPosition);
                 }

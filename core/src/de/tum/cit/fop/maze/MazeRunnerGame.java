@@ -7,12 +7,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
-
-import javax.swing.plaf.TextUI;
 
 /**
  * The MazeRunnerGame class represents the core of the Maze Runner game.
@@ -25,10 +22,6 @@ public class MazeRunnerGame extends Game {
 
     public int getGameLevel() {
         return gameLevel;
-    }
-
-    public void setGameLevel(int gameLevel) {
-        this.gameLevel = gameLevel;
     }
 
     private int gameLevel;
@@ -99,7 +92,7 @@ public class MazeRunnerGame extends Game {
     public void goToGame() {
         // this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
         if (gameScreen == null) {
-            this.setGameLevel(1);
+            gameLevel = 1; // TODO: this will be changed in the future once we can select our own levels
             gameScreen = new GameScreen(this);
         }
         this.setScreen(gameScreen); // Set the current screen to MenuScreen
@@ -178,8 +171,8 @@ public class MazeRunnerGame extends Game {
         return spriteBatch;
     }
 
-    public void ExitToNextLevel (Player player) {
-        if (player.isTouching(player.x, player.y, "isExit")){
+    public void checkExitToNextLevel(Player player) {
+        if (player.isTouchingTile("isExit")){
             gameLevel += 1;
             gameScreen.dispose();
             gameScreen = new GameScreen(this);
