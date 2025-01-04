@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Matrix4;
 
 public class SpotlightEffect extends ApplicationAdapter {
     private SpriteBatch batch;
@@ -16,14 +17,24 @@ public class SpotlightEffect extends ApplicationAdapter {
         batch = new SpriteBatch();
 
         // Create a black texture for the dimmed background
-        Pixmap pixmap = new Pixmap(1000, 1000, Pixmap.Format.RGBA8888);
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(0, 0, 0, 0.7f); // Semi-transparent black
         pixmap.fill();
 
         blackTexture = new Texture(pixmap);
     }
 
-    public void render(float spotlightX, float spotlightY, float spotlightRadius) {
+    public void render(OrthographicCamera camera, float spotlightX, float spotlightY, float spotlightRadius) {
+        //Matrix4 matrix = new Matrix4();
+        //matrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        //batch.setProjectionMatrix(matrix);
+
+        //camera.setToOrtho(false);
+        batch.setProjectionMatrix(camera.combined); // IMPORTANT: it has to follow the camera so that things don't get distorted or displaced
+
+        //batch.setTransformMatrix(camera.view);
+        //batch.setProjectionMatrix(camera.projection);
+
         batch.begin();
 
         // Draw the semi-transparent black overlay
@@ -41,6 +52,9 @@ public class SpotlightEffect extends ApplicationAdapter {
         Gdx.gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_SRC_ALPHA); // IDK why but this worked
 
         // Use ShapeRenderer to draw the transparent circle
+
+        shapeRenderer.setProjectionMatrix(camera.combined);  // IMPORTANT: make it follow the camera {@link: https://stackoverflow.com/questions/33703663/understanding-the-libgdx-projection-matrix}
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1, 1, 1, 0.8f); // White color with almost full alpha
 

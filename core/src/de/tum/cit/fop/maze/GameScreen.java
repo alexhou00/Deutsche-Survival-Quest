@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
@@ -45,9 +47,6 @@ public class GameScreen extends InputAdapter implements Screen {
     Tiles tiles; // Tile system for the map
 
     private final OrthogonalTiledMapRenderer mapRenderer;
-
-    float windowWidth = Gdx.graphics.getWidth();
-    float windowHeight = Gdx.graphics.getHeight();
 
     private final ObjectRenderer hudObjectRenderer; // Hearts and other objects on the HUD
 
@@ -187,7 +186,7 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.update();
         game.getSpriteBatch().end(); // Important to call this after drawing everything
 
-        // renderSpotlightEffect(player.x, player.y, 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
+        renderSpotlightEffect(player.x, player.y, 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
         renderHUD();
     }
 
@@ -252,7 +251,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         font.draw(hudBatch, "This is the HUD", 20, Gdx.graphics.getHeight() - 20);
         font.draw(hudBatch, "Score: " + Math.round(sinusInput), 20f, Gdx.graphics.getHeight() - 50f);
-        font.draw(hudBatch, "Lives:", 20f, windowHeight - 80f);
+        font.draw(hudBatch, "Lives:", 20f, Gdx.graphics.getHeight() - 80f);
 
         // Show all the variables in the bottom-left corner here
         // Variables to show, stored in a map (LinkedHashMap preserves the order)
@@ -268,7 +267,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // hudObjectRenderer use another rendering batch, so we have to end the batch first, and start it again
         hudBatch.begin();
-        hudObjectRenderer.drawHearts(hudBatch, player.getLives(), 128, windowHeight - 106f, 32, 2);
+        hudObjectRenderer.drawHearts(hudBatch, player.getLives(), 128, Gdx.graphics.getHeight() - 106f, 32, 2);
         /* Health bar
         // Draw health bar
         float healthBarWidth = 180f;
@@ -296,7 +295,8 @@ public class GameScreen extends InputAdapter implements Screen {
         float[] screenCoordinates = getScreenCoordinates(x, y);
         float xOnScreen = screenCoordinates[0];
         float yOnScreen = screenCoordinates[1];
-        spotlightEffect.render(xOnScreen, yOnScreen, spotlightRadius);
+        Gdx.app.log("GameScreen", "screen x: " + xOnScreen + "; screen y: " + yOnScreen);
+        spotlightEffect.render(camera, x, y, spotlightRadius);
     }
 
     /**
@@ -308,8 +308,25 @@ public class GameScreen extends InputAdapter implements Screen {
      */
     private float[] getScreenCoordinates(float x, float y) {
         // Convert world position to screen position using the camera's combined matrix
-        Vector3 screenCoordinates = camera.project(new Vector3(x, y, 0));
-        return new float[]{screenCoordinates.x, screenCoordinates.y};
+        //Vector3 screenCoordinates = camera.project(new Vector3(x, y, 0));
+        //return new float[]{screenCoordinates.x, screenCoordinates.y};
+
+        // Get the camera's zoom factor
+        float zoom = camera.zoom;
+
+        // Get the camera's viewport size
+        float viewportWidth = Gdx.graphics.getWidth();
+        float viewportHeight = Gdx.graphics.getHeight();
+
+        // Calculate the scaling factor based on the zoom and viewport size
+        float scaleX = viewportWidth / 2 / camera.viewportWidth;
+        float scaleY = viewportHeight / 2 / camera.viewportHeight;
+
+        // Apply the scaling factor and camera position to the player's world coordinates
+        float screenX = (x - camera.position.x) * scaleX + viewportWidth / 2;
+        float screenY = (y - camera.position.y) * scaleY + viewportHeight / 2;
+
+        return new float[]{screenX, screenY};
     }
 
     @Override
