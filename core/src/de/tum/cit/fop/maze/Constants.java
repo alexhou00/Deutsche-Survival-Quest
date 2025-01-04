@@ -1,17 +1,20 @@
 package de.tum.cit.fop.maze;
 
 public class Constants {
-    public static final int WORLD_WIDTH = 2000;
-    public static final int WORLD_HEIGHT = 2000;
-
     public static final float ZOOM_SPEED = 0.1f; // Controls how quickly the camera adjusts to the target zoom
     public static final float MIN_ZOOM_LEVEL = 0.6f; // MIN is actually zoom in
     public static final float MAX_ZOOM_LEVEL = 1.3f; // MAX is actually zoom out
 
-    public static final int TILE_SIZE = 16;
+    public static final int TILE_SIZE = 16; // in pixels
 
-    static int horizontalTilesCount = 20; // number of tiles on the width
-    public static int TILE_SCREEN_SIZE = WORLD_WIDTH / horizontalTilesCount;
+    public static final int horizontalTilesCount = 20; // number of tiles on the width
+    public static final int verticalTilesCount = 20; // number of tiles on the height
+    public static final int TILE_SCREEN_SIZE = 100;
+
+    public static final int WORLD_WIDTH = horizontalTilesCount * TILE_SCREEN_SIZE;
+    public static final int WORLD_HEIGHT = verticalTilesCount * TILE_SCREEN_SIZE;
+
+    // TILE_SCREEN_SIZE = WORLD_WIDTH / horizontalTilesCount;
     // public static int TILE_SCREEN_SIZE = TILE_SIZE;
 
     public static final int MAX_PLAYER_LIVES = 10;
