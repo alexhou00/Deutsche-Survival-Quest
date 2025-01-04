@@ -298,9 +298,9 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     private void renderSpotlightEffect(float x, float y, float spotlightRadius) {
-        float[] screenCoordinates = getScreenCoordinates(x, y);
-        float xOnScreen = screenCoordinates[0];
-        float yOnScreen = screenCoordinates[1];
+        Position screenCoordinates = getScreenCoordinates(x, y);
+        float xOnScreen = screenCoordinates.getX();
+        float yOnScreen = screenCoordinates.getY();
         Gdx.app.log("GameScreen", "screen x: " + xOnScreen + "; screen y: " + yOnScreen);
         spotlightEffect.render(camera, x, y, spotlightRadius, 0.8f);
     }
@@ -336,9 +336,9 @@ public class GameScreen extends InputAdapter implements Screen {
      *
      * @param x the world x-coordinate
      * @param y the world y-coordinate
-     * @return A float array with two elements: [x, y], representing the actual coordinates on the screen.
+     * @return A {@link Position} with x and y in PIXELS representing the actual coordinates on the screen.
      */
-    private float[] getScreenCoordinates(float x, float y) {
+    private Position getScreenCoordinates(float x, float y) {
         // Get the camera's window (viewport) size
         float windowWidth = Gdx.graphics.getWidth();
         float windowHeight = Gdx.graphics.getHeight();
@@ -351,7 +351,7 @@ public class GameScreen extends InputAdapter implements Screen {
         float screenX = (x - camera.position.x) * scaleX + windowWidth / 2;
         float screenY = (y - camera.position.y) * scaleY + windowHeight / 2;
 
-        return new float[]{screenX, screenY};
+        return new Position(screenX, screenY);
     }
 
     @Override
