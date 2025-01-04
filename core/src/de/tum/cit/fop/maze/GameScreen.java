@@ -173,14 +173,8 @@ public class GameScreen extends InputAdapter implements Screen {
         float angle = getAngle();
         if (angle > 0) hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
 
-        // make sure the camera follows the player
-        // camera.viewportWidth is the window width; camera.viewportHeight is the window height
-        camera.position.set(player.getX(), player.getY(), 0);
-        camera.position.x = Math.max(camera.viewportWidth / 2 * camera.zoom,
-                Math.min(WORLD_WIDTH - camera.viewportWidth / 2 * camera.zoom, camera.position.x));
-        camera.position.y = Math.max(camera.viewportHeight / 2 * camera.zoom,
-                Math.min(WORLD_HEIGHT - camera.viewportHeight / 2 * camera.zoom, camera.position.y));
-        camera.update();
+        moveCamera();
+
         game.getSpriteBatch().end(); // Important to call this after drawing everything
 
         renderSpotlightEffect(player.x, player.y, 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
@@ -294,6 +288,30 @@ public class GameScreen extends InputAdapter implements Screen {
         float yOnScreen = screenCoordinates[1];
         Gdx.app.log("GameScreen", "screen x: " + xOnScreen + "; screen y: " + yOnScreen);
         spotlightEffect.render(camera, x, y, spotlightRadius, 0.8f);
+    }
+
+    /**
+     * make sure the camera follows the player
+     */
+    private void moveCamera(){
+        // camera.viewportWidth is the window width; camera.viewportHeight is the window height
+        // Define the 80% boundary margins
+        float marginX = camera.viewportWidth * 0.8f / 2 * camera.zoom; // 80% of the window width, divided by 2 because we go from the center; also consider zoom here
+        float marginY = camera.viewportHeight * 0.8f / 2 * camera.zoom; // 80% of the window height, divided by 2 because we go from the center; also consider zoom here
+
+        // Calculate the camera bounds to ensure the player is always in the middle 80%
+        float maxX = WORLD_WIDTH - marginX;
+        float maxY = WORLD_HEIGHT - marginY;
+
+        // Set the camera position based on the player's position
+        camera.position.set(player.getX(), player.getY(), 0);
+
+        // Ensure the camera stays within the calculated bounds
+        camera.position.x = MathUtils.clamp(camera.position.x, marginX, maxX);
+        camera.position.y = MathUtils.clamp(camera.position.y, marginY, maxY);
+
+        // Update the camera
+        camera.update();
     }
 
     /**
