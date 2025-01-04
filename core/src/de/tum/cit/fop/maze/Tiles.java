@@ -28,7 +28,7 @@ public class Tiles {
 
     public static final int WALL = 1;
     public static final int ENTRANCE = 13;
-    public static final int EXIT = 20;
+    public static final int EXIT = 21;
 
     /**
      * Constructor: initializes the Tiles object with default values.
