@@ -74,7 +74,11 @@ public class Tiles {
                 } else {
                     tiles[index].getProperties().put("collidable", false);
                 }
+
+                if (index == 20){
+                    tiles[index].getProperties().put("isExit", true);}
             }
+
         }
 
         // Parse properties file

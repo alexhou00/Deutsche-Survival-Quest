@@ -28,6 +28,7 @@ import static de.tum.cit.fop.maze.Constants.*;
 public class GameScreen extends InputAdapter implements Screen {
 
     private final MazeRunnerGame game;
+    public String map;
     private final OrthographicCamera camera;
     private final OrthographicCamera hudCamera; // HUD camera. HUD uses another camera so that it does not follow the player and is fixed on the screen.
 
@@ -80,7 +81,9 @@ public class GameScreen extends InputAdapter implements Screen {
         // Load tiled map
         tiles = new Tiles();
         TiledMap tiledMap = tiles.loadTiledMap("maps/level 1 map.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
-
+        if (game.getGameLevel()==2){
+            tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
+        }
         // Set up map renderer
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many
 
@@ -113,9 +116,14 @@ public class GameScreen extends InputAdapter implements Screen {
         return true; // Return true to indicate the event was handled
     }
 
+
+
+
     /**
      * Handles user input for something throughout the whole game, like zooming and muting.
      */
+
+
     private void handleInput() {
         // Handle keys input for zooming
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) { // "+" key
@@ -160,6 +168,8 @@ public class GameScreen extends InputAdapter implements Screen {
         player.update(delta); // ALL the player functionalities are here
 
         renderGameWorld();
+
+        game.ExitToNextLevel(player);
 
         game.getSpriteBatch().begin();
         // Render the text
@@ -344,6 +354,8 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.setToOrtho(false);
         hudCamera.setToOrtho(false, width, height); // Adjust HUD camera to new screen size
     }
+
+
 
     @Override
     public void pause() {

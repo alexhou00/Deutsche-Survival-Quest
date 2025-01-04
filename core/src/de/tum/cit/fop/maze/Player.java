@@ -141,10 +141,18 @@ public class Player extends Character {
      * @return True if the position is valid, false otherwise.
      */
     public boolean canMoveTo(float x, float y){
-        return isNotTouching(x, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2) &&
-                isNotTouching(x, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
-                isNotTouching(x, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2) &&
-                isNotTouching(x, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2);
+        String property = "collidable";
+        return isNotTouching(x, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, property) &&
+                isNotTouching(x, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, property) &&
+                isNotTouching(x, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, property) &&
+                isNotTouching(x, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, property);
+    }
+
+    public boolean isTouching(float x, float y, String property){
+        return !isNotTouching(x, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, property) &&
+                !isNotTouching(x, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, property) &&
+                !isNotTouching(x, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, property) &&
+                !isNotTouching(x, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, property);
     }
 
     /**
@@ -156,10 +164,10 @@ public class Player extends Character {
      * @param offsetY The y offset for the corner (offset from the center to the top or bottom)
      * @return True if the corner is not touching a collidable tile, false otherwise
      */
-    private boolean isNotTouching(float x, float y, float offsetX, float offsetY) {
+    private boolean isNotTouching(float x, float y, float offsetX, float offsetY, String property) {
         int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
         int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
-        return !isColliding(tileX, tileY, offsetX>0, offsetY>0);
+        return !isColliding(tileX, tileY, offsetX>0, offsetY>0, property);
     }
 
     /**
@@ -171,13 +179,13 @@ public class Player extends Character {
      * @param isUp    True if checking the upper side of the player's hitbox, false if checking the lower side.
      * @return True if the tile is collidable, false otherwise.
      */
-    public boolean isColliding(int tileX, int tileY, boolean isRight, boolean isUp) {
+    public boolean isColliding(int tileX, int tileY, boolean isRight, boolean isUp, String property) {
         // Get the cell at the specified tile position
         TiledMapTileLayer.Cell cell = collisionLayer.getCell(tileX, tileY);
 
         // Check if the cell exists and if it has the "collidable" property (like walls)
         if (cell != null && cell.getTile() != null) {
-            Object collidable = cell.getTile().getProperties().get("collidable");
+            Object collidable = cell.getTile().getProperties().get(property);
             if (collidable != null && collidable.equals(true)) {
                 String horizontalDesc = isRight ? "right" : "left";
                 String verticalDesc = isUp ? "upper" : "lower";

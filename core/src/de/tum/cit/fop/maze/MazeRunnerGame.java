@@ -23,6 +23,17 @@ public class MazeRunnerGame extends Game {
     private MenuScreen menuScreen;
     private GameScreen gameScreen;
 
+    public int getGameLevel() {
+        return gameLevel;
+    }
+
+    public void setGameLevel(int gameLevel) {
+        this.gameLevel = gameLevel;
+    }
+
+    private int gameLevel;
+
+
     // Sprite Batch for rendering
     private SpriteBatch spriteBatch;
 
@@ -88,6 +99,7 @@ public class MazeRunnerGame extends Game {
     public void goToGame() {
         // this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
         if (gameScreen == null) {
+            this.setGameLevel(1);
             gameScreen = new GameScreen(this);
         }
         this.setScreen(gameScreen); // Set the current screen to MenuScreen
@@ -165,4 +177,14 @@ public class MazeRunnerGame extends Game {
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
     }
+
+    public void ExitToNextLevel (Player player) {
+        if (player.isTouching(player.x, player.y, "isExit")){
+            gameLevel += 1;
+            gameScreen.dispose();
+            gameScreen = new GameScreen(this);
+            this.setScreen(gameScreen);
+        }
+    }
+
 }
