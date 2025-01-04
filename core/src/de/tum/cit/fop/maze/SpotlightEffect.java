@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import static de.tum.cit.fop.maze.Constants.*;
+
 /**
  * The {@code SpotlightEffect} class creates a spotlight effect <br>
  * A semi-transparent black overlay is drawn, with a circular spotlight area
@@ -25,7 +27,7 @@ public class SpotlightEffect extends ApplicationAdapter {
         or otherwise it will be chaotic */
 
         // Create a black texture for the dimmed background
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888); // width and height are in pixels, so 1x1 pixel here
         pixmap.setColor(0, 0, 0, 0.7f); // Semi-transparent black
         pixmap.fill();
 
@@ -52,7 +54,8 @@ public class SpotlightEffect extends ApplicationAdapter {
 
         // Draw the semi-transparent black overlay
         batch.setColor(0, 0, 0, 1f); // // Fully opaque black (opacity already defined in `blackTexture`)
-        batch.draw(blackTexture, 0, 0, Gdx.graphics.getWidth() * 20, Gdx.graphics.getHeight() * 20);
+        // enlarge it by 100x of the world size and place it in the center of the world
+        batch.draw(blackTexture, WORLD_WIDTH * -50, WORLD_HEIGHT * -50, WORLD_WIDTH * 100, WORLD_HEIGHT * 100);
 
         // End SpriteBatch before using ShapeRenderer
         batch.end();
