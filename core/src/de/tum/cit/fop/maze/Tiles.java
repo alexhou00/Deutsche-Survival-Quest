@@ -12,21 +12,19 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static de.tum.cit.fop.maze.Constants.*;
+import static de.tum.cit.fop.maze.Position.PositionUnit.*;
 
 public class Tiles {
 
     public TiledMapTileLayer layer;
     /** Coordinates of the entrance tile in world coordinates. */
-    public Map<String, Float> entrancePosition;
-    public int entranceTileX;
-    public int entranceTileY;
+    public Position entrancePosition;
+    public Position entranceTilePosition;
     /** List of positions of the exit tiles in world coordinates. (there might be more than one exit) */
-    public List<Map<String, Float>> exitPositions;
+    public List<Position> exitPositions;
 
     public static final int WALL = 1;
     public static final int ENTRANCE = 13;
@@ -36,9 +34,8 @@ public class Tiles {
      * Constructor: initializes the Tiles object with default values.
      */
     public Tiles() {
-        entrancePosition = new HashMap<>();
-        entranceTileX = 0;
-        entranceTileY = 0;
+        entrancePosition = new Position(0, 0, PIXELS); // null; // PIXELS
+        entranceTilePosition = new Position(0, 0, TILES); // null; // TILES
         exitPositions = new ArrayList<>();
     }
 
@@ -109,13 +106,12 @@ public class Tiles {
                 layer.setCell(x, y, cell);
 
                 // Set entrance and exit positions when the entrances and exits are met
-                if (tileValue == ENTRANCE){ // Tile 1: Entrance
-                    entrancePosition = tilePositionToWorldCoordinates(x, y);
-                    entranceTileX = x;
-                    entranceTileY = y;
+                if (tileValue == ENTRANCE){ // Tile 13: Entrance
+                    entranceTilePosition = new Position(x, y, TILES);
+                    entrancePosition = entranceTilePosition.convertTo(PIXELS);
                 }
-                if (tileValue == EXIT){ // Tile 2: Exit
-                    Map<String, Float> exitPosition = tilePositionToWorldCoordinates(x, y);
+                if (tileValue == EXIT){ // Tile 20: Exit
+                    Position exitPosition = new Position(x, y, TILES).convertTo(PIXELS);
                     exitPositions.add(exitPosition);
                 }
             }
@@ -152,22 +148,6 @@ public class Tiles {
         }
 
         return mapData;
-    }
-
-    /**
-     * Converts tile position to world coordinates.
-     *
-     * @param tileX X-coordinate of the tile (unit: in tiles)
-     * @param tileY Y-coordinate of the tile (unit: in tiles)
-     * @return A map containing "x" and "y" world coordinates (in pixels).
-     */
-    private Map<String, Float> tilePositionToWorldCoordinates(int tileX, int tileY) {
-        float x = (tileX + 0.5f) * TILE_SCREEN_SIZE;
-        float y = (tileY + 0.5f) * TILE_SCREEN_SIZE;
-        Map<String, Float> pos = new HashMap<>();
-        pos.put("x", x);
-        pos.put("y", y);
-        return pos;
     }
 
 }

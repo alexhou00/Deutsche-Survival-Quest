@@ -24,6 +24,11 @@ public class Position {
         this(x, y, PositionUnit.PIXELS);
     }
 
+    // No-args constructor
+    public Position() {
+        this(0.0f, 0.0f);
+    }
+
     // Getters
     public float getX() {
         return x;
@@ -31,6 +36,25 @@ public class Position {
 
     public float getY() {
         return y;
+    }
+
+
+    public int getTileX() {
+        if (unit == PositionUnit.TILES) {
+            return (int) x;
+        }
+        else{
+            throw new IllegalStateException("Position is in PIXELS. Cannot get tile coordinate.");
+        }
+    }
+
+    public int getTileY() {
+        if (unit == PositionUnit.TILES) {
+            return (int) y;
+        }
+        else{
+            throw new IllegalStateException("Position is in PIXELS. Cannot get tile coordinate.");
+        }
     }
 
     public PositionUnit getUnit() {

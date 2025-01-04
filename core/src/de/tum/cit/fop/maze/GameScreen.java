@@ -91,7 +91,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // Set up map renderer
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many
 
-        player = new Player(tiles.entranceTileX, tiles.entranceTileY, 16, 32, 12, 19, 64f, 128f, 6.5f, false, tiles.layer);
+        player = new Player(tiles.entranceTilePosition.getTileX(), tiles.entranceTilePosition.getTileY(), 16, 32, 12, 19, 64f, 128f, 6.5f, false, tiles.layer);
 
         spotlightEffect = new SpotlightEffect();
     }
@@ -180,16 +180,16 @@ public class GameScreen extends InputAdapter implements Screen {
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
 
-        renderSpotlightEffect(player.x, player.y, 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
+        // renderSpotlightEffect(player.x, player.y, 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
         renderHUD();
     }
 
     private float getAngle() {
-        Map<String, Float> exitPosition = null;
+        Position exitPosition = null;
         if (!tiles.exitPositions.isEmpty()) exitPosition = tiles.exitPositions.get(0); // TODO: (future) if there are multiple exit, create a function that finds the closest one
         if (exitPosition != null) {
-            float exitX = exitPosition.get("x");
-            float exitY = exitPosition.get("y");
+            float exitX = exitPosition.getX();
+            float exitY = exitPosition.getY();
             float angle = (float) Math.toDegrees(Math.atan2(exitY - player.y, exitX - player.x)); // atan2 is a useful version of atan;
             angle = (angle + 270) % 360; // rotate counter-clockwise by 90 deg to fit the system of LibGDX and ensure the angle is within [0, 360)
             return angle;
