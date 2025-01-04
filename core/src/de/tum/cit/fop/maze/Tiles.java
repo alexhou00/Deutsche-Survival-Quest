@@ -67,7 +67,7 @@ public class Tiles {
                 */
 
                 // the "collidable" property for specific tiles (e.g., Walls, Traps)
-                if (index == 0) { // Tile 0: Wall
+                if (index == 1) { // Tile 0: Wall
                     tiles[index].getProperties().put("collidable", true);
                 } else if (index == 3) { // Tile 3: Trap
                     tiles[index].getProperties().put("collidable", true);
@@ -97,10 +97,10 @@ public class Tiles {
                 layer.setCell(x, y, cell);
 
                 // Set entrance and exit positions when the entrances and exits are met
-                if (tileValue == 1){ // Tile 1: Entrance
+                if (tileValue == 13){ // Tile 1: Entrance
                     entrancePosition = tilePositionToWorldCoordinates(x, y);
                 }
-                if (tileValue == 2){ // Tile 2: Exit
+                if (tileValue == 20){ // Tile 2: Exit
                     Map<String, Float> exitPosition = tilePositionToWorldCoordinates(x, y);
                     exitPositions.add(exitPosition);
                 }
@@ -131,7 +131,7 @@ public class Tiles {
                 if (!line.contains("=")) continue;
                 String[] parts = line.split("=");
                 mapData.put(parts[0], Integer.parseInt(parts[1]));
-                if (parts[1].equals("1")) Gdx.app.log("Tiles", "Parsed: " + parts[0] + " = " + parts[1]);
+                Gdx.app.log("Tiles", "Parsed: " + parts[0] + " = " + parts[1]);
             }
         } catch (IOException e) {
             e.printStackTrace();

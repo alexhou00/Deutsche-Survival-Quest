@@ -79,7 +79,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Load tiled map
         tiles = new Tiles();
-        TiledMap tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
+        TiledMap tiledMap = tiles.loadTiledMap("maps/level 1 map.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
 
         // Set up map renderer
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many
