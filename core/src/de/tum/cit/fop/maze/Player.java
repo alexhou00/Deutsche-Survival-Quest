@@ -19,8 +19,8 @@ public class Player extends Character {
     int lastHorizontalDirection = 0, lastVerticalDirection = 0;
 
     private static final float BASE_SPEED = 240f; // normal speed when moving either vertically or horizontally
-    private static final float BOOST_MULTIPLIER = 2f; // the speed will be multiplied by this number when SHIFT key is pressed
-    private static final float SMOOTH_FACTOR = 5f; // the lower the value, the smoother it gets (and needs more time to stop )
+    private static final float BOOST_MULTIPLIER = 2f; // the speed will be multiplied by this number when the SHIFT key is pressed
+    private static final float SMOOTH_FACTOR = 5f; // the lower the value, the smoother it gets (and needs more time to stop)
 
     /**
      * Constructor for Player. This is our main character <br>
@@ -44,14 +44,14 @@ public class Player extends Character {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
         this.hasKey = hasKey;
         this.isMoving = false;
-        // this.speed = BASE_SPEED;  // normal speed when moving either vertically or horizontally
+        // this.speed = BASE_SPEED; // normal speed when moving either vertically or horizontally
         this.collisionLayer = collisionLayer;
     }
 
     private void handleMovement() {
         float delta = Gdx.graphics.getDeltaTime();
 
-        // define keys pressed to handle keys for player movement; both WASD and the arrow keys are used
+        // define keys pressed to handle keys for player movement; both WASD, and the arrow keys are used
         boolean rightPressed = Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D);
         boolean leftPressed = Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A);
         boolean upPressed = Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W);
@@ -60,7 +60,7 @@ public class Player extends Character {
 
         // Determine movement direction
         // int horizontalInput, verticalInput; they will be -1, 0, or 1 depending on the direction
-        int horizontalInput = (rightPressed ? 1 : 0) - (leftPressed ? 1 : 0); // -1, 0, 1 for left, not moving, right resp.
+        int horizontalInput = (rightPressed ? 1 : 0) - (leftPressed ? 1 : 0); // -1, 0, 1 for the left, not moving, right resp.
         int verticalInput = (upPressed ? 1 : 0) - (downPressed ? 1 : 0); // -1, 0, 1 for down, not moving, up resp.
 
         // update the last direction of movement based on key presses
@@ -87,7 +87,7 @@ public class Player extends Character {
         boolean canMoveHorizontally = canMoveTo(newXTest, y);
         boolean canMoveVertically = canMoveTo(x, newYTest);
 
-        // both hor. and ver. are pressed -> move diagonal
+        // both hor. and ver. are pressed -> move diagonally
         // Adjust speed for diagonal movement (moving diagonally should divide the speed by sqrt(2))
         if (horizontalInput != 0 && verticalInput != 0) {
             if (canMoveVertically) targetVelX /= 1.414f; // but not touching horizontal walls
@@ -198,7 +198,7 @@ public class Player extends Character {
 
     /**
      * Updates the player's state based on the elapsed time.
-     * First we handle the movement based on our keyboard input
+     * First, we handle the movement based on our keyboard input
      *
      * @param delta The time in seconds since the last update.
      */
