@@ -8,9 +8,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
 
@@ -85,12 +82,12 @@ public class GameScreen extends InputAdapter implements Screen {
         TiledMap tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
 
         // Set up map renderer
-        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles (20 is the number of tiles of the width // so like unitScale is times how many
+        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many
 
         player = new Player(0, 1, 16, 32, 12, 19, 64f, 128f, 6.5f, false, tiles.layer);
 
         spotlightEffect = new SpotlightEffect();
-        spotlightEffect.create();
+        // spotlightEffect.create();
     }
 
     /**
@@ -106,7 +103,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     /**
      * Handles mouse scroll events to adjust zoom levels.
-     * scrolling is automatically detected (for zooming)
+     * Scrolling is automatically detected (for zooming)
      */
     @Override
     public boolean scrolled(float amountX, float amountY) {
@@ -159,7 +156,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(this);
 
         updateZoom(delta); // Smoothly adjust zoom
-        handleInput(); // handle the keys input
+        handleInput(); // handle input of the keys
         player.update(delta); // ALL the player functionalities are here
 
         renderGameWorld();
@@ -296,7 +293,7 @@ public class GameScreen extends InputAdapter implements Screen {
         float xOnScreen = screenCoordinates[0];
         float yOnScreen = screenCoordinates[1];
         Gdx.app.log("GameScreen", "screen x: " + xOnScreen + "; screen y: " + yOnScreen);
-        spotlightEffect.render(camera, x, y, spotlightRadius);
+        spotlightEffect.render(camera, x, y, spotlightRadius, 0.8f);
     }
 
     /**
@@ -304,27 +301,22 @@ public class GameScreen extends InputAdapter implements Screen {
      * This method calculates the screen position based on the camera's position
      * and the given world position.
      *
+     * @param x the world x-coordinate
+     * @param y the world y-coordinate
      * @return A float array with two elements: [x, y], representing the actual coordinates on the screen.
      */
     private float[] getScreenCoordinates(float x, float y) {
-        // Convert world position to screen position using the camera's combined matrix
-        //Vector3 screenCoordinates = camera.project(new Vector3(x, y, 0));
-        //return new float[]{screenCoordinates.x, screenCoordinates.y};
-
-        // Get the camera's zoom factor
-        float zoom = camera.zoom;
-
-        // Get the camera's viewport size
-        float viewportWidth = Gdx.graphics.getWidth();
-        float viewportHeight = Gdx.graphics.getHeight();
+        // Get the camera's window (viewport) size
+        float windowWidth = Gdx.graphics.getWidth();
+        float windowHeight = Gdx.graphics.getHeight();
 
         // Calculate the scaling factor based on the zoom and viewport size
-        float scaleX = viewportWidth / 2 / camera.viewportWidth;
-        float scaleY = viewportHeight / 2 / camera.viewportHeight;
+        float scaleX = windowWidth / 2 / camera.viewportWidth;
+        float scaleY = windowHeight / 2 / camera.viewportHeight;
 
         // Apply the scaling factor and camera position to the player's world coordinates
-        float screenX = (x - camera.position.x) * scaleX + viewportWidth / 2;
-        float screenY = (y - camera.position.y) * scaleY + viewportHeight / 2;
+        float screenX = (x - camera.position.x) * scaleX + windowWidth / 2;
+        float screenY = (y - camera.position.y) * scaleY + windowHeight / 2;
 
         return new float[]{screenX, screenY};
     }
