@@ -31,7 +31,7 @@ public class Tiles {
     //public Position entranceTilePosition;
     /** List of positions of the exit tiles in world coordinates. (there might be more than one exit) */
     //public List<Position> exitPositions;
-    public Position keyTilePosition;
+    private Position keyTilePosition;
 
     /** entrance tile, coordinates of the tile can be accessed through this */
     public Entrance entrance;
@@ -167,27 +167,46 @@ public class Tiles {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                if (!line.contains("=")) continue; // ignore this line
-                String[] parts = line.split("="); // split, parts[0] is position (String) and parts[1] is the tileType or tileValue
-                String[] tileTypes = parts[1].split(","); // could contain key so a grid might have duplicates
-                // if there is the key, iterate through tileTypes
+                if (!line.contains("=")) continue; // skip invalid lines
+
+                String[] parts = line.split("="); // split into key-value, parts[0] is position (String) and parts[1] is the tileType or tileValue
+                if (parts.length != 2) continue; // ignore malformed lines
+
+                String position = parts[0];
+                String[] tileTypes = parts[1].split(","); // Handle multiple tile types (could contain key)
+
                 for (String tileType : tileTypes) {
-                    int tileValue = Integer.parseInt(tileType);
-                    if (tileValue != KEY)
-                        mapData.put(parts[0], tileValue);
-                    else { // get the key position
-                        Position position = stringToPosition(parts[0]);
-                        keyTilePosition = new Position(position.getTileX(), position.getTileY(), TILES);
-                    }
-                    Gdx.app.log("Tiles", "Parsed: " + parts[0] + " = " + tileType + "\tItems on this grid: " + tileTypes.length);
+                    processTile(position, tileType, mapData);
                 }
 
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Gdx.app.error("TileMapParser", String.valueOf(e));
         }
 
         return mapData;
+    }
+
+    /**
+     * Processes an individual tile and updates the map data.
+     *
+     * @param position   The position key of the tile.
+     * @param tileType   The tile value or type as a string.
+     * @param mapData    The map data to update.
+     */
+    private void processTile(String position, String tileType, ObjectMap<String, Integer> mapData) {
+        try {
+            int tileValue = Integer.parseInt(tileType);
+            if (tileValue != KEY) {
+                mapData.put(position, tileValue);
+            }
+            else { // Handle the key tile
+                Position parsedPosition = stringToPosition(position);
+                keyTilePosition = new Position(parsedPosition.getTileX(), parsedPosition.getTileY(), TILES);
+            }
+        } catch (NumberFormatException e) {
+            Gdx.app.error("TileMapParser", "Invalid tile value: " + tileType + " at position " + position, e);
+        }
     }
 
     private Position stringToPosition(String string) {
@@ -199,6 +218,11 @@ public class Tiles {
 
     public StaticTiledMapTile[] getTiles() {
         return tiles;
+    }
+
+
+    public Position getKeyTilePosition() {
+        return keyTilePosition;
     }
 
 }

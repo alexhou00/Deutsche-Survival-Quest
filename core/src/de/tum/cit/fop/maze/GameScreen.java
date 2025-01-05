@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
@@ -20,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static de.tum.cit.fop.maze.Constants.*;
+import static de.tum.cit.fop.maze.Position.PositionUnit.*;
 
 
 /**
@@ -85,15 +85,19 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // initialize game world elements
         tiles = new Tiles();
-        key = new Key(0,0, 16,16,14,14,100, 100);
 
-        TiledMap tiledMap = null;
+        TiledMap tiledMap;
         switch (game.getGameLevel()) {
             case 1 -> tiledMap = tiles.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
             case 2 -> tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
             default -> tiledMap = tiles.loadTiledMap("maps/level-1.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
         }
 
+        // Initialize the key. Only after we lod the tiled map, we can access the key's position
+        Position keyPosition = tiles.getKeyTilePosition().convertTo(PIXELS);
+        float keyX = keyPosition.getX();
+        float keyY = keyPosition.getY();
+        key = new Key(keyX, keyY, TILE_SIZE,TILE_SIZE,10,9,TILE_SCREEN_SIZE, TILE_SCREEN_SIZE);
         // After loading the tiles,
         // get the array of tiles from our tile generator: tiles.getTiles()
         // and then get the texture region where our key is at
@@ -213,11 +217,11 @@ public class GameScreen extends InputAdapter implements Screen {
      */
     private float getAngle(Position position) {
         if (position != null) {
-            if (position.getUnit() != Position.PositionUnit.PIXELS)
-                position = position.convertTo(Position.PositionUnit.PIXELS);
+            if (position.getUnit() != PIXELS)
+                position = position.convertTo(PIXELS);
             float x = position.getX();
             float y = position.getY();
-            // Calculate angle using arc tangent, adjusting for the coordinate system of LibGDX
+            // Calculate the angle using arc tangent, adjusting for the coordinate system of LibGDX
             float angle = (float) Math.toDegrees(Math.atan2(y - player.getY(), x - player.getX())); // atan2 is a useful version of atan;
             angle = (angle + 270) % 360; // rotate counter-clockwise by 90° and normalize to [0, 360)
             return angle;
@@ -295,12 +299,13 @@ public class GameScreen extends InputAdapter implements Screen {
             return;
         // else the key is not collected, render the key:
 
+        /* uncomment this when the key's position should be regularly updated. i.e., the key is dynamic
         //get our key position and render the key there
-        Position keyPosition = tiles.keyTilePosition;
+        Position keyPosition = tiles.getKeyTilePosition();
         // convert key's tile position to pixel coordinates for rendering
-        keyPosition = keyPosition.convertTo(Position.PositionUnit.PIXELS);
+        keyPosition = keyPosition.convertTo(PIXELS);
         key.setX(keyPosition.getX());
-        key.setY(keyPosition.getY());
+        key.setY(keyPosition.getY());*/
 
         game.getSpriteBatch().draw(
                 keyRegion,
