@@ -194,6 +194,18 @@ public class Player extends Character {
         return false; // No collision by default
     }
 
+    //for traps and enemies
+    public void loseLives(float damage){
+        lives -= damage;
+
+        if (lives <= 0){
+            System.out.println("GAME OVER!! You used all of your lives:'(");
+        }
+        else{
+            System.out.println("You got " + damage + " amount of damage!");
+        }
+    }
+
     // getters and setters
     public boolean hasKey() {
         return hasKey;
