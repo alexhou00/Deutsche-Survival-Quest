@@ -63,6 +63,7 @@ public class Collectibles {
         this.width = width;
     }
 
+
     public void setHeight(float height) {
         this.height = height;
     }

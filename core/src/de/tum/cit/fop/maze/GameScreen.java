@@ -42,6 +42,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final Player player;
     Tiles tiles; // Tile system for the map
+    Key key;
 
     private final OrthogonalTiledMapRenderer mapRenderer;
 
@@ -245,6 +246,18 @@ public class GameScreen extends InputAdapter implements Screen {
         float angle = getAngle();
         if (angle > 0) hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
     }
+
+    /*private void renderKey() {
+        game.getSpriteBatch().draw(
+                //game.getKeyTexture(),
+                key.getWorldX(),
+                key.getWorldX(),
+                key.getWidth(),
+                key.getHeight()
+        );
+    }*/
+
+
 
     /**
      * Renders the Heads-Up Display (HUD), including player stats and health.
