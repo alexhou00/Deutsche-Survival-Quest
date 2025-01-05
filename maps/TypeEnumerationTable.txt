@@ -1,0 +1,11 @@
+Value | Type
+-------------------
+0     | Ground
+1     | Entry point
+2~5   | Exit
+6     | Key
+10~29 | Wall
+30~39 | Trap (static)
+40~49 | Enemy (dynamic)
+50~59 | Speed Up (e.g., moving walkway)
+60~79 | Others (e.g. luggage conveyor belt)
