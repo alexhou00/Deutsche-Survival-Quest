@@ -1,5 +1,7 @@
 package de.tum.cit.fop.maze;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Key extends Collectibles {
@@ -11,7 +13,7 @@ public class Key extends Collectibles {
         this.isCollected = false;
     }
 
-    public boolean checkCollisionWithPlayer(Player player) {
+    public boolean collisionWithPlayer(Player player) {
         if (this.getHitbox().overlaps(player.getHitbox())) {
             return true;
         }
@@ -28,6 +30,18 @@ public class Key extends Collectibles {
 
     public boolean isCollected() {
         return isCollected;
+    }
+
+    public void renderTheKey(SpriteBatch spriteBatch, Texture keyTexture) {
+        if (!isCollected) {
+            spriteBatch.draw(
+                    keyTexture,
+                    getWorldX(),
+                    getWorldY(),
+                    getWidthOnScreen(),
+                    getHeightOnScreen()
+            );
+        }
     }
 
 

@@ -76,6 +76,15 @@ public class Collectibles {
         return hitbox.overlaps(player.hitbox);
     }
 
+
+    public float getWidthOnScreen() {
+        return width; // Or you can add a scaling factor if needed
+    }
+
+    public float getHeightOnScreen() {
+        return height; // Or a scaling factor if needed
+    }
+
     // if me make the object move
     public void hitboxPosition(){
         hitbox.setPosition(worldX, worldY);

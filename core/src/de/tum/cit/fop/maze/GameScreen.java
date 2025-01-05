@@ -50,6 +50,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final SpotlightEffect spotlightEffect;
 
+
+
     /**
      * Constructor for GameScreen. Sets up the camera and font.
      * This will be our main screen while playing the game. So it manages everything while gaming.
@@ -170,6 +172,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
         game.checkExitToNextLevel(player);
 
+
+
         game.getSpriteBatch().begin();
 
         renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
@@ -247,17 +251,11 @@ public class GameScreen extends InputAdapter implements Screen {
         if (angle > 0) hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
     }
 
-    /*private void renderKey() {
-        game.getSpriteBatch().draw(
-                //game.getKeyTexture(),
-                key.getWorldX(),
-                key.getWorldX(),
-                key.getWidth(),
-                key.getHeight()
-        );
-    }*/
-
-
+    public void renderKey() {
+        game.getSpriteBatch().begin();
+        renderKey();
+        game.getSpriteBatch().end();
+    }
 
     /**
      * Renders the Heads-Up Display (HUD), including player stats and health.
@@ -425,5 +423,10 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
     // Additional methods and logic can be added as needed for the game screen
+    public void collectingTheKey(float delta) {
+        if (key.collisionWithPlayer(player)) {
+            key.collect();
+        }
+    }
 
 }
