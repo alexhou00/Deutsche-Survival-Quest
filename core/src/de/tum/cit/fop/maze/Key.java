@@ -14,10 +14,7 @@ public class Key extends GameObject {
     }
 
     public boolean collisionWithPlayer(Player player) {
-        if (this.getHitbox().overlaps(player.getHitbox())) {
-            return true;
-        }
-        return false;
+        return this.getHitbox().overlaps(player.getHitbox());
     }
 
     public void collect() {
@@ -30,6 +27,10 @@ public class Key extends GameObject {
 
     public boolean isCollected() {
         return isCollected;
+    }
+
+    public void setCollected(boolean collected) {
+        isCollected = collected;
     }
 
     public void renderTheKey(SpriteBatch spriteBatch, Texture keyTexture) {

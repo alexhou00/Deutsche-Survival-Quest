@@ -183,10 +183,11 @@ public class MazeRunnerGame extends Game {
 
 
     public void checkExitToNextLevel(Player player) {
-        if (player.isTouchingTile("isExit")){
+        if (player.isTouchingTile("isExit") && gameScreen.key.isCollected()){
             gameLevel += 1;
             gameScreen.dispose();
             gameScreen = new GameScreen(this);
+            gameScreen.key.setCollected(false);
             this.setScreen(gameScreen);
         }
     }

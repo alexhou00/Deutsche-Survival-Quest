@@ -257,6 +257,7 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void renderKey() {
+        if (key.isCollected()) return;
         //game.getSpriteBatch().begin();
         StaticTiledMapTile[] tiles_ = tiles.getTiles();
         TextureRegion keyRegion = tiles_[Tiles.KEY].getTextureRegion();
@@ -272,6 +273,10 @@ public class GameScreen extends InputAdapter implements Screen {
                 (int) key.getHeightOnScreen()
         ); // width and height are size on the screen
         Gdx.app.log("Key", "key.getWidthOnScreen(): " + key.getWidthOnScreen());
+
+        if (key.isTouching(player)){
+            key.collect();
+        }
         //game.getSpriteBatch().end();
     }
 

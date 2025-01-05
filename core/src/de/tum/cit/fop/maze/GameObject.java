@@ -100,6 +100,10 @@ public abstract class GameObject {
         return this.getHitbox().overlaps(other.getHitbox());
     }
 
+    public boolean isTouching(Character other) {
+        return this.getHitbox().overlaps(other.getHitbox());
+    }
+
     public float getHitboxWidth() {
         return hitboxWidth;
     }
