@@ -3,12 +3,13 @@ package de.tum.cit.fop.maze;
 import com.badlogic.gdx.math.Rectangle;
 
 /**
- * Represents a generic character in the maze game, such as our player or any moving enemy. <br>
+ * Represents a DYNAMIC character in the maze game, such as our player or any moving enemy. <br>
  * This class provides basic properties and behaviors for characters,
  * such as position, velocity, dimensions, and lifecycle methods.
  * It is intended to be extended by specific character.
  */
 public abstract class Character {
+    // TODO: make it extend GameObject
     protected float lives;
     /** velX and velY stand for velocity X and velocity Y, resp.
      * velocities are horizontal/vertical components of the speed vector

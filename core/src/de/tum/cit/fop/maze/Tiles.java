@@ -17,8 +17,11 @@ import java.util.List;
 import static de.tum.cit.fop.maze.Constants.*;
 import static de.tum.cit.fop.maze.Position.PositionUnit.*;
 
+/** this is like a TilesManager */
 public class Tiles {
-
+    /* TODO: add Entrance entrance and Exit exit so that we can access something like tiles.entrance.position.getX()
+    *   and they should extend the GameObject (Or Tile? Or Cell?)
+    */
     public TiledMapTileLayer layer;
     /** Coordinates of the entrance tile in world coordinates. */
     public Position entrancePosition;
@@ -91,7 +94,6 @@ public class Tiles {
                     tiles[index].getProperties().put("isKey", true);
                 }
             }
-
         }
 
         // Parse properties file
