@@ -44,4 +44,5 @@ public class Key extends Collectibles {
         }
     }
 
+
 }

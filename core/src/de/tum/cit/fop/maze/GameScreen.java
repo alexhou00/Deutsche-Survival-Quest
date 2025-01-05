@@ -428,4 +428,5 @@ public class GameScreen extends InputAdapter implements Screen {
             key.collect();
         }
     }
+
 }

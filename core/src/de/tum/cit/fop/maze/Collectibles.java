@@ -89,6 +89,7 @@ public class Collectibles {
     public void hitboxPosition(){
         hitbox.setPosition(worldX, worldY);
     }
+
 }
 
 
