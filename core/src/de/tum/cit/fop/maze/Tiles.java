@@ -25,8 +25,10 @@ public class Tiles {
     public Position entranceTilePosition;
     /** List of positions of the exit tiles in world coordinates. (there might be more than one exit) */
     public List<Position> exitPositions;
+    public Position keyTilePosition;
 
     public static final int WALL = 1;
+    public static final int KEY = 6;
     public static final int ENTRANCE = 13;
     public static final int EXIT = 21;
 
@@ -37,6 +39,7 @@ public class Tiles {
         entrancePosition = new Position(0, 0, PIXELS); // null; // PIXELS
         entranceTilePosition = new Position(0, 0, TILES); // null; // TILES
         exitPositions = new ArrayList<>();
+        keyTilePosition = new Position(0, 0, TILES);
     }
 
     /**
@@ -81,7 +84,12 @@ public class Tiles {
                 }
 
                 if (index == EXIT){
-                    tiles[index].getProperties().put("isExit", true);}
+                    tiles[index].getProperties().put("isExit", true);
+                }
+
+                if (index == KEY) {
+                    tiles[index].getProperties().put("isKey", true);
+                }
             }
 
         }
@@ -101,18 +109,23 @@ public class Tiles {
                 int y = Integer.parseInt(parts[1]);
                 int tileValue = mapData.get(key);
 
-                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                cell.setTile(tiles[tileValue]);
-                layer.setCell(x, y, cell);
+                if (tileValue != KEY) {
+                    TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+                    cell.setTile(tiles[tileValue]);
+                    layer.setCell(x, y, cell);
 
-                // Set entrance and exit positions when the entrances and exits are met
-                if (tileValue == ENTRANCE){ // Tile 13: Entrance
-                    entranceTilePosition = new Position(x, y, TILES);
-                    entrancePosition = entranceTilePosition.convertTo(PIXELS);
+                    // Set entrance and exit positions when the entrances and exits are met
+                    if (tileValue == ENTRANCE){ // Tile 13: Entrance
+                        entranceTilePosition = new Position(x, y, TILES);
+                        entrancePosition = entranceTilePosition.convertTo(PIXELS);
+                    }
+                    if (tileValue == EXIT){ // Tile 20: Exit
+                        Position exitPosition = new Position(x, y, TILES).convertTo(PIXELS);
+                        exitPositions.add(exitPosition);
+                    }
                 }
-                if (tileValue == EXIT){ // Tile 20: Exit
-                    Position exitPosition = new Position(x, y, TILES).convertTo(PIXELS);
-                    exitPositions.add(exitPosition);
+                else{ // tile is KEY -> record the location.
+                    keyTilePosition = new Position(x, y, TILES);
                 }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
