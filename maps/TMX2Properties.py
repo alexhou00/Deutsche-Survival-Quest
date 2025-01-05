@@ -7,13 +7,19 @@ def xml_to_properties(xml_file, properties_file):
     tree = ET.parse(xml_file)
     root = tree.getroot()
 
+    tilesets = root.findall("tileset")
+    IDs = []
+    for tileset in tilesets:
+        IDs.append(int(tileset.attrib.get("firstgid")))
+    IDs.sort() # Sort the IDs to ensure proper ordering
+    
     # Extract the data from the <data> tag in the <layer>
     layer = root.find("layer")
     data = layer.find("data").text.strip()
 
     # Get map dimensions
-    width = int(root.get("width"))
-    height = int(root.get("height"))
+    # width = int(root.get("width"))
+    # height = int(root.get("height"))
 
     # Parse CSV data
     rows = data.split("\n")
@@ -25,8 +31,10 @@ def xml_to_properties(xml_file, properties_file):
         for x, tile in enumerate(tiles):
             if tile != '':
                 tile_value = int(tile)
+                base_id = max([id_ for id_ in IDs if id_ <= tile_value], default=0)
+                index = tile_value - base_id + 1
                 if tile_value != 0:  # Only include non-zero tiles
-                    properties_lines.append(f"{x},{y}={tile_value-1}")  # minus one since our .properties file is 0-based
+                    properties_lines.append(f"{x},{y}={index-1}")  # minus one since our .properties file is 0-based
 
     # Write to .properties file
     with open(properties_file, "w") as f:
