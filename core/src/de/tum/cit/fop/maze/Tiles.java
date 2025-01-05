@@ -153,8 +153,12 @@ public class Tiles {
             while ((line = reader.readLine()) != null) {
                 if (!line.contains("=")) continue;
                 String[] parts = line.split("=");
-                mapData.put(parts[0], Integer.parseInt(parts[1]));
-                Gdx.app.log("Tiles", "Parsed: " + parts[0] + " = " + parts[1]);
+                String[] tileTypes = parts[1].split(",");
+                for (String tileType : tileTypes) {
+                    mapData.put(parts[0], Integer.parseInt(tileType));
+                    Gdx.app.log("Tiles", "Parsed: " + parts[0] + " = " + tileType + "\tItems on this grid: " + tileTypes.length);
+                }
+
             }
         } catch (IOException e) {
             e.printStackTrace();
