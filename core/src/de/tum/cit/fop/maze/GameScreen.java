@@ -443,7 +443,7 @@ public class GameScreen extends InputAdapter implements Screen {
     // Additional methods and logic can be added as needed for the game screen
     public void collectingTheKey(float delta) {
         if (key.collisionWithPlayer(player)) {
-            key.collect();
+            key.collect(player);
         }
     }
 }

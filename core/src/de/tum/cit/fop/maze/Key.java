@@ -20,9 +20,8 @@ public class Key extends GameObject {
         return false;
     }
 
-    public void collect() {
-        //to prevent multiple collections
-        if (!isCollected) {
+    public void collect(Player player) {
+        if (!isCollected && this.getHitbox().overlaps(player.getHitbox())) {
             isCollected = true;
             System.out.println("Key collected!");
         }
