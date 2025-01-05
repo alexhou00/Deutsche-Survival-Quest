@@ -79,7 +79,7 @@ public class Tiles {
                 */
 
                 // the "collidable" property for specific tiles (e.g., Walls, Traps)
-                if (index == WALL) { // Tile 0: Wall
+                if (index == WALL) { // Tile 0: Wall // TODO: Wall is actually a list of walls
                     tiles[index].getProperties().put("collidable", true);
                 } else if (index == 3) { // Tile 3: Trap
                     tiles[index].getProperties().put("collidable", true);

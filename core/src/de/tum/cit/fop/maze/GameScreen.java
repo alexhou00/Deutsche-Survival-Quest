@@ -45,6 +45,7 @@ public class GameScreen extends InputAdapter implements Screen {
     private final Player player;
     Tiles tiles; // Tile system for the map
     Key key;
+    TextureRegion keyRegion;
 
     private final OrthogonalTiledMapRenderer mapRenderer;
 
@@ -82,7 +83,7 @@ public class GameScreen extends InputAdapter implements Screen {
         game.setMuted(false);
         shapeRenderer = new ShapeRenderer();
 
-        // Load tiled map
+        // initialize game world elements
         tiles = new Tiles();
         key = new Key(0,0, 16,16,14,14,100, 100);
 
@@ -93,10 +94,20 @@ public class GameScreen extends InputAdapter implements Screen {
             default -> tiledMap = tiles.loadTiledMap("maps/level-1.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
         }
 
+        // After loading the tiles,
+        // get the array of tiles from our tile generator: tiles.getTiles()
+        // and then get the texture region where our key is at
+        keyRegion = tiles.getTiles()[Tiles.KEY].getTextureRegion();
+
         // Set up map renderer
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many
 
-        player = new Player(tiles.entranceTilePosition.getTileX(), tiles.entranceTilePosition.getTileY(), 16, 32, 12, 19, 64f, 128f, 6.5f, false, tiles.layer);
+        // initialize player at entrance position
+        player = new Player(
+                tiles.entranceTilePosition.getTileX(),
+                tiles.entranceTilePosition.getTileY(),
+                16, 32, 12, 19, 64f, 128f, 6.5f,
+                tiles.layer);
 
         spotlightEffect = new SpotlightEffect();
 
@@ -193,21 +204,28 @@ public class GameScreen extends InputAdapter implements Screen {
         renderHUD();
     }
 
-    private float getAngle() {
-        Position exitPosition = null;
-        if (!tiles.exitPositions.isEmpty()) exitPosition = tiles.exitPositions.get(0); // TODO: (future) if there are multiple exit, create a function that finds the closest one
-        if (exitPosition != null) {
-            float exitX = exitPosition.getX();
-            float exitY = exitPosition.getY();
-            float angle = (float) Math.toDegrees(Math.atan2(exitY - player.getY(), exitX - player.getX())); // atan2 is a useful version of atan;
-            angle = (angle + 270) % 360; // rotate counter-clockwise by 90 deg to fit the system of LibGDX and ensure the angle is within [0, 360)
+    /**
+     * Calculates the angle between the player and a target position.
+     * Used for directing the arrow towards something like, for example, the exit(s)
+     *
+     * @param position The target position to calculate an angle to
+     * @return The angle in degrees, or -1 if position is null
+     */
+    private float getAngle(Position position) {
+        if (position != null) {
+            float x = position.getX();
+            float y = position.getY();
+            // Calculate angle using arc tangent, adjusting for the coordinate system of LibGDX
+            float angle = (float) Math.toDegrees(Math.atan2(y - player.getY(), x - player.getX())); // atan2 is a useful version of atan;
+            angle = (angle + 270) % 360; // rotate counter-clockwise by 90° and normalize to [0, 360)
             return angle;
         }
-        return -1;
+        return -1; // position not found
     }
 
     /**
      * Renders the game world, including the map and background.
+     * Must be called between SpriteBatch begin() and end().
      */
     private void renderGameWorld(){
         // Set up and begin drawing with the sprite batch
@@ -252,32 +270,49 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private void renderArrow(){
         // Draw arrow that points at the exit
-        float angle = getAngle();
+        Position exitPosition = null;
+        if (!tiles.exitPositions.isEmpty())
+            exitPosition = tiles.exitPositions.get(0); // TODO: (future) if there are multiple exit, create a function that finds the nearest one
+
+        float angle = getAngle(exitPosition);
+        
         if (angle > 0) hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
     }
 
+    /**
+     * Renders the collectible key in the game world if it hasn't been collected.
+     * The key is rendered at its designated position on the map and checks for
+     * collision with the player. If a collision occurs, the key is marked as collected
+     * and will no longer be rendered.
+     * <p>
+     * The key's position is converted from tile coordinates to pixel coordinates
+     * before rendering to ensure proper placement in the game world.
+     */
     public void renderKey() {
-        if (key.isCollected()) return;
-        //game.getSpriteBatch().begin();
-        StaticTiledMapTile[] tiles_ = tiles.getTiles();
-        TextureRegion keyRegion = tiles_[Tiles.KEY].getTextureRegion();
+        if (key.isCollected())
+            return;
+        // else the key is not collected, render the key:
+
+        //get our key position and render the key there
         Position keyPosition = tiles.keyTilePosition;
+        // convert key's tile position to pixel coordinates for rendering
         keyPosition = keyPosition.convertTo(Position.PositionUnit.PIXELS);
         key.setX(keyPosition.getX());
         key.setY(keyPosition.getY());
+
         game.getSpriteBatch().draw(
                 keyRegion,
                 key.getOriginX(),
                 key.getOriginY(),
-                (int) key.getWidthOnScreen(),
-                (int) key.getHeightOnScreen()
+                key.getWidthOnScreen(),
+                key.getHeightOnScreen()
         ); // width and height are size on the screen
-        Gdx.app.log("Key", "key.getWidthOnScreen(): " + key.getWidthOnScreen());
+        // Gdx.app.log("Key", "key.getWidthOnScreen(): " + key.getWidthOnScreen());
 
+        // check for collision with player and collect key if touching
         if (key.isTouching(player)){
-            key.collect(player);
+            key.collect();
         }
-        //game.getSpriteBatch().end();
     }
 
     /**
@@ -387,6 +422,13 @@ public class GameScreen extends InputAdapter implements Screen {
         return new Position(screenX, screenY);
     }
 
+    /**
+     * Handles the resizing of the game window. Will be automatically called once the window is being resized by user.
+     * Updates both the main game camera and HUD camera to maintain proper rendering proportions when the window size changes.
+     *
+     * @param width The new width of the game window in pixels
+     * @param height The new height of the game window in pixels
+     */
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false);
@@ -448,7 +490,7 @@ public class GameScreen extends InputAdapter implements Screen {
     // Additional methods and logic can be added as needed for the game screen
     public void collectingTheKey(float delta) {
         if (key.collisionWithPlayer(player)) {
-            key.collect(player);
+            key.collect();
         }
     }
 }

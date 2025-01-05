@@ -14,7 +14,7 @@ import static java.lang.Math.abs;
 public class Player extends Character {
     private boolean hasKey;
     private boolean isMoving;
-    private TiledMapTileLayer collisionLayer;
+    private final TiledMapTileLayer collisionLayer;
     float targetVelX, targetVelY;
     int lastHorizontalDirection = 0, lastVerticalDirection = 0;
 
@@ -37,12 +37,11 @@ public class Player extends Character {
      * @param widthOnScreen     the actual size of the sprite (frame) drawn on the screen
      * @param heightOnScreen    the actual size of the sprite on the screen
      * @param lives             Number of lives the player starts with.
-     * @param hasKey            Whether the player starts with the key.
      * @param collisionLayer    The layer used for collision detection.
      */
-    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, boolean hasKey, TiledMapTileLayer collisionLayer) {
+    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, TiledMapTileLayer collisionLayer) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
-        this.hasKey = hasKey;
+        this.hasKey = false;
         this.isMoving = false;
         // this.speed = BASE_SPEED; // normal speed when moving either vertically or horizontally
         this.collisionLayer = collisionLayer;
@@ -148,7 +147,10 @@ public class Player extends Character {
                 !pointIsTouchingTileAt(x, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, property);
     }
 
-    /** the center of the player is touching tile that has the property */
+    /**
+     * the "CENTER" of the player is touching the tile that has a specified property
+     * @param property The tile's property to be checked
+     */
     public boolean isTouchingTile(String property){
         return pointIsTouchingTileAt(x, y, 0, 0, property);
     }
@@ -156,32 +158,33 @@ public class Player extends Character {
     /**
      * Checks if a specific corner of the player's hitbox is touching a collidable tile.
      *
-     * @param x       The world x-coordinate to check
-     * @param y       The world y-coordinate to check
-     * @param offsetX The x offset for the corner (offset from the center to the left or right)
-     * @param offsetY The y offset for the corner (offset from the center to the top or bottom)
+     * @param x        The world x-coordinate to check
+     * @param y        The world y-coordinate to check
+     * @param offsetX  The x offset for the corner (offset from the center to the left or right)
+     * @param offsetY  The y offset for the corner (offset from the center to the top or bottom)
+     * @param property The tile's property to be checked
      * @return True if the corner is not touching a collidable tile, false otherwise
      */
     private boolean pointIsTouchingTileAt(float x, float y, float offsetX, float offsetY, String property) {
         int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
         int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
-        return isColliding(tileX, tileY, offsetX>0, offsetY>0, property);
+        return isTouchingTile(tileX, tileY, offsetX>0, offsetY>0, property);
     }
 
     /**
-     * Checks if a specific tile is collidable.
+     * Checks if a specific tile has a property (e.g., is collidable) or not
      *
      * @param tileX  The x-coordinate (in tiles) of the tile.
      * @param tileY  The y-coordinate (in tiles) of the tile.
      * @param isRight True if checking the right side of the player's hitbox, false if checking the left side.
      * @param isUp    True if checking the upper side of the player's hitbox, false if checking the lower side.
-     * @return True if the tile is collidable, false otherwise.
+     * @return True if the tile has that specified property (e.g., collidable), false otherwise.
      */
-    public boolean isColliding(int tileX, int tileY, boolean isRight, boolean isUp, String property) {
+    public boolean isTouchingTile(int tileX, int tileY, boolean isRight, boolean isUp, String property) {
         // Get the cell at the specified tile position
         TiledMapTileLayer.Cell cell = collisionLayer.getCell(tileX, tileY);
 
-        // Check if the cell exists and if it has the "collidable" property (like walls)
+        // Check if the cell exists and if it has the property (like "collidable" for walls)
         if (cell != null && cell.getTile() != null) {
             Object propertyToCheck = cell.getTile().getProperties().get(property);
             if (propertyToCheck != null && propertyToCheck.equals(true)) {
@@ -210,6 +213,7 @@ public class Player extends Character {
     public boolean hasKey() {
         return hasKey;
     }
+
     public void setHasKey(boolean hasKey) {
         this.hasKey = hasKey;
     }
