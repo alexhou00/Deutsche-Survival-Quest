@@ -2,7 +2,7 @@ package de.tum.cit.fop.maze;
 
 import com.badlogic.gdx.math.Rectangle;
 
-/*public class Object {
+public class Collectibles {
 
     protected String name;
     protected int worldX, worldY;
@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
     protected float width, height;
     protected Rectangle hitbox;
 
-    public Object(String name, int worldX, int worldY, boolean collision, float width, float height, Rectangle hitbox) {
+    public Collectibles(String name, int worldX, int worldY, boolean collision, float width, float height, Rectangle hitbox) {
         this.name = name;
         this.worldX = worldX;
         this.worldY = worldY;
@@ -79,6 +79,6 @@ import com.badlogic.gdx.math.Rectangle;
     public void hitboxPosition(){
         hitbox.setPosition(worldX, worldY);
     }
-}*/
+}
 
 

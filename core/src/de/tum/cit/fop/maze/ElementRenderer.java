@@ -12,7 +12,7 @@ import static de.tum.cit.fop.maze.Constants.MAX_PLAYER_LIVES;
  * The ObjectRenderer class handles rendering of static or reusable game objects
  * such as hearts for the HUD or the arrow that points at the exit.
  */
-public class ObjectRenderer {
+public class ElementRenderer {
 
     private final Texture texture;
     private final TextureRegion fullHeartRegion, threeQuartersHeartRegion, halfHeartRegion, oneQuarterHeartRegion, emptyHeartRegion;
@@ -20,7 +20,7 @@ public class ObjectRenderer {
 
     private final Sprite arrow;
 
-    public ObjectRenderer(String texturePath) {
+    public ElementRenderer(String texturePath) {
         // Load the texture and create a region for the heart
         texture = new Texture(Gdx.files.internal(texturePath));
 

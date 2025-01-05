@@ -46,7 +46,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final OrthogonalTiledMapRenderer mapRenderer;
 
-    private final ObjectRenderer hudObjectRenderer; // Hearts and other objects on the HUD
+    private final ElementRenderer hudObjectRenderer; // Hearts and other objects on the HUD
 
     private final SpotlightEffect spotlightEffect;
 
@@ -70,7 +70,7 @@ public class GameScreen extends InputAdapter implements Screen {
         hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         // Load textures for HUD
-        hudObjectRenderer = new ObjectRenderer("objects.png");
+        hudObjectRenderer = new ElementRenderer("objects.png");
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
