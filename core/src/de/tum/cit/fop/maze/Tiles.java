@@ -13,6 +13,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static de.tum.cit.fop.maze.Constants.*;
 import static de.tum.cit.fop.maze.Position.PositionUnit.*;
@@ -23,16 +26,25 @@ public class Tiles {
     *   and they should extend the GameObject (Or Tile? Or Cell?)
     */
     public TiledMapTileLayer layer;
-    /** Coordinates of the entrance tile in world coordinates. */
-    public Position entrancePosition;
-    public Position entranceTilePosition;
+
+    //public Position entrancePosition;
+    //public Position entranceTilePosition;
     /** List of positions of the exit tiles in world coordinates. (there might be more than one exit) */
-    public List<Position> exitPositions;
+    //public List<Position> exitPositions;
     public Position keyTilePosition;
+
+    /** entrance tile, coordinates of the tile can be accessed through this */
+    public Entrance entrance;
+    /** exit tile, coordinates of the tile can be accessed through this */
+    public Exit exit;
 
     private StaticTiledMapTile[] tiles;
 
-    public static final int WALL = 11;
+    // Create an immutable Set of integers representing wall
+    // IntStream.concat(IntStream.rangeClosed(10, 29),IntStream.rangeClosed(64, 66)) in case i want to concat two sections in the future
+    private static final Set<Integer> WALLS = IntStream.rangeClosed(10, 29)
+            .boxed()
+            .collect(Collectors.toSet());
     public static final int KEY = 6;
     public static final int ENTRANCE = 1;
     public static final int EXIT = 2;
@@ -41,9 +53,9 @@ public class Tiles {
      * Constructor: initializes the Tiles object with default values.
      */
     public Tiles() {
-        entrancePosition = new Position(0, 0, PIXELS); // null; // PIXELS
-        entranceTilePosition = new Position(0, 0, TILES); // null; // TILES
-        exitPositions = new ArrayList<>();
+        //entrancePosition = new Position(0, 0, PIXELS); // null; // PIXELS
+        //entranceTilePosition = new Position(0, 0, TILES); // null; // TILES
+        //exitPositions = new ArrayList<>();
         keyTilePosition = new Position(0, 0, TILES);
     }
 
@@ -66,7 +78,26 @@ public class Tiles {
         for (int y = 0; y < tileRows; y++) {
             for (int x = 0; x < tileCols; x++) {
                 int index = y * tileCols + x;
-                tiles[index] = new StaticTiledMapTile(new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE));
+                TextureRegion tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+                if (WALLS.contains(index)){
+                    tiles[index] = new StaticTiledMapTile(tileRegion);
+                    tiles[index].getProperties().put("collidable", true);
+                }
+                else if (index == ENTRANCE){
+                    entrance = new Entrance(tileRegion);
+                    tiles[index] = entrance;
+                    tiles[index].getProperties().put("isEntrance", true); // TODO: need to change this later maybe? not that many boolean values...
+                }
+                else if (index == EXIT){
+                    exit = new Exit(tileRegion);
+                    tiles[index] = exit;
+                    tiles[index].getProperties().put("isExit", true);
+                }
+                else {
+                    tiles[index] = new StaticTiledMapTile(tileRegion);
+                }
+
 
                 /* this is for replacing the code below to avoid a long chain of else-if conditions
                 // outside the loop
@@ -77,27 +108,10 @@ public class Tiles {
                     boolean isCollidable = collidableTiles.contains(index);
                     tiles[index].getProperties().put("collidable", isCollidable);
                 */
-
-                // the "collidable" property for specific tiles (e.g., Walls, Traps)
-                if (index == WALL) { // Tile 0: Wall // TODO: Wall is actually a list of walls
-                    tiles[index].getProperties().put("collidable", true);
-                } else if (index == 3) { // Tile 3: Trap
-                    tiles[index].getProperties().put("collidable", true);
-                } else {
-                    tiles[index].getProperties().put("collidable", false);
-                }
-
-                if (index == EXIT){
-                    tiles[index].getProperties().put("isExit", true);
-                }
-
-                if (index == KEY) {
-                    tiles[index].getProperties().put("isKey", true);
-                }
             }
         }
 
-        // Parse properties file
+        // Parse ".properties" file
         ObjectMap<String, Integer> mapData = parsePropertiesFile(mapFilePath);
 
         // Create a TiledMap
@@ -113,17 +127,21 @@ public class Tiles {
                 int tileValue = mapData.get(key);
 
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                cell.setTile(tiles[tileValue]);
+                StaticTiledMapTile tile = tiles[tileValue];
+                cell.setTile(tile);
                 layer.setCell(x, y, cell);
 
                 // Set entrance and exit positions when the entrances and exits are met
-                if (tileValue == ENTRANCE){ // Tile 13: Entrance
-                    entranceTilePosition = new Position(x, y, TILES);
-                    entrancePosition = entranceTilePosition.convertTo(PIXELS);
+                if (tile instanceof Entrance){ // Tile 13: Entrance
+                    entrance.setTilePosition(new Position(x, y, TILES));
+                    //entranceTilePosition = new Position(x, y, TILES);
+                    //entrancePosition = entranceTilePosition.convertTo(PIXELS);
                 }
-                if (tileValue == EXIT){ // Tile 20: Exit
-                    Position exitPosition = new Position(x, y, TILES).convertTo(PIXELS);
-                    exitPositions.add(exitPosition);
+                if (tile instanceof Exit){ // Tile 20: Exit
+                    //Position exitPosition = new Position(x, y, TILES).convertTo(PIXELS);
+                    //exitPositions.add(exitPosition);
+                    exit.addTilePosition(new Position(x, y, TILES));
+                    Gdx.app.log("Exit", "exit found at: " + x + ", " + y);
                 }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -133,7 +151,7 @@ public class Tiles {
 
         map.getLayers().add(layer);
         Gdx.app.log("Tiles", "Tiled Map loaded");
-        Gdx.app.log("Tiles", "entrance position: " + entrancePosition);
+        Gdx.app.log("Tiles", "entrance position: " + entrance.getTilePosition());
         return map;
     }
 

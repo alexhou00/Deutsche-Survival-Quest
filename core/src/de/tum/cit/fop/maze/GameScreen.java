@@ -104,8 +104,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // initialize player at entrance position
         player = new Player(
-                tiles.entranceTilePosition.getTileX(),
-                tiles.entranceTilePosition.getTileY(),
+                tiles.entrance.getTileX(),
+                tiles.entrance.getTileY(),
                 16, 32, 12, 19, 64f, 128f, 6.5f,
                 tiles.layer);
 
@@ -213,6 +213,8 @@ public class GameScreen extends InputAdapter implements Screen {
      */
     private float getAngle(Position position) {
         if (position != null) {
+            if (position.getUnit() != Position.PositionUnit.PIXELS)
+                position = position.convertTo(Position.PositionUnit.PIXELS);
             float x = position.getX();
             float y = position.getY();
             // Calculate angle using arc tangent, adjusting for the coordinate system of LibGDX
@@ -271,8 +273,8 @@ public class GameScreen extends InputAdapter implements Screen {
     private void renderArrow(){
         // Draw arrow that points at the exit
         Position exitPosition = null;
-        if (!tiles.exitPositions.isEmpty())
-            exitPosition = tiles.exitPositions.get(0); // TODO: (future) if there are multiple exit, create a function that finds the nearest one
+        if (!tiles.exit.getTilePositions().isEmpty())
+            exitPosition = tiles.exit.getTilePosition(0); // TODO: (future) if there are multiple exit, create a function that finds the nearest one
 
         float angle = getAngle(exitPosition);
         
