@@ -104,28 +104,23 @@ public class Tiles {
         // Populate the layer with tiles
         try{
             for (String key : mapData.keys()) {
-                String[] parts = key.split(",");
-                int x = Integer.parseInt(parts[0]);
-                int y = Integer.parseInt(parts[1]);
+                Position position = stringToPosition(key);
+                int x = position.getTileX();
+                int y = position.getTileY();
                 int tileValue = mapData.get(key);
 
-                if (tileValue != KEY) {
-                    TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                    cell.setTile(tiles[tileValue]);
-                    layer.setCell(x, y, cell);
+                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+                cell.setTile(tiles[tileValue]);
+                layer.setCell(x, y, cell);
 
-                    // Set entrance and exit positions when the entrances and exits are met
-                    if (tileValue == ENTRANCE){ // Tile 13: Entrance
-                        entranceTilePosition = new Position(x, y, TILES);
-                        entrancePosition = entranceTilePosition.convertTo(PIXELS);
-                    }
-                    if (tileValue == EXIT){ // Tile 20: Exit
-                        Position exitPosition = new Position(x, y, TILES).convertTo(PIXELS);
-                        exitPositions.add(exitPosition);
-                    }
+                // Set entrance and exit positions when the entrances and exits are met
+                if (tileValue == ENTRANCE){ // Tile 13: Entrance
+                    entranceTilePosition = new Position(x, y, TILES);
+                    entrancePosition = entranceTilePosition.convertTo(PIXELS);
                 }
-                else{ // tile is KEY -> record the location.
-                    keyTilePosition = new Position(x, y, TILES);
+                if (tileValue == EXIT){ // Tile 20: Exit
+                    Position exitPosition = new Position(x, y, TILES).convertTo(PIXELS);
+                    exitPositions.add(exitPosition);
                 }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -151,11 +146,18 @@ public class Tiles {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                if (!line.contains("=")) continue;
-                String[] parts = line.split("=");
-                String[] tileTypes = parts[1].split(",");
+                if (!line.contains("=")) continue; // ignore this line
+                String[] parts = line.split("="); // split, parts[0] is position (String) and parts[1] is the tileType or tileValue
+                String[] tileTypes = parts[1].split(","); // could contain key so a grid might have duplicates
+                // if there is the key, iterate through tileTypes
                 for (String tileType : tileTypes) {
-                    mapData.put(parts[0], Integer.parseInt(tileType));
+                    int tileValue = Integer.parseInt(tileType);
+                    if (tileValue != KEY)
+                        mapData.put(parts[0], tileValue);
+                    else { // get the key position
+                        Position position = stringToPosition(parts[0]);
+                        keyTilePosition = new Position(position.getTileX(), position.getTileY(), TILES);
+                    }
                     Gdx.app.log("Tiles", "Parsed: " + parts[0] + " = " + tileType + "\tItems on this grid: " + tileTypes.length);
                 }
 
@@ -167,4 +169,10 @@ public class Tiles {
         return mapData;
     }
 
+    private Position stringToPosition(String string) {
+        String[] parts = string.split(",");
+        int x = Integer.parseInt(parts[0]);
+        int y = Integer.parseInt(parts[1]);
+        return new Position(x, y, TILES);
+    }
 }
