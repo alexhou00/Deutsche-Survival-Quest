@@ -275,7 +275,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.app.log("Key", "key.getWidthOnScreen(): " + key.getWidthOnScreen());
 
         if (key.isTouching(player)){
-            key.collect();
+            key.collect(player);
         }
         //game.getSpriteBatch().end();
     }
