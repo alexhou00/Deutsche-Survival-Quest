@@ -85,7 +85,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         TiledMap tiledMap = null;
         switch (game.getGameLevel()) {
-            case 1 -> tiledMap = tiles.loadTiledMap("maps/level 1 map.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
+            case 1 -> tiledMap = tiles.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
             case 2 -> tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
             default -> tiledMap = tiles.loadTiledMap("maps/level-1.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
         }

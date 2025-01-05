@@ -30,10 +30,10 @@ public class Tiles {
     public List<Position> exitPositions;
     public Position keyTilePosition;
 
-    public static final int WALL = 1;
+    public static final int WALL = 11;
     public static final int KEY = 6;
-    public static final int ENTRANCE = 13;
-    public static final int EXIT = 21;
+    public static final int ENTRANCE = 1;
+    public static final int EXIT = 2;
 
     /**
      * Constructor: initializes the Tiles object with default values.
