@@ -118,11 +118,11 @@ public abstract class GameObject {
 
 
     public float getWidthOnScreen() {
-        return width; // Or you can add a scaling factor if needed
+        return widthOnScreen;
     }
 
     public float getHeightOnScreen() {
-        return height; // Or a scaling factor if needed
+        return heightOnScreen;
     }
 
     public void setWidthOnScreen(float setWidthOnScreen) {

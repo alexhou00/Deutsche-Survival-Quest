@@ -30,6 +30,8 @@ public class Tiles {
     public List<Position> exitPositions;
     public Position keyTilePosition;
 
+    private StaticTiledMapTile[] tiles;
+
     public static final int WALL = 11;
     public static final int KEY = 6;
     public static final int ENTRANCE = 1;
@@ -59,9 +61,8 @@ public class Tiles {
         var tileSheet = new Texture(tileSheetPath);
         int tileCols = tileSheet.getWidth() / TILE_SIZE;
         int tileRows = tileSheet.getHeight() / TILE_SIZE;
-
+        tiles = new StaticTiledMapTile[tileCols * tileRows];
         // Create tiles based on the tile sheet
-        StaticTiledMapTile[] tiles = new StaticTiledMapTile[tileCols * tileRows];
         for (int y = 0; y < tileRows; y++) {
             for (int x = 0; x < tileCols; x++) {
                 int index = y * tileCols + x;
@@ -177,4 +178,9 @@ public class Tiles {
         int y = Integer.parseInt(parts[1]);
         return new Position(x, y, TILES);
     }
+
+    public StaticTiledMapTile[] getTiles() {
+        return tiles;
+    }
+
 }

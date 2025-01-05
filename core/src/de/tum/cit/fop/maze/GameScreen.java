@@ -6,7 +6,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
@@ -82,6 +84,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Load tiled map
         tiles = new Tiles();
+        key = new Key(0,0, 16,16,14,14,100, 100);
 
         TiledMap tiledMap = null;
         switch (game.getGameLevel()) {
@@ -180,6 +183,7 @@ public class GameScreen extends InputAdapter implements Screen {
         renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
         renderPlayer();
         renderArrow();
+        renderKey();
 
         moveCamera();
 
@@ -253,9 +257,22 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void renderKey() {
-        game.getSpriteBatch().begin();
-        renderKey();
-        game.getSpriteBatch().end();
+        //game.getSpriteBatch().begin();
+        StaticTiledMapTile[] tiles_ = tiles.getTiles();
+        TextureRegion keyRegion = tiles_[Tiles.KEY].getTextureRegion();
+        Position keyPosition = tiles.keyTilePosition;
+        keyPosition = keyPosition.convertTo(Position.PositionUnit.PIXELS);
+        key.setX(keyPosition.getX());
+        key.setY(keyPosition.getY());
+        game.getSpriteBatch().draw(
+                keyRegion,
+                key.getOriginX(),
+                key.getOriginY(),
+                (int) key.getWidthOnScreen(),
+                (int) key.getHeightOnScreen()
+        ); // width and height are size on the screen
+        Gdx.app.log("Key", "key.getWidthOnScreen(): " + key.getWidthOnScreen());
+        //game.getSpriteBatch().end();
     }
 
     /**
