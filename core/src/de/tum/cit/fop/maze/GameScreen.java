@@ -36,7 +36,6 @@ public class GameScreen extends InputAdapter implements Screen {
     private final ShapeRenderer shapeRenderer; // For drawing shapes like health bars
 
     private float sinusInput = 0f;  // work as a timer to create a smooth animation with trig functions
-    private boolean isMuted;
 
     // For zooming
     private float targetZoom; // targetZoom stores the intermediate zoom value so that we can zoom smoothly
@@ -75,7 +74,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
 
-        isMuted = false;
+        game.setMuted(false);
         shapeRenderer = new ShapeRenderer();
 
         // Load tiled map
@@ -136,13 +135,13 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Handle Mute
         if (Gdx.input.isKeyJustPressed(Input.Keys.M)) { // Press 'M' to mute/unmute
-            isMuted = !isMuted;
-            if (isMuted) {
+            game.setMuted(!game.isMuted());
+            if (game.isMuted()) {
                 game.muteBGM();
             } else {
                 game.normalizeBGM();
             }
-            Gdx.app.log("GameScreen", "Mute toggled: " + (isMuted ? "ON" : "OFF"));
+            Gdx.app.log("GameScreen", "Mute toggled: " + (game.isMuted() ? "ON" : "OFF"));
         }
     }
 

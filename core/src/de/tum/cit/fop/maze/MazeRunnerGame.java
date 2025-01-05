@@ -40,6 +40,7 @@ public class MazeRunnerGame extends Game {
     Texture backgroundTexture;
 
     Music backgroundMusic;
+    private boolean isMuted;
 
     /**
      * Constructor for MazeRunnerGame.
@@ -170,6 +171,16 @@ public class MazeRunnerGame extends Game {
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
     }
+
+
+    public boolean isMuted() {
+        return isMuted;
+    }
+
+    public void setMuted(boolean muted) {
+        isMuted = muted;
+    }
+
 
     public void checkExitToNextLevel(Player player) {
         if (player.isTouchingTile("isExit")){
