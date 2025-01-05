@@ -8,8 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
  * such as position, velocity, dimensions, and lifecycle methods.
  * It is intended to be extended by specific character.
  */
-public abstract class Character {
-    // TODO: make it extend GameObject
+public abstract class Character{
     protected float lives;
     /** velX and velY stand for velocity X and velocity Y, resp.
      * velocities are horizontal/vertical components of the speed vector
@@ -36,11 +35,14 @@ public abstract class Character {
      * @param heightOnScreen The height of the character as displayed on screen.
      * @param lives The number of lives the character starts with.
      */
-    public Character(int x, int y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives) {
+    public Character(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives) {
+        // super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
+
         this.lives = lives;
         this.velX = 0;
         this.velY = 0;
         this.speed = 0;
+
         this.x = x;
         this.y = y;
         this.width = width;
@@ -54,7 +56,6 @@ public abstract class Character {
         this.hitboxHeightOnScreen = (float) heightOnScreen * hitboxHeight / height;
 
         this.hitbox = null;
-
     }
 
     abstract void update(float delta);
@@ -184,7 +185,7 @@ public abstract class Character {
         return hitbox;
     }
 
-    public boolean isTouching(Character other) {
+    public boolean isTouching(GameObject other) {
         return this.getHitbox().overlaps(other.getHitbox());
     }
 }

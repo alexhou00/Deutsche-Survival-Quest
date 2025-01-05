@@ -4,12 +4,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
-public class Key extends Collectibles {
+public class Key extends GameObject {
 
     private boolean isCollected;
 
-    public Key(String name, int worldX, int worldY, boolean collision, float width, float height, Rectangle hitbox) {
-        super("key", worldX, worldY, collision, width, height, hitbox);
+    public Key(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen) {
+        super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
         this.isCollected = false;
     }
 
@@ -36,8 +36,8 @@ public class Key extends Collectibles {
         if (!isCollected) {
             spriteBatch.draw(
                     keyTexture,
-                    getWorldX(),
-                    getWorldY(),
+                    getX(),
+                    getY(),
                     getWidthOnScreen(),
                     getHeightOnScreen()
             );

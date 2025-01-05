@@ -2,12 +2,12 @@ package de.tum.cit.fop.maze;
 
 import com.badlogic.gdx.math.Rectangle;
 
-public class Trap extends Obstacle {
+public class Trap extends GameObject {
     private float damage;
 
-    public Trap(String name, int worldX, int worldY, boolean collision, float width, float height, Rectangle hitbox, float damage) {
-        super(name, worldX, worldY, collision, width, height, hitbox);
-        this.damage = 0.5f * damage;// idk we can change the damage as we like ig
+    public Trap(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float damage) {
+        super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
+        this.damage = 0.5f * damage;
     }
 
     public void damagePlayer(Player player) {

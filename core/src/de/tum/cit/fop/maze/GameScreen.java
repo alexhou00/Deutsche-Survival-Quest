@@ -96,6 +96,7 @@ public class GameScreen extends InputAdapter implements Screen {
         player = new Player(tiles.entranceTilePosition.getTileX(), tiles.entranceTilePosition.getTileY(), 16, 32, 12, 19, 64f, 128f, 6.5f, false, tiles.layer);
 
         spotlightEffect = new SpotlightEffect();
+
     }
 
     /**
