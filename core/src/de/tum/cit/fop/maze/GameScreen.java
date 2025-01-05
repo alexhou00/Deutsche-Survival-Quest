@@ -179,7 +179,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
 
-        // renderSpotlightEffect(player.x, player.y, 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
+        // renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
         renderHUD();
     }
 
@@ -189,7 +189,7 @@ public class GameScreen extends InputAdapter implements Screen {
         if (exitPosition != null) {
             float exitX = exitPosition.getX();
             float exitY = exitPosition.getY();
-            float angle = (float) Math.toDegrees(Math.atan2(exitY - player.y, exitX - player.x)); // atan2 is a useful version of atan;
+            float angle = (float) Math.toDegrees(Math.atan2(exitY - player.getY(), exitX - player.getX())); // atan2 is a useful version of atan;
             angle = (angle + 270) % 360; // rotate counter-clockwise by 90 deg to fit the system of LibGDX and ensure the angle is within [0, 360)
             return angle;
         }
