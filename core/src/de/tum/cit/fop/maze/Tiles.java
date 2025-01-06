@@ -35,7 +35,7 @@ public class Tiles {
     /** exit tile, coordinates of the tile can be accessed through this */
     public List<Exit> exits;
 
-    private StaticTiledMapTile[] tiles;
+    private Tile[] tileset;
 
     // Create an immutable Set of integers representing wall
     // IntStream.concat(IntStream.rangeClosed(10, 29),IntStream.rangeClosed(64, 66)) in case i want to concat two sections in the future
@@ -73,7 +73,7 @@ public class Tiles {
         int tileCols = tileSheet.getWidth() / TILE_SIZE;
         int tileRows = tileSheet.getHeight() / TILE_SIZE;
         // tiles is the tileset
-        tiles = new StaticTiledMapTile[tileCols * tileRows];
+        tileset = new Tile[tileCols * tileRows];
         // Create tiles based on the tile sheet
         for (int y = 0; y < tileRows; y++) {
             for (int x = 0; x < tileCols; x++) {
@@ -81,22 +81,22 @@ public class Tiles {
                 TextureRegion tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 
                 if (WALLS.contains(index)){
-                    tiles[index] = new Wall(tileRegion);
-                    tiles[index].getProperties().put("collidable", true);
+                    tileset[index] = new Wall(tileRegion);
+                    tileset[index].getProperties().put("collidable", true);
                 }
                 else if (index == ENTRANCE){
                     entrance = new Entrance(tileRegion);
-                    tiles[index] = entrance;
-                    tiles[index].getProperties().put("isEntrance", true); // TODO: need to change this later maybe? not that many boolean values...
+                    tileset[index] = entrance;
+                    tileset[index].getProperties().put("isEntrance", true); // TODO: need to change this later maybe? not that many boolean values...
                 }
                 else if (index == EXIT){
                     Exit exit = new Exit(tileRegion);
                     exits.add(exit);
-                    tiles[index] = exit;
-                    tiles[index].getProperties().put("isExit", true);
+                    tileset[index] = exit;
+                    tileset[index].getProperties().put("isExit", true);
                 }
                 else {
-                    tiles[index] = new StaticTiledMapTile(tileRegion);
+                    tileset[index] = new Tile(tileRegion);
                 }
             }
         }
@@ -117,7 +117,7 @@ public class Tiles {
                 int tileValue = mapData.get(key);
 
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                StaticTiledMapTile tile = tiles[tileValue];
+                Tile tile = tileset[tileValue];
                 cell.setTile(tile);
                 layer.setCell(x, y, cell);
 
@@ -205,8 +205,8 @@ public class Tiles {
         return new Position(x, y, TILES);
     }
 
-    public StaticTiledMapTile[] getTiles() {
-        return tiles;
+    public Tile[] getTileset() {
+        return tileset;
     }
 
     public Position getKeyTilePosition() {

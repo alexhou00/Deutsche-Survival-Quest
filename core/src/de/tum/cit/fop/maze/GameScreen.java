@@ -101,7 +101,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // After loading the tiles,
         // get the array of tiles from our tile generator: tiles.getTiles()
         // and then get the texture region where our key is at
-        keyRegion = tiles.getTiles()[Tiles.KEY].getTextureRegion();
+        keyRegion = tiles.getTileset()[Tiles.KEY].getTextureRegion();
 
         // Set up map renderer
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many

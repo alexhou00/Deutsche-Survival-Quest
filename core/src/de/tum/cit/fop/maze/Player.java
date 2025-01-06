@@ -2,9 +2,7 @@ package de.tum.cit.fop.maze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
 
 import static de.tum.cit.fop.maze.Constants.*;
@@ -142,23 +140,22 @@ public class Player extends Character {
      * @return True if the position is valid, false otherwise.
      */
     public boolean canMoveTo(float x, float y){
-        String collidable = "collidable";
-        return !pointIsTouchingTileAt(x, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, Wall.class) &&
-                !pointIsTouchingTileAt(x, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, Wall.class) &&
-                !pointIsTouchingTileAt(x, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, Wall.class) &&
-                !pointIsTouchingTileAt(x, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, Wall.class);
+        return !isPointWithinInstanceOf(x, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, Wall.class) &&
+                !isPointWithinInstanceOf(x, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, Wall.class) &&
+                !isPointWithinInstanceOf(x, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, Wall.class) &&
+                !isPointWithinInstanceOf(x, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, Wall.class);
     }
 
     /**
      * the "CENTER" of the player is touching the tile that has a specified property
      * @param objectClass The tile's type to be checked
      */
-    public boolean isTouchingTile(Class<?> objectClass){
-        return pointIsTouchingTileAt(x, y, 0, 0, objectClass);
+    public boolean isCenterTouchingTile(Class<?> objectClass){
+        return isPointWithinInstanceOf(x, y, 0, 0, objectClass);
     }
 
     /**
-     * Checks if a specific corner of the player's hitbox is touching a collidable tile.
+     * Checks if a specific point of the player's hitbox is touching a tile that is of that class.
      *
      * @param x        The world x-coordinate to check
      * @param y        The world y-coordinate to check
@@ -167,7 +164,7 @@ public class Player extends Character {
      * @param objectClass The tile's type to be checked
      * @return True if the point is not touching a tile with that property, false otherwise
      */
-    private boolean pointIsTouchingTileAt(float x, float y, float offsetX, float offsetY, Class<?> objectClass) {
+    private boolean isPointWithinInstanceOf(float x, float y, float offsetX, float offsetY, Class<?> objectClass) {
         int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
         int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
         if (isTileInstanceOf(tileX, tileY, objectClass)){
@@ -192,8 +189,8 @@ public class Player extends Character {
 
         // Check if the cell exists and if it has the property (like "collidable" for walls)
         if (cell != null && cell.getTile() != null) {
-            TiledMapTile tile = cell.getTile();
-            return objectClass.isInstance(tile);
+            Tile tile = (Tile) cell.getTile();
+            return objectClass.isInstance(tile); // tile instanceof objectClass
         }
         return false; // "properties" is false or no collision by default
     }
