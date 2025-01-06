@@ -277,8 +277,8 @@ public class GameScreen extends InputAdapter implements Screen {
     private void renderArrow(){
         // Draw arrow that points at the exit
         Position exitPosition = null;
-        if (!tiles.exit.getTilePositions().isEmpty())
-            exitPosition = tiles.exit.getTilePosition(0); // TODO: (future) if there are multiple exit, create a function that finds the nearest one
+        if (!tiles.exits.isEmpty())
+            exitPosition = tiles.exits.get(0).getTilePosition(); // TODO: (future) if there are multiple exit, create a function that finds the nearest one
 
         float angle = getAngle(exitPosition);
         

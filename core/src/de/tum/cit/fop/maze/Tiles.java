@@ -36,7 +36,7 @@ public class Tiles {
     /** entrance tile, coordinates of the tile can be accessed through this */
     public Entrance entrance;
     /** exit tile, coordinates of the tile can be accessed through this */
-    public Exit exit;
+    public List<Exit> exits;
 
     private StaticTiledMapTile[] tiles;
 
@@ -57,6 +57,8 @@ public class Tiles {
         //entranceTilePosition = new Position(0, 0, TILES); // null; // TILES
         //exitPositions = new ArrayList<>();
         keyTilePosition = new Position(0, 0, TILES);
+        entrance = null;
+        exits = new ArrayList<>();
     }
 
     /**
@@ -90,7 +92,8 @@ public class Tiles {
                     tiles[index].getProperties().put("isEntrance", true); // TODO: need to change this later maybe? not that many boolean values...
                 }
                 else if (index == EXIT){
-                    exit = new Exit(tileRegion);
+                    Exit exit = new Exit(tileRegion);
+                    exits.add(exit);
                     tiles[index] = exit;
                     tiles[index].getProperties().put("isExit", true);
                 }
@@ -134,13 +137,10 @@ public class Tiles {
                 // Set entrance and exit positions when the entrances and exits are met
                 if (tile instanceof Entrance){ // Tile 13: Entrance
                     entrance.setTilePosition(new Position(x, y, TILES));
-                    //entranceTilePosition = new Position(x, y, TILES);
-                    //entrancePosition = entranceTilePosition.convertTo(PIXELS);
                 }
                 if (tile instanceof Exit){ // Tile 20: Exit
-                    //Position exitPosition = new Position(x, y, TILES).convertTo(PIXELS);
-                    //exitPositions.add(exitPosition);
-                    exit.addTilePosition(new Position(x, y, TILES));
+                    Exit exit = exits.get(exits.indexOf(tile));
+                    exit.setTilePosition(new Position(x, y, TILES));
                     Gdx.app.log("Exit", "exit found at: " + x + ", " + y);
                 }
             }

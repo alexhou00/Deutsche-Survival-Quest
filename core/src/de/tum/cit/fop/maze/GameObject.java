@@ -2,6 +2,15 @@ package de.tum.cit.fop.maze;
 
 import com.badlogic.gdx.math.Rectangle;
 
+/**
+ * Represents a generic STATIC game object with common properties and behaviors.
+ * <p>
+ * This class provides a foundation for other game objects
+ * such as traps the key. It includes properties
+ * like position, size, and hitbox, as well as methods for
+ * collision detection and accessing object dimensions.
+ */
+
 public abstract class GameObject {
 
     protected float x, y;
