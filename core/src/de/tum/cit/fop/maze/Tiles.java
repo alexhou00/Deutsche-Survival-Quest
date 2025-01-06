@@ -24,10 +24,6 @@ import static de.tum.cit.fop.maze.Position.PositionUnit.*;
 public class Tiles {
     public TiledMapTileLayer layer;
 
-    //public Position entrancePosition;
-    //public Position entranceTilePosition;
-    /** List of positions of the exit tiles in world coordinates. (there might be more than one exit) */
-    //public List<Position> exitPositions;
     private Position keyTilePosition;
 
     /** entrance tile, coordinates of the tile can be accessed through this */
@@ -36,6 +32,7 @@ public class Tiles {
     public List<Exit> exits;
 
     private Tile[] tileset;
+    public Tile[][] tileOnMap;
 
     // Create an immutable Set of integers representing wall
     // IntStream.concat(IntStream.rangeClosed(10, 29),IntStream.rangeClosed(64, 66)) in case i want to concat two sections in the future
@@ -50,9 +47,6 @@ public class Tiles {
      * Constructor: initializes the Tiles object with default values.
      */
     public Tiles() {
-        //entrancePosition = new Position(0, 0, PIXELS); // null; // PIXELS
-        //entranceTilePosition = new Position(0, 0, TILES); // null; // TILES
-        //exitPositions = new ArrayList<>();
         keyTilePosition = new Position(0, 0, TILES);
         entrance = null;
         exits = new ArrayList<>();
@@ -107,6 +101,7 @@ public class Tiles {
         // Create a TiledMap
         TiledMap map = new TiledMap();
         layer = new TiledMapTileLayer(mapWidthInTiles, mapHeightInTiles, TILE_SIZE, TILE_SIZE); // put our width/height here
+        tileOnMap = new Tile[mapWidthInTiles][mapHeightInTiles];
 
         // Populate the layer with tiles
         try{
@@ -116,17 +111,24 @@ public class Tiles {
                 int y = position.getTileY();
                 int tileValue = mapData.get(key);
 
-                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
                 Tile tile = tileset[tileValue];
+
+                // deal with LibGDX own library
+                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
                 cell.setTile(tile);
                 layer.setCell(x, y, cell);
+
+                // set the position
+                tile.setTilePosition(new Position(x, y, TILES));
+                tileOnMap[x][y] = tile;
+                Gdx.app.log("Tiles", "tileOnMap Added to array: " + x + ", " + y);
 
                 // Set entrance and exit positions when the entrances and exits are met,
                 // We only know the position after parsing and start to create our map
                 if (tile instanceof Entrance){ // Tile 13: Entrance
                     entrance.setTilePosition(new Position(x, y, TILES));
                 }
-                if (tile instanceof Exit){ // Tile 20: Exit
+                else if (tile instanceof Exit){ // Tile 20: Exit
                     Exit exit = exits.get(exits.indexOf(tile));
                     exit.setTilePosition(new Position(x, y, TILES));
                     Gdx.app.log("Exit", "exit found at: " + x + ", " + y);
@@ -211,6 +213,14 @@ public class Tiles {
 
     public Position getKeyTilePosition() {
         return keyTilePosition;
+    }
+
+    public Tile[][] getTileOnMap() {
+        return tileOnMap;
+    }
+
+    public Tile getTileOnMap(int x, int y) {
+        return tileOnMap[x][y];
     }
 
 }

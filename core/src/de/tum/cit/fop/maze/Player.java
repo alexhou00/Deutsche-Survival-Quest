@@ -15,6 +15,7 @@ public class Player extends Character {
     private boolean hasKey;
     private boolean isMoving;
     private final TiledMapTileLayer collisionLayer;
+    private final Tiles tiles;
     float targetVelX, targetVelY;
     int lastHorizontalDirection = 0, lastVerticalDirection = 0;
 
@@ -39,12 +40,13 @@ public class Player extends Character {
      * @param lives             Number of lives the player starts with.
      * @param collisionLayer    The layer used for collision detection.
      */
-    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, TiledMapTileLayer collisionLayer) {
+    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, TiledMapTileLayer collisionLayer, Tiles tiles) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
         this.hasKey = false;
         this.isMoving = false;
         // this.speed = BASE_SPEED; // normal speed when moving either vertically or horizontally
         this.collisionLayer = collisionLayer;
+        this.tiles = tiles;
     }
 
     private void handleMovement() {
@@ -167,10 +169,11 @@ public class Player extends Character {
     private boolean isPointWithinInstanceOf(float x, float y, float offsetX, float offsetY, Class<?> objectClass) {
         int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
         int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
-        if (isTileInstanceOf(tileX, tileY, objectClass)){
+        if (isTileInstanceOf(tileX, tileY, objectClass)){ // TODO:`&& tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)` <- fix this
             String horizontalDesc = (offsetX > 0) ? "right" : "left";
             String verticalDesc = (offsetY > 0) ? "upper" : "lower";
             Gdx.app.log("Player", "Player's " + verticalDesc + "-" + horizontalDesc + " corner collided with tile at position " + tileX + ", " + tileY);
+            Gdx.app.log("Hitbox", tileX + ", " + tileY + " " + tiles.getTileOnMap(tileX, tileY).getTileX() + ", " + tiles.getTileOnMap(tileX, tileY).getTileY());
             return true;
         }
         return false;
@@ -184,7 +187,7 @@ public class Player extends Character {
      * @return True if the tile has that specified property (e.g., collidable), false otherwise.
      */
     public boolean isTileInstanceOf(int tileX, int tileY, Class<?> objectClass) {
-        // Get the cell at the specified tile position
+        /*// Get the cell at the specified tile position
         TiledMapTileLayer.Cell cell = collisionLayer.getCell(tileX, tileY);
 
         // Check if the cell exists and if it has the property (like "collidable" for walls)
@@ -192,7 +195,10 @@ public class Player extends Character {
             Tile tile = (Tile) cell.getTile();
             return objectClass.isInstance(tile); // tile instanceof objectClass
         }
-        return false; // "properties" is false or no collision by default
+        return false; // "properties" is false or no collision by default*/
+
+        Tile tile = tiles.getTileOnMap(tileX, tileY);
+        return objectClass.isInstance(tile);
     }
 
     //for traps and enemies
