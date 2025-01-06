@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ObjectMap;
 
 import java.io.BufferedReader;
@@ -32,7 +33,7 @@ public class Tiles {
     public List<Exit> exits;
 
     private Tile[] tileset;
-    public Tile[][] tileOnMap;
+    private Tile[][] tileOnMap;
 
     // Create an immutable Set of integers representing wall
     // IntStream.concat(IntStream.rangeClosed(10, 29),IntStream.rangeClosed(64, 66)) in case i want to concat two sections in the future
@@ -104,6 +105,7 @@ public class Tiles {
         tileOnMap = new Tile[mapWidthInTiles][mapHeightInTiles];
 
         // Populate the layer with tiles
+        int prevX = 3, prevY = 3;
         try{
             for (String key : mapData.keys()) {
                 Position position = stringToPosition(key);
@@ -120,9 +122,17 @@ public class Tiles {
 
                 // set the position
                 tile.setTilePosition(new Position(x, y, TILES));
-                tileOnMap[x][y] = tile;
+                Position tilePosition = new Position(x, y, TILES).convertTo(Position.PositionUnit.PIXELS);
+                float pixX = tilePosition.getX() - TILE_SCREEN_SIZE / 2f;
+                float pixY = tilePosition.getY() - TILE_SCREEN_SIZE / 2.0f;
+                tile.setHitbox(new Rectangle(pixX, pixY, TILE_SCREEN_SIZE, TILE_SCREEN_SIZE));
+                tileOnMap[x][y] = tile; // new Tile(tile.getTextureRegion());
+                tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                tileOnMap[x][y].setHitbox(new Rectangle(pixX, pixY, TILE_SCREEN_SIZE, TILE_SCREEN_SIZE));
                 Gdx.app.log("Tiles", "tileOnMap Added to array: " + x + ", " + y);
-
+                Gdx.app.log("TilesB", String.valueOf(getTileOnMap(x, y).getHitbox()));
+                if (getTileOnMap(prevX, prevY) != null) Gdx.app.log("TilesD", prevX + " " + prevY + " " + (getTileOnMap(prevX, prevY).getHitbox()));
+                prevX = x; prevY = y;
                 // Set entrance and exit positions when the entrances and exits are met,
                 // We only know the position after parsing and start to create our map
                 if (tile instanceof Entrance){ // Tile 13: Entrance
@@ -140,8 +150,38 @@ public class Tiles {
 
         map.getLayers().add(layer);
 
+        for (String key : mapData.keys()){
+            Position position = stringToPosition(key);
+            int x = position.getTileX();
+            int y = position.getTileY();
+            int tileValue = mapData.get(key);
+
+            Tile tile = tileset[tileValue];
+
+            Position tilePosition = new Position(x, y, TILES).convertTo(Position.PositionUnit.PIXELS);
+            float pixX = tilePosition.getX() - TILE_SCREEN_SIZE / 2f;
+            float pixY = tilePosition.getY() - TILE_SCREEN_SIZE / 2.0f;
+
+            Tile tile2;
+            if (tile instanceof Wall) {
+                tile2 = new Wall(tile.getTextureRegion());
+            } else if (tile instanceof Entrance) {
+                tile2 = new Entrance(tile.getTextureRegion());
+            } else if (tile instanceof Exit) {
+                tile2 = new Exit(tile.getTextureRegion());
+            } else {
+                tile2 = new Tile(tile.getTextureRegion());
+            }
+
+            tileOnMap[x][y] = tile2; // new Tile(tile.getTextureRegion());
+            tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+            tileOnMap[x][y].setHitbox(new Rectangle(pixX, pixY, TILE_SCREEN_SIZE, TILE_SCREEN_SIZE));
+
+        }
+
         Gdx.app.log("Tiles", "Tiled Map loaded");
         Gdx.app.log("Tiles", "entrance position: " + entrance.getTilePosition());
+        Gdx.app.log("TilesC", String.valueOf(getTileOnMap(7, 4).getHitbox())); // problem already exists since here
 
         return map;
     }

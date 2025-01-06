@@ -169,11 +169,11 @@ public class Player extends Character {
     private boolean isPointWithinInstanceOf(float x, float y, float offsetX, float offsetY, Class<?> objectClass) {
         int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
         int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
-        if (isTileInstanceOf(tileX, tileY, objectClass)){ // TODO:`&& tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)` <- fix this
+        if (isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)){ // TODO:`&& tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)` <- fix this
             String horizontalDesc = (offsetX > 0) ? "right" : "left";
             String verticalDesc = (offsetY > 0) ? "upper" : "lower";
             Gdx.app.log("Player", "Player's " + verticalDesc + "-" + horizontalDesc + " corner collided with tile at position " + tileX + ", " + tileY);
-            Gdx.app.log("Hitbox", tileX + ", " + tileY + " " + tiles.getTileOnMap(tileX, tileY).getTileX() + ", " + tiles.getTileOnMap(tileX, tileY).getTileY());
+            Gdx.app.log("Hitbox", tileX + ", " + tileY + " " + tiles.getTileOnMap()[tileX][tileY].getTileX() + ", " + tiles.getTileOnMap(tileX, tileY).getTileY());
             return true;
         }
         return false;

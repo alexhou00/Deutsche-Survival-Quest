@@ -47,7 +47,7 @@ public class Tile extends StaticTiledMapTile{
         return hitbox;
     }
 
-    private void setHitbox(Rectangle hitbox) {
+    public void setHitbox(Rectangle hitbox) {
         this.hitbox = hitbox;
     }
 }
