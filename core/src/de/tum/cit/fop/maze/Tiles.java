@@ -37,7 +37,7 @@ public class Tiles {
 
     // Create an immutable Set of integers representing wall
     // IntStream.concat(IntStream.rangeClosed(10, 29),IntStream.rangeClosed(64, 66)) in case i want to concat two sections in the future
-    private static final Set<Integer> WALLS = IntStream.rangeClosed(10, 29)
+    private static final Set<Integer> WALLS = IntStream.concat(IntStream.rangeClosed(10, 29),IntStream.rangeClosed(60, 79))
             .boxed()
             .collect(Collectors.toSet());
     public static final int KEY = 6;
