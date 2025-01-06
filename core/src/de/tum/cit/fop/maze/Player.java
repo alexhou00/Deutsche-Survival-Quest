@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 
 import static de.tum.cit.fop.maze.Constants.*;
 import static java.lang.Math.abs;
@@ -136,16 +137,26 @@ public class Player extends Character {
 
     /**
      * Checks if the player can move to a given position because of the wall blocks.
+     * <p>
+     * This method checks a grid of points (total of 5 on each side) within the object's hitbox to ensure that
+     * none of these points overlap with an instance of the Wall class. If any of the points within the hitbox
+     * intersects a wall, the object cannot move to the specified position.
      *
      * @param x The x-coordinate to check.
      * @param y The y-coordinate to check.
      * @return True if the position is valid, false otherwise.
      */
     public boolean canMoveTo(float x, float y){
-        return !isPointWithinInstanceOf(x, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, Wall.class) &&
-                !isPointWithinInstanceOf(x, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, Wall.class) &&
-                !isPointWithinInstanceOf(x, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, Wall.class) &&
-                !isPointWithinInstanceOf(x, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, Wall.class);
+        // Loop through points along the border the hitbox along the x-axis
+        for (int i = (int) (-hitboxWidthOnScreen / 2); i <= hitboxWidthOnScreen / 2; i += (int) (hitboxWidthOnScreen/5)){
+            // Loop through points along the border the hitbox along the y-axis
+            for (int j = (int) (-hitboxHeightOnScreen / 2); j <= hitboxHeightOnScreen / 2; j += (int) (hitboxHeightOnScreen/5)){
+                if (isPointWithinInstanceOf(x, y, i, j, Wall.class)){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -169,36 +180,34 @@ public class Player extends Character {
     private boolean isPointWithinInstanceOf(float x, float y, float offsetX, float offsetY, Class<?> objectClass) {
         int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
         int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
-        if (isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)){ // TODO:`&& tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)` <- fix this
-            String horizontalDesc = (offsetX > 0) ? "right" : "left";
-            String verticalDesc = (offsetY > 0) ? "upper" : "lower";
-            Gdx.app.log("Player", "Player's " + verticalDesc + "-" + horizontalDesc + " corner collided with tile at position " + tileX + ", " + tileY);
-            Gdx.app.log("Hitbox", tileX + ", " + tileY + " " + tiles.getTileOnMap()[tileX][tileY].getTileX() + ", " + tiles.getTileOnMap(tileX, tileY).getTileY());
+        // if the tile at position (tileX, tileY) is an instance of the objectClass (e.g., Wall) AND
+        // if the point (x+offsetX, y+offsetY) is inside this tile
+        if (isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)){ //
+            Gdx.app.log("Player",
+                    "Player's " +
+                            ((offsetX > 0) ? "right" : "left") + "-" + ((offsetY > 0) ? "upper" : "lower") +
+                            " corner collided with tile at position " + tileX + ", " + tileY);
             return true;
         }
         return false;
     }
 
     /**
-     * Checks if a tile at a specific position has a property (e.g., is collidable) or not
+     * Checks if a tile at a specific position is an instance of a class (e.g., Wall) or not
      *
      * @param tileX  The x-coordinate (in tiles) of the tile.
      * @param tileY  The y-coordinate (in tiles) of the tile.
-     * @return True if the tile has that specified property (e.g., collidable), false otherwise.
+     * @return True if the tile is that class (e.g., Wall, Exit, etc.), false otherwise.
      */
     public boolean isTileInstanceOf(int tileX, int tileY, Class<?> objectClass) {
-        /*// Get the cell at the specified tile position
-        TiledMapTileLayer.Cell cell = collisionLayer.getCell(tileX, tileY);
-
-        // Check if the cell exists and if it has the property (like "collidable" for walls)
-        if (cell != null && cell.getTile() != null) {
-            Tile tile = (Tile) cell.getTile();
-            return objectClass.isInstance(tile); // tile instanceof objectClass
+        try {
+            Tile tile = tiles.getTileOnMap(tileX, tileY);
+            return objectClass.isInstance(tile);
         }
-        return false; // "properties" is false or no collision by default*/
-
-        Tile tile = tiles.getTileOnMap(tileX, tileY);
-        return objectClass.isInstance(tile);
+        catch (ArrayIndexOutOfBoundsException e){
+            Gdx.app.error("Player", e.getMessage());
+            return false;
+        }
     }
 
     //for traps and enemies

@@ -67,9 +67,9 @@ public class Tiles {
         var tileSheet = new Texture(tileSheetPath);
         int tileCols = tileSheet.getWidth() / TILE_SIZE;
         int tileRows = tileSheet.getHeight() / TILE_SIZE;
-        // tiles is the tileset
+        // `tileset` is the tileset
         tileset = new Tile[tileCols * tileRows];
-        // Create tiles based on the tile sheet
+        // Create the tileset to reference back to the tile type based on the tile sheet
         for (int y = 0; y < tileRows; y++) {
             for (int x = 0; x < tileCols; x++) {
                 int index = y * tileCols + x;
@@ -77,18 +77,18 @@ public class Tiles {
 
                 if (WALLS.contains(index)){
                     tileset[index] = new Wall(tileRegion);
-                    tileset[index].getProperties().put("collidable", true);
+                    //tileset[index].getProperties().put("collidable", true);
                 }
                 else if (index == ENTRANCE){
                     entrance = new Entrance(tileRegion);
                     tileset[index] = entrance;
-                    tileset[index].getProperties().put("isEntrance", true); // TODO: need to change this later maybe? not that many boolean values...
+                    //tileset[index].getProperties().put("isEntrance", true);
                 }
                 else if (index == EXIT){
                     Exit exit = new Exit(tileRegion);
                     exits.add(exit);
                     tileset[index] = exit;
-                    tileset[index].getProperties().put("isExit", true);
+                    //tileset[index].getProperties().put("isExit", true);
                 }
                 else {
                     tileset[index] = new Tile(tileRegion);
@@ -105,7 +105,6 @@ public class Tiles {
         tileOnMap = new Tile[mapWidthInTiles][mapHeightInTiles];
 
         // Populate the layer with tiles
-        int prevX = 3, prevY = 3;
         try{
             for (String key : mapData.keys()) {
                 Position position = stringToPosition(key);
@@ -120,29 +119,9 @@ public class Tiles {
                 cell.setTile(tile);
                 layer.setCell(x, y, cell);
 
-                // set the position
-                tile.setTilePosition(new Position(x, y, TILES));
-                Position tilePosition = new Position(x, y, TILES).convertTo(Position.PositionUnit.PIXELS);
-                float pixX = tilePosition.getX() - TILE_SCREEN_SIZE / 2f;
-                float pixY = tilePosition.getY() - TILE_SCREEN_SIZE / 2.0f;
-                tile.setHitbox(new Rectangle(pixX, pixY, TILE_SCREEN_SIZE, TILE_SCREEN_SIZE));
-                tileOnMap[x][y] = tile; // new Tile(tile.getTextureRegion());
-                tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
-                tileOnMap[x][y].setHitbox(new Rectangle(pixX, pixY, TILE_SCREEN_SIZE, TILE_SCREEN_SIZE));
-                Gdx.app.log("Tiles", "tileOnMap Added to array: " + x + ", " + y);
-                Gdx.app.log("TilesB", String.valueOf(getTileOnMap(x, y).getHitbox()));
-                if (getTileOnMap(prevX, prevY) != null) Gdx.app.log("TilesD", prevX + " " + prevY + " " + (getTileOnMap(prevX, prevY).getHitbox()));
-                prevX = x; prevY = y;
-                // Set entrance and exit positions when the entrances and exits are met,
-                // We only know the position after parsing and start to create our map
-                if (tile instanceof Entrance){ // Tile 13: Entrance
-                    entrance.setTilePosition(new Position(x, y, TILES));
-                }
-                else if (tile instanceof Exit){ // Tile 20: Exit
-                    Exit exit = exits.get(exits.indexOf(tile));
-                    exit.setTilePosition(new Position(x, y, TILES));
-                    Gdx.app.log("Exit", "exit found at: " + x + ", " + y);
-                }
+                // create a new tile based on its type so that we won't be accessing the same tile from the array
+                // also set its position on the map
+                createAndPlaceNewTile(x, y, tile);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             Gdx.app.error("Tiles", "Error loading tiles: ", e);
@@ -150,39 +129,8 @@ public class Tiles {
 
         map.getLayers().add(layer);
 
-        for (String key : mapData.keys()){
-            Position position = stringToPosition(key);
-            int x = position.getTileX();
-            int y = position.getTileY();
-            int tileValue = mapData.get(key);
-
-            Tile tile = tileset[tileValue];
-
-            Position tilePosition = new Position(x, y, TILES).convertTo(Position.PositionUnit.PIXELS);
-            float pixX = tilePosition.getX() - TILE_SCREEN_SIZE / 2f;
-            float pixY = tilePosition.getY() - TILE_SCREEN_SIZE / 2.0f;
-
-            Tile tile2;
-            if (tile instanceof Wall) {
-                tile2 = new Wall(tile.getTextureRegion());
-            } else if (tile instanceof Entrance) {
-                tile2 = new Entrance(tile.getTextureRegion());
-            } else if (tile instanceof Exit) {
-                tile2 = new Exit(tile.getTextureRegion());
-            } else {
-                tile2 = new Tile(tile.getTextureRegion());
-            }
-
-            tileOnMap[x][y] = tile2; // new Tile(tile.getTextureRegion());
-            tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
-            tileOnMap[x][y].setHitbox(new Rectangle(pixX, pixY, TILE_SCREEN_SIZE, TILE_SCREEN_SIZE));
-
-        }
-
         Gdx.app.log("Tiles", "Tiled Map loaded");
         Gdx.app.log("Tiles", "entrance position: " + entrance.getTilePosition());
-        Gdx.app.log("TilesC", String.valueOf(getTileOnMap(7, 4).getHitbox())); // problem already exists since here
-
         return map;
     }
 
@@ -261,6 +209,43 @@ public class Tiles {
 
     public Tile getTileOnMap(int x, int y) {
         return tileOnMap[x][y];
+    }
+
+    /**
+     * Creates a new tile based on its type (Wall, Entrance, Exit, or generic Tile),
+     * so that we won't be accessing the same tile from the array if we still use the {@code Tile tile = tileset[tileValue];}; <br>
+     * All types of existing tiles should be managed here,
+     * and this method update its position on the tileOnMap array
+     *
+     * @param x    The x-coordinate of the tile in the map grid.
+     * @param y    The y-coordinate of the tile in the map grid.
+     * @param tile The original tile to process and to replace.
+     */
+    private void createAndPlaceNewTile(int x, int y, Tile tile) {
+        // Set entrance and exit positions when the entrances and exits are met,
+        // We only know the position after parsing and start to create our map
+        Tile newTile;
+
+        if (tile instanceof Wall) {
+            newTile = new Wall(tile.getTextureRegion());
+        }
+        else if (tile instanceof Entrance) {
+            newTile = new Entrance(tile.getTextureRegion());
+
+            entrance.setTilePosition(new Position(x, y, TILES));
+        }
+        else if (tile instanceof Exit) {
+            newTile = new Exit(tile.getTextureRegion());
+
+            Exit exit = exits.get(exits.indexOf(tile));
+            exit.setTilePosition(new Position(x, y, TILES));
+        }
+        else {
+            newTile = new Tile(tile.getTextureRegion());
+        }
+
+        tileOnMap[x][y] = newTile;
+        tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
     }
 
 }

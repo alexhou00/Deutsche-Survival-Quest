@@ -70,7 +70,8 @@ public class Position {
         this.y = y;
     }
 
-    public void setUnit(PositionUnit unit) {
+    // unit should only be changed when converting
+    private void setUnit(PositionUnit unit) {
         this.unit = unit;
     }
 

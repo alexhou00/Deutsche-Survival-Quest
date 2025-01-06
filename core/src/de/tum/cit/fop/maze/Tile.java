@@ -25,14 +25,13 @@ public class Tile extends StaticTiledMapTile{
     }
 
     public void setTilePosition(Position tilePosition) {
-        tilePosition = tilePosition.convertTo(Position.PositionUnit.TILES);
-        this.tilePosition = tilePosition;
-        //Position tilePosition = this.getTilePosition();
-        Gdx.app.log("Tile", "tilePosition: " + tilePosition);
+        this.tilePosition = tilePosition.convertTo(Position.PositionUnit.TILES);
+
+        // Set Hitbox upon updating its position
         tilePosition = tilePosition.convertTo(Position.PositionUnit.PIXELS);
         float x = tilePosition.getX() - (float) TILE_SCREEN_SIZE / 2;
         float y = tilePosition.getY() - TILE_SCREEN_SIZE / 2.0f;
-        this.setHitbox(new Rectangle(x, y, TILE_SCREEN_SIZE, TILE_SCREEN_SIZE));
+        this.setHitbox(new Rectangle(x, y, TILE_SCREEN_SIZE, TILE_SCREEN_SIZE)); // TODO: different types of walls have different hitbox
     }
 
     public int getTileX(){
