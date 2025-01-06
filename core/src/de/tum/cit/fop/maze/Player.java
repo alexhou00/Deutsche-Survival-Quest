@@ -2,7 +2,9 @@ package de.tum.cit.fop.maze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
 
 import static de.tum.cit.fop.maze.Constants.*;
@@ -140,19 +142,19 @@ public class Player extends Character {
      * @return True if the position is valid, false otherwise.
      */
     public boolean canMoveTo(float x, float y){
-        String property = "collidable";
-        return !pointIsTouchingTileAt(x, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, property) &&
-                !pointIsTouchingTileAt(x, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, property) &&
-                !pointIsTouchingTileAt(x, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, property) &&
-                !pointIsTouchingTileAt(x, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, property);
+        String collidable = "collidable";
+        return !pointIsTouchingTileAt(x, y, -hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, Wall.class) &&
+                !pointIsTouchingTileAt(x, y, hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, Wall.class) &&
+                !pointIsTouchingTileAt(x, y, -hitboxWidthOnScreen / 2, -hitboxHeightOnScreen / 2, Wall.class) &&
+                !pointIsTouchingTileAt(x, y, hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, Wall.class);
     }
 
     /**
      * the "CENTER" of the player is touching the tile that has a specified property
-     * @param property The tile's property to be checked
+     * @param objectClass The tile's type to be checked
      */
-    public boolean isTouchingTile(String property){
-        return pointIsTouchingTileAt(x, y, 0, 0, property);
+    public boolean isTouchingTile(Class<?> objectClass){
+        return pointIsTouchingTileAt(x, y, 0, 0, objectClass);
     }
 
     /**
@@ -162,39 +164,38 @@ public class Player extends Character {
      * @param y        The world y-coordinate to check
      * @param offsetX  The x offset for the corner (offset from the center to the left or right)
      * @param offsetY  The y offset for the corner (offset from the center to the top or bottom)
-     * @param property The tile's property to be checked
-     * @return True if the corner is not touching a collidable tile, false otherwise
+     * @param objectClass The tile's type to be checked
+     * @return True if the point is not touching a tile with that property, false otherwise
      */
-    private boolean pointIsTouchingTileAt(float x, float y, float offsetX, float offsetY, String property) {
+    private boolean pointIsTouchingTileAt(float x, float y, float offsetX, float offsetY, Class<?> objectClass) {
         int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
         int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
-        return isTouchingTile(tileX, tileY, offsetX>0, offsetY>0, property);
+        if (isTileInstanceOf(tileX, tileY, objectClass)){
+            String horizontalDesc = (offsetX > 0) ? "right" : "left";
+            String verticalDesc = (offsetY > 0) ? "upper" : "lower";
+            Gdx.app.log("Player", "Player's " + verticalDesc + "-" + horizontalDesc + " corner collided with tile at position " + tileX + ", " + tileY);
+            return true;
+        }
+        return false;
     }
 
     /**
-     * Checks if a specific tile has a property (e.g., is collidable) or not
+     * Checks if a tile at a specific position has a property (e.g., is collidable) or not
      *
      * @param tileX  The x-coordinate (in tiles) of the tile.
      * @param tileY  The y-coordinate (in tiles) of the tile.
-     * @param isRight True if checking the right side of the player's hitbox, false if checking the left side.
-     * @param isUp    True if checking the upper side of the player's hitbox, false if checking the lower side.
      * @return True if the tile has that specified property (e.g., collidable), false otherwise.
      */
-    public boolean isTouchingTile(int tileX, int tileY, boolean isRight, boolean isUp, String property) {
+    public boolean isTileInstanceOf(int tileX, int tileY, Class<?> objectClass) {
         // Get the cell at the specified tile position
         TiledMapTileLayer.Cell cell = collisionLayer.getCell(tileX, tileY);
 
         // Check if the cell exists and if it has the property (like "collidable" for walls)
         if (cell != null && cell.getTile() != null) {
-            Object propertyToCheck = cell.getTile().getProperties().get(property);
-            if (propertyToCheck != null && propertyToCheck.equals(true)) {
-                String horizontalDesc = isRight ? "right" : "left";
-                String verticalDesc = isUp ? "upper" : "lower";
-                Gdx.app.log("Player", "Player's " + verticalDesc + "-" + horizontalDesc + " corner collided with tile at position " + tileX + ", " + tileY);
-                return true;
-            }
+            TiledMapTile tile = cell.getTile();
+            return objectClass.isInstance(tile);
         }
-        return false; // No collision by default
+        return false; // "properties" is false or no collision by default
     }
 
     //for traps and enemies

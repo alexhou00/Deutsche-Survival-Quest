@@ -16,7 +16,6 @@ public class ElementRenderer {
 
     private final Texture texture;
     private final TextureRegion fullHeartRegion, threeQuartersHeartRegion, halfHeartRegion, oneQuarterHeartRegion, emptyHeartRegion;
-    private final TextureRegion arrowRegion;
 
     private final Sprite arrow;
 
@@ -30,7 +29,7 @@ public class ElementRenderer {
         oneQuarterHeartRegion = extractHeart(texture, 112);
         emptyHeartRegion = extractHeart(texture, 128);
 
-        arrowRegion = new TextureRegion(texture, 490, 10, 20, 10);
+        TextureRegion arrowRegion = new TextureRegion(texture, 490, 10, 20, 10);
         arrow = new Sprite(arrowRegion);
     }
 
@@ -79,10 +78,12 @@ public class ElementRenderer {
     }
 
     public void drawArrow(SpriteBatch batch, float degrees, float x, float y) {
-        float scale = 1.5f;
+        // drawing a sprite is different from drawing a texture region
+        // for drawing a sprite, we use sprite.draw(spriteBatch) instead of spriteBatch.draw(textureRegion)
+        float scale = 1.5f; // enlarging the arrow on the screen, but the offset from the origin of the player needs to be adjusted
         arrow.setOrigin(arrow.getWidth() / 2, -45 / scale);
         arrow.setPosition(x - arrow.getWidth() / 2, y + 45 / scale);
-        arrow.setRotation(degrees);
+        arrow.setRotation(degrees); // we need to rotate the arrow, so it's more convenient to make it a sprite
         arrow.setScale(scale);
         arrow.draw(batch);
     }

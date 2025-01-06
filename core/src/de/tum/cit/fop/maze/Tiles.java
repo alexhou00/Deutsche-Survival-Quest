@@ -22,9 +22,6 @@ import static de.tum.cit.fop.maze.Position.PositionUnit.*;
 
 /** this is like a TilesManager */
 public class Tiles {
-    /* TODO: add Entrance entrance and Exit exit so that we can access something like tiles.entrance.position.getX()
-    *   and they should extend the GameObject (Or Tile? Or Cell?)
-    */
     public TiledMapTileLayer layer;
 
     //public Position entrancePosition;
@@ -75,6 +72,7 @@ public class Tiles {
         var tileSheet = new Texture(tileSheetPath);
         int tileCols = tileSheet.getWidth() / TILE_SIZE;
         int tileRows = tileSheet.getHeight() / TILE_SIZE;
+        // tiles is the tileset
         tiles = new StaticTiledMapTile[tileCols * tileRows];
         // Create tiles based on the tile sheet
         for (int y = 0; y < tileRows; y++) {
@@ -83,7 +81,7 @@ public class Tiles {
                 TextureRegion tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 
                 if (WALLS.contains(index)){
-                    tiles[index] = new StaticTiledMapTile(tileRegion);
+                    tiles[index] = new Wall(tileRegion);
                     tiles[index].getProperties().put("collidable", true);
                 }
                 else if (index == ENTRANCE){
@@ -100,17 +98,6 @@ public class Tiles {
                 else {
                     tiles[index] = new StaticTiledMapTile(tileRegion);
                 }
-
-
-                /* this is for replacing the code below to avoid a long chain of else-if conditions
-                // outside the loop
-                Set<Integer> collidableTiles = new HashSet<>(Arrays.asList(0, 3));
-
-
-                // inside here
-                    boolean isCollidable = collidableTiles.contains(index);
-                    tiles[index].getProperties().put("collidable", isCollidable);
-                */
             }
         }
 
@@ -134,7 +121,8 @@ public class Tiles {
                 cell.setTile(tile);
                 layer.setCell(x, y, cell);
 
-                // Set entrance and exit positions when the entrances and exits are met
+                // Set entrance and exit positions when the entrances and exits are met,
+                // We only know the position after parsing and start to create our map
                 if (tile instanceof Entrance){ // Tile 13: Entrance
                     entrance.setTilePosition(new Position(x, y, TILES));
                 }
@@ -148,10 +136,11 @@ public class Tiles {
             Gdx.app.error("Tiles", "Error loading tiles: ", e);
         }
 
-
         map.getLayers().add(layer);
+
         Gdx.app.log("Tiles", "Tiled Map loaded");
         Gdx.app.log("Tiles", "entrance position: " + entrance.getTilePosition());
+
         return map;
     }
 
@@ -173,7 +162,7 @@ public class Tiles {
                 if (parts.length != 2) continue; // ignore malformed lines
 
                 String position = parts[0];
-                String[] tileTypes = parts[1].split(","); // Handle multiple tile types (could contain key)
+                String[] tileTypes = parts[1].split(","); // Handle multiple tile types (could contain the key)
 
                 for (String tileType : tileTypes) {
                     processTile(position, tileType, mapData);
@@ -190,9 +179,9 @@ public class Tiles {
     /**
      * Processes an individual tile and updates the map data.
      *
-     * @param position   The position key of the tile.
-     * @param tileType   The tile value or type as a string.
-     * @param mapData    The map data to update.
+     * @param position   The position key of the tile. (Format: "x,y")
+     * @param tileType   The tile value or type but as a string.
+     * @param mapData    The mapData to update.
      */
     private void processTile(String position, String tileType, ObjectMap<String, Integer> mapData) {
         try {
@@ -219,7 +208,6 @@ public class Tiles {
     public StaticTiledMapTile[] getTiles() {
         return tiles;
     }
-
 
     public Position getKeyTilePosition() {
         return keyTilePosition;
