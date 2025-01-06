@@ -21,6 +21,8 @@ public abstract class Character{
     protected float hitboxHeightOnScreen;
     protected Rectangle hitbox;
 
+    protected boolean paused;
+
 
     /**
      * Constructs a new Character instance with specified parameters.
@@ -60,9 +62,13 @@ public abstract class Character{
 
     abstract void update(float delta);
 
-    abstract void pause();
+    void pause(){
+        paused = true;
+    }
 
-    abstract void resume();
+    void resume(){
+        paused = false;
+    }
 
     abstract void hide();
 

@@ -295,8 +295,13 @@ public class GameScreen extends InputAdapter implements Screen {
      * before rendering to ensure proper placement in the game world.
      */
     public void renderKey() {
-        if (key.isCollected())
-            return;
+        float keyScale = 1f;
+        if (key.isCollected()){
+            key.setX(player.getX());
+            key.setY(player.getY() - 10);
+            keyScale = 0.5f;
+        }
+            //return;
         // else the key is not collected, render the key:
 
         /* uncomment this when the key's position should be regularly updated. i.e., the key is dynamic
@@ -311,8 +316,8 @@ public class GameScreen extends InputAdapter implements Screen {
                 keyRegion,
                 key.getOriginX(),
                 key.getOriginY(),
-                key.getWidthOnScreen(),
-                key.getHeightOnScreen()
+                key.getWidthOnScreen() * keyScale,
+                key.getHeightOnScreen() * keyScale
         ); // width and height are size on the screen
         // Gdx.app.log("Key", "key.getWidthOnScreen(): " + key.getWidthOnScreen());
 
@@ -438,8 +443,10 @@ public class GameScreen extends InputAdapter implements Screen {
      */
     @Override
     public void resize(int width, int height) {
+        player.pause();
         camera.setToOrtho(false);
         hudCamera.setToOrtho(false, width, height); // Adjust HUD camera to new screen size
+        player.resume();
     }
 
 

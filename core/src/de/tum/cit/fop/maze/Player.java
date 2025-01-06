@@ -239,17 +239,8 @@ public class Player extends Character {
      */
     @Override
     void update(float delta) {
+        if (paused) return;
         handleMovement();
-    }
-
-    @Override
-    void pause() {
-
-    }
-
-    @Override
-    void resume() {
-
     }
 
     @Override
