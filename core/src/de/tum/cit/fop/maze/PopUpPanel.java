@@ -15,7 +15,10 @@ public class PopUpPanel extends ScreenAdapter {
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage = new Stage());
+        stage = new Stage();
+
+        Gdx.input.setInputProcessor(stage);
+
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         GameIntroduction gameIntroduction = new GameIntroduction("Game Introduction", skin);
@@ -44,6 +47,7 @@ public class PopUpPanel extends ScreenAdapter {
     @Override
     public void dispose() {
         stage.dispose();
+        skin.dispose();
     }
 
     @Override
@@ -77,12 +81,12 @@ public class PopUpPanel extends ScreenAdapter {
                     "Good Luck!!\n" +
                     "\n" +
                     "[Press continue button to access level 1 instructions]\n");
+
             button("Continue");
         }
         @Override
         protected void result(Object object) {
             System.out.println(object);
         }
-
     }
 }
