@@ -1,8 +1,6 @@
 package de.tum.cit.fop.maze;
 
-import com.badlogic.gdx.math.Rectangle;
-
-public class Trap extends GameObject {
+public class Trap extends StaticObject {
     private float damage;
 
     public Trap(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float damage) {

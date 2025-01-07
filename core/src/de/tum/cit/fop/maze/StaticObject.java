@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
  * collision detection and accessing object dimensions.
  */
 
-public abstract class GameObject {
+public abstract class StaticObject {
 
     protected float x, y;
     protected float width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen;
@@ -20,7 +20,7 @@ public abstract class GameObject {
     protected Rectangle hitbox;
 
     /**
-     * Constructs a new GameObject instance with specified parameters.
+     * Constructs a new StaticObject instance with specified parameters.
      *
      * @param x World x-coordinate of the object's initial position (origin is the center of the sprite)
      * @param y World y-coordinate of the object's initial position. (origin is the center of the sprite)
@@ -31,7 +31,7 @@ public abstract class GameObject {
      * @param widthOnScreen The width of the object as displayed on screen.
      * @param heightOnScreen The height of the object as displayed on screen.
      */
-    public GameObject(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen) {
+    public StaticObject(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -101,11 +101,11 @@ public abstract class GameObject {
         this.hitbox = hitbox;
     }
 
-    public boolean isCollision(GameObject other) {
+    public boolean isCollision(StaticObject other) {
         return hitbox.overlaps(other.hitbox);
     }
 
-    public boolean isTouching(GameObject other) {
+    public boolean isTouching(StaticObject other) {
         return this.getHitbox().overlaps(other.getHitbox());
     }
 
