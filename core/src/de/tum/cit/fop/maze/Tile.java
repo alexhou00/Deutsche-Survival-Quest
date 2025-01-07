@@ -8,17 +8,22 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Rectangle;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static de.tum.cit.fop.maze.Constants.TILE_SCREEN_SIZE;
 import static de.tum.cit.fop.maze.Constants.TILE_SIZE;
 
 public class Tile extends StaticTiledMapTile{
+    private float worldX, worldY;
     private Position tilePosition;
-    private Rectangle hitbox;
+
+    private boolean[][] hitPixmap; // stores the precomputed alpha map
 
     public Tile(TextureRegion textureRegion) {
         super(textureRegion);
         this.tilePosition = null;
-        this.hitbox = null;
+        this.hitPixmap = null;
     }
 
     public Position getTilePosition() {
@@ -31,14 +36,32 @@ public class Tile extends StaticTiledMapTile{
     public void setTilePosition(Position tilePosition) {
         this.tilePosition = tilePosition.convertTo(Position.PositionUnit.TILES);
 
+        // debug, get the target tile we want to see
+        //boolean flag = tilePosition.equals(new Position(17,4, Position.PositionUnit.TILES)); // 16, 4
+
         // Set Hitbox upon updating its position
         tilePosition = tilePosition.convertTo(Position.PositionUnit.PIXELS);
-        float x = tilePosition.getX() - (float) TILE_SCREEN_SIZE / 2;
-        float y = tilePosition.getY() - TILE_SCREEN_SIZE / 2.0f;
+        worldX = tilePosition.getX() - (float) TILE_SCREEN_SIZE / 2;
+        worldY = tilePosition.getY() - TILE_SCREEN_SIZE / 2.0f;
 
-        Rectangle hitbox = calculateHitbox(x, y, this.getTextureRegion());
-        this.setHitbox(hitbox);
-        //this.setHitbox(new Rectangle(x, y, TILE_SCREEN_SIZE, TILE_SCREEN_SIZE));
+        setHitPixmap();
+
+        /* debug message
+        if (flag){
+            printHitPixmap();
+        }
+         */
+    }
+
+    void printHitPixmap(){
+        int width = this.getTextureRegion().getRegionWidth();
+        int height = this.getTextureRegion().getRegionHeight();
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                System.out.print((hitPixmap[x][y]) ? "１" : "０");
+            }
+            System.out.println();
+        }
     }
 
     public int getTileX(){
@@ -49,41 +72,14 @@ public class Tile extends StaticTiledMapTile{
         return this.tilePosition.getTileY();
     }
 
-    public Rectangle getHitbox() {
-        return hitbox;
-    }
+    private void setHitPixmap() {
+        Pixmap pixmap = getTilePixmap(this.getTextureRegion());
+        int startX = this.getTextureRegion().getRegionX();
+        int startY = this.getTextureRegion().getRegionY();
+        int width = this.getTextureRegion().getRegionWidth();
+        int height = this.getTextureRegion().getRegionHeight();
 
-    public void setHitbox(Rectangle hitbox) {
-        this.hitbox = hitbox;
-    }
-
-    /**
-     * Calculates the hitbox (non-transparent area) for a tile based on its texture region.
-     *
-     * @param textureRegion The texture region of the tile.
-     * @return A {@link Rectangle} representing the hitbox in pixel coordinates.
-     */
-    private Rectangle calculateHitbox(float baseX, float baseY, TextureRegion textureRegion) {
-        float scale = (float) TILE_SCREEN_SIZE / TILE_SIZE;
-
-        // Extract the texture and ensure it's prepared
-        Texture texture = textureRegion.getTexture();
-        TextureData textureData = texture.getTextureData();
-
-        // Ensure the TextureData is prepared for pixel access
-        if (!textureData.isPrepared()) {
-            textureData.prepare();
-        }
-
-        // Access the Pixmap
-        Pixmap pixmap = textureData.consumePixmap();
-        int startX = textureRegion.getRegionX();
-        int startY = textureRegion.getRegionY();
-        int width = textureRegion.getRegionWidth();
-        int height = textureRegion.getRegionHeight();
-
-        // Variables to store the bounding box
-        int minX = width, minY = height, maxX = 0, maxY = 0;
+        hitPixmap = new boolean[width][height];
 
         // Iterate over the pixels in the texture region
         for (int y = 0; y < height; y++) {
@@ -91,25 +87,73 @@ public class Tile extends StaticTiledMapTile{
                 int pixel = pixmap.getPixel(startX + x, startY + y);
                 int alpha = (pixel & 0xFF000000) >>> 24; // Extract the alpha channel
 
-                if (alpha > 0) { // Non-transparent pixel
-                    if (x < minX) minX = x;
-                    if (x > maxX) maxX = x;
-                    if (y < minY) minY = y;
-                    if (y > maxY) maxY = y;
-                }
+                // Collision detected if (alpha > 20) (max. 255)
+                hitPixmap[x][y] = (alpha > 20);
             }
         }
+    }
 
-        // Dispose the Pixmap after processing
-        pixmap.dispose();
+    /**
+     * Precomputes and caches the Pixmap for the given tile region.
+     *
+     * @param tileRegion The {@link TextureRegion} of the tile.
+     * @return The Pixmap of the tile.
+     */
+    private Pixmap getTilePixmap(TextureRegion tileRegion) {
+        final Map<String, Pixmap> tilePixmapCache = new HashMap<>();
 
-        // Handle the case where the entire tile is transparent
-        if (minX > maxX || minY > maxY) {
-            return new Rectangle(baseX, baseY, 0, 0); // No hitbox
+        String key = tileRegion.getTexture().toString() + tileRegion.getRegionX() + tileRegion.getRegionY();
+        if (!tilePixmapCache.containsKey(key)) {
+            Texture tileTexture = tileRegion.getTexture();
+            TextureData textureData = tileTexture.getTextureData();
+            if (!textureData.isPrepared()) {
+                textureData.prepare();
+            }
+
+            Pixmap pixmap = textureData.consumePixmap();
+            tilePixmapCache.put(key, pixmap);
+        }
+        return tilePixmapCache.get(key);
+    }
+
+    /**
+     * Checks if the specified point collides with the non-transparent part of a tile.
+     *
+     * @param pointX The world X coordinate of the point.
+     * @param pointY The world Y coordinate of the point.
+     * @return True if there is a collision, false otherwise.
+     */
+    public boolean isCollidingPoint(float pointX, float pointY) {
+        /*Precomputed Alpha Maps:
+        Instead of accessing Pixmap directly during runtime,
+        preprocess the tileset and store alpha masks as 2D arrays of booleans
+        (true for non-transparent or alpha > 20, false for transparent).
+        This avoids expensive Pixmap operations.
+         */
+        TextureRegion tileRegion = this.getTextureRegion();
+
+        float scale = (float) TILE_SCREEN_SIZE / TILE_SIZE;
+        int height = this.getTextureRegion().getRegionHeight(); // in pixels, which is 16 (or TILE_SIZE) in this case
+
+        // Calculate the local tile coordinates (in pixels) relative to the tile's position
+        int localX = (int) ((pointX - worldX) / scale);
+        int localY = height - (int) ((pointY - worldY) / scale) - 1; // The direction of the y-axis needs to be reversed.
+        // In the array, the y-axis is facing down. However, in LibGDX coordinate system, it is facing upward from the bottom-left corner.
+
+        // Check if the point is within the bounds of the tile
+        if (localX < 0 || localX >= tileRegion.getRegionWidth() || localY < 0 || localY >= tileRegion.getRegionHeight()) {
+            return false; // Point is outside the tile's bounds
         }
 
-        // Create a rectangle using the bounding box
-        // Gdx.app.log("Rectangle", rect +  "");
-        return new Rectangle(baseX + minX, baseY + minY, (maxX - minX + 1) * scale, (maxY - minY + 1) * scale);
+        // get that specific bit (boolean)
+        boolean pixel = hitPixmap[localX][localY];//pixmap.getPixel(pixelX, pixelY);
+
+        // Collision detected if alpha > 0
+        if (pixel){ // max 255
+            Gdx.app.log("Alpha",localX + ", " + localY);
+            printHitPixmap();
+            return true;
+        }
+        return false;
     }
 }

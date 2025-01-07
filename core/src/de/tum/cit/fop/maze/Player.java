@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 
 import static de.tum.cit.fop.maze.Constants.*;
 import static java.lang.Math.abs;
@@ -148,9 +147,9 @@ public class Player extends Character {
      */
     public boolean canMoveTo(float x, float y){
         // Loop through points along the border the hitbox along the x-axis
-        for (int i = (int) (-hitboxWidthOnScreen / 2); i <= hitboxWidthOnScreen / 2; i += (int) (hitboxWidthOnScreen/5)){
+        for (int i = (int) (-hitboxWidthOnScreen / 2); i <= hitboxWidthOnScreen / 2; i += (int) (hitboxWidthOnScreen/10)){
             // Loop through points along the border the hitbox along the y-axis
-            for (int j = (int) (-hitboxHeightOnScreen / 2); j <= hitboxHeightOnScreen / 2; j += (int) (hitboxHeightOnScreen/5)){
+            for (int j = (int) (-hitboxHeightOnScreen / 2); j <= hitboxHeightOnScreen / 2; j += (int) (hitboxHeightOnScreen/10)){
                 if (isPointWithinInstanceOf(x, y, i, j, Wall.class)){
                     return false;
                 }
@@ -182,7 +181,7 @@ public class Player extends Character {
         int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
         // if the tile at position (tileX, tileY) is an instance of the objectClass (e.g., Wall) AND
         // if the point (x+offsetX, y+offsetY) is inside this tile
-        if (isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)){ //
+        if (isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).isCollidingPoint(x+offsetX, y+offsetY)){ // && tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)
             Gdx.app.log("Player",
                     "Player's " +
                             ((offsetX > 0) ? "right" : "left") + "-" + ((offsetY > 0) ? "upper" : "lower") +
