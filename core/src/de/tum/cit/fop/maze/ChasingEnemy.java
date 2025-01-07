@@ -64,8 +64,8 @@ public class ChasingEnemy extends Character {
     void update(float delta) {
         if (paused) return; // Check if the game is paused
 
-        // Check if the player is within the detection radius using the helper method
-        if (isPlayerWithinDetectionRadius(player)) { // Directly use the field 'player'
+        // Check if the player is within the detection radius
+        if (isPlayerWithinDetectionRadius(player)) {
             // If the player is within the detection radius, chase the player
             isChasing = true;
             chase(player, delta); // Call the chase method
@@ -80,7 +80,26 @@ public class ChasingEnemy extends Character {
             }
             moveTowardsTarget(delta); // Gradually move towards the random target
         }
+
+        // Check for collision between the enemy and the player
+        attackPlayer(player); // Check if the enemy touched the player
     }
+
+    /**
+     * Checks if the enemy collides with the player.
+     * If a collision is detected, the player loses lives.
+     *
+     * @param player The player object.
+     */
+
+    //like the damge player in trap class
+    private void attackPlayer(Player player) {
+        if (this.getHitbox().overlaps(player.getHitbox())) {
+            player.loseLives(1);
+            System.out.println("The enemy touched the player! Player loses 1 life.");
+        }
+    }
+
 
     /*private boolean isPlayerWithinDetectionRadius(Player player) {
         // Calculate the distance between the enemy and the player
@@ -148,7 +167,7 @@ public class ChasingEnemy extends Character {
             y = newY; // Move vertically if no collision
         }
 
-        // Optionally: Constrain enemy position within the game world boundaries
+        // Constrain enemy position within the game world boundaries
         x = MathUtils.clamp(x, hitboxWidthOnScreen / 2, WORLD_WIDTH - hitboxWidthOnScreen / 2);
         y = MathUtils.clamp(y, hitboxHeightOnScreen / 2, WORLD_HEIGHT - hitboxHeightOnScreen / 2);
     }

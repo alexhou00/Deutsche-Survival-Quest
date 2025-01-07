@@ -16,7 +16,9 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static de.tum.cit.fop.maze.Constants.*;
@@ -54,8 +56,12 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final SpotlightEffect spotlightEffect;
 
-    private ChasingEnemy chasingEnemy;
+    private List<ChasingEnemy> chasingEnemies;
+    private List<Trap> traps;
+
+
     private TiledMapTileLayer collisionLayer;
+    PopUpPanel popUpPanel;
 
 
 
@@ -115,11 +121,25 @@ public class GameScreen extends InputAdapter implements Screen {
                 tiles.entrance.getTileX(),
                 tiles.entrance.getTileY(),
                 16, 32, 12, 19, 64f, 128f, 6.5f,
-                tiles.layer, tiles);
+                tiles.layer, tiles, this);//"this" is already a game screen
+
+
+
+
+        // Initialize traps and add one trap (you can add more as needed)
+        traps = new ArrayList<>();
+        Trap trap1 = new Trap(100f, 150f, 50, 50, 30, 30, 50f, 50f, 1.0f);
+        traps.add(trap1);
+
+
 
 
         // Initialize ChasingEnemy with player and collisionLayer
-        chasingEnemy = new ChasingEnemy(10, 10, 32, 32, 32, 32, 64, 64, 3, tiles.layer, player);
+        chasingEnemies = new ArrayList<>();
+        ChasingEnemy chasingEnemy1 = new ChasingEnemy(10, 10, 32, 32, 32, 32, 64, 64, 3, tiles.layer, player);
+        chasingEnemies.add(chasingEnemy1); // Add enemy targeting the player
+
+        popUpPanel = new PopUpPanel();
 
 
         spotlightEffect = new SpotlightEffect();
@@ -209,9 +229,9 @@ public class GameScreen extends InputAdapter implements Screen {
         renderArrow();
         renderKey();
 
-        // Render the chasing enemy
-        chasingEnemy.update(delta); // Update the chasing enemy's logic (e.g., chasing the player or moving randomly)
-        chasingEnemy.draw(game.getSpriteBatch()); // Draw the enemy to the screen
+        if (!chasingEnemies.isEmpty()) {
+            chasingEnemies.get(0).draw(game.getSpriteBatch());
+        }
 
 
         moveCamera();
@@ -339,6 +359,14 @@ public class GameScreen extends InputAdapter implements Screen {
         if (key.isTouching(player)){
             key.collect();
         }
+    }
+
+    private void renderChasingEnemies() {
+        chasingEnemies.get(0).draw(game.getSpriteBatch());
+    }
+
+    private void renderTrap(){
+        traps.get(0).draw(game.getSpriteBatch());
     }
 
     /**
@@ -487,6 +515,15 @@ public class GameScreen extends InputAdapter implements Screen {
         shapeRenderer.dispose();
         mapRenderer.dispose();
         hudObjectRenderer.dispose();
+    }
+
+    //getter for trap and enemy
+    public List<Trap> getTraps() {
+        return traps;
+    }
+
+    public List<ChasingEnemy> getChasingEnemies() {
+        return chasingEnemies;
     }
 
     /**
