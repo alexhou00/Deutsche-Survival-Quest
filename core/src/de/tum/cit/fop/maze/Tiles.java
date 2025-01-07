@@ -41,6 +41,9 @@ public class Tiles {
     private static final Set<Integer> WALLS = IntStream.concat(IntStream.rangeClosed(10, 29),IntStream.rangeClosed(60, 79))
             .boxed()
             .collect(Collectors.toSet());
+    private static final Set<Integer> TRAPS = IntStream.rangeClosed(30, 39)
+            .boxed()
+            .collect(Collectors.toSet());
     public static final int KEY = 6;
     public static final int ENTRANCE = 1;
     public static final int EXIT = 2;
@@ -90,6 +93,9 @@ public class Tiles {
                     exits.add(exit);
                     tileset[index] = exit;
                     //tileset[index].getProperties().put("isExit", true);
+                }
+                else if (TRAPS.contains(index)){
+                    tileset[index] = new Trap(tileRegion);
                 }
                 else {
                     tileset[index] = new Tile(tileRegion);
@@ -253,6 +259,9 @@ public class Tiles {
 
             Exit exit = exits.get(exits.indexOf(tile));
             exit.setTilePosition(new Position(x, y, TILES));
+        }
+        else if (tile instanceof Trap){
+            newTile = new Trap(tile.getTextureRegion());
         }
         else {
             newTile = new Tile(tile.getTextureRegion());

@@ -213,6 +213,7 @@ public class Player extends Character {
         }
     }
 
+
     //for traps and enemies
     private void checkCollisions() {
         // Access traps and enemies through GameManager
@@ -220,11 +221,12 @@ public class Player extends Character {
         List<ChasingEnemy> chasingEnemies = gameScreen.getChasingEnemies();
 
         // Check for collision with traps
+        /*
         for (Trap trap : traps) {
             if (this.getHitbox().overlaps(trap.getHitbox())) {
                 trap.damagePlayer(this);
             }
-        }
+        }*/
 
         // Check for collision with enemies
         /*for (ChasingEnemy enemy : chasingEnemies) {
