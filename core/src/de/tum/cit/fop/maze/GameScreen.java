@@ -349,9 +349,9 @@ public class GameScreen extends InputAdapter implements Screen {
         hudBatch.setProjectionMatrix(hudCamera.combined); // HUD uses its own camera so that it does not follow the player and the position is fixed on the screen.
         hudBatch.begin();
 
-        font.draw(hudBatch, "This is the HUD", 20, Gdx.graphics.getHeight() - 20);
-        font.draw(hudBatch, "Score: " + Math.round(sinusInput), 20f, Gdx.graphics.getHeight() - 50f);
-        font.draw(hudBatch, "Lives:", 20f, Gdx.graphics.getHeight() - 80f);
+        //font.draw(hudBatch, "This is the HUD", 20, Gdx.graphics.getHeight() - 20);
+        //font.draw(hudBatch, "Score: " + Math.round(sinusInput), 20f, Gdx.graphics.getHeight() - 50f);
+        //font.draw(hudBatch, "Lives:", 20f, Gdx.graphics.getHeight() - 80f);
 
         // Show all the variables in the bottom-left corner here
         // Variables to show, stored in a map (LinkedHashMap preserves the order)
@@ -367,7 +367,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // hudObjectRenderer use another rendering batch, so we have to end the batch first, and start it again
         hudBatch.begin();
-        hudObjectRenderer.drawHearts(hudBatch, player.getLives(), 128, Gdx.graphics.getHeight() - 106f, 32, 2);
+        hudObjectRenderer.drawHearts(hudBatch, player.getLives(), 20, Gdx.graphics.getHeight() - 26f - 20, 32, 2);
         /* Health bar
         // Draw health bar
         float healthBarWidth = 180f;
