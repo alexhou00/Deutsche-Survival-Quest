@@ -37,6 +37,8 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> characterDownAnimation;
     private Animation<TextureRegion> characterIdleAnimation;
 
+    private TextureRegion trapRegion;
+
     Texture backgroundTexture;
 
     Music backgroundMusic;
@@ -60,6 +62,7 @@ public class MazeRunnerGame extends Game {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         this.loadCharacterAnimation(); // Load character animation
+        this.loadTrapTexture();
         backgroundTexture = new Texture("background.png");
 
         // Play some background music
@@ -133,6 +136,10 @@ public class MazeRunnerGame extends Game {
 
     }
 
+    private void loadTrapTexture(){
+        trapRegion = new TextureRegion(new Texture(Gdx.files.internal("objects.png")),1,165,31,26);
+    }
+
     /**
      * Cleans up resources when the game is disposed.
      */
@@ -168,6 +175,10 @@ public class MazeRunnerGame extends Game {
         return backgroundTexture;
     }
 
+    public TextureRegion getTrapRegion() {
+        return trapRegion;
+    }
+
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
     }
@@ -183,7 +194,7 @@ public class MazeRunnerGame extends Game {
 
 
     public void checkExitToNextLevel(Player player) {
-        if (player.isCenterTouchingTile(Exit.class) /*&& gameScreen.key.isCollected()*/){
+        if (player.isCenterTouchingTile(Exit.class) && gameScreen.key.isCollected()){
             gameLevel += 1;
             gameScreen.dispose();
             gameScreen = new GameScreen(this);

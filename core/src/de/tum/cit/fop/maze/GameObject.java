@@ -3,20 +3,13 @@ package de.tum.cit.fop.maze;
 import com.badlogic.gdx.math.Rectangle;
 
 /**
- * Represents a generic STATIC game object with common properties and behaviors.
- * <p>
- * This class provides a foundation for other game objects
- * such as traps the key. It includes properties
- * like position, size, and hitbox, as well as methods for
- * collision detection and accessing object dimensions.
+ * Represents a generic game object with common properties and behaviors.
  */
-
 public abstract class GameObject {
 
     protected float x, y;
     protected float width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen;
-    protected float hitboxWidthOnScreen;
-    protected float hitboxHeightOnScreen;
+    protected float hitboxWidthOnScreen, hitboxHeightOnScreen;
     protected Rectangle hitbox;
 
     /**
@@ -40,24 +33,13 @@ public abstract class GameObject {
         this.hitboxHeight = hitboxHeight;
         this.widthOnScreen = widthOnScreen;
         this.heightOnScreen = heightOnScreen;
-        // Actual size of the non-transparent part shown on the screen
         this.hitboxWidthOnScreen = (float) widthOnScreen * hitboxWidth / width;
         this.hitboxHeightOnScreen = (float) heightOnScreen * hitboxHeight / height;
-
         this.hitbox = null;
     }
 
     public float getX() {
         return x;
-    }
-
-    /**
-     * Calculates the x-coordinate of the object's origin (the center of the object).
-     *
-     * @return The x-coordinate of the origin.
-     */
-    public float getOriginX(){
-        return x - widthOnScreen / 2;
     }
 
     public void setX(float x) {
@@ -68,15 +50,6 @@ public abstract class GameObject {
         return y;
     }
 
-    /**
-     * Calculates the y-coordinate of the object's origin (the center of the object).
-     *
-     * @return The y-coordinate of the origin.
-     */
-    public float getOriginY(){
-        return y - heightOnScreen / 2;
-    }
-
     public void setY(float y) {
         this.y = y;
     }
@@ -85,32 +58,16 @@ public abstract class GameObject {
         return width;
     }
 
-    public float getHeight() {
-        return height;
-    }
-
     public void setWidth(float width) {
         this.width = width;
     }
 
+    public float getHeight() {
+        return height;
+    }
+
     public void setHeight(float height) {
         this.height = height;
-    }
-
-    public void setHitbox(Rectangle hitbox) {
-        this.hitbox = hitbox;
-    }
-
-    public boolean isCollision(GameObject other) {
-        return hitbox.overlaps(other.hitbox);
-    }
-
-    public boolean isTouching(GameObject other) {
-        return this.getHitbox().overlaps(other.getHitbox());
-    }
-
-    public boolean isTouching(Character other) {
-        return this.getHitbox().overlaps(other.getHitbox());
     }
 
     public float getHitboxWidth() {
@@ -129,28 +86,46 @@ public abstract class GameObject {
         this.hitboxHeight = hitboxHeight;
     }
 
-
     public float getWidthOnScreen() {
         return widthOnScreen;
+    }
+
+    public void setWidthOnScreen(float widthOnScreen) {
+        this.widthOnScreen = widthOnScreen;
     }
 
     public float getHeightOnScreen() {
         return heightOnScreen;
     }
 
-    public void setWidthOnScreen(float setWidthOnScreen) {
-        this.widthOnScreen = setWidthOnScreen;
-    }
-
-    // if me make the object move
-    public void hitboxPosition(){
-        hitbox.setPosition(x, y);
+    public void setHeightOnScreen(float heightOnScreen) {
+        this.heightOnScreen = heightOnScreen;
     }
 
     public Rectangle getHitbox() {
         hitbox = new Rectangle(x - hitboxWidthOnScreen / 2, y - hitboxWidthOnScreen / 2, hitboxWidthOnScreen, hitboxHeightOnScreen);
         return hitbox;
     }
+
+    /**
+     * Calculates the x-coordinate of the character's origin (the center of the character).
+     *
+     * @return The x-coordinate of the origin.
+     */
+    public float getOriginX() {
+        return x - widthOnScreen / 2;
+    }
+
+    /**
+     * Calculates the y-coordinate of the character's origin (the center of the character).
+     *
+     * @return The y-coordinate of the origin.
+     */
+    public float getOriginY() {
+        return y - heightOnScreen / 2;
+    }
+
+    public boolean isTouching(GameObject other) {
+        return this.getHitbox().overlaps(other.getHitbox());
+    }
 }
-
-

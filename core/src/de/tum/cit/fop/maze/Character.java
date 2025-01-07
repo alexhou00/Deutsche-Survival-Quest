@@ -8,18 +8,13 @@ import com.badlogic.gdx.math.Rectangle;
  * such as position, velocity, dimensions, and lifecycle methods.
  * It is intended to be extended by specific character.
  */
-public abstract class Character{
+public abstract class Character extends GameObject {
     protected float lives;
     /** velX and velY stand for velocity X and velocity Y, resp.
      * velocities are horizontal/vertical components of the speed vector
      * speed is the overall magnitude of speed
      * */
-    protected float x, y, velX, velY, speed;
-    protected float width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen;
-    /** The width/height of the visible hitbox on the screen. */
-    protected float hitboxWidthOnScreen;
-    protected float hitboxHeightOnScreen;
-    protected Rectangle hitbox;
+    protected float velX, velY, speed;
 
     protected boolean paused;
 
@@ -38,13 +33,12 @@ public abstract class Character{
      * @param lives The number of lives the character starts with.
      */
     public Character(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives) {
-        // super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
-
+        super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
         this.lives = lives;
         this.velX = 0;
         this.velY = 0;
         this.speed = 0;
-
+/*
         this.x = x;
         this.y = y;
         this.width = width;
@@ -57,7 +51,7 @@ public abstract class Character{
         this.hitboxWidthOnScreen = (float) widthOnScreen * hitboxWidth / width;
         this.hitboxHeightOnScreen = (float) heightOnScreen * hitboxHeight / height;
 
-        this.hitbox = null;
+        this.hitbox = null;*/
     }
 
     abstract void update(float delta);
@@ -81,38 +75,6 @@ public abstract class Character{
         this.lives = lives;
     }
 
-    public float getX() {
-        return x;
-    }
-
-    /**
-     * Calculates the x-coordinate of the character's origin (the center of the character).
-     *
-     * @return The x-coordinate of the origin.
-     */
-    public float getOriginX(){
-        return x - widthOnScreen / 2;
-    }
-
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    public float getY() {
-        return y;
-    }
-    /**
-     * Calculates the y-coordinate of the character's origin (the center of the character).
-     *
-     * @return The y-coordinate of the origin.
-     */
-    public float getOriginY(){
-        return y - heightOnScreen / 2;
-    }
-
-    public void setY(float y) {
-        this.y = y;
-    }
 
     public float getVelX() {
         return velX;
@@ -136,62 +98,5 @@ public abstract class Character{
 
     public void setSpeed(float speed) {
         this.speed = speed;
-    }
-
-    public float getWidth() {
-        return width;
-    }
-
-    public void setWidth(float width) {
-        this.width = width;
-    }
-
-    public float getHeight() {
-        return height;
-    }
-
-    public void setHeight(float height) {
-        this.height = height;
-    }
-
-    public float getHitboxWidth() {
-        return hitboxWidth;
-    }
-
-    public void setHitboxWidth(float hitboxWidth) {
-        this.hitboxWidth = hitboxWidth;
-    }
-
-    public float getHitboxHeight() {
-        return hitboxHeight;
-    }
-
-    public void setHitboxHeight(float hitboxHeight) {
-        this.hitboxHeight = hitboxHeight;
-    }
-
-    public float getWidthOnScreen() {
-        return widthOnScreen;
-    }
-
-    public void setWidthOnScreen(float setWidthOnScreen) {
-        this.widthOnScreen = setWidthOnScreen;
-    }
-
-    public float getHeightOnScreen() {
-        return heightOnScreen;
-    }
-
-    public void setHeightOnScreen(float heightOnScreen) {
-        this.heightOnScreen = heightOnScreen;
-    }
-
-    public Rectangle getHitbox() {
-        hitbox = new Rectangle(x - hitboxWidthOnScreen / 2, y - hitboxWidthOnScreen / 2, hitboxWidthOnScreen, hitboxHeightOnScreen);
-        return hitbox;
-    }
-
-    public boolean isTouching(GameObject other) {
-        return this.getHitbox().overlaps(other.getHitbox());
     }
 }

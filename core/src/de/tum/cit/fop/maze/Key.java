@@ -2,13 +2,12 @@ package de.tum.cit.fop.maze;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 
 /**
  * Represents the Key object to be collected to go to the exit and advance to the next level.
  * The key can be collected by the player and is rendered on the screen if not collected.
  */
-public class Key extends GameObject {
+public class Key extends StaticObject {
 
     private boolean isCollected;
 
@@ -39,6 +38,7 @@ public class Key extends GameObject {
      * Note that the key should be checked if collected at first by checking if touching player in some other places
      */
     public void collect() {
+        if (this.isCollected) return; // prevent recollecting
         isCollected = true;
         System.out.println("Key collected!"); // Debug message
     }

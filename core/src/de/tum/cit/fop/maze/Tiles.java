@@ -14,6 +14,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -107,7 +108,7 @@ public class Tiles {
         // Populate the layer with tiles
         try{
             for (String key : mapData.keys()) {
-                Position position = stringToPosition(key);
+                Position position = stringToPosition(key, TILES);
                 int x = position.getTileX();
                 int y = position.getTileY();
                 int tileValue = mapData.get(key);
@@ -151,12 +152,19 @@ public class Tiles {
                 String[] parts = line.split("="); // split into key-value, parts[0] is position (String) and parts[1] is the tileType or tileValue
                 if (parts.length != 2) continue; // ignore malformed lines
 
-                String position = parts[0];
-                String[] tileTypes = parts[1].split(","); // Handle multiple tile types (could contain the key)
+                if (!Objects.equals(parts[0], "keyPosition")){ // null-safe equal
+                    String position = parts[0];
+                    String[] tileTypes = parts[1].split(","); // Handle multiple tile types (could contain the key)
 
-                for (String tileType : tileTypes) {
-                    processTile(position, tileType, mapData);
+                    for (String tileType : tileTypes) {
+                        processTile(position, tileType, mapData);
+                    }
                 }
+                else{
+                    keyTilePosition = stringToPosition(parts[1], TILES).convertTo(PIXELS);
+                }
+
+
 
             }
         } catch (IOException e) {
@@ -179,20 +187,26 @@ public class Tiles {
             if (tileValue != KEY) {
                 mapData.put(position, tileValue);
             }
+            /* Handling the key tile with the deprecated specification in .properties file: x,y=<A_TILE>,<KEY>
             else { // Handle the key tile
-                Position parsedPosition = stringToPosition(position);
+                Position parsedPosition = stringToPosition(position, TILES);
                 keyTilePosition = new Position(parsedPosition.getTileX(), parsedPosition.getTileY(), TILES);
-            }
+            }*/
         } catch (NumberFormatException e) {
             Gdx.app.error("TileMapParser", "Invalid tile value: " + tileType + " at position " + position, e);
         }
     }
 
-    private Position stringToPosition(String string) {
+    private Position stringToPosition(String string, Position.PositionUnit unit) {
         String[] parts = string.split(",");
-        int x = Integer.parseInt(parts[0]);
-        int y = Integer.parseInt(parts[1]);
-        return new Position(x, y, TILES);
+        float x = (Float.parseFloat(parts[0]) % 1 == 0) ? Integer.parseInt(parts[0]) : Float.parseFloat(parts[0]);
+        float y = (Float.parseFloat(parts[1]) % 1 == 0) ? Integer.parseInt(parts[1]) : Float.parseFloat(parts[1]);
+        if (unit == TILES){
+            return new Position(x, y, TILES);
+        }
+        else { // unit is pixels
+            return new Position(x, y, PIXELS);
+        }
     }
 
     public Tile[] getTileset() {
