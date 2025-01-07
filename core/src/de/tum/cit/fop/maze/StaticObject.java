@@ -11,14 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
  * collision detection and accessing object dimensions.
  */
 
-public abstract class StaticObject {
-
-    protected float x, y;
-    protected float width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen;
-    protected float hitboxWidthOnScreen;
-    protected float hitboxHeightOnScreen;
-    protected Rectangle hitbox;
-
+public abstract class StaticObject extends GameObject {
     /**
      * Constructs a new StaticObject instance with specified parameters.
      *
@@ -32,124 +25,7 @@ public abstract class StaticObject {
      * @param heightOnScreen The height of the object as displayed on screen.
      */
     public StaticObject(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.hitboxWidth = hitboxWidth;
-        this.hitboxHeight = hitboxHeight;
-        this.widthOnScreen = widthOnScreen;
-        this.heightOnScreen = heightOnScreen;
-        // Actual size of the non-transparent part shown on the screen
-        this.hitboxWidthOnScreen = (float) widthOnScreen * hitboxWidth / width;
-        this.hitboxHeightOnScreen = (float) heightOnScreen * hitboxHeight / height;
-
-        this.hitbox = null;
-    }
-
-    public float getX() {
-        return x;
-    }
-
-    /**
-     * Calculates the x-coordinate of the object's origin (the center of the object).
-     *
-     * @return The x-coordinate of the origin.
-     */
-    public float getOriginX(){
-        return x - widthOnScreen / 2;
-    }
-
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    /**
-     * Calculates the y-coordinate of the object's origin (the center of the object).
-     *
-     * @return The y-coordinate of the origin.
-     */
-    public float getOriginY(){
-        return y - heightOnScreen / 2;
-    }
-
-    public void setY(float y) {
-        this.y = y;
-    }
-
-    public float getWidth() {
-        return width;
-    }
-
-    public float getHeight() {
-        return height;
-    }
-
-    public void setWidth(float width) {
-        this.width = width;
-    }
-
-    public void setHeight(float height) {
-        this.height = height;
-    }
-
-    public void setHitbox(Rectangle hitbox) {
-        this.hitbox = hitbox;
-    }
-
-    public boolean isCollision(StaticObject other) {
-        return hitbox.overlaps(other.hitbox);
-    }
-
-    public boolean isTouching(StaticObject other) {
-        return this.getHitbox().overlaps(other.getHitbox());
-    }
-
-    public boolean isTouching(Character other) {
-        return this.getHitbox().overlaps(other.getHitbox());
-    }
-
-    public float getHitboxWidth() {
-        return hitboxWidth;
-    }
-
-    public void setHitboxWidth(float hitboxWidth) {
-        this.hitboxWidth = hitboxWidth;
-    }
-
-    public float getHitboxHeight() {
-        return hitboxHeight;
-    }
-
-    public void setHitboxHeight(float hitboxHeight) {
-        this.hitboxHeight = hitboxHeight;
-    }
-
-
-    public float getWidthOnScreen() {
-        return widthOnScreen;
-    }
-
-    public float getHeightOnScreen() {
-        return heightOnScreen;
-    }
-
-    public void setWidthOnScreen(float setWidthOnScreen) {
-        this.widthOnScreen = setWidthOnScreen;
-    }
-
-    // if me make the object move
-    public void hitboxPosition(){
-        hitbox.setPosition(x, y);
-    }
-
-    public Rectangle getHitbox() {
-        hitbox = new Rectangle(x - hitboxWidthOnScreen / 2, y - hitboxWidthOnScreen / 2, hitboxWidthOnScreen, hitboxHeightOnScreen);
-        return hitbox;
+        super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
     }
 }
 
