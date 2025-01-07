@@ -175,6 +175,10 @@ public class MazeRunnerGame extends Game {
         return backgroundTexture;
     }
 
+    public TextureRegion getTrapRegion() {
+        return trapRegion;
+    }
+
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
     }
