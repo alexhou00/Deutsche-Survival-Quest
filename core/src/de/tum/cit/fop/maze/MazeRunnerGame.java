@@ -90,7 +90,7 @@ public class MazeRunnerGame extends Game {
             gameScreen = null;
         }
         if (gameOverScreen != null) {
-            gameScreen.dispose(); // Dispose the menu screen if it exists
+            gameOverScreen.dispose(); // Dispose the menu screen if it exists
             gameOverScreen = null;
         }
     }
@@ -112,7 +112,7 @@ public class MazeRunnerGame extends Game {
         }
 
         if (gameOverScreen != null) {
-            gameScreen.dispose(); // Dispose the menu screen if it exists
+            gameOverScreen.dispose(); // Dispose the menu screen if it exists
             gameOverScreen = null;
         }
     }

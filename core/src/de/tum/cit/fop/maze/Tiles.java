@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ObjectMap;
 
 import java.io.BufferedReader;
@@ -37,6 +35,8 @@ public class Tiles {
     private Tile[] tileset;
     private Tile[][] tileOnMap;
 
+    int maxTilesOnCell;
+
     // Create an immutable Set of integers representing wall
     // IntStream.concat(IntStream.rangeClosed(10, 29),IntStream.rangeClosed(64, 66)) in case i want to concat two sections in the future
     private static final Set<Integer> WALLS = IntStream.concat(IntStream.rangeClosed(10, 29),IntStream.rangeClosed(60, 149))
@@ -60,6 +60,7 @@ public class Tiles {
         exits = new ArrayList<>();
 
         traps = new ArrayList<>();
+        maxTilesOnCell = 0;
     }
 
     /**
@@ -110,48 +111,57 @@ public class Tiles {
         }
 
         // Parse ".properties" file
-        ObjectMap<String, Integer> mapData = parsePropertiesFile(mapFilePath);
+        ObjectMap<String, List<Integer>> mapData = parsePropertiesFile(mapFilePath);
 
         // Create a TiledMap
         TiledMap map = new TiledMap();
-        layer = new TiledMapTileLayer(mapWidthInTiles, mapHeightInTiles, TILE_SIZE, TILE_SIZE); // put our width/height here
-        tileOnMap = new Tile[mapWidthInTiles][mapHeightInTiles];
 
-        // Populate the layer with tiles
-        try{
-            for (String key : mapData.keys()) {
-                Position position = stringToPosition(key, TILES);
-                int x = position.getTileX();
-                int y = position.getTileY();
-                int tileValue = mapData.get(key);
+        tileOnMap = new Tile[mapWidthInTiles][mapHeightInTiles]; // stores the tile in that cell that is on the most upper layer
 
-                if (!TRAPS.contains(tileValue)){
+        for (int i=0;i<maxTilesOnCell;i++){
 
-                    Tile tile = tileset[tileValue];
+            layer = new TiledMapTileLayer(mapWidthInTiles, mapHeightInTiles, TILE_SIZE, TILE_SIZE); // put our width/height here
+            //Gdx.app.log("TileReader", "current layer: " + i);
 
-                    // deal with LibGDX own library
-                    TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                    cell.setTile(tile);
-                    layer.setCell(x, y, cell);
+            // Populate the layer with tiles
+            try{
+                for (String key : mapData.keys()) {
+                    if (mapData.get(key).size() <= i)
+                        continue;
+                    int tileValue = mapData.get(key).get(i);
+                    Position position = stringToPosition(key, TILES);
+                    int x = position.getTileX();
+                    int y = position.getTileY();
 
-                    // create a new tile based on its type so that we won't be accessing the same tile from the array
-                    // also set its position on the map
-                    createAndPlaceNewTile(x, y, tile);
+                    if (!TRAPS.contains(tileValue)){
+
+                        Tile tile = tileset[tileValue];
+
+                        // deal with LibGDX own library
+                        TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+                        cell.setTile(tile);
+                        layer.setCell(x, y, cell);
+
+                        // create a new tile based on its type so that we won't be accessing the same tile from the array
+                        // also set its position on the map
+                        createAndPlaceNewTile(x, y, tile);
+                    }
+                    else{ // a trap
+                        Tile tile = tileset[tileValue];
+                        createAndPlaceNewTile(x, y, tile);
+                    }
+
                 }
-                else{ // a trap
-                    Tile tile = tileset[tileValue];
-                    createAndPlaceNewTile(x, y, tile);
-                }
-
+            } catch (ArrayIndexOutOfBoundsException e) {
+                Gdx.app.error("Tiles", "Error loading tiles: ", e);
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            Gdx.app.error("Tiles", "Error loading tiles: ", e);
+
+            map.getLayers().add(layer);
+
         }
 
-        map.getLayers().add(layer);
-
         Gdx.app.log("Tiles", "Tiled Map loaded");
-        Gdx.app.log("Tiles", "entrance position: " + entrance.getTilePosition());
+        //Gdx.app.log("Tiles", "entrance position: " + entrance.getTilePosition());
         return map;
     }
 
@@ -161,8 +171,8 @@ public class Tiles {
      * @param filePath Path to the properties file.
      * @return An {@link ObjectMap} containing map data.
      */
-    private ObjectMap<String, Integer> parsePropertiesFile(String filePath) {
-        ObjectMap<String, Integer> mapData = new ObjectMap<>();
+    private ObjectMap<String, List<Integer>> parsePropertiesFile(String filePath) {
+        ObjectMap<String, List<Integer>> mapData = new ObjectMap<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -177,6 +187,7 @@ public class Tiles {
                     String[] tileTypes = parts[1].split(","); // Handle multiple tile types (could contain the key)
 
                     for (String tileType : tileTypes) {
+                        //Gdx.app.log("Parse", "Tile Parsed: " + position);
                         processTile(position, tileType, mapData);
                     }
                 }
@@ -201,12 +212,22 @@ public class Tiles {
      * @param tileType   The tile value or type but as a string.
      * @param mapData    The mapData to update.
      */
-    private void processTile(String position, String tileType, ObjectMap<String, Integer> mapData) {
+    private void processTile(String position, String tileType, ObjectMap<String, List<Integer>> mapData) {
         try {
             int tileValue = Integer.parseInt(tileType);
 
             if (tileValue != KEY) {
-                mapData.put(position, tileValue);
+                List<Integer> list;
+                if (mapData.get(position) == null){
+                    list = new ArrayList<>();
+                    mapData.put(position, list);
+                }
+                list = mapData.get(position);
+                list.add(tileValue);
+                if (list.size() > maxTilesOnCell) maxTilesOnCell = list.size();
+                mapData.put(position, list);
+                //Gdx.app.log("mapData", "Put to mapData: " + position + " " + mapData.get(position));
+
             }
 
             /*
@@ -266,7 +287,6 @@ public class Tiles {
      * @param tile The original tile to process and to replace.
      */
     private void createAndPlaceNewTile(int x, int y, Tile tile) {
-
         if (tile.getProperties().get("type").equals("Trap")) {
             Position position = new Position(x, y, TILES).convertTo(PIXELS);
             float worldX = position.getX();

@@ -146,14 +146,12 @@ public class Tile extends StaticTiledMapTile{
         }
 
         // get that specific bit (boolean)
-        boolean pixel = hitPixmap[localX][localY];//pixmap.getPixel(pixelX, pixelY);
+        //pixmap.getPixel(pixelX, pixelY);
 
         // Collision detected if alpha > 0
-        if (pixel){ // max 255
-            Gdx.app.log("Alpha",localX + ", " + localY);
-           // printHitPixmap();
-            return true;
-        }
-        return false;
+        // max 255
+        //Gdx.app.log("Alpha",localX + ", " + localY);
+        // printHitPixmap();
+        return hitPixmap[localX][localY]; // true if this pixel is true
     }
 }

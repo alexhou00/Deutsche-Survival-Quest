@@ -8,37 +8,49 @@ def xml_to_properties(xml_file, properties_file):
     root = tree.getroot()
 
     tilesets = root.findall("tileset")
-    IDs = []
-    for tileset in tilesets:
-        IDs.append(int(tileset.attrib.get("firstgid")))
+    IDs = [int(tileset.attrib.get("firstgid")) for tileset in tilesets]
     IDs.sort() # Sort the IDs to ensure proper ordering
     
     # Extract the data from the <data> tag in the <layer>
-    layer = root.find("layer")
-    data = layer.find("data").text.strip()
+    layers = root.findall("layer")
+    properties_dict = {}
 
-    # Get map dimensions
-    # width = int(root.get("width"))
-    # height = int(root.get("height"))
 
-    # Parse CSV data
-    rows = data.split("\n")
-    properties_lines = []
+    for layer in layers:
+        data = layer.find("data").text.strip()
 
-    # Convert to .properties format
-    for y, row in enumerate(reversed(rows)):
-        tiles = row.split(",")
-        for x, tile in enumerate(tiles):
-            if tile != '':
-                tile_value = int(tile)
-                base_id = max([id_ for id_ in IDs if id_ <= tile_value], default=0)
-                index = tile_value - base_id + 1
-                if tile_value != 0:  # Only include non-zero tiles
-                    properties_lines.append(f"{x},{y}={index-1}")  # minus one since our .properties file is 0-based
+        # Get map dimensions
+        # width = int(root.get("width"))
+        # height = int(root.get("height"))
 
-    # Write to .properties file
-    with open(properties_file, "w") as f:
-        f.write("\n".join(properties_lines))
+        # Parse CSV data
+        rows = data.split("\n")
+        # properties_lines = []
+
+        # Convert to .properties format
+        for y, row in enumerate(reversed(rows)):
+            tiles = row.split(",")
+            for x, tile in enumerate(tiles):
+                if tile != '':
+                    tile_value = int(tile)
+
+                    if tile_value != 0:  # Only process non-zero tiles
+                        base_id = max([id_ for id_ in IDs if id_ <= tile_value], default=0)
+                        index = tile_value - base_id + 1
+
+                        key = f"{x},{y}"
+                        if key not in properties_dict:
+                            properties_dict[key] = []
+                        properties_dict[key].append(index-1) # minus one since our .properties file is 0-based
+
+
+        keyPosition = input("keyPosition=")
+        # Write to .properties file
+        with open(properties_file, "w") as f:
+            f.write(f"keyPosition={keyPosition}\n")
+            for key, indices in properties_dict.items():
+                indices_str = ",".join(map(str, indices))
+                f.write(f"{key}={indices_str}\n")
 
 dir_path = ""
 xml_file = dir_path + input("Enter the filename of the tmx file (include the .tmx extension):") #"test.tmx"
