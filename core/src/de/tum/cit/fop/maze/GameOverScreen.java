@@ -36,6 +36,8 @@ public class GameOverScreen implements Screen {
         var camera = new OrthographicCamera();
         camera.update();
 
+        this.show();
+
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
         stage = new Stage(viewport, game.getSpriteBatch()); // Create a stage for UI elements
 
