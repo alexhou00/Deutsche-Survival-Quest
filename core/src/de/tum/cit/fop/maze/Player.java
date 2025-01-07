@@ -6,6 +6,8 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 
+import java.util.List;
+
 import static de.tum.cit.fop.maze.Constants.*;
 import static java.lang.Math.abs;
 
@@ -19,6 +21,7 @@ public class Player extends Character {
     private final Tiles tiles;
     float targetVelX, targetVelY;
     int lastHorizontalDirection = 0, lastVerticalDirection = 0;
+    GameScreen gameScreen;
 
     private static final float BASE_SPEED = 240f; // normal speed when moving either vertically or horizontally
     private static final float BOOST_MULTIPLIER = 2f; // the speed will be multiplied by this number when the SHIFT key is pressed
@@ -41,13 +44,14 @@ public class Player extends Character {
      * @param lives             Number of lives the player starts with.
      * @param collisionLayer    The layer used for collision detection.
      */
-    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, TiledMapTileLayer collisionLayer, Tiles tiles) {
+    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, TiledMapTileLayer collisionLayer, Tiles tiles, GameScreen gameScreen) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
         this.hasKey = false;
         this.isMoving = false;
         // this.speed = BASE_SPEED; // normal speed when moving either vertically or horizontally
         this.collisionLayer = collisionLayer;
         this.tiles = tiles;
+        this.gameScreen = gameScreen;
     }
 
     private void handleMovement() {
@@ -211,14 +215,34 @@ public class Player extends Character {
     }
 
     //for traps and enemies
-    public void loseLives(float damage){
-        lives -= damage;
+    private void checkCollisions() {
+        // Access traps and enemies through GameManager
+        List<Trap> traps = gameScreen.getTraps();
+        List<ChasingEnemy> chasingEnemies = gameScreen.getChasingEnemies();
+
+        // Check for collision with traps
+        for (Trap trap : traps) {
+            if (this.getHitbox().overlaps(trap.getHitbox())) {
+                trap.damagePlayer(this);
+            }
+        }
+
+        // Check for collision with enemies
+        /*for (ChasingEnemy enemy : chasingEnemies) {
+            if (this.getHitbox().overlaps(enemy.getHitbox())) {
+                enemy.checkPlayerCollision(this);
+            }
+        }*/
+    }
+
+    public void loseLives(float amount){//or damage idk
+        lives -= amount;
 
         if (lives <= 0){
             System.out.println("GAME OVER!! You used all of your lives:'(");
         }
         else{
-            System.out.println("You got " + damage + " amount of damage!");
+            System.out.println("You got " + amount + " amount of damage! Remaining lives: " + lives);
         }
     }
 
@@ -241,6 +265,7 @@ public class Player extends Character {
     void update(float delta) {
         if (paused) return;
         handleMovement();
+        checkCollisions();
     }
 
     @Override

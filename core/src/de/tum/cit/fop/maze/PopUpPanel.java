@@ -11,7 +11,7 @@ public class PopUpPanel extends ScreenAdapter {
 
     private Stage stage;
     MazeRunnerGame game;
-    Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+    Skin skin;
     //private Window popUpWindow;
 
 
@@ -21,7 +21,7 @@ public class PopUpPanel extends ScreenAdapter {
 
         Gdx.input.setInputProcessor(stage);
 
-        skin = game.getSkin();
+        skin = new Skin(Gdx.files.internal("craft/uiskin.json"));
 
         GameIntroduction gameIntroduction = new GameIntroduction("Game Introduction", skin);
 
