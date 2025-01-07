@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
@@ -52,6 +53,9 @@ public class GameScreen extends InputAdapter implements Screen {
     private final ElementRenderer hudObjectRenderer; // Hearts and other objects on the HUD
 
     private final SpotlightEffect spotlightEffect;
+
+    private ChasingEnemy chasingEnemy;
+    private TiledMapTileLayer collisionLayer;
 
 
 
@@ -112,6 +116,11 @@ public class GameScreen extends InputAdapter implements Screen {
                 tiles.entrance.getTileY(),
                 16, 32, 12, 19, 64f, 128f, 6.5f,
                 tiles.layer, tiles);
+
+
+        // Initialize ChasingEnemy with player and collisionLayer
+        chasingEnemy = new ChasingEnemy(10, 10, 32, 32, 32, 32, 64, 64, 3, tiles.layer, player);
+
 
         spotlightEffect = new SpotlightEffect();
 
@@ -199,6 +208,11 @@ public class GameScreen extends InputAdapter implements Screen {
         renderPlayer();
         renderArrow();
         renderKey();
+
+        // Render the chasing enemy
+        chasingEnemy.update(delta); // Update the chasing enemy's logic (e.g., chasing the player or moving randomly)
+        chasingEnemy.draw(game.getSpriteBatch()); // Draw the enemy to the screen
+
 
         moveCamera();
 

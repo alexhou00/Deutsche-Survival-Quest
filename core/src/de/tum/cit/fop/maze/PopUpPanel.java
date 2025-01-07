@@ -10,8 +10,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 public class PopUpPanel extends ScreenAdapter {
 
     private Stage stage;
+    MazeRunnerGame game;
+    Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
     //private Window popUpWindow;
-    private Skin skin;
+
 
     @Override
     public void show() {
@@ -19,7 +21,7 @@ public class PopUpPanel extends ScreenAdapter {
 
         Gdx.input.setInputProcessor(stage);
 
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
+        skin = game.getSkin();
 
         GameIntroduction gameIntroduction = new GameIntroduction("Game Introduction", skin);
 
