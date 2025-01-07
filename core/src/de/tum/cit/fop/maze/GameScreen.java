@@ -224,7 +224,6 @@ public class GameScreen extends InputAdapter implements Screen {
         game.checkExitToNextLevel(player);
 
 
-
         game.getSpriteBatch().begin();
         renderTrap();
         // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
