@@ -70,10 +70,11 @@ public class ElementRenderer {
             batch.draw(partialHeart, startX + livesInt * spacing, startY, 14 * scale, 13 * scale);
         }
 
-
-        // Draw empty hearts
-        for (int i = (int)Math.ceil(lives); i < MAX_PLAYER_LIVES; i++) {
-            batch.draw(emptyHeartRegion, startX + i * spacing, startY, 14 * scale, 13 * scale);
+        if (livesInt > 0){
+            // Draw empty hearts
+            for (int i = (int)Math.ceil(lives); i < MAX_PLAYER_LIVES; i++) {
+                batch.draw(emptyHeartRegion, startX + i * spacing, startY, 14 * scale, 13 * scale);
+            }
         }
     }
 

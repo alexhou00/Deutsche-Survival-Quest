@@ -57,8 +57,6 @@ public class GameScreen extends InputAdapter implements Screen {
     private final SpotlightEffect spotlightEffect;
 
     private List<ChasingEnemy> chasingEnemies;
-    private List<Trap> traps;
-
 
     private TiledMapTileLayer collisionLayer;
     PopUpPanel popUpPanel;
@@ -127,7 +125,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
         // Initialize traps and add one trap (you can add more as needed)
-        traps = new ArrayList<>();
+        // traps = new ArrayList<>();
         //Trap trap1 = new Trap(100f, 150f, 50, 50, 30, 30, 50f, 50f, 1.0f);
         // traps.add(trap1);
 
@@ -223,12 +221,12 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
         game.getSpriteBatch().begin();
-
+        renderTrap();
         // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
         renderPlayer();
         renderArrow();
         renderKey();
-        // renderTrap();
+
 
         if (!chasingEnemies.isEmpty()) {
             chasingEnemies.get(0).draw(game.getSpriteBatch());
@@ -365,10 +363,12 @@ public class GameScreen extends InputAdapter implements Screen {
     private void renderChasingEnemies() {
         chasingEnemies.get(0).draw(game.getSpriteBatch());
     }
-/*
+
     private void renderTrap(){
-        traps.get(0).draw(game.getSpriteBatch());
-    }*/
+        for (Trap trap : tiles.traps){
+            trap.draw(game.getSpriteBatch());
+        }
+    }
 
     /**
      * Renders the Heads-Up Display (HUD), including player stats and health.
@@ -519,9 +519,6 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     //getter for trap and enemy
-    public List<Trap> getTraps() {
-        return traps;
-    }
 
     public List<ChasingEnemy> getChasingEnemies() {
         return chasingEnemies;

@@ -217,20 +217,25 @@ public class Player extends Character {
     //for traps and enemies
     private void checkCollisions() {
         // Access traps and enemies through GameManager
-        List<Trap> traps = gameScreen.getTraps();
+        List<Trap> traps = tiles.traps;
         List<ChasingEnemy> chasingEnemies = gameScreen.getChasingEnemies();
 
         // Check for collision with traps
-        /*
+
         for (Trap trap : traps) {
-            if (this.getHitbox().overlaps(trap.getHitbox())) {
-                trap.damagePlayer(this);
+            if (trap.isTouching(this)) {
+                loseLives(trap.getDamage());
+                System.out.println("Be careful!! You hit a trap:O");
+                targetVelX = -targetVelX * 2;
+                velX *= -2;
+                targetVelY = -targetVelY * 2;
+                velY *= -2;
             }
-        }*/
+        }
 
         // Check for collision with enemies
         /*for (ChasingEnemy enemy : chasingEnemies) {
-            if (this.getHitbox().overlaps(enemy.getHitbox())) {
+            if (enemy.isTouching(this) {
                 enemy.checkPlayerCollision(this);
             }
         }*/
@@ -245,15 +250,6 @@ public class Player extends Character {
         else{
             System.out.println("You got " + amount + " amount of damage! Remaining lives: " + lives);
         }
-    }
-
-    // getters and setters
-    public boolean hasKey() {
-        return hasKey;
-    }
-
-    public void setHasKey(boolean hasKey) {
-        this.hasKey = hasKey;
     }
 
     /**

@@ -27,6 +27,7 @@ public class Tiles {
     public TiledMapTileLayer layer;
 
     private Position keyTilePosition;
+    List<Trap> traps;
 
     /** entrance tile, coordinates of the tile can be accessed through this */
     public Entrance entrance;
@@ -55,6 +56,8 @@ public class Tiles {
         keyTilePosition = new Position(0, 0, TILES);
         entrance = null;
         exits = new ArrayList<>();
+
+        traps = new ArrayList<>();
     }
 
     /**
@@ -81,21 +84,22 @@ public class Tiles {
 
                 if (WALLS.contains(index)){
                     tileset[index] = new Wall(tileRegion);
-                    //tileset[index].getProperties().put("collidable", true);
+                    tileset[index].getProperties().put("type", "Wall");
                 }
                 else if (index == ENTRANCE){
                     entrance = new Entrance(tileRegion);
                     tileset[index] = entrance;
-                    //tileset[index].getProperties().put("isEntrance", true);
+                    tileset[index].getProperties().put("type", "Entrance");
                 }
                 else if (index == EXIT){
                     Exit exit = new Exit(tileRegion);
                     exits.add(exit);
                     tileset[index] = exit;
-                    //tileset[index].getProperties().put("isExit", true);
+                    tileset[index].getProperties().put("type", "Exit");
                 }
                 else if (TRAPS.contains(index)){
-                    tileset[index] = new Trap(tileRegion);
+                    tileset[index] = new Tile(tileRegion); // Trap(tileRegion);
+                    tileset[index].getProperties().put("type", "Trap");
                 }
                 else {
                     tileset[index] = new Tile(tileRegion);
@@ -119,16 +123,24 @@ public class Tiles {
                 int y = position.getTileY();
                 int tileValue = mapData.get(key);
 
-                Tile tile = tileset[tileValue];
+                if (!TRAPS.contains(tileValue)){
 
-                // deal with LibGDX own library
-                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                cell.setTile(tile);
-                layer.setCell(x, y, cell);
+                    Tile tile = tileset[tileValue];
 
-                // create a new tile based on its type so that we won't be accessing the same tile from the array
-                // also set its position on the map
-                createAndPlaceNewTile(x, y, tile);
+                    // deal with LibGDX own library
+                    TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+                    cell.setTile(tile);
+                    layer.setCell(x, y, cell);
+
+                    // create a new tile based on its type so that we won't be accessing the same tile from the array
+                    // also set its position on the map
+                    createAndPlaceNewTile(x, y, tile);
+                }
+                else{ // a trap
+                    Tile tile = tileset[tileValue];
+                    createAndPlaceNewTile(x, y, tile);
+                }
+
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             Gdx.app.error("Tiles", "Error loading tiles: ", e);
@@ -158,7 +170,7 @@ public class Tiles {
                 String[] parts = line.split("="); // split into key-value, parts[0] is position (String) and parts[1] is the tileType or tileValue
                 if (parts.length != 2) continue; // ignore malformed lines
 
-                if (!Objects.equals(parts[0], "keyPosition")){ // null-safe equal
+                if (!Objects.equals(parts[0], "keyPosition")){ // null-safe equal, the key is not "keyPosition"
                     String position = parts[0];
                     String[] tileTypes = parts[1].split(","); // Handle multiple tile types (could contain the key)
 
@@ -190,9 +202,19 @@ public class Tiles {
     private void processTile(String position, String tileType, ObjectMap<String, Integer> mapData) {
         try {
             int tileValue = Integer.parseInt(tileType);
+
             if (tileValue != KEY) {
                 mapData.put(position, tileValue);
             }
+
+            /*
+            if (tileValue != KEY && !TRAPS.contains(tileValue)) {
+                mapData.put(position, tileValue);
+            }
+            else if (TRAPS.contains(tileValue)){
+                Position parsedPosition = stringToPosition(position, TILES);
+                traps.add(new Trap());
+            }*/
             /* Handling the key tile with the deprecated specification in .properties file: x,y=<A_TILE>,<KEY>
             else { // Handle the key tile
                 Position parsedPosition = stringToPosition(position, TILES);
@@ -242,6 +264,15 @@ public class Tiles {
      * @param tile The original tile to process and to replace.
      */
     private void createAndPlaceNewTile(int x, int y, Tile tile) {
+
+        if (tile.getProperties().get("type").equals("Trap")) {
+            Position position = new Position(x, y, TILES).convertTo(PIXELS);
+            float worldX = position.getX();
+            float worldY = position.getY();
+            traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,16,16,TILE_SCREEN_SIZE, TILE_SCREEN_SIZE, 2));
+            return;
+        }
+
         // Set entrance and exit positions when the entrances and exits are met,
         // We only know the position after parsing and start to create our map
         Tile newTile;
@@ -259,9 +290,6 @@ public class Tiles {
 
             Exit exit = exits.get(exits.indexOf(tile));
             exit.setTilePosition(new Position(x, y, TILES));
-        }
-        else if (tile instanceof Trap){
-            newTile = new Trap(tile.getTextureRegion());
         }
         else {
             newTile = new Tile(tile.getTextureRegion());
