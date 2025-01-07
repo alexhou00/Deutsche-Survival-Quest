@@ -19,6 +19,7 @@ public class MazeRunnerGame extends Game {
     // Screens
     private MenuScreen menuScreen;
     private GameScreen gameScreen;
+    private GameOverScreen gameOverScreen;
 
     public int getGameLevel() {
         return gameLevel;
@@ -88,6 +89,10 @@ public class MazeRunnerGame extends Game {
             gameScreen.dispose(); // Dispose the game screen if it exists
             gameScreen = null;
         }
+        if (gameOverScreen != null) {
+            gameScreen.dispose(); // Dispose the menu screen if it exists
+            gameOverScreen = null;
+        }
     }
 
     /**
@@ -105,7 +110,35 @@ public class MazeRunnerGame extends Game {
             menuScreen.dispose(); // Dispose the menu screen if it exists
             menuScreen = null;
         }
+
+        if (gameOverScreen != null) {
+            gameScreen.dispose(); // Dispose the menu screen if it exists
+            gameOverScreen = null;
+        }
     }
+
+    public void goToGameOverScreen() {
+        // Initialize GameOverScreen if not already initialized
+        if (gameOverScreen == null) {
+            gameOverScreen = new GameOverScreen(this);
+        }
+
+        // Set the screen to GameOverScreen
+        this.setScreen(gameOverScreen);
+
+        // Dispose of the current game screen if it exists
+        if (gameScreen != null) {
+            gameScreen.dispose();
+            gameScreen = null;
+        }
+
+        // Dispose of the menu screen if it exists (this might not always be necessary, but it's safe to do)
+        if (menuScreen != null) {
+            menuScreen.dispose();
+            menuScreen = null;
+        }
+    }
+
 
     /**
      * Loads the character animation from the character.png file.

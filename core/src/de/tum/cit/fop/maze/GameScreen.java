@@ -203,6 +203,11 @@ public class GameScreen extends InputAdapter implements Screen {
             return;
         }
 
+        if (player.getLives() <= 0) {
+            game.goToGameOverScreen();  // Trigger game over screen
+            return;  // Stop further game logic (e.g., player movement, world rendering)
+        }
+
         ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
         camera.update(); // Update the camera
 
@@ -217,7 +222,6 @@ public class GameScreen extends InputAdapter implements Screen {
         renderGameWorld();
 
         game.checkExitToNextLevel(player);
-
 
 
         game.getSpriteBatch().begin();
