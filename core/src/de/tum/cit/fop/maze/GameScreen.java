@@ -205,7 +205,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         if (player.getLives() <= 0) {
             game.goToGameOverScreen();  // Trigger game over screen
-            return;  // Stop further game logic (e.g., player movement, world rendering)
+            return;
         }
 
         ScreenUtils.clear(0, 0, 0, 1); // Clear the screen

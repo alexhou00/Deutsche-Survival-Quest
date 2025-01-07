@@ -151,7 +151,7 @@ public class Tile extends StaticTiledMapTile{
         // Collision detected if alpha > 0
         if (pixel){ // max 255
             Gdx.app.log("Alpha",localX + ", " + localY);
-            printHitPixmap();
+           // printHitPixmap();
             return true;
         }
         return false;

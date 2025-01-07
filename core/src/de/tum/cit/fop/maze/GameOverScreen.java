@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -56,7 +57,7 @@ public class GameOverScreen implements Screen {
 
         buttons = new LinkedHashMap<>();
         buttons.put("restartButton", new TextButton("Restart Game", game.getSkin()));
-        buttons.put("exitButton", new TextButton("Exit Game", game.getSkin()));
+        buttons.put("exitGameButton", new TextButton("Exit Game", game.getSkin()));
 
         Gdx.app.log("GameOverScreen", "GameOverScreen is created.");
 
@@ -91,19 +92,27 @@ public class GameOverScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear the screen
 
-        // Begin the SpriteBatch and draw the background texture
         game.getSpriteBatch().begin();
         game.getSpriteBatch().draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.getSpriteBatch().end();
 
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f)); // Update the stage
-        stage.draw(); // Draw the stage
+
+        // Draw a simple label for debugging
+        game.getSpriteBatch().begin();//BEGİN priteBatch EVERYTİME YOU WANNA DRAW
+        BitmapFont font = new BitmapFont();
+        font.draw(game.getSpriteBatch(), "Game Over", Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2);
+        game.getSpriteBatch().end();//YOU NEED TO END EVERYTHİME YOU WANNA FİNİSH PUTTİNG STH ON THE SECREEN
+
+        // Update and draw the stage (buttons should be visible)
+        //stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        stage.draw();
+
     }
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage);
-
+        Gdx.input.setInputProcessor(stage); // Set the input processor to the GameOver screen
+        Gdx.app.log("GameOverScreen", "GameOverScreen is now showing.");
     }
 
     @Override

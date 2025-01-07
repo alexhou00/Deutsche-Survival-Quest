@@ -118,27 +118,34 @@ public class MazeRunnerGame extends Game {
     }
 
     public void goToGameOverScreen() {
-        // Initialize GameOverScreen if not already initialized
-        if (gameOverScreen == null) {
-            gameOverScreen = new GameOverScreen(this);
-        }
+        Gdx.app.log("MazeRunner", "Navigating to Game Over Screen...");
 
-        // Set the screen to GameOverScreen
-        this.setScreen(gameOverScreen);
+        try {
+            // Check if gameOverScreen is already created
+            if (gameOverScreen == null) {
+                gameOverScreen = new GameOverScreen(this);
+                Gdx.app.log("MazeRunner", "GameOverScreen created.");
+            }
 
-        // Dispose of the current game screen if it exists
-        if (gameScreen != null) {
-            gameScreen.dispose();
-            gameScreen = null;
-        }
+            // Set the screen to GameOverScreen
+            this.setScreen(gameOverScreen);
 
-        // Dispose of the menu screen if it exists (this might not always be necessary, but it's safe to do)
-        if (menuScreen != null) {
-            menuScreen.dispose();
-            menuScreen = null;
+            // Dispose of other screens if necessary
+            if (gameScreen != null) {
+                gameScreen.dispose();
+                gameScreen = null;
+            }
+
+            if (menuScreen != null) {
+                menuScreen.dispose();
+                menuScreen = null;
+            }
+
+        } catch (Exception e) {
+            Gdx.app.log("MazeRunner", "Error while switching to GameOverScreen: " + e.getMessage());
+            e.printStackTrace();
         }
     }
-
 
     /**
      * Loads the character animation from the character.png file.
