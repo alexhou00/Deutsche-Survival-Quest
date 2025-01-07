@@ -183,7 +183,7 @@ public class MazeRunnerGame extends Game {
 
 
     public void checkExitToNextLevel(Player player) {
-        if (player.isCenterTouchingTile(Exit.class) /*&& gameScreen.key.isCollected()*/){
+        if (player.isCenterTouchingTile(Exit.class) && gameScreen.key.isCollected()){
             gameLevel += 1;
             gameScreen.dispose();
             gameScreen = new GameScreen(this);

@@ -39,6 +39,7 @@ public class Key extends GameObject {
      * Note that the key should be checked if collected at first by checking if touching player in some other places
      */
     public void collect() {
+        if (this.isCollected) return; // prevent recollecting
         isCollected = true;
         System.out.println("Key collected!"); // Debug message
     }
