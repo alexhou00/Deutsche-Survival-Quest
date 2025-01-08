@@ -99,8 +99,8 @@ public class GameOverScreen implements Screen {
 
         // Draw a simple label for debugging
         game.getSpriteBatch().begin();//BEGİN priteBatch EVERYTİME YOU WANNA DRAW
-        BitmapFont font = new BitmapFont();
-        font.draw(game.getSpriteBatch(), "Game Over", Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2);
+        //BitmapFont font = new BitmapFont();
+        //font.draw(game.getSpriteBatch(), "Game Over", Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2);
         game.getSpriteBatch().end();//YOU NEED TO END EVERYTHİME YOU WANNA FİNİSH PUTTİNG STH ON THE SECREEN
 
         // Update and draw the stage (buttons should be visible)

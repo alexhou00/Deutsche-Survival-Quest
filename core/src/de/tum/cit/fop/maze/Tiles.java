@@ -116,6 +116,26 @@ public class Tiles {
         return tileset;
     }
 
+    /** Creates a new tile based on its type (Wall, Entrance, Exit, or generic Tile),
+     * at the first time it is used, isPositionKnown is false, and we are just using it
+     * to create Tile for the tile set.
+     * <p>
+     * The second time, we create new tiles, and we place it in the `tileOnMap` array,
+     * which tells the program that we're putting it on the map
+     * we create new tiles so that we won't be accessing the same tile from the array
+     * if we still use the {@code Tile tile = tileset[tileValue];}; <br>
+     * All types of existing tiles should be managed here,
+     * and this method updates its position on the tileOnMap array
+     *
+     * @param index the tileIndex or the tileValue on the tileset;
+     * @param tileRegion the textureRegion of the tile
+     * @param isPositionKnown true if creating tiles for the tileset, which the positions of the tiles are indeed unknown;
+     *                        false if creating completely new instances of tiles
+     * @param x the tile X position on the map if isPositionKnown
+     * @param y the tile Y position on the map if isPositionKnown
+     *
+     * @return a Tile object, it can either be a Wall, Entrance, Exit or a generic Tile
+     */
     private Tile createTile(int index, TextureRegion tileRegion, boolean isPositionKnown, int x, int y) {
         if (WALLS.contains(index)){
             Tile tile = new Wall(tileRegion);
@@ -229,7 +249,6 @@ public class Tiles {
         for (int layerI = 0; layerI < maxTilesOnCell; layerI++){
 
             layer = new TiledMapTileLayer(mapWidthInTiles, mapHeightInTiles, TILE_SIZE, TILE_SIZE); // put our width/height here
-            //Gdx.app.log("TileReader", "current layer: " + i);
 
             // Populate the layer with tiles
             try{
@@ -290,14 +309,17 @@ public class Tiles {
         try {
             int tileValue = Integer.parseInt(tileType);
             if (tileValue != KEY) {
+                // originally it was a Integer instead of a List<Integer>,
+                // but now we can have more than one layer,
+                // so we need a list to store the tiles in this specific cell at this position
                 List<Integer> list;
-                if (mapData.get(position) == null){
+                if (mapData.get(position) == null){ // puts a empty list to the Map if empty
                     list = new ArrayList<>();
                     mapData.put(position, list);
                 }
                 list = mapData.get(position);
                 list.add(tileValue);
-                if (list.size() > maxTilesOnCell) maxTilesOnCell = list.size();
+                if (list.size() > maxTilesOnCell) maxTilesOnCell = list.size(); // set maxTilesOnCell to fine the maximum # of tiles that any grid has
                 mapData.put(position, list);
                 //Gdx.app.log("mapData", "Put to mapData: " + position + " " + mapData.get(position));
 
@@ -333,42 +355,6 @@ public class Tiles {
 
     public Tile getTileOnMap(int x, int y) {
         return tileOnMap[x][y];
-    }
-
-    /**
-     * Creates a new tile based on its type (Wall, Entrance, Exit, or generic Tile),
-     * so that we won't be accessing the same tile from the array if we still use the {@code Tile tile = tileset[tileValue];}; <br>
-     * All types of existing tiles should be managed here,
-     * and this method update its position on the tileOnMap array
-     *
-     * @param x    The x-coordinate of the tile in the map grid.
-     * @param y    The y-coordinate of the tile in the map grid.
-     * @param tile The original tile to process and to replace.
-     */
-    private void createAndPlaceNewTile(int x, int y, Tile tile) {
-
-        // Set entrance and exit positions when the entrances and exits are met,
-        // We only know the position after parsing and start to create our map
-        Tile newTile;
-
-        if (tile instanceof Wall) {
-            newTile = new Wall(tile.getTextureRegion());
-        }
-        else if (tile instanceof Entrance) {
-            newTile = new Entrance(tile.getTextureRegion());
-
-            entrance.setTilePosition(new Position(x, y, TILES));
-        }
-        else if (tile instanceof Exit) {
-            newTile = new Exit(tile.getTextureRegion());
-
-            Exit exit = (Exit) tile; //exits.get(exits.indexOf(tile));
-            exit.setTilePosition(new Position(x, y, TILES));
-            exits.add(exit);
-        }
-        else {
-            newTile = new Tile(tile.getTextureRegion());
-        }
     }
 
 }

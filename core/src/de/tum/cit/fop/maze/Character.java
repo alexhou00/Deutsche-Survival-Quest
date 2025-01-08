@@ -1,7 +1,5 @@
 package de.tum.cit.fop.maze;
 
-import com.badlogic.gdx.math.Rectangle;
-
 /**
  * Represents a DYNAMIC character in the maze game, such as our player or any moving enemy. <br>
  * This class provides basic properties and behaviors for characters,
@@ -38,20 +36,6 @@ public abstract class Character extends GameObject {
         this.velX = 0;
         this.velY = 0;
         this.speed = 0;
-/*
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.hitboxWidth = hitboxWidth;
-        this.hitboxHeight = hitboxHeight;
-        this.widthOnScreen = widthOnScreen;
-        this.heightOnScreen = heightOnScreen;
-        // Actual size of the non-transparent part shown on the screen
-        this.hitboxWidthOnScreen = (float) widthOnScreen * hitboxWidth / width;
-        this.hitboxHeightOnScreen = (float) heightOnScreen * hitboxHeight / height;
-
-        this.hitbox = null;*/
     }
 
     abstract void update(float delta);

@@ -356,7 +356,6 @@ public class GameScreen extends InputAdapter implements Screen {
                 key.getWidthOnScreen() * keyScale,
                 key.getHeightOnScreen() * keyScale
         ); // width and height are size on the screen
-        // Gdx.app.log("Key", "key.getWidthOnScreen(): " + key.getWidthOnScreen());
 
         // check for collision with player and collect key if touching
         if (key.isTouching(player)){
@@ -382,9 +381,6 @@ public class GameScreen extends InputAdapter implements Screen {
         hudBatch.setProjectionMatrix(hudCamera.combined); // HUD uses its own camera so that it does not follow the player and the position is fixed on the screen.
         hudBatch.begin();
 
-        //font.draw(hudBatch, "This is the HUD", 20, Gdx.graphics.getHeight() - 20);
-        //font.draw(hudBatch, "Score: " + Math.round(sinusInput), 20f, Gdx.graphics.getHeight() - 50f);
-        //font.draw(hudBatch, "Lives:", 20f, Gdx.graphics.getHeight() - 80f);
 
         // Show all the variables in the bottom-left corner here
         // Variables to show, stored in a map (LinkedHashMap preserves the order)
@@ -553,11 +549,4 @@ public class GameScreen extends InputAdapter implements Screen {
         return camera;
     }
 
-
-    // Additional methods and logic can be added as needed for the game screen
-    public void collectingTheKey(float delta) {
-        if (key.collisionWithPlayer(player)) {
-            key.collect();
-        }
-    }
 }
