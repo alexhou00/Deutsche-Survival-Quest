@@ -110,36 +110,70 @@ public class Tiles {
             for (int x = 0; x < tileCols; x++) {
                 int index = y * tileCols + x;
                 TextureRegion tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                tileset[index] = createTileForTileset(index, tileRegion);
+                tileset[index] = createTile(index, tileRegion, false, 0,0);
             }
         }
         return tileset;
     }
 
-    private Tile createTileForTileset(int index, TextureRegion tileRegion) {
+    private Tile createTile(int index, TextureRegion tileRegion, boolean isPositionKnown, int x, int y) {
         if (WALLS.contains(index)){
             Tile tile = new Wall(tileRegion);
             tile.getProperties().put("type", "Wall");
+
+            if (isPositionKnown){
+                tileOnMap[x][y] = tile;
+                tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+            }
+
             return tile;
         }
         else if (index == ENTRANCE){
             entrance = new Entrance(tileRegion); // we create our Entrance instance here
             entrance.getProperties().put("type", "Entrance");
+
+            if (isPositionKnown) {
+                entrance.setTilePosition(new Position(x, y, TILES));
+                tileOnMap[x][y] = entrance;
+                tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+            }
+
             return entrance;
         }
         else if (EXIT.contains(index)){
             Exit exit = new Exit(tileRegion);
             exit.getProperties().put("type", "Exit");
+
+            if (isPositionKnown){
+                exit.setTilePosition(new Position(x, y, TILES));
+                exits.add(exit);
+                tileOnMap[x][y] = exit;
+                tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+            }
+
+
             return exit;
         }
         else if (TRAPS.contains(index)){
             Tile tile = new Tile(tileRegion);
             tile.getProperties().put("type", "Trap");
+
+            if (isPositionKnown){
+                tileOnMap[x][y] = tile;
+                tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+            }
+
             return tile;
         }
         else {
             Tile tile = new Tile(tileRegion);
             tile.getProperties().put("type", "");
+
+            if (isPositionKnown){
+                tileOnMap[x][y] = tile;
+                tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+            }
+
             return tile;
         }
     }
@@ -218,11 +252,17 @@ public class Tiles {
 
                         // create a new tile based on its type so that we won't be accessing the same tile from the array
                         // also set its position on the map
-                        createAndPlaceNewTile(x, y, tile);
+                        //createAndPlaceNewTile(x, y, tile);
+                        createTile(tileValue, tile.getTextureRegion(), true, x, y);
                     }
                     else{ // a trap
                         Tile tile = tileset[tileValue];
-                        createAndPlaceNewTile(x, y, tile);
+
+                        Position trapPosition = new Position(x, y, TILES).convertTo(PIXELS);
+                        float worldX = trapPosition.getX();
+                        float worldY = trapPosition.getY();
+                        // a new instance of trap is created here
+                        traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,16,16,TILE_SCREEN_SIZE, TILE_SCREEN_SIZE, 2));
                     }
 
                 }
@@ -306,13 +346,6 @@ public class Tiles {
      * @param tile The original tile to process and to replace.
      */
     private void createAndPlaceNewTile(int x, int y, Tile tile) {
-        if (tile.getProperties().get("type").equals("Trap")) {
-            Position position = new Position(x, y, TILES).convertTo(PIXELS);
-            float worldX = position.getX();
-            float worldY = position.getY();
-            traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,16,16,TILE_SCREEN_SIZE, TILE_SCREEN_SIZE, 2));
-            return;
-        }
 
         // Set entrance and exit positions when the entrances and exits are met,
         // We only know the position after parsing and start to create our map
@@ -336,9 +369,6 @@ public class Tiles {
         else {
             newTile = new Tile(tile.getTextureRegion());
         }
-
-        tileOnMap[x][y] = newTile;
-        tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
     }
 
 }
