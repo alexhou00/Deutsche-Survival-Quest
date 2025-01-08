@@ -16,6 +16,9 @@ import static java.lang.Math.abs;
 public class Player extends Character {
     private boolean hasKey;
     private boolean isMoving;
+    private boolean isHurt = false;
+    private float hurtTimer = 0f; // Timer for the red tint
+
     private final TiledMapTileLayer collisionLayer;
     private final Tiles tiles;
     float targetVelX, targetVelY;
@@ -57,11 +60,11 @@ public class Player extends Character {
         float delta = Gdx.graphics.getDeltaTime();
 
         // define keys pressed to handle keys for player movement; both WASD, and the arrow keys are used
-        boolean rightPressed = Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D);
-        boolean leftPressed = Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A);
-        boolean upPressed = Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W);
-        boolean downPressed = Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S);
-        boolean boostPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
+        boolean rightPressed = !isHurt && (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D));
+        boolean leftPressed = !isHurt && (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A));
+        boolean upPressed = !isHurt && (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W));
+        boolean downPressed = !isHurt && (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S));
+        boolean boostPressed = (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
 
         // Determine movement direction
         // int horizontalInput, verticalInput; they will be -1, 0, or 1 depending on the direction
@@ -226,10 +229,10 @@ public class Player extends Character {
             if (trap.isTouching(this)) {
                 loseLives(trap.getDamage());
                 System.out.println("Be careful!! You hit a trap:O");
-                targetVelX = -targetVelX * 2;
-                velX *= -2;
-                targetVelY = -targetVelY * 2;
-                velY *= -2;
+                targetVelX = -targetVelX;
+                velX *= -1;
+                targetVelY = -targetVelY;
+                velY *= -1;
             }
         }
 
@@ -250,6 +253,9 @@ public class Player extends Character {
         else{
             System.out.println("You got " + amount + " amount of damage! Remaining lives: " + lives);
         }
+
+        isHurt = true;
+        hurtTimer = 0.5f;
     }
 
     /**
@@ -263,6 +269,15 @@ public class Player extends Character {
         if (paused) return;
         handleMovement();
         checkCollisions();
+
+        // Update the hurt timer
+        if (isHurt) {
+            hurtTimer -= delta;
+            if (hurtTimer <= 0) {
+                isHurt = false;
+                hurtTimer = 0;
+            }
+        }
     }
 
     @Override
@@ -282,4 +297,9 @@ public class Player extends Character {
     public void setMoving(boolean moving) {
         isMoving = moving;
     }
+
+    public boolean isHurt() {
+        return isHurt;
+    }
+
 }

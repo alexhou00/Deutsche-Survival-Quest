@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
@@ -60,6 +61,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private TiledMapTileLayer collisionLayer;
     PopUpPanel popUpPanel;
+
+    private ShaderProgram shader;
 
 
 
@@ -141,6 +144,16 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
         spotlightEffect = new SpotlightEffect();
+
+        // Load and compile shaders
+        ShaderProgram.pedantic = false; // Allow non-pedantic GLSL code
+        shader = new ShaderProgram(
+                Gdx.files.internal("default.vert"),
+                Gdx.files.internal("hurtEffect.frag")
+        );
+        if (!shader.isCompiled()) {
+            Gdx.app.error("ShaderError", shader.getLog());
+        }
 
     }
 
@@ -291,6 +304,11 @@ public class GameScreen extends InputAdapter implements Screen {
      * Renders the player's character based on movement state.
      */
     private void renderPlayer(){
+        if (player.isHurt()){
+            game.getSpriteBatch().setShader(shader);
+            shader.setUniformf("isHurt", 0.1f);
+        }
+
         if (player.isMoving()) {  // Character Walking Animation
             // Draw the character next to the text :) / We can reuse sinusInput here
             game.getSpriteBatch().draw(
@@ -309,6 +327,7 @@ public class GameScreen extends InputAdapter implements Screen {
                     player.getHeightOnScreen()
             );
         }
+        game.getSpriteBatch().setShader(null);
     }
 
     private void renderArrow(){
