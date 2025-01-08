@@ -10,13 +10,11 @@ import com.badlogic.gdx.utils.ObjectMap;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.badlogic.gdx.math.MathUtils.random;
 import static de.tum.cit.fop.maze.Constants.*;
 import static de.tum.cit.fop.maze.Position.PositionUnit.*;
 
@@ -41,14 +39,16 @@ public class Tiles {
 
     // Create an immutable Set of integers representing wall
     // IntStream.concat(IntStream.rangeClosed(10, 29),IntStream.rangeClosed(64, 66)) in case i want to concat two sections in the future
-    private static final Set<Integer> WALLS = IntStream.concat(IntStream.rangeClosed(10, 29),IntStream.rangeClosed(60, 149))
+    private static final Set<Integer> WALLS = IntStream.concat(IntStream.rangeClosed(11, 29),IntStream.rangeClosed(60, 149))
             .boxed()
             .collect(Collectors.toSet());
-    private static final Set<Integer> TRAPS = IntStream.rangeClosed(30, 39)
+    private static final int TRAPS_FIRST = 30;
+    private static final Set<Integer> TRAPS = IntStream.rangeClosed(TRAPS_FIRST, 39)
             .boxed()
             .collect(Collectors.toSet());
     public static final int KEY = 6;
     public static final int ENTRANCE = 1;
+    public static final int GROUND = 0;
     public static final Set<Integer> EXIT = IntStream.rangeClosed(2, 5)
             .boxed()
             .collect(Collectors.toSet());
@@ -80,11 +80,11 @@ public class Tiles {
      * @param mapHeightInTiles  Height of the map in tiles.
      * @return The created {@link TiledMap} object.
      */
-    public TiledMap loadTiledMap(String mapFilePath, String tileSheetPath, int mapWidthInTiles, int mapHeightInTiles) {
+    public TiledMap loadTiledMap(String mapFilePath, String tileSheetPath, String ObstacleSheetPath, int mapWidthInTiles, int mapHeightInTiles) {
         // To completely load the tiled map,
         // FIRST,
         // Load the tile sheet
-        tileset = loadTileSheet(tileSheetPath);
+        tileset = loadTileSheet(tileSheetPath, ObstacleSheetPath);
 
         // SECOND,
         // Parse ".properties" file. The position of the key will also be handled here.
@@ -97,8 +97,9 @@ public class Tiles {
     }
 
 
-    private Tile[] loadTileSheet(String tileSheetPath) {
+    private Tile[] loadTileSheet(String tileSheetPath, String ObstacleSheetPath) {
         var tileSheet = new Texture(tileSheetPath);
+        var obstacleSheet = new Texture(ObstacleSheetPath);
         int tileCols = tileSheet.getWidth() / TILE_SIZE;
         int tileRows = tileSheet.getHeight() / TILE_SIZE;
 
@@ -109,7 +110,13 @@ public class Tiles {
         for (int y = 0; y < tileRows; y++) {
             for (int x = 0; x < tileCols; x++) {
                 int index = y * tileCols + x;
-                TextureRegion tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+                TextureRegion tileRegion;
+                if (!TRAPS.contains(index))
+                    tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                else // traps
+                    tileRegion = new TextureRegion(obstacleSheet, 32 * (index - TRAPS_FIRST), 0, 32, 32);
+
                 tileset[index] = createTile(index, tileRegion, false, 0,0);
             }
         }
@@ -221,7 +228,7 @@ public class Tiles {
 
                     for (String tileType : tileTypes) {
                         //Gdx.app.log("Parse", "Tile Parsed: " + position);
-                        putTileDataInMap(position, tileType, mapData);
+                        putTileDataInMapData(position, tileType, mapData);
                     }
                 }
                 else{
@@ -256,13 +263,22 @@ public class Tiles {
                     if (mapData.get(key).size() <= layerI)
                         continue;
                     int tileValue = mapData.get(key).get(layerI);
+                    int tileIndex = tileValue;
                     Position position = stringToPosition(key, TILES);
                     int x = position.getTileX();
                     int y = position.getTileY();
 
                     if (!TRAPS.contains(tileValue)){
 
-                        Tile tile = tileset[tileValue];
+                        // There would be a random chance to change the ground tile
+                        if (tileIndex == GROUND) {
+                            double random = Math.random(); // generates random number between 0.0 and 1.0
+                            if (random <= 0.005 * 4) { // 0.5% chance each for four of our ground tile variant
+                                tileIndex = 7 + (int) (Math.floor(random * 200)); // 1/0.5 is 200%, tileIndex can therefore be 7~10
+                            }
+                        }
+
+                        Tile tile = tileset[tileIndex]; // We get the texture through this tile
 
                         // deal with LibGDX own library
                         TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
@@ -272,7 +288,7 @@ public class Tiles {
                         // create a new tile based on its type so that we won't be accessing the same tile from the array
                         // also set its position on the map
                         //createAndPlaceNewTile(x, y, tile);
-                        createTile(tileValue, tile.getTextureRegion(), true, x, y);
+                        createTile(tileValue, tile.getTextureRegion(), true, x, y); // it is still tileValue instead of tileIndex here, so the functionalities will not be aff
                     }
                     else{ // a trap
                         Tile tile = tileset[tileValue];
@@ -281,7 +297,7 @@ public class Tiles {
                         float worldX = trapPosition.getX();
                         float worldY = trapPosition.getY();
                         // a new instance of trap is created here
-                        traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,16,16,TILE_SCREEN_SIZE, TILE_SCREEN_SIZE, 2));
+                        traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,16,16,TILE_SCREEN_SIZE * 0.8f, TILE_SCREEN_SIZE * 0.8f, 2));
                     }
 
                 }
@@ -299,13 +315,14 @@ public class Tiles {
     }
 
     /**
+     * While parsing the .properties file,
      * Processes an individual tile to update the map data.
      *
      * @param position   The position key of the tile. (Format: "x,y")
      * @param tileType   The tile value or type but as a string.
      * @param mapData    The mapData to update.
      */
-    private void putTileDataInMap(String position, String tileType, ObjectMap<String, List<Integer>> mapData) {
+    private void putTileDataInMapData(String position, String tileType, ObjectMap<String, List<Integer>> mapData) {
         try {
             int tileValue = Integer.parseInt(tileType);
             if (tileValue != KEY) {

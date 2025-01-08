@@ -99,9 +99,9 @@ public class GameScreen extends InputAdapter implements Screen {
 
         TiledMap tiledMap;
         switch (game.getGameLevel()) {
-            case 1 -> tiledMap = tiles.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
-            case 2 -> tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
-            default -> tiledMap = tiles.loadTiledMap("maps/level-1.properties", Gdx.files.internal("level1_tileset.png").path(), 40, 40);
+            case 1 -> tiledMap = tiles.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("level1_tileset.png").path(), Gdx.files.internal("level1_obstacles.png").path(), 40, 40);
+            case 2 -> tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("level1_tileset.png").path(), Gdx.files.internal("level1_obstacles.png").path(), 40, 40);
+            default -> tiledMap = tiles.loadTiledMap("maps/level-1.properties", Gdx.files.internal("level1_tileset.png").path(), Gdx.files.internal("level1_obstacles.png").path(), 40, 40);
         }
 
         // Initialize the key. Only after we lod the tiled map, we can access the key's position
