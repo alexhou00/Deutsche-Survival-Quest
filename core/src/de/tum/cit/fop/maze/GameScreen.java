@@ -62,7 +62,7 @@ public class GameScreen extends InputAdapter implements Screen {
     private TiledMapTileLayer collisionLayer;
     PopUpPanel popUpPanel;
 
-    private ShaderProgram shader;
+    private final ShaderProgram shader;
 
 
 
@@ -334,7 +334,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // Draw arrow that points at the exit
         Position exitPosition = null;
         if (!tiles.exits.isEmpty())
-            exitPosition = tiles.exits.get(0).getTilePosition(); // TODO: (future) if there are multiple exit, create a function that finds the nearest one
+            exitPosition = tiles.getNearestExit(player.getX(), player.getY()).getTilePosition();
 
         float angle = getAngle(exitPosition);
         

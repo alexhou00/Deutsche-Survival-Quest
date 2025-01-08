@@ -357,4 +357,30 @@ public class Tiles {
         return tileOnMap[x][y];
     }
 
+    public Exit getNearestExit(float playerX, float playerY){
+        // find the nearest exit to (x,y) to this.exits
+        if (exits == null || exits.isEmpty()) {
+            throw new IllegalStateException("No exits available on the map.");
+        }
+
+        Exit nearestExit = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for (Exit exit : exits) {
+            Position exitPosition = exit.getTilePosition().convertTo(PIXELS);
+            float exitX = exitPosition.getX();
+            float exitY = exitPosition.getY();
+
+            // Calculate the Euclidean distance
+            double distance = Math.sqrt(Math.pow(exitX - playerX, 2) + Math.pow(exitY - playerY, 2));
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestExit = exit;
+            }
+        }
+
+        return nearestExit;
+    }
+
 }

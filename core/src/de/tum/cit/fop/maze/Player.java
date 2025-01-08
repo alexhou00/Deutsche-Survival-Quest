@@ -144,7 +144,7 @@ public class Player extends Character {
     /**
      * Checks if the player can move to a given position because of the wall blocks.
      * <p>
-     * This method checks a grid of points (total of 5 on each side) within the object's hitbox to ensure that
+     * This method checks a grid of points (total of five on each side) within the object's hitbox to ensure that
      * none of these points overlap with an instance of the Wall class. If any of the points within the hitbox
      * intersects a wall, the object cannot move to the specified position.
      *
@@ -238,7 +238,7 @@ public class Player extends Character {
 
         // Check for collision with enemies
         /*for (ChasingEnemy enemy : chasingEnemies) {
-            if (enemy.isTouching(this) {
+            if (enemy.isTouching(this)) {
                 enemy.checkPlayerCollision(this);
             }
         }*/
