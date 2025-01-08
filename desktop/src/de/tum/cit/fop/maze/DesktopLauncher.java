@@ -1,5 +1,6 @@
 package de.tum.cit.fop.maze;
 
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
@@ -20,6 +21,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setTitle("Deutsche Survival Quest"); // Set the window title
 		//TODO: Change the name
+		config.setWindowIcon(Files.FileType.Internal, ("icon-128.png"));
 
 		// Get the display mode of the current monitor
 		Graphics.DisplayMode displayMode = Lwjgl3ApplicationConfiguration.getDisplayMode();
@@ -29,8 +31,7 @@ public class DesktopLauncher {
 				Math.round(0.8f * displayMode.height)
 		);
 		config.useVsync(true); // Enable vertical sync
-		config.setForegroundFPS(60); // Set the foreground frames per second
-		// TODO: setWindowIcon
+		config.setForegroundFPS(60); // Set the foreground frames per second;
 		// Launch the game
 		new Lwjgl3Application(new MazeRunnerGame(new DesktopFileChooser()), config);
 	}

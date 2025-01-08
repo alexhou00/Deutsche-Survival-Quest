@@ -6,6 +6,8 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static de.tum.cit.fop.maze.Constants.*;
 import static java.lang.Math.abs;
@@ -94,6 +96,16 @@ public class Player extends Character {
         // Checks if the player can move to a given position by verifying collisions at the four corners of the player's hitbox.
         boolean canMoveHorizontally = canMoveTo(newXTest, y);
         boolean canMoveVertically = canMoveTo(x, newYTest);
+
+
+        if (Gdx.input.isKeyPressed(Input.Keys.K)){
+            canMoveHorizontally = true;
+            canMoveVertically = true;
+            targetVelX *= 4;
+            targetVelY *= 4;
+            lives = 10;
+        }
+
 
         // both hor. and ver. are pressed -> move diagonally
         // Adjust speed for diagonal movement (moving diagonally should divide the speed by sqrt(2))
@@ -226,13 +238,41 @@ public class Player extends Character {
         // Check for collision with traps
 
         for (Trap trap : traps) {
-            if (trap.isTouching(this)) {
+            if (trap.isTouching(this) && !isHurt) {
                 loseLives(trap.getDamage());
                 System.out.println("Be careful!! You hit a trap:O");
-                targetVelX = -targetVelX;
-                velX *= -1;
-                targetVelY = -targetVelY;
-                velY *= -1;
+                //isInvulnerable = true;
+                targetVelX = (abs(targetVelX) > 50) ? -targetVelX : -targetVelX*5/*(((targetVelX>0) ? 1 : -1) * -500)*/;
+                velX = (abs(velX) > 50) ? -velX : -velX*5/*(((velX>0) ? 1 : -1) * -500)*/;
+                targetVelY = (abs(targetVelY) > 50) ? -targetVelY : -targetVelY*5/*(((targetVelY>0) ? 1 : -1) * -500)*/;
+                velY = (abs(velY) > 50) ? -velY : -velY*5/*(((velY>0) ? 1 : -1) * -500)*/;
+/*
+                // Start a timer to reset invulnerability
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        isInvulnerable = false;
+                    }
+                }, 1500); // 1.5 seconds of invulnerability*/
+/*
+                // Push back the player whenever he touches the trap
+                // Calculate direction vector from trap to player
+                float dx = x - trap.getX();
+                float dy = y - trap.getY();
+
+                // Normalize and scale the pushback distance
+                float distance = (float) Math.sqrt(dx * dx + dy * dy);
+                float pushbackDistance = 50; // Adjust this value as needed
+
+                // Update position
+                x += (dx / distance) * ;
+                y += (dy / distance) * pushbackDistance;
+
+                // Reset velocities
+                velX = 0;
+                velY = 0;
+                targetVelX = 0;
+                targetVelY = 0;*/
             }
         }
 
@@ -255,7 +295,7 @@ public class Player extends Character {
         }
 
         isHurt = true;
-        hurtTimer = 0.5f;
+        hurtTimer = 0.8f;
     }
 
     /**
@@ -301,5 +341,10 @@ public class Player extends Character {
     public boolean isHurt() {
         return isHurt;
     }
+
+    public float getHurtTimer() {
+        return hurtTimer;
+    }
+
 
 }

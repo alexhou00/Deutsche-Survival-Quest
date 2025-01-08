@@ -292,7 +292,9 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // mapRenderer use another rendering batch, so we have to end the ones first, render the map, and then begin our spriteBatch again outside of this function
         mapRenderer.setView(camera);
-        mapRenderer.render();
+        // this adds a darker shade to it, like night effect
+        //mapRenderer.getBatch().setColor(0.5f, 0.5f, 0.5f, 1);
+        mapRenderer.render(); // mapRenderer renders the map, also the layers or so the tiles
     }
 
     private void renderText(float textX, float textY, String text) {
@@ -304,7 +306,7 @@ public class GameScreen extends InputAdapter implements Screen {
      * Renders the player's character based on movement state.
      */
     private void renderPlayer(){
-        if (player.isHurt()){
+        if (player.getHurtTimer() > 0.3f){
             game.getSpriteBatch().setShader(shader);
             shader.setUniformf("isHurt", 0.1f);
         }
