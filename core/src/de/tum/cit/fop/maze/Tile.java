@@ -54,15 +54,21 @@ public class Tile extends StaticTiledMapTile{
     }
 
     void printHitPixmap(){
-        int width = this.getTextureRegion().getRegionWidth();
-        int height = this.getTextureRegion().getRegionHeight();
+        printHitPixmap(hitPixmap);
+    }
+
+    public static void printHitPixmap(boolean[][] hitPixmap) {
+        int width = hitPixmap[0].length;
+        int height = hitPixmap.length;
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                System.out.print((hitPixmap[x][y]) ? "１" : "０");
+                System.out.print(hitPixmap[x][y] ? "１" : "０");
             }
             System.out.println();
         }
     }
+
 
     public int getTileX(){
         return this.tilePosition.getTileX();
@@ -74,23 +80,29 @@ public class Tile extends StaticTiledMapTile{
 
     private void setHitPixmap() {
         Pixmap pixmap = getTilePixmap(this.getTextureRegion());
-        int startX = this.getTextureRegion().getRegionX();
-        int startY = this.getTextureRegion().getRegionY();
-        int width = this.getTextureRegion().getRegionWidth();
-        int height = this.getTextureRegion().getRegionHeight();
+        hitPixmap = createHitPixmap(this.getTextureRegion(), pixmap);
+    }
 
-        hitPixmap = new boolean[width][height];
+    public static boolean[][] createHitPixmap(TextureRegion textureRegion, Pixmap tilePixmap) {
+        int startX = textureRegion.getRegionX();
+        int startY = textureRegion.getRegionY();
+        int width = textureRegion.getRegionWidth();
+        int height = textureRegion.getRegionHeight();
+
+        boolean[][] hitPixmap = new boolean[width][height];
 
         // Iterate over the pixels in the texture region
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                int pixel = pixmap.getPixel(startX + x, startY + y);
+                int pixel = tilePixmap.getPixel(startX + x, startY + y);
                 int alpha = (pixel & 0xFF000000) >>> 24; // Extract the alpha channel
 
                 // Collision detected if (alpha > 20) (max. 255)
                 hitPixmap[x][y] = (alpha > 20);
             }
         }
+
+        return hitPixmap;
     }
 
     /**
@@ -100,6 +112,10 @@ public class Tile extends StaticTiledMapTile{
      * @return The Pixmap of the tile.
      */
     private Pixmap getTilePixmap(TextureRegion tileRegion) {
+        return getPixmap(tileRegion);
+    }
+
+    public static Pixmap getPixmap(TextureRegion tileRegion) {
         final Map<String, Pixmap> tilePixmapCache = new HashMap<>();
 
         String key = tileRegion.getTexture().toString() + tileRegion.getRegionX() + tileRegion.getRegionY();
