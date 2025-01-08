@@ -20,7 +20,9 @@ import java.util.stream.IntStream;
 import static de.tum.cit.fop.maze.Constants.*;
 import static de.tum.cit.fop.maze.Position.PositionUnit.*;
 
-/** this is like a TilesManager */
+/** this is like a TilesManager or ".properties" File Reader
+ * It manages tile (and also other objects for the level) creation for each level
+ */
 public class Tiles {
     public TiledMapTileLayer layer;
 
@@ -65,6 +67,12 @@ public class Tiles {
 
     /**
      * Loads a tiled map from the specified map and tile sheet files.
+     * Note that only this method is public, which means only this method
+     * should be accessed outside of this class when we want to load a tiled map <br><br>
+     * STEPS: <br>
+     * <li> First, we load the tile sheet and store it in `tileset` </li>
+     * <li> Second, we parse the .properties file and process every tile (store it in mapData) </li>
+     * <li> Third, we place the tiles on the map by creating a new instance of the tile (so that each tile can have their own position)  </li>
      *
      * @param mapFilePath       Path to the map properties file.
      * @param tileSheetPath     Path to the tile sheet image.
@@ -73,52 +81,118 @@ public class Tiles {
      * @return The created {@link TiledMap} object.
      */
     public TiledMap loadTiledMap(String mapFilePath, String tileSheetPath, int mapWidthInTiles, int mapHeightInTiles) {
+        // To completely load the tiled map,
+        // FIRST,
         // Load the tile sheet
+        tileset = loadTileSheet(tileSheetPath);
+
+        // SECOND,
+        // Parse ".properties" file. The position of the key will also be handled here.
+        ObjectMap<String, List<Integer>> mapData = parsePropertiesFile(mapFilePath);
+
+
+        // THIRD,
+        // Put the tiles on the map. And if the tile is a trap/enemy, create a trap/enemy.
+        return createTiledMap(mapData, mapWidthInTiles, mapHeightInTiles);
+    }
+
+
+    private Tile[] loadTileSheet(String tileSheetPath) {
         var tileSheet = new Texture(tileSheetPath);
         int tileCols = tileSheet.getWidth() / TILE_SIZE;
         int tileRows = tileSheet.getHeight() / TILE_SIZE;
+
         // `tileset` is the tileset
-        tileset = new Tile[tileCols * tileRows];
+        Tile[] tileset = new Tile[tileCols * tileRows];
+
         // Create the tileset to reference back to the tile type based on the tile sheet
         for (int y = 0; y < tileRows; y++) {
             for (int x = 0; x < tileCols; x++) {
                 int index = y * tileCols + x;
                 TextureRegion tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-
-                if (WALLS.contains(index)){
-                    tileset[index] = new Wall(tileRegion);
-                    tileset[index].getProperties().put("type", "Wall");
-                }
-                else if (index == ENTRANCE){
-                    entrance = new Entrance(tileRegion);
-                    tileset[index] = entrance;
-                    tileset[index].getProperties().put("type", "Entrance");
-                }
-                else if (EXIT.contains(index)){
-                    Exit exit = new Exit(tileRegion);
-                    tileset[index] = exit;
-                    tileset[index].getProperties().put("type", "Exit");
-                }
-                else if (TRAPS.contains(index)){
-                    tileset[index] = new Tile(tileRegion); // Trap(tileRegion);
-                    tileset[index].getProperties().put("type", "Trap");
-                }
-                else {
-                    tileset[index] = new Tile(tileRegion);
-                    tileset[index].getProperties().put("type", "");
-                }
+                tileset[index] = createTileForTileset(index, tileRegion);
             }
         }
+        return tileset;
+    }
 
-        // Parse ".properties" file
-        ObjectMap<String, List<Integer>> mapData = parsePropertiesFile(mapFilePath);
+    private Tile createTileForTileset(int index, TextureRegion tileRegion) {
+        if (WALLS.contains(index)){
+            Tile tile = new Wall(tileRegion);
+            tile.getProperties().put("type", "Wall");
+            return tile;
+        }
+        else if (index == ENTRANCE){
+            entrance = new Entrance(tileRegion); // we create our Entrance instance here
+            entrance.getProperties().put("type", "Entrance");
+            return entrance;
+        }
+        else if (EXIT.contains(index)){
+            Exit exit = new Exit(tileRegion);
+            exit.getProperties().put("type", "Exit");
+            return exit;
+        }
+        else if (TRAPS.contains(index)){
+            Tile tile = new Tile(tileRegion);
+            tile.getProperties().put("type", "Trap");
+            return tile;
+        }
+        else {
+            Tile tile = new Tile(tileRegion);
+            tile.getProperties().put("type", "");
+            return tile;
+        }
+    }
 
+    /**
+     * Parses the properties file for the tile map.
+     *
+     * @param filePath Path to the properties file.
+     * @return An {@link ObjectMap} containing map data.
+     */
+    private ObjectMap<String, List<Integer>> parsePropertiesFile(String filePath) {
+        ObjectMap<String, List<Integer>> mapData = new ObjectMap<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.contains("=")) continue; // skip invalid lines
+
+                String[] parts = line.split("="); // split into key-value, parts[0] is position (String) and parts[1] is the tileType or tileValue
+                if (parts.length != 2) continue; // ignore malformed lines
+
+                if (!Objects.equals(parts[0], "keyPosition")){ // null-safe equal, the key is not "keyPosition"
+                    String position = parts[0];
+                    String[] tileTypes = parts[1].split(","); // Handle multiple tile types (could contain the key)
+
+                    for (String tileType : tileTypes) {
+                        //Gdx.app.log("Parse", "Tile Parsed: " + position);
+                        putTileDataInMap(position, tileType, mapData);
+                    }
+                }
+                else{
+                    keyTilePosition = stringToPosition(parts[1], TILES).convertTo(PIXELS);
+                }
+
+
+
+            }
+        } catch (IOException e) {
+            Gdx.app.error("TileMapParser", String.valueOf(e));
+        }
+
+        return mapData;
+    }
+
+    private TiledMap createTiledMap(ObjectMap<String, List<Integer>> mapData, int mapWidthInTiles, int mapHeightInTiles) {
         // Create a TiledMap
         TiledMap map = new TiledMap();
 
         tileOnMap = new Tile[mapWidthInTiles][mapHeightInTiles]; // stores the tile in that cell that is on the most upper layer
 
-        for (int i=0;i<maxTilesOnCell;i++){
+        // iterate every layer, since there could be two of them
+        // (the first one is the ground, and the second is some additional stuff on it)
+        for (int layerI = 0; layerI < maxTilesOnCell; layerI++){
 
             layer = new TiledMapTileLayer(mapWidthInTiles, mapHeightInTiles, TILE_SIZE, TILE_SIZE); // put our width/height here
             //Gdx.app.log("TileReader", "current layer: " + i);
@@ -126,9 +200,9 @@ public class Tiles {
             // Populate the layer with tiles
             try{
                 for (String key : mapData.keys()) {
-                    if (mapData.get(key).size() <= i)
+                    if (mapData.get(key).size() <= layerI)
                         continue;
-                    int tileValue = mapData.get(key).get(i);
+                    int tileValue = mapData.get(key).get(layerI);
                     Position position = stringToPosition(key, TILES);
                     int x = position.getTileX();
                     int y = position.getTileY();
@@ -166,56 +240,15 @@ public class Tiles {
     }
 
     /**
-     * Parses the properties file for the tile map.
-     *
-     * @param filePath Path to the properties file.
-     * @return An {@link ObjectMap} containing map data.
-     */
-    private ObjectMap<String, List<Integer>> parsePropertiesFile(String filePath) {
-        ObjectMap<String, List<Integer>> mapData = new ObjectMap<>();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (!line.contains("=")) continue; // skip invalid lines
-
-                String[] parts = line.split("="); // split into key-value, parts[0] is position (String) and parts[1] is the tileType or tileValue
-                if (parts.length != 2) continue; // ignore malformed lines
-
-                if (!Objects.equals(parts[0], "keyPosition")){ // null-safe equal, the key is not "keyPosition"
-                    String position = parts[0];
-                    String[] tileTypes = parts[1].split(","); // Handle multiple tile types (could contain the key)
-
-                    for (String tileType : tileTypes) {
-                        //Gdx.app.log("Parse", "Tile Parsed: " + position);
-                        processTile(position, tileType, mapData);
-                    }
-                }
-                else{
-                    keyTilePosition = stringToPosition(parts[1], TILES).convertTo(PIXELS);
-                }
-
-
-
-            }
-        } catch (IOException e) {
-            Gdx.app.error("TileMapParser", String.valueOf(e));
-        }
-
-        return mapData;
-    }
-
-    /**
-     * Processes an individual tile and updates the map data.
+     * Processes an individual tile to update the map data.
      *
      * @param position   The position key of the tile. (Format: "x,y")
      * @param tileType   The tile value or type but as a string.
      * @param mapData    The mapData to update.
      */
-    private void processTile(String position, String tileType, ObjectMap<String, List<Integer>> mapData) {
+    private void putTileDataInMap(String position, String tileType, ObjectMap<String, List<Integer>> mapData) {
         try {
             int tileValue = Integer.parseInt(tileType);
-
             if (tileValue != KEY) {
                 List<Integer> list;
                 if (mapData.get(position) == null){
@@ -229,20 +262,6 @@ public class Tiles {
                 //Gdx.app.log("mapData", "Put to mapData: " + position + " " + mapData.get(position));
 
             }
-
-            /*
-            if (tileValue != KEY && !TRAPS.contains(tileValue)) {
-                mapData.put(position, tileValue);
-            }
-            else if (TRAPS.contains(tileValue)){
-                Position parsedPosition = stringToPosition(position, TILES);
-                traps.add(new Trap());
-            }*/
-            /* Handling the key tile with the deprecated specification in .properties file: x,y=<A_TILE>,<KEY>
-            else { // Handle the key tile
-                Position parsedPosition = stringToPosition(position, TILES);
-                keyTilePosition = new Position(parsedPosition.getTileX(), parsedPosition.getTileY(), TILES);
-            }*/
         } catch (NumberFormatException e) {
             Gdx.app.error("TileMapParser", "Invalid tile value: " + tileType + " at position " + position, e);
         }
