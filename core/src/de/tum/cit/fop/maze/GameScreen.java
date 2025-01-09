@@ -16,6 +16,7 @@ import com.badlogic.gdx.InputAdapter;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import de.tum.cit.fop.maze.MapTileObjects.Tile;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -64,7 +65,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final ShaderProgram shader;
 
-
+    private TiledMap map;
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
@@ -124,16 +125,10 @@ public class GameScreen extends InputAdapter implements Screen {
                 16, 32, 12, 19, 64f, 128f, 6.5f,
                 tiles.layer, tiles, this);//"this" is already a game screen
 
-
-
-
         // Initialize traps and add one trap (you can add more as needed)
         // traps = new ArrayList<>();
         //Trap trap1 = new Trap(100f, 150f, 50, 50, 30, 30, 50f, 50f, 1.0f);
         // traps.add(trap1);
-
-
-
 
         // Initialize ChasingEnemy with player and collisionLayer
         chasingEnemies = new ArrayList<>();
@@ -154,6 +149,7 @@ public class GameScreen extends InputAdapter implements Screen {
         if (!shader.isCompiled()) {
             Gdx.app.error("ShaderError", shader.getLog());
         }
+
 
     }
 
@@ -242,6 +238,7 @@ public class GameScreen extends InputAdapter implements Screen {
         renderPlayer();
         renderArrow();
         renderKey();
+        drawMapBorder();
 
 
         if (!chasingEnemies.isEmpty()) {
@@ -255,6 +252,32 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
         renderHUD();
+    }
+
+    public void drawMapBorder() {
+       // if (mapTiles.isEmpty()) return;
+
+        // Set up ShapeRenderer to match game world projection
+        shapeRenderer.setProjectionMatrix(game.getSpriteBatch().getProjectionMatrix());
+
+        // Begin drawing with filled shapes for the border
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.WHITE); // Set border color
+
+        // Draw top border (horizontal)
+        shapeRenderer.rect(0, WORLD_HEIGHT, WORLD_WIDTH, TILE_SIZE);
+
+        // Draw bottom border (horizontal)
+        shapeRenderer.rect(0, -TILE_SIZE, WORLD_WIDTH, TILE_SIZE);
+
+        // Draw left border (vertical)
+        shapeRenderer.rect(0 - TILE_SIZE, 0 - TILE_SIZE, TILE_SIZE, (WORLD_HEIGHT + (2*TILE_SIZE)));
+
+        // Draw right border (vertical)
+        shapeRenderer.rect(WORLD_WIDTH , 0 - TILE_SIZE, TILE_SIZE, (WORLD_HEIGHT + (2*TILE_SIZE)));
+
+        // End drawing the border
+        shapeRenderer.end();
     }
 
     /**
