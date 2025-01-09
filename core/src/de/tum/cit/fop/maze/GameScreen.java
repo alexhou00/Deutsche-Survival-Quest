@@ -114,6 +114,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // get the array of tiles from our tile generator: tiles.getTiles()
         // and then get the texture region where our key is at
         keyRegion = tiles.getTileset()[Tiles.KEY].getTextureRegion();
+        Gdx.app.log("GameScreen", "Key Created");
 
         // Set up map renderer
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many
@@ -124,6 +125,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 tiles.entrance.getTileY(),
                 16, 32, 12, 19, 64f, 128f, 6.5f,
                 tiles.layer, tiles, this);//"this" is already a game screen
+        Gdx.app.log("GameScreen", "Player Created");
 
         // Initialize traps and add one trap (you can add more as needed)
         // traps = new ArrayList<>();
@@ -150,7 +152,7 @@ public class GameScreen extends InputAdapter implements Screen {
             Gdx.app.error("ShaderError", shader.getLog());
         }
 
-
+        Gdx.app.log("GameScreen", "GameScreen's Constructor Successfully Executed");
     }
 
     /**
@@ -232,31 +234,32 @@ public class GameScreen extends InputAdapter implements Screen {
         game.checkExitToNextLevel(player);
 
 
-        game.getSpriteBatch().begin();
+
         renderTrap();
         // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
         renderPlayer();
         renderArrow();
         renderKey();
+
         drawMapBorder();
 
 
+        game.getSpriteBatch().begin();
         if (!chasingEnemies.isEmpty()) {
             chasingEnemies.get(0).draw(game.getSpriteBatch());
         }
+        game.getSpriteBatch().end();
 
 
         moveCamera();
 
-        game.getSpriteBatch().end(); // Important to call this after drawing everything
+        //game.getSpriteBatch().end(); // Important to call this after drawing everything
 
         // renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
         renderHUD();
     }
 
     public void drawMapBorder() {
-       // if (mapTiles.isEmpty()) return;
-
         // Set up ShapeRenderer to match game world projection
         shapeRenderer.setProjectionMatrix(game.getSpriteBatch().getProjectionMatrix());
 
@@ -328,6 +331,8 @@ public class GameScreen extends InputAdapter implements Screen {
      * Renders the player's character based on movement state.
      */
     private void renderPlayer(){
+        game.getSpriteBatch().begin();
+
         if (player.getHurtTimer() > 0.3f){
             game.getSpriteBatch().setShader(shader);
             shader.setUniformf("isHurt", 0.1f);
@@ -352,9 +357,11 @@ public class GameScreen extends InputAdapter implements Screen {
             );
         }
         game.getSpriteBatch().setShader(null);
+        game.getSpriteBatch().end();
     }
 
     private void renderArrow(){
+        game.getSpriteBatch().begin();
         // Draw arrow that points at the exit
         Position exitPosition = null;
         if (!tiles.exits.isEmpty())
@@ -363,6 +370,7 @@ public class GameScreen extends InputAdapter implements Screen {
         float angle = getAngle(exitPosition);
         
         if (angle > 0) hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
+        game.getSpriteBatch().end();
     }
 
     /**
@@ -375,6 +383,8 @@ public class GameScreen extends InputAdapter implements Screen {
      * before rendering to ensure proper placement in the game world.
      */
     public void renderKey() {
+        game.getSpriteBatch().begin();
+
         float keyScale = 1f;
         if (key.isCollected()){
             key.setX(player.getX());
@@ -404,6 +414,7 @@ public class GameScreen extends InputAdapter implements Screen {
         if (key.isTouching(player)){
             key.collect();
         }
+        game.getSpriteBatch().end();
     }
 
     private void renderChasingEnemies() {
@@ -411,9 +422,11 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     private void renderTrap(){
+        game.getSpriteBatch().begin();
         for (Trap trap : tiles.traps){
             trap.draw(game.getSpriteBatch());
         }
+        game.getSpriteBatch().end();
     }
 
     /**
@@ -464,11 +477,13 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     private void renderSpotlightEffect(float x, float y, float spotlightRadius) {
+        game.getSpriteBatch().begin();
         Position screenCoordinates = getScreenCoordinates(x, y);
         float xOnScreen = screenCoordinates.getX();
         float yOnScreen = screenCoordinates.getY();
         Gdx.app.log("GameScreen", "screen x: " + xOnScreen + "; screen y: " + yOnScreen);
         spotlightEffect.render(camera, x, y, spotlightRadius, 0.8f);
+        game.getSpriteBatch().end();
     }
 
     /**
@@ -556,7 +571,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     @Override
     public void dispose() {
-        shapeRenderer.dispose();
+        //shapeRenderer.dispose(); // IDK why but I wasn't supposed to dispose shapeRenderer otherwise the program will crash with unknown internal reasons
         mapRenderer.dispose();
         hudObjectRenderer.dispose();
     }
