@@ -14,7 +14,7 @@ import static de.tum.cit.fop.maze.MapTileObjects.Tile.getPixmap;
 
 public class Trap extends GameObject {
     private float damage;
-    private TextureRegion trapTexture;
+    private final TextureRegion trapTexture;
 
     private boolean[][] hitPixmap; // stores the precomputed alpha map
 
@@ -56,6 +56,7 @@ public class Trap extends GameObject {
         return getPixmap(tileRegion);
     }
 
+    /** Override the original rectangle overlapping method to this hitPixmap detection*/
     @Override
     public boolean isTouching(GameObject object) {
         /*Precomputed Alpha Maps:
@@ -63,60 +64,36 @@ public class Trap extends GameObject {
         preprocess the tileset and store alpha masks as 2D arrays of booleans
         (true for non-transparent or alpha > 20, false for transparent).
         This avoids expensive Pixmap operations.
-         */ // access it throuch hitPixmap
-        /*TextureRegion tileRegion = this.getTextureRegion();
-
-        float scale = (float) TILE_SCREEN_SIZE * 0.8f / 32f;
-
-        for (int localX)
-
-            int height = this.getTextureRegion().getRegionHeight(); // in pixels, which is 16 (or TILE_SIZE) in this case
-
-        // Calculate the local tile coordinates (in pixels) relative to the tile's position
-        int localX = (int) ((pointX - x) / scale);
-        int localY = height - (int) ((pointY - y) / scale) - 1; // The direction of the y-axis needs to be reversed.
-        // In the array, the y-axis is facing down. However, in LibGDX coordinate system, it is facing upward from the bottom-left corner.
-
-        // Check if the point is within the bounds of the tile
-        if (localX < 0 || localX >= tileRegion.getRegionWidth() || localY < 0 || localY >= tileRegion.getRegionHeight()) {
-            return false; // Point is outside the tile's bounds
-        }
-
-        // get that specific bit (boolean)
-        // printHitPixmap();
-        return hitPixmap[localX][localY]; // true if this pixel is true*/
-
+         */
         // Get the hitboxes of both objects
         Rectangle thisHitbox = this.getHitbox();
         Rectangle otherHitbox = object.getHitbox();
 
-        // Check if their hitboxes overlap
+        // Check if their hitboxes overlap at first
         if (!thisHitbox.overlaps(otherHitbox)) {
-            return false; // No collision if hitboxes don't intersect
+            return false; // No collision if hitboxes don't even intersect
         }
 
-        float scale = (float) TILE_SCREEN_SIZE * 0.8f / 32f;
+        // start pixel-perfect collision detection
+        float scale = (float) TILE_SCREEN_SIZE * 0.8f / 32f; // 32 is the size of the original image
         int height = this.getTextureRegion().getRegionHeight(); // The direction of the y-axis needs to be reversed.
-        //Gdx.app.log("TrapTouch", "height: " + height);
 
         // Calculate the overlapping region of the two hitboxes
         int startX = Math.max((int) thisHitbox.x, (int) otherHitbox.x);
         int startY = Math.max((int) thisHitbox.y, (int) otherHitbox.y - 12); // IDK why -12, it'd just offset adjust
         int endX = Math.min((int) (thisHitbox.x + thisHitbox.width), (int) (otherHitbox.x + otherHitbox.width));
         int endY = Math.min((int) (thisHitbox.y + thisHitbox.height), (int) (otherHitbox.y - 12 + otherHitbox.height));
-        //Gdx.app.log("TrapTouch", startX + " " + startY + " " + endX + " " + endY);
 
         // Iterate through each pixel in the overlapping region
         for (int x = startX; x < endX; x++) {
             for (int y = startY; y < endY; y++) {
-                // Convert world coordinates to local coordinates of "this"
+                // Convert world coordinates to local coordinates of "this" (the trap)
                 int localXThis = (int) ((x - thisHitbox.x) / scale);
-                int localYThis = height - (int) ((y - thisHitbox.y) / scale) - 1;
+                int localYThis = height - (int) ((y - thisHitbox.y) / scale) - 1; // reverse the y position
 
-                // Check the alpha map for "this"
+                // Check the alpha map for "this" (the trap)
                 if (this.hitPixmap[localXThis][localYThis]) {
-                    Gdx.app.log("TrapTouch", "localYThis: " + localYThis);
-                    printHitPixmap();
+                    // printHitPixmap();
                     return true; // Collision detected because the non-transparent pixel of "this" overlaps with "object"'s hitbox
                 }
             }
@@ -124,7 +101,6 @@ public class Trap extends GameObject {
 
         // No collision detected
         return false;
-        //return true;
 
     }
 
