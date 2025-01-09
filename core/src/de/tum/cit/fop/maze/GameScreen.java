@@ -275,7 +275,7 @@ public class GameScreen extends InputAdapter implements Screen {
         shapeRenderer.rect(0 - TILE_SIZE, 0 - TILE_SIZE, TILE_SIZE, (WORLD_HEIGHT + (2*TILE_SIZE)));
 
         // Draw right border (vertical)
-        shapeRenderer.rect(WORLD_WIDTH + TILE_SIZE, 0 - TILE_SIZE, TILE_SIZE, (WORLD_HEIGHT + (2*TILE_SIZE)));
+        shapeRenderer.rect(WORLD_WIDTH , 0 - TILE_SIZE, TILE_SIZE, (WORLD_HEIGHT + (2*TILE_SIZE)));
 
         // End drawing the border
         shapeRenderer.end();
