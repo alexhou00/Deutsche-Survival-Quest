@@ -1,5 +1,7 @@
 package de.tum.cit.fop.maze;
 
+import de.tum.cit.fop.maze.BaseClasses.GameObject;
+
 /**
  * Represents a DYNAMIC character in the maze game, such as our player or any moving enemy. <br>
  * This class provides basic properties and behaviors for characters,

@@ -1,12 +1,11 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.MapTileObjects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import com.badlogic.gdx.math.Rectangle;
+import de.tum.cit.fop.maze.Position;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +17,7 @@ public class Tile extends StaticTiledMapTile{
     private float worldX, worldY;
     private Position tilePosition;
 
-    private boolean[][] hitPixmap; // stores the precomputed alpha map
+    protected boolean[][] hitPixmap; // stores the precomputed alpha map
 
     public Tile(TextureRegion textureRegion) {
         super(textureRegion);
@@ -78,7 +77,7 @@ public class Tile extends StaticTiledMapTile{
         return this.tilePosition.getTileY();
     }
 
-    private void setHitPixmap() {
+    protected void setHitPixmap() {
         Pixmap pixmap = getTilePixmap(this.getTextureRegion());
         hitPixmap = createHitPixmap(this.getTextureRegion(), pixmap);
     }
@@ -111,7 +110,7 @@ public class Tile extends StaticTiledMapTile{
      * @param tileRegion The {@link TextureRegion} of the tile.
      * @return The Pixmap of the tile.
      */
-    private Pixmap getTilePixmap(TextureRegion tileRegion) {
+    protected Pixmap getTilePixmap(TextureRegion tileRegion) {
         return getPixmap(tileRegion);
     }
 

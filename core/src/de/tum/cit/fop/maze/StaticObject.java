@@ -1,6 +1,6 @@
 package de.tum.cit.fop.maze;
 
-import com.badlogic.gdx.math.Rectangle;
+import de.tum.cit.fop.maze.BaseClasses.GameObject;
 
 /**
  * Represents a generic STATIC game object with common properties and behaviors.

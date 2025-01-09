@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.ObjectMap;
+import de.tum.cit.fop.maze.MapTileObjects.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -44,6 +45,9 @@ public class Tiles {
             .collect(Collectors.toSet());
     private static final int TRAPS_FIRST = 30;
     private static final Set<Integer> TRAPS = IntStream.rangeClosed(TRAPS_FIRST, 39)
+            .boxed()
+            .collect(Collectors.toSet());
+    private static final Set<Integer> SPEED_BOOST = IntStream.rangeClosed(50, 59)
             .boxed()
             .collect(Collectors.toSet());
     public static final int KEY = 6;
@@ -184,6 +188,17 @@ public class Tiles {
         else if (TRAPS.contains(index)){
             Tile tile = new Tile(tileRegion);
             tile.getProperties().put("type", "Trap");
+
+            if (isPositionKnown){
+                tileOnMap[x][y] = tile;
+                tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+            }
+
+            return tile;
+        }
+        else if (SPEED_BOOST.contains(index)){
+            Tile tile = new SpeedBoost(tileRegion);
+            tile.getProperties().put("type", "Speed Boost");
 
             if (isPositionKnown){
                 tileOnMap[x][y] = tile;

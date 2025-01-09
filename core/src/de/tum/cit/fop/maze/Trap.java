@@ -2,19 +2,15 @@ package de.tum.cit.fop.maze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-
-import java.util.HashMap;
-import java.util.Map;
+import de.tum.cit.fop.maze.BaseClasses.GameObject;
+import de.tum.cit.fop.maze.MapTileObjects.Tile;
 
 import static de.tum.cit.fop.maze.Constants.TILE_SCREEN_SIZE;
-import static de.tum.cit.fop.maze.Constants.TILE_SIZE;
-import static de.tum.cit.fop.maze.Tile.createHitPixmap;
-import static de.tum.cit.fop.maze.Tile.getPixmap;
+import static de.tum.cit.fop.maze.MapTileObjects.Tile.createHitPixmap;
+import static de.tum.cit.fop.maze.MapTileObjects.Tile.getPixmap;
 
 public class Trap extends GameObject {
     private float damage;

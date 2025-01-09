@@ -7,5 +7,6 @@ Value | Type
 10~29 | Wall
 30~39 | Trap (static)
 40~49 | Enemy (dynamic)
-50~59 | Speed Up (e.g., moving walkway)
+50~59 | Speed Boost (e.g., moving walkway)
 60~79 | Others (e.g. luggage conveyor belt)
+80~149| Wall

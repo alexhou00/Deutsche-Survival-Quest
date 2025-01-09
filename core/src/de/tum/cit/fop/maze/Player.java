@@ -4,10 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
+import de.tum.cit.fop.maze.MapTileObjects.SpeedBoost;
+import de.tum.cit.fop.maze.MapTileObjects.Tile;
+import de.tum.cit.fop.maze.MapTileObjects.Wall;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static de.tum.cit.fop.maze.Constants.*;
 import static java.lang.Math.abs;
@@ -84,10 +85,12 @@ public class Player extends Character {
 
         // speed is doubled (times the `BOOST_MULTIPLIER`) when SHIFT key is hold
         // final speed is speed * FPS (delta), since the speed should be independent of the FPS
+        boolean isBoost = boostPressed || isPointWithinInstanceOf(x,y,0,-heightOnScreen/2, SpeedBoost.class); // if the bottom-center is touching a speed boost tile
+        if (isBoost) Gdx.app.log("Player", "Boost!");
         if (horizontalInput == 0) targetVelX = 0; // remember that velocities are signed, and the sign indicates the direction
-        else targetVelX = boostPressed ? (lastHorizontalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastHorizontalDirection * BASE_SPEED); // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
+        else targetVelX = isBoost ? (lastHorizontalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastHorizontalDirection * BASE_SPEED); // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
         if (verticalInput == 0) targetVelY = 0;
-        else targetVelY = boostPressed ? (lastVerticalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastVerticalDirection * BASE_SPEED);
+        else targetVelY = isBoost ? (lastVerticalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastVerticalDirection * BASE_SPEED);
 
         // predict new positions for collision checking
         float newXTest = x + velX * delta;
@@ -96,7 +99,6 @@ public class Player extends Character {
         // Checks if the player can move to a given position by verifying collisions at the four corners of the player's hitbox.
         boolean canMoveHorizontally = canMoveTo(newXTest, y);
         boolean canMoveVertically = canMoveTo(x, newYTest);
-
 
         if (Gdx.input.isKeyPressed(Input.Keys.K)){
             canMoveHorizontally = true;
@@ -200,6 +202,7 @@ public class Player extends Character {
         int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
         // if the tile at position (tileX, tileY) is an instance of the objectClass (e.g., Wall) AND
         // if the point (x+offsetX, y+offsetY) is inside this tile
+        //if (isTileInstanceOf(tileX, tileY, SpeedBoost.class) && tiles.getTileOnMap(tileX, tileY).)
         if (isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).isCollidingPoint(x+offsetX, y+offsetY)){ // && tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)
             Gdx.app.log("Player",
                     "Player's " +

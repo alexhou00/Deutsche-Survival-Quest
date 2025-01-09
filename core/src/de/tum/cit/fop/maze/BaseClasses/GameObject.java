@@ -1,4 +1,4 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.BaseClasses;
 
 import com.badlogic.gdx.math.Rectangle;
 
