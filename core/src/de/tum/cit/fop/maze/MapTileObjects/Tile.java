@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.Rectangle;
 import de.tum.cit.fop.maze.Position;
 
 import java.util.HashMap;
@@ -93,11 +94,11 @@ public class Tile extends StaticTiledMapTile{
         // Iterate over the pixels in the texture region
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                int pixel = tilePixmap.getPixel(startX + x, startY + y);
-                int alpha = (pixel & 0xFF000000) >>> 24; // Extract the alpha channel
+                int pixel = tilePixmap.getPixel(startX + x, startY + y); // pixel is in RGBA8888 Format, so that alpha is the LSB
+                int alpha = (pixel & 0x000000FF); // int alpha = (pixel & 0xFF000000) >>> 24; // Extract the alpha channel
 
-                // Collision detected if (alpha > 20) (max. 255)
-                hitPixmap[x][y] = (alpha > 20);
+                // Collision detected if (alpha > 150) (max. 255)
+                hitPixmap[x][y] = (alpha > 150);
             }
         }
 
@@ -142,7 +143,7 @@ public class Tile extends StaticTiledMapTile{
         /*Precomputed Alpha Maps:
         Instead of accessing Pixmap directly during runtime,
         preprocess the tileset and store alpha masks as 2D arrays of booleans
-        (true for non-transparent or alpha > 20, false for transparent).
+        (true for non-transparent or alpha > 150, false for transparent).
         This avoids expensive Pixmap operations.
          */
         TextureRegion tileRegion = this.getTextureRegion();
@@ -163,5 +164,25 @@ public class Tile extends StaticTiledMapTile{
         // get that specific bit (boolean)
         // printHitPixmap();
         return hitPixmap[localX][localY]; // true if this pixel is true
+    }
+
+    /**
+     * Checks if the specified point is in the space of this tile.
+     * Compare {@code isCollidingPoint} which only detects the non-transparent part of the tile.
+     * <br>
+     * Note that this is specifically used to detect the SpeedBoost tile,
+     * since it is lacking a hitbox.
+     *
+     * @param pointX The world X coordinate of the point.
+     * @param pointY The world Y coordinate of the point.
+     * @return True if there is a collision, false otherwise.
+     */
+    public boolean isPointInTile(float pointX, float pointY) {
+        Position tilePosition = this.getTilePosition();
+        tilePosition = tilePosition.convertTo(Position.PositionUnit.PIXELS);
+        float x = tilePosition.getX() - (float) TILE_SCREEN_SIZE / 2;
+        float y = tilePosition.getY() - TILE_SCREEN_SIZE / 2.0f;
+        Rectangle hitbox = new Rectangle(x, y, TILE_SCREEN_SIZE, TILE_SCREEN_SIZE);
+        return hitbox.contains(pointX, pointY);
     }
 }

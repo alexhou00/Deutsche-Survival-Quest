@@ -167,7 +167,6 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.zoom += (targetZoom - camera.zoom) * ZOOM_SPEED;
     }
 
-
     /**
      * Handles mouse scroll events to adjust zoom levels.
      * Scrolling is automatically detected (for zooming)
