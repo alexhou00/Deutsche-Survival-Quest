@@ -231,6 +231,7 @@ public class MazeRunnerGame extends Game {
             gameScreen = new GameScreen(this);
             gameScreen.key.setCollected(false);
             this.setScreen(gameScreen);
+            Gdx.app.log("MazeRunnerGame", "Set Screen to Game Screen");
         }
     }
 

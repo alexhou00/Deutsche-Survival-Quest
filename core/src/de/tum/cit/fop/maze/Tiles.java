@@ -283,7 +283,7 @@ public class Tiles {
                     int x = position.getTileX();
                     int y = position.getTileY();
 
-                    if (!TRAPS.contains(tileValue)){
+                    if (!TRAPS.contains(tileValue)){ // if it is not a trap
 
                         // There would be a random chance to change the ground tile
                         if (tileIndex == GROUND) {

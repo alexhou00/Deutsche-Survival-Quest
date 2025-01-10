@@ -83,10 +83,9 @@ public class Player extends Character {
         // to have the player stop the animation if none of the keys are pressed or continues with the animation otherwise
         isMoving = (abs(velX) > 5 || abs(velY) >5);  // horizontalInput != 0 || verticalInput != 0;
 
-        // speed is doubled (times the `BOOST_MULTIPLIER`) when SHIFT key is hold
+        // speed is doubled (times the `BOOST_MULTIPLIER`) when: (1) SHIFT key is hold OR (2) touching a speed boost tile
         // final speed is speed * FPS (delta), since the speed should be independent of the FPS
-        boolean isBoost = boostPressed || isPointWithinInstanceOf(x,y,0,-heightOnScreen/2, SpeedBoost.class); // if the bottom-center is touching a speed boost tile
-        if (isBoost) Gdx.app.log("Player", "Boost!");
+        boolean isBoost = boostPressed || isPointWithinWholeTileOf(x, y, 0, -heightOnScreen/2, SpeedBoost.class); // if the bottom-center is touching a speed boost tile
         if (horizontalInput == 0) targetVelX = 0; // remember that velocities are signed, and the sign indicates the direction
         else targetVelX = isBoost ? (lastHorizontalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastHorizontalDirection * BASE_SPEED); // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
         if (verticalInput == 0) targetVelY = 0;
@@ -211,6 +210,28 @@ public class Player extends Character {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Checks if a specific point of the player's hitbox is
+     * touching any point of the tile that is of that class.
+     * The tile means a whole square here,
+     * compare {@code isPointWithinInstanceOf}
+     * <br>
+     * Specifically, this is used to detect if the player is touching the moving walkway,
+     * since the hitPixmap of the moving walkway is already used to detect collision as walls
+     *
+     * @param x        The world x-coordinate to check
+     * @param y        The world y-coordinate to check
+     * @param offsetX  The x offset for the corner (offset from the center to the left or right)
+     * @param offsetY  The y offset for the corner (offset from the center to the top or bottom)
+     * @param objectClass The tile's type to be checked
+     * @return True if the point is not touching a tile with that property, false otherwise
+     */
+    private boolean isPointWithinWholeTileOf(float x, float y, float offsetX, float offsetY, Class<?> objectClass) {
+        int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
+        int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
+        return isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).isPointInTile(x + offsetX, y + offsetY);
     }
 
     /**
