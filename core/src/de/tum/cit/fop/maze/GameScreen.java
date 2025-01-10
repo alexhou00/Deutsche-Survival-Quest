@@ -11,11 +11,21 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -63,7 +73,8 @@ public class GameScreen extends InputAdapter implements Screen {
     PopUpPanel popUpPanel;
 
     private final ShaderProgram shader;
-
+    private Stage stage1;
+    private TextButton button;
 
 
     /**
@@ -80,6 +91,29 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.setToOrtho(false);
         camera.zoom = 0.8f;
         targetZoom = 1.0f; // create a smooth little zooming animation when start (0.8 -> 1.0)
+
+        Viewport viewport1 = new ScreenViewport(camera);
+        stage1 = new Stage(viewport1, game.getSpriteBatch());
+
+        Table table = new Table();
+        Drawable background =createSolidColorDrawable(Color.WHITE);
+        stage1.addActor(table);
+        Gdx.input.setInputProcessor(stage1);
+        table.setBackground(background);
+        table.setSize(600,400);
+        table.setPosition(200,200);
+        Label label = new Label("Game Instructions",game.getSkin(),"title");
+        table.add(label).padBottom(80).center().row();
+        label.getStyle().font.getData().setScale(0.5f);
+        button = new TextButton("Start now", game.getSkin());
+
+        button.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor){
+                                       Gdx.app.log("start game", "Start game");
+                                        table.remove(); // Change to the game screen when button is pressed
+                                    }});
+        table.add(button);
 
         // Create and configure the HUD camera
         hudCamera = new OrthographicCamera();
@@ -180,6 +214,22 @@ public class GameScreen extends InputAdapter implements Screen {
         return true; // Return true to indicate the event was handled
     }
 
+    private Drawable createSolidColorDrawable(Color color) {
+        // Create a Pixmap with the solid color
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(color);
+        pixmap.fill();
+
+        // Create a Texture from the Pixmap
+        Texture texture = new Texture(pixmap);
+
+        // Clean up the Pixmap
+        pixmap.dispose();
+
+        // Return a Drawable
+        return new TextureRegionDrawable(texture);
+    }
+
 
     /**
      * Handles user input for something throughout the whole game, like zooming and muting.
@@ -254,8 +304,12 @@ public class GameScreen extends InputAdapter implements Screen {
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
 
+//        stage1.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f)); //Update the stage
+        stage1.act(delta);
+        stage1.draw(); // Draw the
         // renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
         renderHUD();
+
     }
 
     /**
@@ -569,5 +623,4 @@ public class GameScreen extends InputAdapter implements Screen {
     public OrthographicCamera getCamera() {
         return camera;
     }
-
 }
