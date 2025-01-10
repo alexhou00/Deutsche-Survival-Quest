@@ -113,7 +113,7 @@ public class GameScreen extends InputAdapter implements Screen {
                                        Gdx.app.log("start game", "Start game");
                                         table.remove(); // Change to the game screen when button is pressed
                                     }});
-        table.add(button);
+        table.add(button); // TODO: fix button
 
         // Create and configure the HUD camera
         hudCamera = new OrthographicCamera();
