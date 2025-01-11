@@ -70,9 +70,17 @@ public class SpeechBubble {
             default -> speechTailRegions;
         };
 
+        String[] parts = text.split("\\r?\\n"); // split new lines '\n' but UNIX and Windows both compatible
+
         // Calculate dimensions for the bubble
-        float textWidth = getTextWidth(text);  //xt.length() * mWidth;//font.getRegion().getRegionWidth();
-        float textHeight = font.getLineHeight();
+        float textWidth = 0; // find max
+        for (String part : parts){
+            float width = getTextWidth(part);  //xt.length() * mWidth;//font.getRegion().getRegionWidth();
+            if (width > textWidth){
+                textWidth = width;
+            }
+        }
+        float textHeight = font.getLineHeight() * parts.length + (parts.length - 1) * 9;
         float paddingX = 5 * scale;
         float paddingY = 10 * scale;
         float bubbleWidth = (textWidth + paddingX * 2);
@@ -111,10 +119,10 @@ public class SpeechBubble {
         batch.draw(speechCorners[2][2], x + cornerSize + centerWidth, y, cornerSize, cornerSize);
 
         // Render the tail
-        if (tailX < x + 17 * scale){
+        if (tailX < x + 15 * scale){
             tailRegion = tailRegions[1];
         }
-        else if (tailX > x + bubbleWidth - tailRegion.getRegionWidth() * scale - 17 * scale){
+        else if (tailX > x + bubbleWidth - tailRegion.getRegionWidth() * scale - 15 * scale){
             tailRegion = tailRegions[2];
         }
         batch.draw(tailRegion, tailX, y - 12 * scale, tailRegion.getRegionWidth() * scale, tailRegion.getRegionHeight() * scale);
