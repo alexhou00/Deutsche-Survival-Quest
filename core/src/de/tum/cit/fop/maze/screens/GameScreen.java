@@ -177,7 +177,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 tiles.entrance.getTileX(),
                 tiles.entrance.getTileY(),
                 16, 32, 12, 19, 64f, 128f, 6.5f,
-                tiles.layer, tiles, this);//"this" is already a game screen
+                this, tiles.layer, tiles);//"this" is already a game screen
 
 
 
@@ -194,7 +194,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //chasingEnemy = new ArrayList<>();
         //ChasingEnemy chasingEnemy1 = new ChasingEnemy(10, 10, 32, 32, 32, 32, 64, 64, 3, tiles.layer, player, chasingEnemyTexture);
         //chasingEnemy.add(chasingEnemy1); // Add enemy targeting the player*/
-        chasingEnemy = new ChasingEnemy(0, 0, 32, 32, 32, 32, 64, 64, 3, player, tiles.layer, new TextureRegion(new Texture(Gdx.files.internal( "mob_guy.png")), 0, 0, 32, 32));
+        chasingEnemy = new ChasingEnemy(0, 0, 32, 32, 32, 32, 64, 64, 3, this, tiles.layer, player); //new TextureRegion(new Texture(Gdx.files.internal( "mob_guy.png")), 0, 0, 32, 32));
 
 
         popUpPanel = new PopUpPanel();
