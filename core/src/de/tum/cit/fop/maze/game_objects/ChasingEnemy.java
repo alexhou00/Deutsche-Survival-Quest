@@ -95,7 +95,7 @@ public class ChasingEnemy extends Character {
     //like the damge player in trap class
     private void attackPlayer(Player player) {
         if (this.getHitbox().overlaps(player.getHitbox())) {
-            player.loseLives(1);
+            //player.loseLives(1);
             System.out.println("The enemy touched the player! Player loses 1 life.");
         }
     }

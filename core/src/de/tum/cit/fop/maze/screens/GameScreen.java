@@ -468,6 +468,11 @@ public class GameScreen extends InputAdapter implements Screen {
             trap.draw(game.getSpriteBatch());
         }
     }
+    private void renderChasingEnemy(){
+        for (ChasingEnemy chasingEnemy : chasingEnemies){
+
+        }
+    }
 
     /**
      * Renders the Heads-Up Display (HUD), including player stats and health.

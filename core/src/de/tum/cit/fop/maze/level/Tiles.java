@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.ObjectMap;
+import de.tum.cit.fop.maze.game_objects.ChasingEnemy;
 import de.tum.cit.fop.maze.util.Position;
 import de.tum.cit.fop.maze.game_objects.Trap;
 import de.tum.cit.fop.maze.tiles.*;
@@ -29,6 +30,8 @@ public class Tiles {
     private Position keyTilePosition;
     public List<Trap> traps;
 
+    public List<ChasingEnemy> chasingEnemies;
+
     /** entrance tile, coordinates of the tile can be accessed through this */
     public Entrance entrance;
     /** exit tile, coordinates of the tile can be accessed through this */
@@ -49,6 +52,9 @@ public class Tiles {
             .collect(Collectors.toSet());
     private static final int TRAPS_FIRST = 3;
     private static final int TRAPS_SECOND = 80;
+
+    private static final int ENEMY_FIRST = 4;
+
     private static final Set<Integer> TRAPS = IntStream.concat(IntStream.of(TRAPS_FIRST),IntStream.rangeClosed(TRAPS_SECOND, 89))
             .boxed()
             .collect(Collectors.toSet());
@@ -71,6 +77,7 @@ public class Tiles {
         exits = new ArrayList<>();
 
         traps = new ArrayList<>();
+        chasingEnemies = new ArrayList<>();
         maxTilesOnCell = 0;
     }
 
