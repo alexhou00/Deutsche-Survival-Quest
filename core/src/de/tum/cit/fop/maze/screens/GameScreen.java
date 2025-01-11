@@ -323,7 +323,17 @@ public class GameScreen extends InputAdapter implements Screen {
         renderArrow();
         renderKey();
 
-        player.say("The quick brown fox jumps over the lazy dog. \nThe quick brown fox jumps over the lazy dog. \nThe quick brown fox jumps over the lazy dog. \nThe quick brown fox jumps over the lazy dog.",
+        player.say("""
+                The quick brown fox jumps over the lazy dog.
+                Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.
+                Blowzy night-frumps vex'd Jack Q.
+                Příliš žluťoučký kůň úpěl ďábelské ódy.
+                This pangram contains four As, one B, two Cs, one D, thirty Es, six Fs,\s
+                five Gs, seven Hs, eleven Is, one J, one K, two Ls, two Ms, eighteen Ns,\s
+                fifteen Os, two Ps, one Q, five Rs, twenty-seven Ss, eighteen Ts, two Us,\s
+                seven Vs, eight Ws, two Xs, three Ys, & one Z.
+                Die Polizisten beruhigten Mutter und Tochter, halfen dem Mädchen, seine Zähne zu putzen, und brachten es dann ins Bett.
+                """,
                 true, sinusInput, 0.05f);
 
         moveCamera();

@@ -28,6 +28,14 @@ public class SpeechBubble {
 
     private final BitmapFont font;
 
+    private static final int SMALL_LETTER_AE = 228;
+    private static final int SMALL_LETTER_OE = 246;
+    private static final int SMALL_LETTER_UE = 252;
+    private static final int SMALL_LETTER_SS = 223;
+    private static final int CAPITAL_LETTER_AE = 196;
+    private static final int CAPITAL_LETTER_OE = 214;
+    private static final int CAPITAL_LETTER_UE = 220;
+
     public SpeechBubble() {
         this.texture = new Texture(Gdx.files.internal("objects.png"));
         this.speechTailRegion = new TextureRegion(texture, 192, 224, 16, 24);
@@ -51,10 +59,10 @@ public class SpeechBubble {
         this.font.setColor(Color.BLACK); // Set font color to match the speech bubble style
         font.getData().setScale(scale/2);
 
-        this.letterWidth = new float['~'+2];
-        for (int i = '!'; i<='~'; i++){
+        this.letterWidth = new float[256]; // extended-ascii to include letters like ä, ö, ü
+        for (int i = ' '; i<='ü'; i++){
             letterWidth[i] = getLetterWidth(font, Character.toString((char) i));
-            System.out.println( Character.toString(i)+ ": " + letterWidth[i]);
+            System.out.println(Character.toString(i)+ ": " + letterWidth[i]);
         }
     }
 
@@ -155,13 +163,19 @@ public class SpeechBubble {
             case 'm','w' -> 1;
             default -> 0;
         };
-        return Math.max(layout.width + (scale / 2) * 1.5f + adjust * scale, layout.width); // width of letter "m"
+        return Math.max(layout.width + (scale / 2) * 1.5f * 0 + adjust * scale, layout.width); // width of letter "m"
     }
 
     public float getTextWidth(String text){
         float length = 0; //3 * scale; // 5 is the minimum, so we add base of it
         for (char c : text.toCharArray()){
-            length += letterWidth[c];
+            try{
+                length += letterWidth[c]; // if (c<='ü')
+            }
+            catch (ArrayIndexOutOfBoundsException e){
+                Gdx.app.log("SpeechBubble", "Unsupported letter: " + c);
+                length += letterWidth['m'];
+            }
         }
         return length;
     }
