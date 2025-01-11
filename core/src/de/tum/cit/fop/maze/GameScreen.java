@@ -1,8 +1,6 @@
 package de.tum.cit.fop.maze;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.InputAdapter;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -76,6 +73,12 @@ public class GameScreen extends InputAdapter implements Screen {
     private Stage stage1;
     private TextButton button;
 
+    // Show all the variables in the bottom-left corner here
+    // Variables to show, stored in a map (LinkedHashMap preserves the order)
+    Map<String, Float> variablesToShow = new LinkedHashMap<>();
+    InputMultiplexer inputMultiplexer = new InputMultiplexer();
+
+
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
@@ -92,32 +95,40 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.zoom = 0.8f;
         targetZoom = 1.0f; // create a smooth little zooming animation when start (0.8 -> 1.0)
 
-        Viewport viewport1 = new ScreenViewport(camera);
+        // Create and configure the HUD camera
+        hudCamera = new OrthographicCamera();
+        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        Viewport viewport1 = new ScreenViewport(hudCamera);
         stage1 = new Stage(viewport1, game.getSpriteBatch());
 
         Table table = new Table();
         Drawable background =createSolidColorDrawable(Color.WHITE);
         stage1.addActor(table);
-        Gdx.input.setInputProcessor(stage1);
+        // Gdx.input.setInputProcessor(stage1);
         table.setBackground(background);
-        table.setSize(600,400);
-        table.setPosition(200,200);
+        table.setSize(Gdx.graphics.getWidth() * 0.9f,Gdx.graphics.getHeight() * 0.9f);
+        table.setPosition(Gdx.graphics.getWidth() * 0.05f,Gdx.graphics.getHeight() * 0.05f);
         Label label = new Label("Game Instructions",game.getSkin(),"title");
         table.add(label).padBottom(80).center().row();
         label.getStyle().font.getData().setScale(0.5f);
         button = new TextButton("Start now", game.getSkin());
 
         button.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor){
-                                       Gdx.app.log("start game", "Start game");
-                                        table.remove(); // Change to the game screen when button is pressed
-                                    }});
+            @Override
+            public void changed(ChangeEvent event, Actor actor){
+                                   Gdx.app.log("start game", "Start game");
+                                    table.remove(); // Change to the game screen when button is pressed
+                                    game.resume();
+                                }});
         table.add(button); // TODO: fix button
+        button.setPosition(200, 200); // Set a clear position on the stage
 
-        // Create and configure the HUD camera
-        hudCamera = new OrthographicCamera();
-        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        // We use an InputMultiplexer instead of only stage or "this",
+        // since both stage1 (for intro panel) and the GameScreen (for scrolling) handle inputs
+        inputMultiplexer.addProcessor(stage1); // the stage is for the intro panel
+        inputMultiplexer.addProcessor(this);  // used to detect mouse scrolls
+        Gdx.input.setInputProcessor(inputMultiplexer);
 
         // Load textures for HUD
         hudObjectRenderer = new ElementRenderer("objects.png");
@@ -189,6 +200,8 @@ public class GameScreen extends InputAdapter implements Screen {
             Gdx.app.error("ShaderError", shader.getLog());
         }
 
+        this.pause();
+        Gdx.input.setInputProcessor(stage1);
     }
 
     /**
@@ -276,7 +289,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Move text in a circular path to have an example of a moving object
         sinusInput += delta;  // sinusInput is like `time`, storing the time for animation
-        Gdx.input.setInputProcessor(this);
 
         updateZoom(delta); // Smoothly adjust zoom
         handleInput(); // handle input of the keys
@@ -304,7 +316,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
 
-//        stage1.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f)); //Update the stage
         stage1.act(delta);
         stage1.draw(); // Draw the
         // renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
@@ -393,7 +404,7 @@ public class GameScreen extends InputAdapter implements Screen {
             exitPosition = tiles.getNearestExit(player.getX(), player.getY()).getTilePosition();
 
         float angle = getAngle(exitPosition);
-        
+
         if (angle > 0) hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
     }
 
@@ -452,26 +463,21 @@ public class GameScreen extends InputAdapter implements Screen {
      * Renders the Heads-Up Display (HUD), including player stats and health.
      */
     private void renderHUD() {
-        SpriteBatch hudBatch = game.getSpriteBatch();
-        hudBatch.setProjectionMatrix(hudCamera.combined); // HUD uses its own camera so that it does not follow the player and the position is fixed on the screen.
-        hudBatch.begin();
+        game.getSpriteBatch().setProjectionMatrix(hudCamera.combined); // HUD uses its own camera so that it does not follow the player and the position is fixed on the screen.
+        game.getSpriteBatch().begin();
 
-
-        // Show all the variables in the bottom-left corner here
-        // Variables to show, stored in a map (LinkedHashMap preserves the order)
-        Map<String, Float> variablesToShow = new LinkedHashMap<>();
+        variablesToShow.clear();
         variablesToShow.put("player.x", player.getX());
         variablesToShow.put("player.y", player.getY());
         variablesToShow.put("player.speed", player.getSpeed());
         variablesToShow.put("camera zoom", camera.zoom);
-
         drawVariables(variablesToShow);
 
-        hudBatch.end();
+        game.getSpriteBatch().end();
 
         // hudObjectRenderer use another rendering batch, so we have to end the batch first, and start it again
-        hudBatch.begin();
-        hudObjectRenderer.drawHearts(hudBatch, player.getLives(), 20, Gdx.graphics.getHeight() - 26f - 20, 32, 2);
+        game.getSpriteBatch().begin();
+        hudObjectRenderer.drawHearts(game.getSpriteBatch(), player.getLives(), 20, Gdx.graphics.getHeight() - 26f - 20, 32, 2);
         /* Health bar
         // Draw health bar
         float healthBarWidth = 180f;
@@ -492,7 +498,7 @@ public class GameScreen extends InputAdapter implements Screen {
         shapeRenderer.rect(healthBarX, healthBarY, healthBarWidth * healthPercentage, healthBarHeight);
 
         shapeRenderer.end();*/
-        hudBatch.end();
+        game.getSpriteBatch().end();
     }
 
     private void renderSpotlightEffect(float x, float y, float spotlightRadius) {
@@ -571,15 +577,22 @@ public class GameScreen extends InputAdapter implements Screen {
 
     @Override
     public void pause() {
+        Gdx.app.log("GameScreen", "Game paused");
+
+        player.pause();
+        // Stop processing input temporarily
+        Gdx.input.setInputProcessor(null); // Disable input handling during pause
     }
 
     @Override
     public void resume() {
+        Gdx.app.log("GameScreen", "Game resumed");
+        player.resume();
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     @Override
     public void show() {
-
     }
 
     @Override

@@ -203,10 +203,10 @@ public class Player extends Character {
         // if the point (x+offsetX, y+offsetY) is inside this tile
         //if (isTileInstanceOf(tileX, tileY, SpeedBoost.class) && tiles.getTileOnMap(tileX, tileY).)
         if (isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).isCollidingPoint(x+offsetX, y+offsetY)){ // && tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)
-            Gdx.app.log("Player",
+            /*Gdx.app.log("Player",
                     "Player's " +
                             ((offsetX > 0) ? "right" : "left") + "-" + ((offsetY > 0) ? "upper" : "lower") +
-                            " corner collided with tile at position " + tileX + ", " + tileY);
+                            " corner collided with tile at position " + tileX + ", " + tileY);*/
             return true;
         }
         return false;
