@@ -41,7 +41,10 @@ public class Tiles {
 
     // Create an immutable Set of integers representing wall
     // IntStream.concat(IntStream.rangeClosed(10, 29),IntStream.rangeClosed(64, 66)) in case i want to concat two sections in the future
-    private static final Set<Integer> WALLS = IntStream.concat(IntStream.rangeClosed(20, 79),IntStream.rangeClosed(100, 149))
+    private static final Set<Integer> WALLS = IntStream.concat(IntStream.concat(
+                    IntStream.of(0),
+                    IntStream.rangeClosed(20, 79)),
+                    IntStream.rangeClosed(100, 149))
             .boxed()
             .collect(Collectors.toSet());
     private static final int TRAPS_FIRST = 3;
@@ -250,7 +253,7 @@ public class Tiles {
                         putTileDataInMapData(position, tileType, mapData);
                     }
                 }
-                else{
+                else{ // the key in the key-value is "keyPosition" which allows us to place the key on float positions
                     keyTilePosition = stringToPosition(parts[1], TILES).convertTo(PIXELS);
                 }
 
@@ -287,7 +290,19 @@ public class Tiles {
                     int x = position.getTileX();
                     int y = position.getTileY();
 
-                    if (!TRAPS.contains(tileValue)){ // if it is not a trap
+                    if (tileValue == KEY){
+                        keyTilePosition = new Position(x, y, TILES);
+                    }
+                    else if (TRAPS.contains(tileValue)){ // a trap
+                        Tile tile = tileset[tileValue];
+
+                        Position trapPosition = new Position(x, y, TILES).convertTo(PIXELS);
+                        float worldX = trapPosition.getX();
+                        float worldY = trapPosition.getY();
+                        // a new instance of trap is created here
+                        traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,16,16,TILE_SCREEN_SIZE * 0.8f, TILE_SCREEN_SIZE * 0.8f, 2));
+                    }
+                    else { // if it is neither a trap nor a key, which is the default one
 
                         // There would be a random chance to change the ground tile
                         if (tileIndex == BASIC_GROUND) {
@@ -308,15 +323,6 @@ public class Tiles {
                         // also set its position on the map
                         //createAndPlaceNewTile(x, y, tile);
                         createTile(tileValue, tile.getTextureRegion(), true, x, y); // it is still tileValue instead of tileIndex here, so the functionalities will not be aff
-                    }
-                    else{ // a trap
-                        Tile tile = tileset[tileValue];
-
-                        Position trapPosition = new Position(x, y, TILES).convertTo(PIXELS);
-                        float worldX = trapPosition.getX();
-                        float worldY = trapPosition.getY();
-                        // a new instance of trap is created here
-                        traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,16,16,TILE_SCREEN_SIZE * 0.8f, TILE_SCREEN_SIZE * 0.8f, 2));
                     }
 
                 }
@@ -344,7 +350,7 @@ public class Tiles {
     private void putTileDataInMapData(String position, String tileType, ObjectMap<String, List<Integer>> mapData) {
         try {
             int tileValue = Integer.parseInt(tileType);
-            if (tileValue != KEY) {
+            if (true/*tileValue != KEY*/) {
                 // originally it was a Integer instead of a List<Integer>,
                 // but now we can have more than one layer,
                 // so we need a list to store the tiles in this specific cell at this position
@@ -359,6 +365,10 @@ public class Tiles {
                 mapData.put(position, list);
                 //Gdx.app.log("mapData", "Put to mapData: " + position + " " + mapData.get(position));
 
+            }
+            else { // get the key position here if the specification type is x,y=KEY
+                //Position position = stringToPosition(parts[0]);
+                //keyTilePosition = new Position(position.getTileX(), position.getTileY(), TILES);
             }
         } catch (NumberFormatException e) {
             Gdx.app.error("TileMapParser", "Invalid tile value: " + tileType + " at position " + position, e);
