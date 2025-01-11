@@ -323,6 +323,9 @@ public class GameScreen extends InputAdapter implements Screen {
         renderArrow();
         renderKey();
 
+        player.say("The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog.",
+                true, sinusInput, 0.05f);
+
         moveCamera();
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything

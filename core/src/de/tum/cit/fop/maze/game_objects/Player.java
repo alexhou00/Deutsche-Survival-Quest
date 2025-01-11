@@ -173,7 +173,6 @@ public class Player extends Character {
         for (int i = (int) (-hitboxWidthOnScreen / 2); i <= hitboxWidthOnScreen / 2; i += (int) (hitboxWidthOnScreen / numPointsToCheck))
             if (isPointWithinInstanceOf(x, y, i, -hitboxHeightOnScreen / 2, Wall.class))
                 return false;
-
         // Check bottom edge
         for (int i = (int) (-hitboxWidthOnScreen / 2); i <= hitboxWidthOnScreen / 2; i += (int) (hitboxWidthOnScreen / numPointsToCheck)) {
             if (isPointWithinInstanceOf(x, y, i, hitboxHeightOnScreen / 2, Wall.class))

@@ -93,7 +93,7 @@ public class SpeechBubble {
         centerHeight = bubbleHeight - 2 * cornerSize;
 
         x = MathUtils.clamp(x, 0, getWorldWidth()-bubbleWidth);
-        tailX = MathUtils.clamp(tailX, x+cornerSize, getWorldWidth());
+        tailX = MathUtils.clamp(tailX, x+cornerSize, getWorldWidth()-tailRegion.getRegionWidth() * scale -cornerSize);
 
         // Top row
         batch.draw(speechCorners[0][0], x, y + centerHeight + cornerSize, cornerSize, cornerSize);
@@ -113,6 +113,9 @@ public class SpeechBubble {
         // Render the tail
         if (tailX < x + 17 * scale){
             tailRegion = tailRegions[1];
+        }
+        else if (tailX > x + bubbleWidth - tailRegion.getRegionWidth() * scale - 17 * scale){
+            tailRegion = tailRegions[2];
         }
         batch.draw(tailRegion, tailX, y - 12 * scale, tailRegion.getRegionWidth() * scale, tailRegion.getRegionHeight() * scale);
 
