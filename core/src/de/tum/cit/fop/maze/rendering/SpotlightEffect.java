@@ -55,7 +55,7 @@ public class SpotlightEffect extends ApplicationAdapter {
         // Draw the semi-transparent black overlay
         batch.setColor(0, 0, 0, 1f); // // Fully opaque black (opacity already defined in `blackTexture`)
         // enlarge it by 100x of the world size and place it in the center of the world
-        batch.draw(blackTexture, WORLD_WIDTH * -50, WORLD_HEIGHT * -50, WORLD_WIDTH * 100, WORLD_HEIGHT * 100);
+        batch.draw(blackTexture, getWorldWidth() * -50, getWorldHeight() * -50, getWorldWidth() * 100, getWorldHeight() * 100);
 
         // End SpriteBatch before using ShapeRenderer
         batch.end();

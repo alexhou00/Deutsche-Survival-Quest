@@ -168,8 +168,8 @@ public class ChasingEnemy extends Character {
         }
 
         // Constrain enemy position within the game world boundaries
-        x = MathUtils.clamp(x, hitboxWidthOnScreen / 2, WORLD_WIDTH - hitboxWidthOnScreen / 2);
-        y = MathUtils.clamp(y, hitboxHeightOnScreen / 2, WORLD_HEIGHT - hitboxHeightOnScreen / 2);
+        x = MathUtils.clamp(x, hitboxWidthOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2);
+        y = MathUtils.clamp(y, hitboxHeightOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
     }
 
     /**
@@ -198,8 +198,8 @@ public class ChasingEnemy extends Character {
     }
 
     private void setRandomTarget() {
-        randomTargetX = MathUtils.random(hitboxWidthOnScreen / 2, WORLD_WIDTH - hitboxWidthOnScreen / 2);
-        randomTargetY = MathUtils.random(hitboxHeightOnScreen / 2, WORLD_HEIGHT - hitboxHeightOnScreen / 2);
+        randomTargetX = MathUtils.random(hitboxWidthOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2);
+        randomTargetY = MathUtils.random(hitboxHeightOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
     }
 
     /**

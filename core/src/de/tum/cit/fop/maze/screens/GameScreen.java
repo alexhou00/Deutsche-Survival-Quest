@@ -529,8 +529,8 @@ public class GameScreen extends InputAdapter implements Screen {
         float marginY = camera.viewportHeight * 0.8f / 2 * camera.zoom; // 80% of the window height, divided by 2 because we go from the center; also consider zoom here
 
         // Calculate the camera bounds to ensure the player is always in the middle 80%
-        float maxX = WORLD_WIDTH - marginX;
-        float maxY = WORLD_HEIGHT - marginY;
+        float maxX = getWorldWidth() - marginX;
+        float maxY = getWorldHeight() - marginY;
 
         // Set the camera position based on the player's position
         camera.position.set(player.getX(), player.getY(), 0);

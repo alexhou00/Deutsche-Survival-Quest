@@ -244,14 +244,22 @@ public class Tiles {
                 String[] parts = line.split("="); // split into key-value, parts[0] is position (String) and parts[1] is the tileType or tileValue
                 if (parts.length != 2) continue; // ignore malformed lines
 
-                if (!Objects.equals(parts[0], "keyPosition")){ // null-safe equal, the key is not "keyPosition"
-                    String position = parts[0];
+                if (!Objects.equals(parts[0], "keyPosition")){ // null-safe equal, the key is NOT "keyPosition"
+                    String positionStr = parts[0];
                     String[] tileTypes = parts[1].split(","); // Handle multiple tile types (could contain the key)
 
                     for (String tileType : tileTypes) {
                         //Gdx.app.log("Parse", "Tile Parsed: " + position);
-                        putTileDataInMapData(position, tileType, mapData);
+                        putTileDataInMapData(positionStr, tileType, mapData);
                     }
+
+                    // Update the Map Size as we read the positions and find the largest value
+                    Position position = stringToPosition(positionStr, TILES);
+                    if (horizontalTilesCount < position.getTileX() + 1) {
+                        horizontalTilesCount = position.getTileX()+1;
+                        Gdx.app.log("MapParser", "horizontal tiles count updated to " + horizontalTilesCount);
+                    }
+                    if (verticalTilesCount < position.getTileY() + 1) verticalTilesCount = position.getTileY() + 1;
                 }
                 else{ // the key in the key-value is "keyPosition" which allows us to place the key on float positions
                     keyTilePosition = stringToPosition(parts[1], TILES).convertTo(PIXELS);

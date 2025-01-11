@@ -149,8 +149,8 @@ public class Player extends Character {
         }
 
         // Constrain Player to World Boundaries
-        x = MathUtils.clamp(x, hitboxWidthOnScreen / 2, WORLD_WIDTH - hitboxWidthOnScreen / 2);
-        y = MathUtils.clamp(y, hitboxHeightOnScreen / 2, WORLD_HEIGHT - hitboxHeightOnScreen / 2);
+        x = MathUtils.clamp(x, hitboxWidthOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2);
+        y = MathUtils.clamp(y, hitboxHeightOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
 
         if (rightPressed || leftPressed || upPressed || downPressed){
             // Gdx.app.log("Player", "x: " + x + "; y: " + y);

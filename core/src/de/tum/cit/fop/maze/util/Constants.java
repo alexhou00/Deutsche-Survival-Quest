@@ -7,15 +7,17 @@ public class Constants {
 
     public static final int TILE_SIZE = 16; // in pixels
 
-    public static final int horizontalTilesCount = 20; // number of tiles on the width
-    public static final int verticalTilesCount = 20; // number of tiles on the height
+    public static int horizontalTilesCount = 1; // number of tiles on the width
+    public static int verticalTilesCount = 1; // number of tiles on the height
     public static final int TILE_SCREEN_SIZE = 100;
 
-    public static final int WORLD_WIDTH = horizontalTilesCount * TILE_SCREEN_SIZE;
-    public static final int WORLD_HEIGHT = verticalTilesCount * TILE_SCREEN_SIZE;
+    public static int getWorldWidth() {
+        return horizontalTilesCount * TILE_SCREEN_SIZE;
+    }
 
-    // TILE_SCREEN_SIZE = WORLD_WIDTH / horizontalTilesCount;
-    // public static int TILE_SCREEN_SIZE = TILE_SIZE;
+    public static int getWorldHeight() {
+        return verticalTilesCount * TILE_SCREEN_SIZE;
+    }
 
     public static final int MAX_PLAYER_LIVES = 10;
 }
