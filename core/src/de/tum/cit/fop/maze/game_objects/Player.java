@@ -256,7 +256,7 @@ public class Player extends Character {
     private void checkCollisions() {
         // Access traps and enemies through GameManager
         List<Trap> traps = tiles.traps;
-        List<ChasingEnemy> chasingEnemies = gameScreen.getChasingEnemies();
+        ChasingEnemy chasingEnemies = gameScreen.getChasingEnemy();
 
         // Check for collision with traps
 

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.ObjectMap;
+import de.tum.cit.fop.maze.game_objects.ChasingEnemy;
 import de.tum.cit.fop.maze.util.Position;
 import de.tum.cit.fop.maze.game_objects.Trap;
 import de.tum.cit.fop.maze.tiles.*;
@@ -29,6 +30,8 @@ public class Tiles {
     private Position keyTilePosition;
     public List<Trap> traps;
 
+    public List<ChasingEnemy> chasingEnemies;
+
     /** entrance tile, coordinates of the tile can be accessed through this */
     public Entrance entrance;
     /** exit tile, coordinates of the tile can be accessed through this */
@@ -49,9 +52,23 @@ public class Tiles {
             .collect(Collectors.toSet());
     private static final int TRAPS_FIRST = 3;
     private static final int TRAPS_SECOND = 80;
+
+    private static final int ENEMY_FIRST = 4;
+    private static final int ENEMY_SECOND = 150;
+
+
     private static final Set<Integer> TRAPS = IntStream.concat(IntStream.of(TRAPS_FIRST),IntStream.rangeClosed(TRAPS_SECOND, 89))
             .boxed()
             .collect(Collectors.toSet());
+
+    private static final Set<Integer> CHASING_ENEMIES = IntStream.concat(
+            IntStream.of(ENEMY_FIRST),
+            IntStream.rangeClosed(ENEMY_SECOND, 159))
+            .boxed()//Converts the primitive int values in the stream into their wrapper class, Integer
+            //[1, 2, 3, 10, 11, ...] becomes [Integer(1), Integer(2), ...]
+            .collect(Collectors.toSet());//Collects the Integer values from the stream and stores them in a Set
+
+
     private static final Set<Integer> SPEED_BOOST = IntStream.rangeClosed(90, 99)
             .boxed()
             .collect(Collectors.toSet());
@@ -71,7 +88,10 @@ public class Tiles {
         exits = new ArrayList<>();
 
         traps = new ArrayList<>();
+        chasingEnemies = new ArrayList<>();
         maxTilesOnCell = 0;
+
+
     }
 
     /**
@@ -106,9 +126,11 @@ public class Tiles {
     }
 
 
+    // Loads tile images and obstacle images from the specified file paths and organizes them into an array of Tile objects.
     private Tile[] loadTileSheet(String tileSheetPath, String ObstacleSheetPath) {
-        var tileSheet = new Texture(tileSheetPath);
-        var obstacleSheet = new Texture(ObstacleSheetPath);
+        var tileSheet = new Texture(tileSheetPath);//represents the main tile sheet image.
+        var obstacleSheet = new Texture(ObstacleSheetPath);//represents the main tile sheet image.
+        //Calculates how many tiles (tileCols and tileRows) can fit horizontally and vertically in the tile sheet, assuming each tile has a fixed size (TILE_SIZE).
         int tileCols = tileSheet.getWidth() / TILE_SIZE;
         int tileRows = tileSheet.getHeight() / TILE_SIZE;
 
@@ -116,17 +138,31 @@ public class Tiles {
         Tile[] tileset = new Tile[tileCols * tileRows];
 
         // Create the tileset to reference back to the tile type based on the tile sheet
+        //This is the core logic of the method. It iterates through each position (grid cell)
+        // in the tile sheet and determines how to handle the tile at that position
         for (int y = 0; y < tileRows; y++) {
             for (int x = 0; x < tileCols; x++) {
                 int index = y * tileCols + x;
 
-                TextureRegion tileRegion;
-                if (!TRAPS.contains(index))
+                TextureRegion tileRegion = null;
+
+                //TextureRegion tileRegion;
+                //If index is not in the TRAPS set:
+                if (!TRAPS.contains(index) && !CHASING_ENEMIES.contains(index)) {
                     tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                else{// traps
+                }
+                if (TRAPS.contains(index)) {
                     int startX = (index == TRAPS_FIRST) ? 0: 32 * (index - TRAPS_SECOND + 1);
                     tileRegion = new TextureRegion(obstacleSheet, startX, 0, 32, 32);
                 }
+                if (CHASING_ENEMIES.contains(index)) {
+                int startX = (index == ENEMY_FIRST) ? 0: 32 * (index - ENEMY_SECOND + 1);
+                    tileRegion = new TextureRegion(obstacleSheet, startX, 0, 32, 32);
+                }
+                /*else{// traps
+                    int startX = (index == TRAPS_FIRST) ? 0: 32 * (index - TRAPS_SECOND + 1);
+                    tileRegion = new TextureRegion(obstacleSheet, startX, 0, 32, 32);
+                }*/
 
                 tileset[index] = createTile(index, tileRegion, false, 0,0);
             }
@@ -203,6 +239,17 @@ public class Tiles {
 
             return tile;
         }
+
+        else if (CHASING_ENEMIES.contains(index)){
+            Tile tile = new Tile(tileRegion);
+            tile.getProperties().put("type", "Enemy");
+            if (isPositionKnown){
+                tileOnMap[x][y] = tile;
+                tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+            }
+            return tile;
+        }
+
         else if (SPEED_BOOST.contains(index)){
             Tile tile = new SpeedBoost(tileRegion);
             tile.getProperties().put("type", "Speed Boost");
@@ -309,6 +356,16 @@ public class Tiles {
                         float worldY = trapPosition.getY();
                         // a new instance of trap is created here
                         traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,16,16,TILE_SCREEN_SIZE * 0.8f, TILE_SCREEN_SIZE * 0.8f, 2));
+                    }
+
+                    else if (CHASING_ENEMIES.contains(tileValue)){//an enemy or a chasing enemy i myself don't know it yet
+                        Tile tile = tileset[tileValue];
+
+                        Position chasingEnemyPosition = new Position(x, y, TILES).convertTo(PIXELS);
+                        float worldX = chasingEnemyPosition.getX();
+                        float worldY = chasingEnemyPosition.getY();
+                        //chasingEnemies.add(new ChasingEnemy(10, 10, 32, 32, 32, 32, 64, 64, 3, tile.getTextureRegion()));
+
                     }
                     else { // if it is neither a trap nor a key, which is the default one
 
