@@ -167,14 +167,27 @@ public class Player extends Character {
      * @return True if the position is valid, false otherwise.
      */
     public boolean canMoveTo(float x, float y){
-        // Loop through points along the border the hitbox along the x-axis
-        for (int i = (int) (-hitboxWidthOnScreen / 2); i <= hitboxWidthOnScreen / 2; i += (int) (hitboxWidthOnScreen/10)){
-            // Loop through points along the border the hitbox along the y-axis
-            for (int j = (int) (-hitboxHeightOnScreen / 2); j <= hitboxHeightOnScreen / 2; j += (int) (hitboxHeightOnScreen/10)){
-                if (isPointWithinInstanceOf(x, y, i, j, Wall.class)){
-                    return false;
-                }
-            }
+        // Points to check along each edge (more points = more accurate but slower)
+        int numPointsToCheck = 20;
+        // Check top edge
+        for (int i = (int) (-hitboxWidthOnScreen / 2); i <= hitboxWidthOnScreen / 2; i += (int) (hitboxWidthOnScreen / numPointsToCheck))
+            if (isPointWithinInstanceOf(x, y, i, -hitboxHeightOnScreen / 2, Wall.class))
+                return false;
+
+        // Check bottom edge
+        for (int i = (int) (-hitboxWidthOnScreen / 2); i <= hitboxWidthOnScreen / 2; i += (int) (hitboxWidthOnScreen / numPointsToCheck)) {
+            if (isPointWithinInstanceOf(x, y, i, hitboxHeightOnScreen / 2, Wall.class))
+                return false;
+        }
+        // Check left edge
+        for (int j = (int) (-hitboxHeightOnScreen / 2); j <= hitboxHeightOnScreen / 2; j += (int) (hitboxHeightOnScreen / numPointsToCheck)) {
+            if (isPointWithinInstanceOf(x, y, -hitboxWidthOnScreen / 2, j, Wall.class))
+                return false;
+        }
+        // Check right edge
+        for (int j = (int) (-hitboxHeightOnScreen / 2); j <= hitboxHeightOnScreen / 2; j += (int) (hitboxHeightOnScreen / numPointsToCheck)) {
+            if (isPointWithinInstanceOf(x, y, hitboxWidthOnScreen / 2, j, Wall.class))
+                return false;
         }
         return true;
     }
