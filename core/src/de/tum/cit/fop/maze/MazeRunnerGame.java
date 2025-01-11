@@ -9,7 +9,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
-import de.tum.cit.fop.maze.MapTileObjects.Exit;
+import de.tum.cit.fop.maze.game_objects.Player;
+import de.tum.cit.fop.maze.tiles.Exit;
+import de.tum.cit.fop.maze.screens.GameOverScreen;
+import de.tum.cit.fop.maze.screens.GameScreen;
+import de.tum.cit.fop.maze.screens.MenuScreen;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 
 /**
@@ -225,11 +229,11 @@ public class MazeRunnerGame extends Game {
 
 
     public void checkExitToNextLevel(Player player) {
-        if (player.isCenterTouchingTile(Exit.class) && gameScreen.key.isCollected()){
+        if (player.isCenterTouchingTile(Exit.class) && gameScreen.getKey().isCollected()){
             gameLevel += 1;
             gameScreen.dispose();
             gameScreen = new GameScreen(this);
-            gameScreen.key.setCollected(false);
+            gameScreen.getKey().setCollected(false);
             this.setScreen(gameScreen);
             Gdx.app.log("MazeRunnerGame", "Set Screen to Game Screen");
         }

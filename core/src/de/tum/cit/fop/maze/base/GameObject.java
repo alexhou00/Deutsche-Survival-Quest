@@ -1,4 +1,4 @@
-package de.tum.cit.fop.maze.BaseClasses;
+package de.tum.cit.fop.maze.base;
 
 import com.badlogic.gdx.math.Rectangle;
 
@@ -33,8 +33,8 @@ public abstract class GameObject {
         this.hitboxHeight = hitboxHeight;
         this.widthOnScreen = widthOnScreen;
         this.heightOnScreen = heightOnScreen;
-        this.hitboxWidthOnScreen = (float) widthOnScreen * hitboxWidth / width;
-        this.hitboxHeightOnScreen = (float) heightOnScreen * hitboxHeight / height;
+        this.hitboxWidthOnScreen = widthOnScreen * hitboxWidth / width;
+        this.hitboxHeightOnScreen = heightOnScreen * hitboxHeight / height;
         this.hitbox = null;
     }
 

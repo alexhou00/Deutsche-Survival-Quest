@@ -1,6 +1,4 @@
-package de.tum.cit.fop.maze;
-
-import de.tum.cit.fop.maze.BaseClasses.GameObject;
+package de.tum.cit.fop.maze.base;
 
 /**
  * Represents a DYNAMIC character in the maze game, such as our player or any moving enemy. <br>
@@ -40,19 +38,19 @@ public abstract class Character extends GameObject {
         this.speed = 0;
     }
 
-    abstract void update(float delta);
+    public abstract void update(float delta);
 
-    void pause(){
+    public void pause(){
         paused = true;
     }
 
-    void resume(){
+    public void resume(){
         paused = false;
     }
 
-    abstract void hide();
+    public abstract void hide();
 
-    abstract void dispose();
+    public abstract void dispose();
 
     public float getLives() {
         return lives;

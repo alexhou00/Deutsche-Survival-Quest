@@ -1,6 +1,6 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.util;
 
-import static de.tum.cit.fop.maze.Constants.TILE_SCREEN_SIZE;
+import static de.tum.cit.fop.maze.util.Constants.TILE_SCREEN_SIZE;
 
 public class Position {
     private float x;
@@ -102,8 +102,7 @@ public class Position {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof Position)) return false;
-        Position other = (Position) obj;
+        if (!(obj instanceof Position other)) return false;
         return x == other.x && y == other.y && unit == other.unit;
     }
 

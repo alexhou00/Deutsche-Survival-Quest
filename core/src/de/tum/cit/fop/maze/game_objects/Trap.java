@@ -1,19 +1,18 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.game_objects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-import de.tum.cit.fop.maze.BaseClasses.GameObject;
-import de.tum.cit.fop.maze.MapTileObjects.Tile;
+import de.tum.cit.fop.maze.base.GameObject;
+import de.tum.cit.fop.maze.tiles.Tile;
 
-import static de.tum.cit.fop.maze.Constants.TILE_SCREEN_SIZE;
-import static de.tum.cit.fop.maze.MapTileObjects.Tile.createHitPixmap;
-import static de.tum.cit.fop.maze.MapTileObjects.Tile.getPixmap;
+import static de.tum.cit.fop.maze.util.Constants.TILE_SCREEN_SIZE;
+import static de.tum.cit.fop.maze.tiles.Tile.createHitPixmap;
+import static de.tum.cit.fop.maze.tiles.Tile.getPixmap;
 
 public class Trap extends GameObject {
-    private float damage;
+    private final float damage;
     private final TextureRegion trapTexture;
 
     private boolean[][] hitPixmap; // stores the precomputed alpha map

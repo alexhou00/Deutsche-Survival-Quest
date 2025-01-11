@@ -1,6 +1,4 @@
-package de.tum.cit.fop.maze;
-
-import de.tum.cit.fop.maze.BaseClasses.GameObject;
+package de.tum.cit.fop.maze.base;
 
 /**
  * Represents a generic STATIC game object with common properties and behaviors.

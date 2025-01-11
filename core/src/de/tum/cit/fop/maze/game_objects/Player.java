@@ -1,23 +1,26 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.game_objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
-import de.tum.cit.fop.maze.MapTileObjects.SpeedBoost;
-import de.tum.cit.fop.maze.MapTileObjects.Tile;
-import de.tum.cit.fop.maze.MapTileObjects.Wall;
+import de.tum.cit.fop.maze.level.Tiles;
+import de.tum.cit.fop.maze.base.Character;
+import de.tum.cit.fop.maze.tiles.SpeedBoost;
+import de.tum.cit.fop.maze.tiles.Tile;
+import de.tum.cit.fop.maze.tiles.Wall;
+import de.tum.cit.fop.maze.screens.GameScreen;
 
 import java.util.List;
 
-import static de.tum.cit.fop.maze.Constants.*;
+import static de.tum.cit.fop.maze.util.Constants.*;
 import static java.lang.Math.abs;
 
 /**
  * Represents the main player character in the maze game, handling movement, collision, and state.
  */
 public class Player extends Character {
-    private boolean hasKey;
+    private final boolean hasKey;
     private boolean isMoving;
     private boolean isHurt = false;
     private float hurtTimer = 0f; // Timer for the red tint
@@ -202,14 +205,12 @@ public class Player extends Character {
         // if the tile at position (tileX, tileY) is an instance of the objectClass (e.g., Wall) AND
         // if the point (x+offsetX, y+offsetY) is inside this tile
         //if (isTileInstanceOf(tileX, tileY, SpeedBoost.class) && tiles.getTileOnMap(tileX, tileY).)
-        if (isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).isCollidingPoint(x+offsetX, y+offsetY)){ // && tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)
-            /*Gdx.app.log("Player",
+        // && tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)
+        /*Gdx.app.log("Player",
                     "Player's " +
                             ((offsetX > 0) ? "right" : "left") + "-" + ((offsetY > 0) ? "upper" : "lower") +
                             " corner collided with tile at position " + tileX + ", " + tileY);*/
-            return true;
-        }
-        return false;
+        return isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).isCollidingPoint(x + offsetX, y + offsetY);
     }
 
     /**
@@ -329,7 +330,7 @@ public class Player extends Character {
      * @param delta The time in seconds since the last update.
      */
     @Override
-    void update(float delta) {
+    public void update(float delta) {
         if (paused) return;
         handleMovement();
         checkCollisions();
@@ -345,12 +346,12 @@ public class Player extends Character {
     }
 
     @Override
-    void hide() {
+    public void hide() {
 
     }
 
     @Override
-    void dispose() {
+    public void dispose() {
 
     }
 

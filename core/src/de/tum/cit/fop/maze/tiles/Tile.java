@@ -1,4 +1,4 @@
-package de.tum.cit.fop.maze.MapTileObjects;
+package de.tum.cit.fop.maze.tiles;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -6,13 +6,13 @@ import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Rectangle;
-import de.tum.cit.fop.maze.Position;
+import de.tum.cit.fop.maze.util.Position;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static de.tum.cit.fop.maze.Constants.TILE_SCREEN_SIZE;
-import static de.tum.cit.fop.maze.Constants.TILE_SIZE;
+import static de.tum.cit.fop.maze.util.Constants.TILE_SCREEN_SIZE;
+import static de.tum.cit.fop.maze.util.Constants.TILE_SIZE;
 
 public class Tile extends StaticTiledMapTile{
     private float worldX, worldY;

@@ -1,4 +1,4 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import org.w3c.dom.Text;
+import de.tum.cit.fop.maze.MazeRunnerGame;
 
 import java.util.*;
 
@@ -26,7 +26,7 @@ public class MenuScreen implements Screen {
     private final Stage stage;
     MazeRunnerGame game;
     Texture backgroundTexture;
-    private Map<String, TextButton> buttons;
+    private final Map<String, TextButton> buttons;
 
     /**
      * Constructor for MenuScreen. Sets up the camera, viewport, stage, and UI elements.

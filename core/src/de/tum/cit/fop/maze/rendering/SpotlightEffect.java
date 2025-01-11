@@ -1,4 +1,4 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.rendering;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import static de.tum.cit.fop.maze.Constants.*;
+import static de.tum.cit.fop.maze.util.Constants.*;
 
 /**
  * The {@code SpotlightEffect} class creates a spotlight effect <br>

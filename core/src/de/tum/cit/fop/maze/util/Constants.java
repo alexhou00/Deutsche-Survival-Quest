@@ -1,4 +1,4 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.util;
 
 public class Constants {
     public static final float ZOOM_SPEED = 0.1f; // Controls how quickly the camera adjusts to the target zoom

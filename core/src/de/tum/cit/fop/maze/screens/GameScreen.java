@@ -1,4 +1,4 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
@@ -23,14 +23,24 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import de.tum.cit.fop.maze.*;
+import de.tum.cit.fop.maze.game_objects.ChasingEnemy;
+import de.tum.cit.fop.maze.game_objects.Key;
+import de.tum.cit.fop.maze.game_objects.Player;
+import de.tum.cit.fop.maze.game_objects.Trap;
+import de.tum.cit.fop.maze.level.Tiles;
+import de.tum.cit.fop.maze.rendering.ElementRenderer;
+import de.tum.cit.fop.maze.rendering.PopUpPanel;
+import de.tum.cit.fop.maze.rendering.SpotlightEffect;
+import de.tum.cit.fop.maze.util.Position;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static de.tum.cit.fop.maze.Constants.*;
-import static de.tum.cit.fop.maze.Position.PositionUnit.*;
+import static de.tum.cit.fop.maze.util.Constants.*;
+import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
 
 
 /**
@@ -55,7 +65,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final Player player;
     Tiles tiles; // Tile system for the map
-    Key key;
+    private final Key key;
     TextureRegion keyRegion;
 
     private final OrthogonalTiledMapRenderer mapRenderer;
@@ -64,14 +74,14 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final SpotlightEffect spotlightEffect;
 
-    private List<ChasingEnemy> chasingEnemies;
+    private final List<ChasingEnemy> chasingEnemies;
 
     private TiledMapTileLayer collisionLayer;
     PopUpPanel popUpPanel;
 
     private final ShaderProgram shader;
-    private Stage stage1;
-    private TextButton button;
+    private final Stage stage1;
+    private final TextButton button;
 
     // Show all the variables in the bottom-left corner here
     // Variables to show, stored in a map (LinkedHashMap preserves the order)
@@ -636,4 +646,9 @@ public class GameScreen extends InputAdapter implements Screen {
     public OrthographicCamera getCamera() {
         return camera;
     }
+
+    public Key getKey() {
+        return key;
+    }
+
 }

@@ -1,4 +1,4 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.rendering;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import static de.tum.cit.fop.maze.Constants.MAX_PLAYER_LIVES;
+import static de.tum.cit.fop.maze.util.Constants.MAX_PLAYER_LIVES;
 
 /**
  * The ObjectRenderer class handles rendering of static or reusable game objects

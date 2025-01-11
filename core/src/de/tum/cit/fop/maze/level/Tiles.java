@@ -1,4 +1,4 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.level;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -6,7 +6,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.ObjectMap;
-import de.tum.cit.fop.maze.MapTileObjects.*;
+import de.tum.cit.fop.maze.util.Position;
+import de.tum.cit.fop.maze.game_objects.Trap;
+import de.tum.cit.fop.maze.tiles.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -16,8 +18,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.badlogic.gdx.math.MathUtils.random;
-import static de.tum.cit.fop.maze.Constants.*;
-import static de.tum.cit.fop.maze.Position.PositionUnit.*;
+import static de.tum.cit.fop.maze.util.Constants.*;
+import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
 
 /** this is like a TilesManager or ".properties" File Reader
  * It manages tile (and also other objects for the level) creation for each level
@@ -26,7 +28,7 @@ public class Tiles {
     public TiledMapTileLayer layer;
 
     private Position keyTilePosition;
-    List<Trap> traps;
+    public List<Trap> traps;
 
     /** entrance tile, coordinates of the tile can be accessed through this */
     public Entrance entrance;

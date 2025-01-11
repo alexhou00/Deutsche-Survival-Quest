@@ -1,4 +1,6 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.game_objects;
+
+import de.tum.cit.fop.maze.base.StaticObject;
 
 /** The third obstacle, rather than static traps & enemies, it must be something ingenious. Use your imagination and experience in videogames.*/
 public class ElementOfSurprise extends StaticObject {

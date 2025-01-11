@@ -1,7 +1,8 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.game_objects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import de.tum.cit.fop.maze.base.StaticObject;
 
 /**
  * Represents the Key object to be collected to go to the exit and advance to the next level.

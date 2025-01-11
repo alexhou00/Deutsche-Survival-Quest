@@ -1,20 +1,20 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.game_objects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
+import de.tum.cit.fop.maze.base.Character;
 
-import static de.tum.cit.fop.maze.Constants.*;
+import static de.tum.cit.fop.maze.util.Constants.*;
 
 public class ChasingEnemy extends Character {
 
     private final TiledMapTileLayer collisionLayer;
     private float targetX, targetY;
-    private float detectionRadius;
+    private final float detectionRadius;
     private boolean isChasing;
-    private Texture enemyTexture;
+    private final Texture enemyTexture;
 
     private static final float ENEMY_BASE_SPEED = 180f;// we can change it when we want to
 
@@ -25,7 +25,7 @@ public class ChasingEnemy extends Character {
     // To hold the current random target
     private float randomTargetX, randomTargetY;
 
-    private Player player;
+    private final Player player;
 
     /**
      * Constructs a new Enemy instance with specified parameters.
@@ -61,7 +61,7 @@ public class ChasingEnemy extends Character {
 
 
     @Override
-    void update(float delta) {
+    public void update(float delta) {
         if (paused) return; // Check if the game is paused
 
         // Check if the player is within the detection radius
@@ -218,23 +218,23 @@ public class ChasingEnemy extends Character {
         batch.draw(enemyTexture, x - widthOnScreen / 2, y - heightOnScreen / 2, widthOnScreen, heightOnScreen);
     }
 
-        @Override
-    void pause() {
+    @Override
+    public void pause() {
 
     }
 
     @Override
-    void resume() {
+    public void resume() {
 
     }
 
     @Override
-    void hide() {
+    public void hide() {
 
     }
 
     @Override
-    void dispose() {
+    public void dispose() {
 
     }
 }
