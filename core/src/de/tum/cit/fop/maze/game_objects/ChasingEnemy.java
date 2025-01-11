@@ -2,6 +2,7 @@ package de.tum.cit.fop.maze.game_objects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import de.tum.cit.fop.maze.base.Character;
@@ -27,6 +28,8 @@ public class ChasingEnemy extends Character {
 
     private final Player player;
 
+    private final TextureRegion chasingEnemyTexture;
+
     /**
      * Constructs a new Enemy instance with specified parameters.
      *
@@ -39,13 +42,12 @@ public class ChasingEnemy extends Character {
      * @param widthOnScreen  The width of the character as displayed on screen.
      * @param heightOnScreen The height of the character as displayed on screen.
      * @param lives          The number of lives the character starts with.
-     * @param collisionLayer The collision layer used for checking the walls.
      */
     public ChasingEnemy(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight,
-                        float widthOnScreen, float heightOnScreen, float lives, TiledMapTileLayer collisionLayer, Player player) {
+                        float widthOnScreen, float heightOnScreen, float lives, Player player, TiledMapTileLayer collisionLayer, TextureRegion chasingEnemyTexture) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE),
                 width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
-        this.collisionLayer = collisionLayer;
+
         this.targetX = x; // Start at the enemy's initial position
         this.targetY = y;
         this.detectionRadius = 300f; // Default detection radius
@@ -54,11 +56,22 @@ public class ChasingEnemy extends Character {
         this.randomTargetX = x; // Initial random target position
         this.randomTargetY = y;
         this.player = player;
+        this.collisionLayer = collisionLayer;
+        this.chasingEnemyTexture = new TextureRegion();
 
         // Load the enemy's texture
         this.enemyTexture = new Texture("mobs.png"); // Make sure the path matches your assets folder
     }
 
+    /*public ChasingEnemy(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, int widthOnScreen, int heightOnScreen, int lives, TextureRegion textureRegion) {
+        super(tileX, tileY, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
+        this.player = null;
+        this.collisionLayer = null;
+        this.chasingEnemyTexture = new TextureRegion();
+        this.detectionRadius = 0f;
+        enemyTexture = null;
+
+    }*/
 
     @Override
     public void update(float delta) {

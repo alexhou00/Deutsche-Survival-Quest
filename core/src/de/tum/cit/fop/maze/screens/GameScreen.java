@@ -74,8 +74,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final SpotlightEffect spotlightEffect;
 
-    private final List<ChasingEnemy> chasingEnemies;
-
     private TiledMapTileLayer collisionLayer;
     PopUpPanel popUpPanel;
 
@@ -87,6 +85,8 @@ public class GameScreen extends InputAdapter implements Screen {
     // Variables to show, stored in a map (LinkedHashMap preserves the order)
     Map<String, Float> variablesToShow = new LinkedHashMap<>();
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
+
+    ChasingEnemy chasingEnemy;
 
 
 
@@ -191,9 +191,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
         // Initialize ChasingEnemy with player and collisionLayer
-        chasingEnemies = new ArrayList<>();
-        ChasingEnemy chasingEnemy1 = new ChasingEnemy(10, 10, 32, 32, 32, 32, 64, 64, 3, tiles.layer, player);
-        chasingEnemies.add(chasingEnemy1); // Add enemy targeting the player
+        //chasingEnemy = new ArrayList<>();
+        //ChasingEnemy chasingEnemy1 = new ChasingEnemy(10, 10, 32, 32, 32, 32, 64, 64, 3, tiles.layer, player, chasingEnemyTexture);
+        //chasingEnemy.add(chasingEnemy1); // Add enemy targeting the player*/
+        chasingEnemy = new ChasingEnemy(0, 0, 32, 32, 32, 32, 64, 64, 3, player, tiles.layer, new TextureRegion(new Texture(Gdx.files.internal( "mob_guy.png")), 0, 0, 32, 32));
+
 
         popUpPanel = new PopUpPanel();
 
@@ -212,6 +214,10 @@ public class GameScreen extends InputAdapter implements Screen {
 
         this.pause();
         Gdx.input.setInputProcessor(stage1);
+    }
+
+    public ChasingEnemy getChasingEnemy() {
+        return chasingEnemy;
     }
 
     /**
@@ -312,15 +318,10 @@ public class GameScreen extends InputAdapter implements Screen {
         game.getSpriteBatch().begin();
         renderTrap();
         // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
+        renderChasingEnemy();
         renderPlayer();
         renderArrow();
         renderKey();
-
-
-        if (!chasingEnemies.isEmpty()) {
-            chasingEnemies.get(0).draw(game.getSpriteBatch());
-        }
-
 
         moveCamera();
 
@@ -459,9 +460,6 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
-    private void renderChasingEnemies() {
-        chasingEnemies.get(0).draw(game.getSpriteBatch());
-    }
 
     private void renderTrap(){
         for (Trap trap : tiles.traps){
@@ -469,9 +467,7 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
     private void renderChasingEnemy(){
-        for (ChasingEnemy chasingEnemy : chasingEnemies){
-
-        }
+        chasingEnemy.draw(game.getSpriteBatch());
     }
 
     /**
@@ -621,11 +617,6 @@ public class GameScreen extends InputAdapter implements Screen {
         hudObjectRenderer.dispose();
     }
 
-    //getter for trap and enemy
-
-    public List<ChasingEnemy> getChasingEnemies() {
-        return chasingEnemies;
-    }
 
     /**
      * Draws a list of variables and their values on the HUD.
