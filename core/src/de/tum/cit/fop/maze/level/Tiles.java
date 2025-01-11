@@ -17,7 +17,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.badlogic.gdx.math.MathUtils.random;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
 
@@ -42,20 +41,21 @@ public class Tiles {
 
     // Create an immutable Set of integers representing wall
     // IntStream.concat(IntStream.rangeClosed(10, 29),IntStream.rangeClosed(64, 66)) in case i want to concat two sections in the future
-    private static final Set<Integer> WALLS = IntStream.concat(IntStream.rangeClosed(11, 29),IntStream.rangeClosed(60, 149))
+    private static final Set<Integer> WALLS = IntStream.concat(IntStream.rangeClosed(20, 79),IntStream.rangeClosed(100, 149))
             .boxed()
             .collect(Collectors.toSet());
-    private static final int TRAPS_FIRST = 30;
-    private static final Set<Integer> TRAPS = IntStream.rangeClosed(TRAPS_FIRST, 39)
+    private static final int TRAPS_FIRST = 3;
+    private static final int TRAPS_SECOND = 80;
+    private static final Set<Integer> TRAPS = IntStream.concat(IntStream.of(TRAPS_FIRST),IntStream.rangeClosed(TRAPS_SECOND, 89))
             .boxed()
             .collect(Collectors.toSet());
-    private static final Set<Integer> SPEED_BOOST = IntStream.rangeClosed(50, 59)
+    private static final Set<Integer> SPEED_BOOST = IntStream.rangeClosed(90, 99)
             .boxed()
             .collect(Collectors.toSet());
-    public static final int KEY = 6;
+    public static final int KEY = 5;
     public static final int ENTRANCE = 1;
-    public static final int GROUND = 0;
-    public static final Set<Integer> EXIT = IntStream.rangeClosed(2, 5)
+    public static final int BASIC_GROUND = 10;
+    public static final Set<Integer> EXIT = IntStream.concat(IntStream.of(2), IntStream.rangeClosed(12, 14))
             .boxed()
             .collect(Collectors.toSet());
 
@@ -120,8 +120,10 @@ public class Tiles {
                 TextureRegion tileRegion;
                 if (!TRAPS.contains(index))
                     tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                else // traps
-                    tileRegion = new TextureRegion(obstacleSheet, 32 * (index - TRAPS_FIRST), 0, 32, 32);
+                else{// traps
+                    int startX = (index == TRAPS_FIRST) ? 0: 32 * (index - TRAPS_SECOND + 1);
+                    tileRegion = new TextureRegion(obstacleSheet, startX, 0, 32, 32);
+                }
 
                 tileset[index] = createTile(index, tileRegion, false, 0,0);
             }
@@ -288,7 +290,7 @@ public class Tiles {
                     if (!TRAPS.contains(tileValue)){ // if it is not a trap
 
                         // There would be a random chance to change the ground tile
-                        if (tileIndex == GROUND) {
+                        if (tileIndex == BASIC_GROUND) {
                             double random = Math.random(); // generates random number between 0.0 and 1.0
                             if (random <= 0.005 * 4) { // 0.5% chance each for four of our ground tile variant
                                 tileIndex = 7 + (int) (Math.floor(random * 200)); // 1/0.5 is 200%, tileIndex can therefore be 7~10
