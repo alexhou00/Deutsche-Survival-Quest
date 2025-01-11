@@ -1,5 +1,8 @@
 package de.tum.cit.fop.maze.base;
 
+import de.tum.cit.fop.maze.rendering.SpeechBubble;
+import de.tum.cit.fop.maze.screens.GameScreen;
+
 /**
  * Represents a DYNAMIC character in the maze game, such as our player or any moving enemy. <br>
  * This class provides basic properties and behaviors for characters,
@@ -13,6 +16,10 @@ public abstract class Character extends GameObject {
      * speed is the overall magnitude of speed
      * */
     protected float velX, velY, speed;
+
+    private final SpeechBubble speechBubble;
+
+    protected GameScreen gameScreen;
 
     protected boolean paused;
 
@@ -30,15 +37,19 @@ public abstract class Character extends GameObject {
      * @param heightOnScreen The height of the character as displayed on screen.
      * @param lives The number of lives the character starts with.
      */
-    public Character(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives) {
+    public Character(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, GameScreen gameScreen) {
         super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
         this.lives = lives;
         this.velX = 0;
         this.velY = 0;
         this.speed = 0;
+        this.gameScreen = gameScreen;
+        this.speechBubble = new SpeechBubble();
     }
 
-    public abstract void update(float delta);
+    public void update(float delta){
+        //speechBubble.update(delta);
+    }
 
     public void pause(){
         paused = true;
@@ -82,5 +93,28 @@ public abstract class Character extends GameObject {
 
     public void setSpeed(float speed) {
         this.speed = speed;
+    }
+
+    // Normal Speech Bubble
+    public void say(String text) {
+        speechBubble.render(gameScreen.game.getSpriteBatch(), text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.NORMAL);
+    }
+
+    // Normal Speech Bubble
+    public void say(String text, boolean typewriterEffect, float timer, float interval) {
+        if (typewriterEffect){
+            say(text.substring(0, Math.min((int) ((timer/interval)), text.length())));
+        }
+        else say(text);
+    }
+
+    // Multi-edged Speech Bubble for a message out loud
+    public void scream(String text) {
+        speechBubble.render(gameScreen.game.getSpriteBatch(), text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.SCREAM);
+    }
+
+    // Cloud-shaped Speech Bubble for thoughts
+    public void think(String text) {
+        speechBubble.render(gameScreen.game.getSpriteBatch(), text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.THOUGHT);
     }
 }

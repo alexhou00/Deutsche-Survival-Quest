@@ -1,10 +1,12 @@
 package de.tum.cit.fop.maze.game_objects;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import de.tum.cit.fop.maze.base.Character;
+import de.tum.cit.fop.maze.screens.GameScreen;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 
@@ -42,9 +44,9 @@ public class ChasingEnemy extends Character {
      * @param collisionLayer The collision layer used for checking the walls.
      */
     public ChasingEnemy(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight,
-                        float widthOnScreen, float heightOnScreen, float lives, TiledMapTileLayer collisionLayer, Player player) {
+                        float widthOnScreen, float heightOnScreen, float lives, GameScreen gameScreen, TiledMapTileLayer collisionLayer, Player player) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE),
-                width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
+                width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, gameScreen);
         this.collisionLayer = collisionLayer;
         this.targetX = x; // Start at the enemy's initial position
         this.targetY = y;

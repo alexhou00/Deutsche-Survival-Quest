@@ -29,7 +29,6 @@ public class Player extends Character {
     private final Tiles tiles;
     float targetVelX, targetVelY;
     int lastHorizontalDirection = 0, lastVerticalDirection = 0;
-    GameScreen gameScreen;
 
     private static final float BASE_SPEED = 240f; // normal speed when moving either vertically or horizontally
     private static final float BOOST_MULTIPLIER = 2f; // the speed will be multiplied by this number when the SHIFT key is pressed
@@ -52,14 +51,13 @@ public class Player extends Character {
      * @param lives             Number of lives the player starts with.
      * @param collisionLayer    The layer used for collision detection.
      */
-    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, TiledMapTileLayer collisionLayer, Tiles tiles, GameScreen gameScreen) {
-        super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
+    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, GameScreen gameScreen, TiledMapTileLayer collisionLayer, Tiles tiles) {
+        super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, gameScreen);
         this.hasKey = false;
         this.isMoving = false;
         // this.speed = BASE_SPEED; // normal speed when moving either vertically or horizontally
         this.collisionLayer = collisionLayer;
         this.tiles = tiles;
-        this.gameScreen = gameScreen;
     }
 
     private void handleMovement() {

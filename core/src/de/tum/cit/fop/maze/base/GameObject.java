@@ -102,6 +102,14 @@ public abstract class GameObject {
         this.heightOnScreen = heightOnScreen;
     }
 
+    public float getHitboxWidthOnScreen() {
+        return widthOnScreen * hitboxWidth / width;
+    }
+
+    public float getHitboxHeightOnScreen() {
+        return heightOnScreen * hitboxHeight / height;
+    }
+
     public Rectangle getHitbox() {
         hitbox = new Rectangle(x - hitboxWidthOnScreen / 2, y - hitboxWidthOnScreen / 2, hitboxWidthOnScreen, hitboxHeightOnScreen);
         return hitbox;

@@ -50,7 +50,7 @@ import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
  */
 public class GameScreen extends InputAdapter implements Screen {
 
-    private final MazeRunnerGame game;
+    public final MazeRunnerGame game;
 
     private final OrthographicCamera camera;
     private final OrthographicCamera hudCamera; // HUD camera. HUD uses another camera so that it does not follow the player and is fixed on the screen.
@@ -177,7 +177,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 tiles.entrance.getTileX(),
                 tiles.entrance.getTileY(),
                 16, 32, 12, 19, 64f, 128f, 6.5f,
-                tiles.layer, tiles, this);//"this" is already a game screen
+                this, tiles.layer, tiles);//"this" is already a game screen
 
 
 
@@ -192,7 +192,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Initialize ChasingEnemy with player and collisionLayer
         chasingEnemies = new ArrayList<>();
-        ChasingEnemy chasingEnemy1 = new ChasingEnemy(10, 10, 32, 32, 32, 32, 64, 64, 3, tiles.layer, player);
+        ChasingEnemy chasingEnemy1 = new ChasingEnemy(10, 10, 32, 32, 32, 32, 64, 64, 3, this, tiles.layer, player);
         chasingEnemies.add(chasingEnemy1); // Add enemy targeting the player
 
         popUpPanel = new PopUpPanel();
@@ -316,6 +316,17 @@ public class GameScreen extends InputAdapter implements Screen {
         renderArrow();
         renderKey();
 
+        //String msg = "The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog.";
+        //player.say(msg.substring(0, (int) (sinusInput*10%msg.length())));
+        player.say("The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog.",
+                true, sinusInput, 0.05f);
+        //player.say("arfawfafj;owaejfowjfwp9w");
+        player.say("");
+
+        /*Texture texture = new Texture(Gdx.files.internal("mobguy.png"));
+        new TextureRegion(texture, 0,0,32,32);
+
+        new TextureRegion(new Texture(Gdx.files.internal("mob_guy.png")), 0,0,32,32);*/
 
         if (!chasingEnemies.isEmpty()) {
             chasingEnemies.get(0).draw(game.getSpriteBatch());
