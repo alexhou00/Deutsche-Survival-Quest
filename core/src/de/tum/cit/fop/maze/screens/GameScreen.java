@@ -50,7 +50,7 @@ import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
  */
 public class GameScreen extends InputAdapter implements Screen {
 
-    private final MazeRunnerGame game;
+    public final MazeRunnerGame game;
 
     private final OrthographicCamera camera;
     private final OrthographicCamera hudCamera; // HUD camera. HUD uses another camera so that it does not follow the player and is fixed on the screen.
