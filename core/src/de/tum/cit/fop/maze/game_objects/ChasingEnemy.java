@@ -75,7 +75,7 @@ public class ChasingEnemy extends Character {
         this.targetX = 0; // Start at the enemy's initial position
         this.targetY = 0;
         setRandomTarget();
-        this.detectionRadius = 500f; // Default detection radius
+        this.detectionRadius = 400f; // Default detection radius
         this.isChasing = false;
         this.randomMoveCooldown = RANDOM_MOVE_TIME;
         //this.randomTargetX = x; // Initial random target position
@@ -195,8 +195,8 @@ public class ChasingEnemy extends Character {
         dirY /= distance;
 
         // Set the velocity towards the target
-        velX = dirX * ENEMY_BASE_SPEED;
-        velY = dirY * ENEMY_BASE_SPEED;
+        velX = (float) (Math.tanh(dirX))/*((dirX>0)?1:-1)*/ * ENEMY_BASE_SPEED; // tanh is between 1~-1
+        velY = (float) (Math.tanh(dirY))/*((dirY>0)?1:-1)*/ * ENEMY_BASE_SPEED;
         //Gdx.app.log("Enemy Move", "velocity: " + velocityX + ", " + velocityY);
         // Predict new position
         float newX = x + velX * delta;
