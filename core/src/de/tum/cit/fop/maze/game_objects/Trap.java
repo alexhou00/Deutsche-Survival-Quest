@@ -20,7 +20,7 @@ public class Trap extends GameObject {
     public Trap(TextureRegion textureRegion, float x, float y, int width, int height, int hitboxWidth, int hitboxHeight,
                 float widthOnScreen, float heightOnScreen, float damage) {
         super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
-        this.damage = 0.5f * damage; // Optional multiplier
+        this.damage = damage; // Optional multiplier
         this.trapTexture = textureRegion; // new TextureRegion(new Texture(Gdx.files.internal("objects.png")),1,165,31,26); // Path to the trap image texture
         setHitPixmap();
     }

@@ -130,6 +130,7 @@ public class Tiles {
     private Tile[] loadTileSheet(String tileSheetPath, String ObstacleSheetPath) {
         var tileSheet = new Texture(tileSheetPath);//represents the main tile sheet image.
         var obstacleSheet = new Texture(ObstacleSheetPath);//represents the main tile sheet image.
+        var enemySheet = new Texture(Gdx.files.internal("mob_guy.png"));
         //Calculates how many tiles (tileCols and tileRows) can fit horizontally and vertically in the tile sheet, assuming each tile has a fixed size (TILE_SIZE).
         int tileCols = tileSheet.getWidth() / TILE_SIZE;
         int tileRows = tileSheet.getHeight() / TILE_SIZE;
@@ -147,22 +148,18 @@ public class Tiles {
                 TextureRegion tileRegion = null;
 
                 //TextureRegion tileRegion;
-                //If index is not in the TRAPS set:
-                if (!TRAPS.contains(index) && !CHASING_ENEMIES.contains(index)) {
-                    tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                }
+                // Load the TextureRegions from the sheets:
                 if (TRAPS.contains(index)) {
                     int startX = (index == TRAPS_FIRST) ? 0: 32 * (index - TRAPS_SECOND + 1);
                     tileRegion = new TextureRegion(obstacleSheet, startX, 0, 32, 32);
                 }
-                if (CHASING_ENEMIES.contains(index)) {
-                int startX = (index == ENEMY_FIRST) ? 0: 32 * (index - ENEMY_SECOND + 1);
-                    tileRegion = new TextureRegion(obstacleSheet, startX, 0, 32, 32);
+                else if (CHASING_ENEMIES.contains(index)) {
+                    int startX = (index == ENEMY_FIRST) ? 0: 16 * (index - ENEMY_SECOND + 1);
+                    tileRegion = new TextureRegion(enemySheet, startX, 0, 16, 16);
                 }
-                /*else{// traps
-                    int startX = (index == TRAPS_FIRST) ? 0: 32 * (index - TRAPS_SECOND + 1);
-                    tileRegion = new TextureRegion(obstacleSheet, startX, 0, 32, 32);
-                }*/
+                else /*(!TRAPS.contains(index) && !CHASING_ENEMIES.contains(index))*/ { // DEFAULT
+                    tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                }
 
                 tileset[index] = createTile(index, tileRegion, false, 0,0);
             }
@@ -355,16 +352,16 @@ public class Tiles {
                         float worldX = trapPosition.getX();
                         float worldY = trapPosition.getY();
                         // a new instance of trap is created here
-                        traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,16,16,TILE_SCREEN_SIZE * 0.8f, TILE_SCREEN_SIZE * 0.8f, 2));
+                        traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,16,16,TILE_SCREEN_SIZE * 0.8f, TILE_SCREEN_SIZE * 0.8f, 1));
                     }
 
                     else if (CHASING_ENEMIES.contains(tileValue)){//an enemy or a chasing enemy i myself don't know it yet
                         Tile tile = tileset[tileValue];
 
-                        Position chasingEnemyPosition = new Position(x, y, TILES).convertTo(PIXELS);
-                        float worldX = chasingEnemyPosition.getX();
-                        float worldY = chasingEnemyPosition.getY();
-                        //chasingEnemies.add(new ChasingEnemy(10, 10, 32, 32, 32, 32, 64, 64, 3, tile.getTextureRegion()));
+                        Position chasingEnemyPosition = new Position(x, y, TILES);
+                        int worldX = chasingEnemyPosition.getTileX();
+                        int worldY = chasingEnemyPosition.getTileY();
+                        chasingEnemies.add(new ChasingEnemy(tile.getTextureRegion(), worldX, worldY, 32, 32, 32, 32, 64, 64, 3, layer));
 
                     }
                     else { // if it is neither a trap nor a key, which is the default one

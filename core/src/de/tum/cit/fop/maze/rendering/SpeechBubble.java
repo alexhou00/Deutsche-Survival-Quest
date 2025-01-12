@@ -173,7 +173,7 @@ public class SpeechBubble {
                 length += letterWidth[c]; // if (c<='ü')
             }
             catch (ArrayIndexOutOfBoundsException e){
-                Gdx.app.log("SpeechBubble", "Unsupported letter: " + c);
+                //Gdx.app.log("SpeechBubble", "Unsupported letter: " + c);
                 length += letterWidth['m'];
             }
         }

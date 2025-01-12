@@ -25,6 +25,8 @@ public class Player extends Character {
     private boolean isHurt = false;
     private float hurtTimer = 0f; // Timer for the red tint
 
+    GameScreen gameScreen;
+
     private final TiledMapTileLayer collisionLayer;
     private final Tiles tiles;
     float targetVelX, targetVelY;
@@ -52,12 +54,13 @@ public class Player extends Character {
      * @param collisionLayer    The layer used for collision detection.
      */
     public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, GameScreen gameScreen, TiledMapTileLayer collisionLayer, Tiles tiles) {
-        super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, gameScreen);
+        super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
         this.hasKey = false;
         this.isMoving = false;
         // this.speed = BASE_SPEED; // normal speed when moving either vertically or horizontally
         this.collisionLayer = collisionLayer;
         this.tiles = tiles;
+        this.gameScreen = gameScreen;
     }
 
     private void handleMovement() {
@@ -268,7 +271,7 @@ public class Player extends Character {
     private void checkCollisions() {
         // Access traps and enemies through GameManager
         List<Trap> traps = tiles.traps;
-        ChasingEnemy chasingEnemies = gameScreen.getChasingEnemy();
+        // ChasingEnemy chasingEnemies = gameScreen.tiles.chasingEnemies.get(0); //TODO: change the .get(0)
 
         // Check for collision with traps
 
@@ -281,33 +284,6 @@ public class Player extends Character {
                 velX = (abs(velX) > 50) ? -velX : -velX*5/*(((velX>0) ? 1 : -1) * -500)*/;
                 targetVelY = (abs(targetVelY) > 50) ? -targetVelY : -targetVelY*5/*(((targetVelY>0) ? 1 : -1) * -500)*/;
                 velY = (abs(velY) > 50) ? -velY : -velY*5/*(((velY>0) ? 1 : -1) * -500)*/;
-/*
-                // Start a timer to reset invulnerability
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        isInvulnerable = false;
-                    }
-                }, 1500); // 1.5 seconds of invulnerability*/
-/*
-                // Push back the player whenever he touches the trap
-                // Calculate direction vector from trap to player
-                float dx = x - trap.getX();
-                float dy = y - trap.getY();
-
-                // Normalize and scale the pushback distance
-                float distance = (float) Math.sqrt(dx * dx + dy * dy);
-                float pushbackDistance = 50; // Adjust this value as needed
-
-                // Update position
-                x += (dx / distance) * ;
-                y += (dy / distance) * pushbackDistance;
-
-                // Reset velocities
-                velX = 0;
-                velY = 0;
-                targetVelX = 0;
-                targetVelY = 0;*/
             }
         }
 

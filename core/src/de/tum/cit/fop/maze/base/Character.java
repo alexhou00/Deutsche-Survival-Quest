@@ -1,5 +1,6 @@
 package de.tum.cit.fop.maze.base;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import de.tum.cit.fop.maze.rendering.SpeechBubble;
 import de.tum.cit.fop.maze.screens.GameScreen;
 
@@ -19,7 +20,7 @@ public abstract class Character extends GameObject {
 
     private final SpeechBubble speechBubble;
 
-    protected GameScreen gameScreen;
+    //protected GameScreen gameScreen;
 
     protected boolean paused;
 
@@ -37,13 +38,12 @@ public abstract class Character extends GameObject {
      * @param heightOnScreen The height of the character as displayed on screen.
      * @param lives The number of lives the character starts with.
      */
-    public Character(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, GameScreen gameScreen) {
+    public Character(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives) {
         super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
         this.lives = lives;
         this.velX = 0;
         this.velY = 0;
         this.speed = 0;
-        this.gameScreen = gameScreen;
         this.speechBubble = new SpeechBubble();
     }
 
@@ -96,25 +96,25 @@ public abstract class Character extends GameObject {
     }
 
     // Normal Speech Bubble
-    public void say(String text) {
-        speechBubble.render(gameScreen.game.getSpriteBatch(), text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.NORMAL);
+    public void say(String text, SpriteBatch batch) {
+        speechBubble.render(batch, text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.NORMAL);
     }
 
     // Normal Speech Bubble
-    public void say(String text, boolean typewriterEffect, float timer, float interval) {
+    public void say(String text, SpriteBatch batch, boolean typewriterEffect, float timer, float interval) {
         if (typewriterEffect){
-            say(text.substring(0, Math.min((int) ((timer/interval)), text.length())));
+            say(text.substring(0, Math.min((int) ((timer/interval)), text.length())), batch);
         }
-        else say(text);
+        else say(text, batch);
     }
 
     // Multi-edged Speech Bubble for a message out loud
-    public void scream(String text) {
-        speechBubble.render(gameScreen.game.getSpriteBatch(), text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.SCREAM);
+    public void scream(String text, SpriteBatch batch) {
+        speechBubble.render(batch, text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.SCREAM);
     }
 
     // Cloud-shaped Speech Bubble for thoughts
-    public void think(String text) {
-        speechBubble.render(gameScreen.game.getSpriteBatch(), text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.THOUGHT);
+    public void think(String text, SpriteBatch batch) {
+        speechBubble.render(batch, text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.THOUGHT);
     }
 }

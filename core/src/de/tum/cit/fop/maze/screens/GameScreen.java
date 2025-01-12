@@ -66,7 +66,7 @@ public class GameScreen extends InputAdapter implements Screen {
     private float targetZoom; // targetZoom stores the intermediate zoom value so that we can zoom smoothly
 
     private final Player player;
-    Tiles tiles; // Tile system for the map
+    public Tiles tiles; // Tile system for the map
     private final Key key;
     TextureRegion keyRegion;
 
@@ -90,7 +90,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     Animation<TextureRegion> playerAnimation;
 
-    ChasingEnemy chasingEnemy;
+    //ChasingEnemy chasingEnemy;
 
 
 
@@ -198,8 +198,11 @@ public class GameScreen extends InputAdapter implements Screen {
         //chasingEnemy = new ArrayList<>();
         //ChasingEnemy chasingEnemy1 = new ChasingEnemy(10, 10, 32, 32, 32, 32, 64, 64, 3, tiles.layer, player, chasingEnemyTexture);
         //chasingEnemy.add(chasingEnemy1); // Add enemy targeting the player*/
-        chasingEnemy = new ChasingEnemy(0, 0, 32, 32, 32, 32, 64, 64, 3, this, tiles.layer, player); //new TextureRegion(new Texture(Gdx.files.internal( "mob_guy.png")), 0, 0, 32, 32));
+        //chasingEnemy = new ChasingEnemy(0, 0, 32, 32, 32, 32, 64, 64, 3, this, tiles.layer, player); //new TextureRegion(new Texture(Gdx.files.internal( "mob_guy.png")), 0, 0, 32, 32));
 
+        for (ChasingEnemy enemy : tiles.chasingEnemies){
+            enemy.init(player);
+        }
 
         popUpPanel = new PopUpPanel();
 
@@ -219,10 +222,10 @@ public class GameScreen extends InputAdapter implements Screen {
         this.pause();
         Gdx.input.setInputProcessor(stage1);
     }
-
+/*
     public ChasingEnemy getChasingEnemy() {
         return chasingEnemy;
-    }
+    }*/
 
     /**
      * Updates the camera's zoom smoothly based on the target zoom level.
@@ -337,7 +340,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 fifteen Os, two Ps, one Q, five Rs, twenty-seven Ss, eighteen Ts, two Us,\s
                 seven Vs, eight Ws, two Xs, three Ys, & one Z.
                 Die Polizisten beruhigten Mutter und Tochter, halfen dem Mädchen, seine Zähne zu putzen, und brachten es dann ins Bett.
-                """,
+                """, game.getSpriteBatch(),
                 true, sinusInput, 0.05f);
 
         moveCamera();
@@ -494,7 +497,10 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
     private void renderChasingEnemy(){
-        chasingEnemy.draw(game.getSpriteBatch());
+        //chasingEnemy.draw(game.getSpriteBatch());
+        for (ChasingEnemy enemy : tiles.chasingEnemies){
+            enemy.draw(game.getSpriteBatch());
+        }
     }
 
     /**
