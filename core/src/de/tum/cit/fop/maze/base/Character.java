@@ -1,8 +1,14 @@
 package de.tum.cit.fop.maze.base;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.rendering.SpeechBubble;
 import de.tum.cit.fop.maze.screens.GameScreen;
+import de.tum.cit.fop.maze.tiles.Tile;
+import de.tum.cit.fop.maze.tiles.Wall;
+
+import static de.tum.cit.fop.maze.util.Constants.TILE_SCREEN_SIZE;
 
 /**
  * Represents a DYNAMIC character in the maze game, such as our player or any moving enemy. <br>
@@ -24,6 +30,7 @@ public abstract class Character extends GameObject {
 
     protected boolean paused;
 
+    protected final Tiles tiles;
 
     /**
      * Constructs a new Character instance with specified parameters.
@@ -38,14 +45,95 @@ public abstract class Character extends GameObject {
      * @param heightOnScreen The height of the character as displayed on screen.
      * @param lives The number of lives the character starts with.
      */
-    public Character(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives) {
+    public Character(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, Tiles tiles) {
         super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
         this.lives = lives;
         this.velX = 0;
         this.velY = 0;
         this.speed = 0;
         this.speechBubble = new SpeechBubble();
+        this.tiles = tiles;
     }
+
+    /**
+     * Checks if the player can move to a given position because of the wall blocks.
+     * <p>
+     * This method checks a grid of points (total of five on each side) within the object's hitbox to ensure that
+     * none of these points overlap with an instance of the Wall class. If any of the points within the hitbox
+     * intersects a wall, the object cannot move to the specified position.
+     *
+     * @param x The x-coordinate to check.
+     * @param y The y-coordinate to check.
+     * @return True if the position is valid, false otherwise.
+     */
+    protected boolean canMoveTo(float x, float y){
+        // Points to check along each edge (more points = more accurate but slower)
+        int numPointsToCheck = 20;
+        // Check top edge
+        for (int i = (int) (-hitboxWidthOnScreen / 2); i <= hitboxWidthOnScreen / 2; i += (int) (hitboxWidthOnScreen / numPointsToCheck))
+            if (isPointWithinInstanceOf(x, y, i, -hitboxHeightOnScreen / 2, Wall.class))
+                return false;
+        // Check bottom edge
+        for (int i = (int) (-hitboxWidthOnScreen / 2); i <= hitboxWidthOnScreen / 2; i += (int) (hitboxWidthOnScreen / numPointsToCheck)) {
+            if (isPointWithinInstanceOf(x, y, i, hitboxHeightOnScreen / 2, Wall.class))
+                return false;
+        }
+        // Check left edge
+        for (int j = (int) (-hitboxHeightOnScreen / 2); j <= hitboxHeightOnScreen / 2; j += (int) (hitboxHeightOnScreen / numPointsToCheck)) {
+            if (isPointWithinInstanceOf(x, y, -hitboxWidthOnScreen / 2, j, Wall.class))
+                return false;
+        }
+        // Check right edge
+        for (int j = (int) (-hitboxHeightOnScreen / 2); j <= hitboxHeightOnScreen / 2; j += (int) (hitboxHeightOnScreen / numPointsToCheck)) {
+            if (isPointWithinInstanceOf(x, y, hitboxWidthOnScreen / 2, j, Wall.class))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks if a specific point of the player's hitbox is touching a tile that is of that class.
+     *
+     * @param x        The world x-coordinate to check
+     * @param y        The world y-coordinate to check
+     * @param offsetX  The x offset for the corner (offset from the center to the left or right)
+     * @param offsetY  The y offset for the corner (offset from the center to the top or bottom)
+     * @param objectClass The tile's type to be checked
+     * @return True if the point is not touching a tile with that property, false otherwise
+     */
+    protected boolean isPointWithinInstanceOf(float x, float y, float offsetX, float offsetY, Class<?> objectClass) {
+        int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
+        int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
+        // if the tile at position (tileX, tileY) is an instance of the objectClass (e.g., Wall) AND
+        // if the point (x+offsetX, y+offsetY) is inside this tile
+        //if (isTileInstanceOf(tileX, tileY, SpeedBoost.class) && tiles.getTileOnMap(tileX, tileY).)
+        // && tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)
+        /*Gdx.app.log("Player",
+                    "Player's " +
+                            ((offsetX > 0) ? "right" : "left") + "-" + ((offsetY > 0) ? "upper" : "lower") +
+                            " corner collided with tile at position " + tileX + ", " + tileY);*/
+        return isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).isCollidingPoint(x + offsetX, y + offsetY);
+    }
+
+
+    /**
+     * Checks if a tile at a specific position is an instance of a class (e.g., Wall) or not
+     *
+     * @param tileX  The x-coordinate (in tiles) of the tile.
+     * @param tileY  The y-coordinate (in tiles) of the tile.
+     * @return True if the tile is that class (e.g., Wall, Exit, etc.), false otherwise.
+     */
+    protected boolean isTileInstanceOf(int tileX, int tileY, Class<?> objectClass) {
+        try {
+            Tile tile = tiles.getTileOnMap(tileX, tileY);
+            return objectClass.isInstance(tile);
+        }
+        catch (ArrayIndexOutOfBoundsException e){
+            Gdx.app.error("Player", e.getMessage());
+            return false;
+        }
+    }
+
 
     public void update(float delta){
         //speechBubble.update(delta);

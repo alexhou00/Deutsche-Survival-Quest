@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import de.tum.cit.fop.maze.base.Character;
+import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.screens.GameScreen;
 import de.tum.cit.fop.maze.tiles.Wall;
 
@@ -28,10 +29,6 @@ public class ChasingEnemy extends Character {
     private static final float RANDOM_MOVE_TIME = 2f;
     private float randomMoveCooldown;
 
-    // To hold the current random target
-    private final float randomTargetX;
-    private final float randomTargetY;
-
     private Player player = null;
 
     /**
@@ -46,9 +43,8 @@ public class ChasingEnemy extends Character {
      * @param widthOnScreen  The width of the character as displayed on screen.
      * @param heightOnScreen The height of the character as displayed on screen.
      * @param lives          The number of lives the character starts with.
-     * @param collisionLayer The collision layer used for checking the walls.
      */
-    public ChasingEnemy(TextureRegion textureRegion, int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight,
+    /*public ChasingEnemy(TextureRegion textureRegion, int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight,
                         float widthOnScreen, float heightOnScreen, float lives, GameScreen gameScreen, TiledMapTileLayer collisionLayer, Player player) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE),
                 width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
@@ -65,21 +61,21 @@ public class ChasingEnemy extends Character {
 
         // Load the enemy's texture
         this.enemyTexture = textureRegion; // new Texture("mobs.png"); // Make sure the path matches your assets folder
-    }
+    }*/
 
     public ChasingEnemy(TextureRegion textureRegion, int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight,
-                        float widthOnScreen, float heightOnScreen, float lives, TiledMapTileLayer collisionLayer) {
+                        float widthOnScreen, float heightOnScreen, float lives, Tiles tiles) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE),
-                width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
-        this.collisionLayer = collisionLayer;
+                width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, tiles);
+        this.collisionLayer = tiles.layer;
         this.targetX = 0; // Start at the enemy's initial position
         this.targetY = 0;
         setRandomTarget();
         this.detectionRadius = 300f; // Default detection radius
         this.isChasing = false;
         this.randomMoveCooldown = RANDOM_MOVE_TIME;
-        this.randomTargetX = x; // Initial random target position
-        this.randomTargetY = y;
+        //this.randomTargetX = x; // Initial random target position
+        //this.randomTargetY = y;
         //this.player = player;
 
 
@@ -182,6 +178,7 @@ public class ChasingEnemy extends Character {
 
         // Normalize the direction vector
         float distance = (float) Math.sqrt(dirX * dirX + dirY * dirY);
+        if (distance < ENEMY_BASE_SPEED * delta * 2) return;
         dirX /= distance;
         dirY /= distance;
 
@@ -206,12 +203,13 @@ public class ChasingEnemy extends Character {
         y = MathUtils.clamp(y, hitboxHeightOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
     }
 
-    /**
+    /*/**
      * Checks if the enemy can move to a target position.
      * @param targetX The target x-coordinate.
      * @param targetY The target y-coordinate.
      * @return True if the enemy can move to the target position, otherwise false.
      */
+    /*
     private boolean canMoveTo(float targetX, float targetY) {
         // Convert the target coordinates to tile coordinates
         int tileX = (int) (targetX / TILE_SCREEN_SIZE);
@@ -223,14 +221,14 @@ public class ChasingEnemy extends Character {
         if (cell != null && cell.getTile() != null) {
             // If the cell is not null, it means there's something at that position.
             // Check if the tile is a solid object that the enemy cannot pass through
-            /*return cell.getTile().getProperties().containsKey("walkable") &&
-                    (Boolean) cell.getTile().getProperties().get("walkable");*/
+            //return cell.getTile().getProperties().containsKey("walkable") &&
+                    (Boolean) cell.getTile().getProperties().get("walkable");
             return (cell.getTile() instanceof Wall);
         }
 
         // If there's no tile at the target position, assume it's walkable
         return true;
-    }
+    }*/
 
     private void setRandomTarget() {
         /*randomTargetX = MathUtils.random(hitboxWidthOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2);

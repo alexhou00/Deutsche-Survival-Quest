@@ -181,7 +181,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 tiles.entrance.getTileX(),
                 tiles.entrance.getTileY(),
                 16, 32, 12, 19, 64f, 128f, 6.5f,
-                this, tiles.layer, tiles);//"this" is already a game screen
+                this, tiles);//"this" is already a game screen
 
 
 
