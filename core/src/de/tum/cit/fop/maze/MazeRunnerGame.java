@@ -41,6 +41,9 @@ public class MazeRunnerGame extends Game {
 
     // Character animation downwards
     private Animation<TextureRegion> characterDownAnimation;
+    private Animation<TextureRegion> characterUpAnimation;
+    private Animation<TextureRegion> characterLeftAnimation;
+    private Animation<TextureRegion> characterRightAnimation;
     private Animation<TextureRegion> characterIdleAnimation;
 
     Texture backgroundTexture;
@@ -162,19 +165,29 @@ public class MazeRunnerGame extends Game {
         int animationFrames = 4;
 
         // libGDX internal Array instead of ArrayList because of performance
-        Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> downFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> upFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> leftFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> rightFrames = new Array<>(TextureRegion.class);
         Array<TextureRegion> idleFrame = new Array<>(TextureRegion.class);
 
         // Add all frames to the animation
         int framesXOffset = 0; // define how many frames of X to shift to start extracting our character on "character.png"
         for (int col = 0; col < animationFrames; col++) {
-            walkFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, 0, frameWidth, frameHeight));
+            downFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, 0, frameWidth, frameHeight));
+            rightFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, frameHeight, frameWidth, frameHeight));
+            upFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, frameHeight * 2, frameWidth, frameHeight));
+            leftFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, frameHeight * 3, frameWidth, frameHeight));
+
         }
         idleFrame.add(new TextureRegion(walkSheet, 0, 0, frameWidth, frameHeight));
 
 
 
-        characterDownAnimation = new Animation<>(0.1f, walkFrames);
+        characterDownAnimation = new Animation<>(0.1f, downFrames);
+        characterUpAnimation = new Animation<>(0.1f, upFrames);
+        characterLeftAnimation = new Animation<>(0.1f, leftFrames);
+        characterRightAnimation = new Animation<>(0.1f, rightFrames);
         characterIdleAnimation = new Animation<>(0.1f, idleFrame);
 
     }
@@ -204,6 +217,18 @@ public class MazeRunnerGame extends Game {
 
     public Animation<TextureRegion> getCharacterDownAnimation() {
         return characterDownAnimation;
+    }
+
+    public Animation<TextureRegion> getCharacterUpAnimation() {
+        return characterUpAnimation;
+    }
+
+    public Animation<TextureRegion> getCharacterLeftAnimation() {
+        return characterLeftAnimation;
+    }
+
+    public Animation<TextureRegion> getCharacterRightAnimation() {
+        return characterRightAnimation;
     }
 
     public Animation<TextureRegion> getCharacterIdleAnimation() {

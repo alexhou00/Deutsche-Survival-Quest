@@ -2,6 +2,7 @@ package de.tum.cit.fop.maze.screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -41,6 +42,7 @@ import java.util.Map;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
+import static java.lang.Math.abs;
 
 
 /**
@@ -85,6 +87,8 @@ public class GameScreen extends InputAdapter implements Screen {
     // Variables to show, stored in a map (LinkedHashMap preserves the order)
     Map<String, Float> variablesToShow = new LinkedHashMap<>();
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
+
+    Animation<TextureRegion> playerAnimation;
 
     ChasingEnemy chasingEnemy;
 
@@ -395,15 +399,25 @@ public class GameScreen extends InputAdapter implements Screen {
      * Renders the player's character based on movement state.
      */
     private void renderPlayer(){
-        if (player.getHurtTimer() > 0.3f){
+        if (player.getHurtTimer() > 0.3f){ // 0.8 s ~ 0.3 s, during the 0.5 s duration, add the red tint
             game.getSpriteBatch().setShader(shader);
             shader.setUniformf("isHurt", 0.1f);
         }
 
         if (player.isMoving()) {  // Character Walking Animation
             // Draw the character next to the text :) / We can reuse sinusInput here
+            int hurtFactor = (player.isHurt()) ? -1 : 1; // used to adjust our conditional expression so that the player can still face the same direction even when getting damage
+            if (abs(player.getVelX()) > abs(player.getVelY())){ // x velocity > y velocity -> either left or right
+                if (player.getVelX() * hurtFactor < 0) playerAnimation = game.getCharacterLeftAnimation();
+                else playerAnimation = game.getCharacterRightAnimation();
+            }
+            else { // v_y > v_x
+                if (player.getVelY() * hurtFactor < 0) playerAnimation = game.getCharacterDownAnimation();
+                else playerAnimation = game.getCharacterUpAnimation();
+            }
+
             game.getSpriteBatch().draw(
-                    game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
+                    playerAnimation.getKeyFrame(sinusInput, true),
                     player.getOriginX(),
                     player.getOriginY(),
                     player.getWidthOnScreen(),
@@ -418,7 +432,7 @@ public class GameScreen extends InputAdapter implements Screen {
                     player.getHeightOnScreen()
             );
         }
-        game.getSpriteBatch().setShader(null);
+        game.getSpriteBatch().setShader(null); // end the shader so we only shade the player
     }
 
     private void renderArrow(){
@@ -595,6 +609,7 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.setToOrtho(false);
         hudCamera.setToOrtho(false, width, height); // Adjust HUD camera to new screen size
         player.resume();
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
 

@@ -89,7 +89,7 @@ public class SpeechBubble {
             }
         }
         float textHeight = font.getLineHeight() * parts.length + (parts.length - 1) * 9;
-        float paddingX = 5 * scale;
+        float paddingX = 8 * scale;
         float paddingY = 10 * scale;
         float bubbleWidth = (textWidth + paddingX * 2);
         float bubbleHeight = (textHeight + paddingY * 2);
@@ -163,7 +163,7 @@ public class SpeechBubble {
             case 'm','w' -> 1;
             default -> 0;
         };
-        return Math.max(layout.width + (scale / 2) * 1.5f * 0 + adjust * scale, layout.width); // width of letter "m"
+        return Math.max(layout.width + adjust * scale, layout.width); // width of letter "m"
     }
 
     public float getTextWidth(String text){
