@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.base.Character;
@@ -190,7 +191,7 @@ public class Player extends Character {
     //for traps and enemies
     private void checkCollisions() {
         // Access traps and enemies through GameManager
-        List<Trap> traps = tiles.traps;
+        Array<Trap> traps = tiles.traps;
         // ChasingEnemy chasingEnemies = gameScreen.tiles.chasingEnemies.get(0); //TODO: change the .get(0)
 
         // Check for collision with traps

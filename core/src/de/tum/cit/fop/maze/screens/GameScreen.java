@@ -503,6 +503,13 @@ public class GameScreen extends InputAdapter implements Screen {
         //chasingEnemy.draw(game.getSpriteBatch());
         for (ChasingEnemy enemy : tiles.chasingEnemies){
             enemy.draw(game.getSpriteBatch());
+            /*game.getSpriteBatch().draw(
+                    game.getCharacterIdleAnimation().getKeyFrame(sinusInput, true),
+                    player.getOriginX(),
+                    player.getOriginY(),
+                    player.getWidthOnScreen(),
+                    player.getHeightOnScreen()
+            );*/
         }
     }
 

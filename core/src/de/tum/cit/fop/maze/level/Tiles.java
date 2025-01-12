@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import de.tum.cit.fop.maze.game_objects.ChasingEnemy;
 import de.tum.cit.fop.maze.util.Position;
@@ -28,14 +29,14 @@ public class Tiles {
     public TiledMapTileLayer layer;
 
     private Position keyTilePosition;
-    public List<Trap> traps;
+    public Array<Trap> traps;
 
-    public List<ChasingEnemy> chasingEnemies;
+    public Array<ChasingEnemy> chasingEnemies;
 
     /** entrance tile, coordinates of the tile can be accessed through this */
     public Entrance entrance;
     /** exit tile, coordinates of the tile can be accessed through this */
-    public List<Exit> exits;
+    public Array<Exit> exits;
 
     private Tile[] tileset;
     private Tile[][] tileOnMap;
@@ -85,10 +86,10 @@ public class Tiles {
     public Tiles() {
         keyTilePosition = new Position(0, 0, TILES);
         entrance = null;
-        exits = new ArrayList<>();
+        exits = new Array<>();
 
-        traps = new ArrayList<>();
-        chasingEnemies = new ArrayList<>();
+        traps = new Array<>();
+        chasingEnemies = new Array<>();
         maxTilesOnCell = 0;
 
 
@@ -117,7 +118,7 @@ public class Tiles {
 
         // SECOND,
         // Parse ".properties" file. The position of the key will also be handled here.
-        ObjectMap<String, List<Integer>> mapData = parsePropertiesFile(mapFilePath);
+        ObjectMap<String, Array<Integer>> mapData = parsePropertiesFile(mapFilePath);
 
 
         // THIRD,
@@ -277,8 +278,8 @@ public class Tiles {
      * @param filePath Path to the properties file.
      * @return An {@link ObjectMap} containing map data.
      */
-    private ObjectMap<String, List<Integer>> parsePropertiesFile(String filePath) {
-        ObjectMap<String, List<Integer>> mapData = new ObjectMap<>();
+    private ObjectMap<String, Array<Integer>> parsePropertiesFile(String filePath) {
+        ObjectMap<String, Array<Integer>> mapData = new ObjectMap<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -319,7 +320,7 @@ public class Tiles {
         return mapData;
     }
 
-    private TiledMap createTiledMap(ObjectMap<String, List<Integer>> mapData, int mapWidthInTiles, int mapHeightInTiles) {
+    private TiledMap createTiledMap(ObjectMap<String, Array<Integer>> mapData, int mapWidthInTiles, int mapHeightInTiles) {
         // Create a TiledMap
         TiledMap map = new TiledMap();
 
@@ -334,7 +335,7 @@ public class Tiles {
             // Populate the layer with tiles
             try{
                 for (String key : mapData.keys()) {
-                    if (mapData.get(key).size() <= layerI)
+                    if (mapData.get(key).size <= layerI)
                         continue;
                     int tileValue = mapData.get(key).get(layerI);
                     int tileIndex = tileValue;
@@ -409,21 +410,21 @@ public class Tiles {
      * @param tileType   The tile value or type but as a string.
      * @param mapData    The mapData to update.
      */
-    private void putTileDataInMapData(String position, String tileType, ObjectMap<String, List<Integer>> mapData) {
+    private void putTileDataInMapData(String position, String tileType, ObjectMap<String, Array<Integer>> mapData) {
         try {
             int tileValue = Integer.parseInt(tileType);
             if (true/*tileValue != KEY*/) {
                 // originally it was a Integer instead of a List<Integer>,
                 // but now we can have more than one layer,
                 // so we need a list to store the tiles in this specific cell at this position
-                List<Integer> list;
+                Array<Integer> list;
                 if (mapData.get(position) == null){ // puts a empty list to the Map if empty
-                    list = new ArrayList<>();
+                    list = new Array<>();
                     mapData.put(position, list);
                 }
                 list = mapData.get(position);
                 list.add(tileValue);
-                if (list.size() > maxTilesOnCell) maxTilesOnCell = list.size(); // set maxTilesOnCell to fine the maximum # of tiles that any grid has
+                if (list.size > maxTilesOnCell) maxTilesOnCell = list.size; // set maxTilesOnCell to fine the maximum # of tiles that any grid has
                 mapData.put(position, list);
                 //Gdx.app.log("mapData", "Put to mapData: " + position + " " + mapData.get(position));
 
