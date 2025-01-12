@@ -9,7 +9,9 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.base.Character;
+import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.screens.GameScreen;
 import de.tum.cit.fop.maze.tiles.Wall;
@@ -48,25 +50,6 @@ public class ChasingEnemy extends Character {
      * @param heightOnScreen The height of the character as displayed on screen.
      * @param lives          The number of lives the character starts with.
      */
-    /*public ChasingEnemy(TextureRegion textureRegion, int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight,
-                        float widthOnScreen, float heightOnScreen, float lives, GameScreen gameScreen, TiledMapTileLayer collisionLayer, Player player) {
-        super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE),
-                width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
-        this.collisionLayer = collisionLayer;
-        this.targetX = x; // Start at the enemy's initial position
-        this.targetY = y;
-        this.detectionRadius = 300f; // Default detection radius
-        this.isChasing = false;
-        this.randomMoveCooldown = RANDOM_MOVE_TIME;
-        this.randomTargetX = x; // Initial random target position
-        this.randomTargetY = y;
-        this.player = player;
-
-
-        // Load the enemy's texture
-        this.enemyTexture = textureRegion; // new Texture("mobs.png"); // Make sure the path matches your assets folder
-    }*/
-
     public ChasingEnemy(TextureRegion textureRegion, int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight,
                         float widthOnScreen, float heightOnScreen, float lives, Tiles tiles) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE),
@@ -121,7 +104,8 @@ public class ChasingEnemy extends Character {
         }
 
         // Check for collision between the enemy and the player
-        attackPlayer(player); // Check if the enemy touched the player
+        attackPlayer(player, delta); // Check if the enemy touched the player
+        checkCollisions();
     }
 
     /**
@@ -131,10 +115,16 @@ public class ChasingEnemy extends Character {
      * @param player The player object.
      */
     //like the damage player in trap class
-    private void attackPlayer(Player player) {
+    private void attackPlayer(Player player, float delta) {
         if (damageCooldown <=0 && this.isTouching(player)) {
             player.loseLives(1, this);
             bounceBack(player);
+            x = x + velX * delta;
+            y = y + velY * delta;
+            x = x + velX * delta;
+            y = y + velY * delta;
+            x = x + velX * delta;
+            y = y + velY * delta;
             damageCooldown = DAMAGE_COOLDOWN_TIME; // Reset the cooldown
             System.out.println("The enemy touched the player! Player loses 1 life.");
             System.out.println("this.hitbox: " + this.getHitbox());
@@ -143,11 +133,6 @@ public class ChasingEnemy extends Character {
     }
 
 
-    /*private boolean isPlayerWithinDetectionRadius(Player player) {
-        // Calculate the distance between the enemy and the player
-        float distance = (float) Math.sqrt(Math.pow(player.getX() - x, 2) + Math.pow(player.getY() - y, 2));
-        return distance <= detectionRadius; // Return true if the player is within the detection radius
-    }*/
     private boolean isPlayerWithinDetectionRadius(Player player) {
         float dx = player.getX() - x;
         float dy = player.getY() - y;
@@ -155,21 +140,7 @@ public class ChasingEnemy extends Character {
         return distanceSquared <= detectionRadius * detectionRadius;
     }
 
-    /*public void chase(Player player, float delta) {
-        // Get the player's position
-        float playerX = player.getX();
-        float playerY = player.getY();
 
-        // Calculate the distance to the player
-        float distanceToPlayer = (float) Math.sqrt(Math.pow(playerX - x, 2) + Math.pow(playerY - y, 2));
-
-        // If the player is within the detection radius, start chasing
-        if (distanceToPlayer <= detectionRadius) {
-            targetX = playerX; // Set the target position to the player's position
-            targetY = playerY;
-            moveTowardsTarget(delta); // Move towards the target (the player)
-        }
-    }*/
     /**
      * Chase the player by moving towards the player's position.
      * @param player The player object.
@@ -217,37 +188,35 @@ public class ChasingEnemy extends Character {
         y = MathUtils.clamp(y, hitboxHeightOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
     }
 
-    /*/**
-     * Checks if the enemy can move to a target position.
-     * @param targetX The target x-coordinate.
-     * @param targetY The target y-coordinate.
-     * @return True if the enemy can move to the target position, otherwise false.
-     */
-    /*
-    private boolean canMoveTo(float targetX, float targetY) {
-        // Convert the target coordinates to tile coordinates
-        int tileX = (int) (targetX / TILE_SCREEN_SIZE);
-        int tileY = (int) (targetY / TILE_SCREEN_SIZE);
+    @Override
+    protected boolean canMoveTo(float x, float y){
+        return super.canMoveTo(x,y);
+    }
 
-        // Check if the tile is walkable (assuming 1 is a solid tile and 0 is a walkable tile)
-        TiledMapTileLayer.Cell cell = collisionLayer.getCell(tileX, tileY);
+    //for traps and enemies
+    private void checkCollisions() {
+        // Access traps and enemies through GameManager
+        Array<Trap> traps = tiles.traps;
+        // ChasingEnemy chasingEnemies = gameScreen.tiles.chasingEnemies.get(0); //TODO: change the .get(0)
 
-        if (cell != null && cell.getTile() != null) {
-            // If the cell is not null, it means there's something at that position.
-            // Check if the tile is a solid object that the enemy cannot pass through
-            //return cell.getTile().getProperties().containsKey("walkable") &&
-                    (Boolean) cell.getTile().getProperties().get("walkable");
-            return (cell.getTile() instanceof Wall);
+        // Check for collision with traps
+
+        for (Trap trap : new Array.ArrayIterator<>(traps)) {
+            if (trap.isTouching(this)) {
+                System.out.println("A chasing enemy has hit a trap :O00");
+            }
         }
 
-        // If there's no tile at the target position, assume it's walkable
-        return true;
-    }*/
+
+        // Check for collision with enemies
+        /*for (ChasingEnemy enemy : chasingEnemies) {
+            if (enemy.isTouching(this)) {
+                enemy.checkPlayerCollision(this);
+            }
+        }*/
+    }
 
     private void setRandomTarget() {
-        /*randomTargetX = MathUtils.random(hitboxWidthOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2);
-        randomTargetY = MathUtils.random(hitboxHeightOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
-   */
         boolean moveHorizontally = MathUtils.randomBoolean(); // Randomly decide whether to move horizontally or vertically
 
         if (moveHorizontally) {
@@ -261,6 +230,15 @@ public class ChasingEnemy extends Character {
         }
 
         randomMoveCooldown = RANDOM_MOVE_TIME; // Reset cooldown
+    }
+
+    protected boolean isTouchingTrap() {
+        for (Trap trap : new Array.ArrayIterator<>(tiles.traps)) {
+            if (trap.isTouching(this)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

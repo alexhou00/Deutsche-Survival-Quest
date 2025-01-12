@@ -204,11 +204,11 @@ public class Player extends Character {
         }
 
         // Check for collision with enemies
-        /*for (ChasingEnemy enemy : chasingEnemies) {
-            if (enemy.isTouching(this)) {
-                enemy.checkPlayerCollision(this);
+        for (ChasingEnemy enemy : tiles.chasingEnemies) {
+            if (enemy.isTouching(this) && !isHurt) {
+                bounceBack(enemy);
             }
-        }*/
+        }
     }
 
     public void loseLives(float amount, GameObject source){//or damage idk

@@ -160,7 +160,7 @@ public class GameScreen extends InputAdapter implements Screen {
         player = new Player(
                 tiles.entrance.getTileX(),
                 tiles.entrance.getTileY(),
-                16, 32, 12, 19, 64f, 128f, 6.5f,
+                16, 32, 12, 19, 64f, 128f, 200f,
                 this, tiles);//"this" is already a game screen
 
         // Initialize traps and add one trap (you can add more as needed)

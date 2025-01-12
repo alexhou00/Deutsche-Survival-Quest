@@ -2,6 +2,9 @@ package de.tum.cit.fop.maze.base;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Array;
+import de.tum.cit.fop.maze.game_objects.ChasingEnemy;
+import de.tum.cit.fop.maze.game_objects.Trap;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.rendering.SpeechBubble;
 import de.tum.cit.fop.maze.screens.GameScreen;
@@ -92,16 +95,7 @@ public abstract class Character extends GameObject {
         return true;
     }
 
-    /**
-     * Checks if a specific point of the player's hitbox is touching a tile that is of that class.
-     *
-     * @param x        The world x-coordinate to check
-     * @param y        The world y-coordinate to check
-     * @param offsetX  The x offset for the corner (offset from the center to the left or right)
-     * @param offsetY  The y offset for the corner (offset from the center to the top or bottom)
-     * @param objectClass The tile's type to be checked
-     * @return True if the point is not touching a tile with that property, false otherwise
-     */
+
     protected boolean isPointWithinInstanceOf(float x, float y, float offsetX, float offsetY, Class<?> objectClass) {
         int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
         int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
@@ -115,7 +109,6 @@ public abstract class Character extends GameObject {
                             " corner collided with tile at position " + tileX + ", " + tileY);*/
         return isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).isCollidingPoint(x + offsetX, y + offsetY);
     }
-
 
     /**
      * Checks if a tile at a specific position is an instance of a class (e.g., Wall) or not
