@@ -275,8 +275,8 @@ public class ChasingEnemy extends Character {
      * Draw the enemy to the screen.
      * @param batch The SpriteBatch used to draw the sprite.
      */
-    public void draw(SpriteBatch batch) {
-        batch.draw(enemyTexture, x - widthOnScreen / 2, y - heightOnScreen / 2, widthOnScreen, heightOnScreen);
+    public void draw(SpriteBatch batch, TextureRegion textureRegion) {
+        batch.draw(textureRegion, x - widthOnScreen / 2, y - heightOnScreen / 2, widthOnScreen, heightOnScreen);
     }
 
     @Override

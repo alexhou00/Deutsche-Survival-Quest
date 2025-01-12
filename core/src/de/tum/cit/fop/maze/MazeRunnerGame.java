@@ -16,6 +16,9 @@ import de.tum.cit.fop.maze.screens.GameScreen;
 import de.tum.cit.fop.maze.screens.MenuScreen;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The MazeRunnerGame class represents the core of the Maze Runner game.
  * It manages the screens and global resources like SpriteBatch and Skin.
@@ -45,6 +48,8 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> characterLeftAnimation;
     private Animation<TextureRegion> characterRightAnimation;
     private Animation<TextureRegion> characterIdleAnimation;
+
+    private Map<String, Animation<TextureRegion>> mobGuyAnimations;
 
     Texture backgroundTexture;
 
@@ -158,11 +163,12 @@ public class MazeRunnerGame extends Game {
      */
     private void loadCharacterAnimation() {
         Texture walkSheet = new Texture(Gdx.files.internal("character.png")); // TODO: Redesign our character
+        Texture mobGuySheet = new Texture(Gdx.files.internal("mob_guy.png"));
 
 
         int frameWidth = 16;
         int frameHeight = 32;
-        int animationFrames = 4;
+        int animationFrames = 4; // for player
 
         // libGDX internal Array instead of ArrayList because of performance
         Array<TextureRegion> downFrames = new Array<>(TextureRegion.class);
@@ -171,16 +177,30 @@ public class MazeRunnerGame extends Game {
         Array<TextureRegion> rightFrames = new Array<>(TextureRegion.class);
         Array<TextureRegion> idleFrame = new Array<>(TextureRegion.class);
 
-        // Add all frames to the animation
+        Map<String, Array<TextureRegion>> mobGuyFrames = new HashMap<>();
+        mobGuyFrames.put("down", new Array<>(TextureRegion.class));
+        mobGuyFrames.put("up", new Array<>(TextureRegion.class));
+        mobGuyFrames.put("left", new Array<>(TextureRegion.class));
+        mobGuyFrames.put("right", new Array<>(TextureRegion.class));
+
+                // Add all frames to the animation
         int framesXOffset = 0; // define how many frames of X to shift to start extracting our character on "character.png"
         for (int col = 0; col < animationFrames; col++) {
             downFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, 0, frameWidth, frameHeight));
             rightFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, frameHeight, frameWidth, frameHeight));
             upFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, frameHeight * 2, frameWidth, frameHeight));
             leftFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, frameHeight * 3, frameWidth, frameHeight));
-
         }
         idleFrame.add(new TextureRegion(walkSheet, 0, 0, frameWidth, frameHeight));
+
+        animationFrames = 3;
+        int mobFrameSize = 16;
+        for (int col = 0; col < animationFrames; col++){
+            mobGuyFrames.get("down").add(new TextureRegion(mobGuySheet, (col) * mobFrameSize, 0, mobFrameSize, mobFrameSize));
+            mobGuyFrames.get("left").add(new TextureRegion(mobGuySheet, mobFrameSize * animationFrames + (col) * mobFrameSize, 0, mobFrameSize, mobFrameSize));
+            mobGuyFrames.get("right").add(new TextureRegion(mobGuySheet, mobFrameSize * animationFrames * 2 + (col) * mobFrameSize, 0, mobFrameSize, mobFrameSize));
+            mobGuyFrames.get("up").add(new TextureRegion(mobGuySheet, mobFrameSize * animationFrames * 3 + (col) * mobFrameSize, 0, mobFrameSize, mobFrameSize));
+        }
 
 
 
@@ -189,6 +209,12 @@ public class MazeRunnerGame extends Game {
         characterLeftAnimation = new Animation<>(0.1f, leftFrames);
         characterRightAnimation = new Animation<>(0.1f, rightFrames);
         characterIdleAnimation = new Animation<>(0.1f, idleFrame);
+
+        mobGuyAnimations = new HashMap<>();
+        mobGuyAnimations.put("down", new Animation<>(0.1f, mobGuyFrames.get("down")));
+        mobGuyAnimations.put("left", new Animation<>(0.1f, mobGuyFrames.get("left")));
+        mobGuyAnimations.put("right", new Animation<>(0.1f, mobGuyFrames.get("right")));
+        mobGuyAnimations.put("up", new Animation<>(0.1f, mobGuyFrames.get("up")));
 
     }
 
@@ -233,6 +259,10 @@ public class MazeRunnerGame extends Game {
 
     public Animation<TextureRegion> getCharacterIdleAnimation() {
         return characterIdleAnimation;
+    }
+
+    public Map<String, Animation<TextureRegion>> getMobGuyAnimations() {
+        return mobGuyAnimations;
     }
 
     public Texture getBackgroundTexture() {

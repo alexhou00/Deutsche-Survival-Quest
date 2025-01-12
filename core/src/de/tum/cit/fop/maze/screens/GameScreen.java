@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -89,6 +90,7 @@ public class GameScreen extends InputAdapter implements Screen {
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
 
     Animation<TextureRegion> playerAnimation;
+    Animation<TextureRegion> mobGuyAnimation;
 
     //ChasingEnemy chasingEnemy;
 
@@ -495,14 +497,24 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
     private void renderTrap(){
-        for (Trap trap : tiles.traps){
+        for (Trap trap : new Array.ArrayIterator<>(tiles.traps)){ // for (trap : tiles.traps){
             trap.draw(game.getSpriteBatch());
         }
     }
     private void renderChasingEnemy(){
         //chasingEnemy.draw(game.getSpriteBatch());
-        for (ChasingEnemy enemy : tiles.chasingEnemies){
-            enemy.draw(game.getSpriteBatch());
+        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)){ // for (ChasingEnemy enemy : tiles.chasingEnemies)
+
+            if (abs(enemy.getVelX()) > abs(enemy.getVelY())){ // x velocity > y velocity -> either left or right
+                if (enemy.getVelX() < 0) mobGuyAnimation = game.getMobGuyAnimations().get("left");
+                else mobGuyAnimation = game.getMobGuyAnimations().get("right");
+            }
+            else { // v_y > v_x
+                if (enemy.getVelY() < 0) mobGuyAnimation = game.getMobGuyAnimations().get("down");
+                else mobGuyAnimation = game.getMobGuyAnimations().get("up");
+            }
+
+            enemy.draw(game.getSpriteBatch(), mobGuyAnimation.getKeyFrame(sinusInput, true));
             /*game.getSpriteBatch().draw(
                     game.getCharacterIdleAnimation().getKeyFrame(sinusInput, true),
                     player.getOriginX(),
