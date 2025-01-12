@@ -2,13 +2,13 @@ package de.tum.cit.fop.maze.screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -36,9 +36,7 @@ import de.tum.cit.fop.maze.rendering.PopUpPanel;
 import de.tum.cit.fop.maze.rendering.SpotlightEffect;
 import de.tum.cit.fop.maze.util.Position;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
@@ -77,12 +75,12 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final SpotlightEffect spotlightEffect;
 
-    private TiledMapTileLayer collisionLayer;
-    PopUpPanel popUpPanel;
+    //private TiledMapTileLayer collisionLayer;
+    //PopUpPanel popUpPanel;
 
     private final ShaderProgram shader;
     private final Stage stage1;
-    private final TextButton button;
+    private TextButton button;
 
     // Show all the variables in the bottom-left corner here
     // Variables to show, stored in a map (LinkedHashMap preserves the order)
@@ -118,27 +116,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Viewport viewport1 = new ScreenViewport(hudCamera);
         stage1 = new Stage(viewport1, game.getSpriteBatch());
 
-        Table table = new Table();
-        Drawable background =createSolidColorDrawable(Color.WHITE);
-        stage1.addActor(table);
-        // Gdx.input.setInputProcessor(stage1);
-        table.setBackground(background);
-        table.setSize(Gdx.graphics.getWidth() * 0.9f,Gdx.graphics.getHeight() * 0.9f);
-        table.setPosition(Gdx.graphics.getWidth() * 0.05f,Gdx.graphics.getHeight() * 0.05f);
-        Label label = new Label("Game Instructions",game.getSkin(),"title");
-        table.add(label).padBottom(80).center().row();
-        label.getStyle().font.getData().setScale(0.5f);
-        button = new TextButton("Start now", game.getSkin());
-
-        button.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor){
-                                   Gdx.app.log("start game", "Start game");
-                                    table.remove(); // Change to the game screen when button is pressed
-                                    game.resume();
-                                }});
-        table.add(button); // TODO: fix button
-        button.setPosition(200, 200); // Set a clear position on the stage
+        createIntroPanel();
 
         // We use an InputMultiplexer instead of only stage or "this",
         // since both stage1 (for intro panel) and the GameScreen (for scrolling) handle inputs
@@ -185,16 +163,10 @@ public class GameScreen extends InputAdapter implements Screen {
                 16, 32, 12, 19, 64f, 128f, 6.5f,
                 this, tiles);//"this" is already a game screen
 
-
-
-
         // Initialize traps and add one trap (you can add more as needed)
         // traps = new ArrayList<>();
         //Trap trap1 = new Trap(100f, 150f, 50, 50, 30, 30, 50f, 50f, 1.0f);
         // traps.add(trap1);
-
-
-
 
         // Initialize ChasingEnemy with player and collisionLayer
         //chasingEnemy = new ArrayList<>();
@@ -202,12 +174,11 @@ public class GameScreen extends InputAdapter implements Screen {
         //chasingEnemy.add(chasingEnemy1); // Add enemy targeting the player*/
         //chasingEnemy = new ChasingEnemy(0, 0, 32, 32, 32, 32, 64, 64, 3, this, tiles.layer, player); //new TextureRegion(new Texture(Gdx.files.internal( "mob_guy.png")), 0, 0, 32, 32));
 
-        for (ChasingEnemy enemy : tiles.chasingEnemies){
+        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)){
             enemy.init(player);
         }
 
-        popUpPanel = new PopUpPanel();
-
+        //popUpPanel = new PopUpPanel();
 
         spotlightEffect = new SpotlightEffect();
 
@@ -223,11 +194,32 @@ public class GameScreen extends InputAdapter implements Screen {
 
         this.pause();
         Gdx.input.setInputProcessor(stage1);
+        //Gdx.app.log("Size" ,  horizontalTilesCount + "x" + verticalTilesCount);
     }
-/*
-    public ChasingEnemy getChasingEnemy() {
-        return chasingEnemy;
-    }*/
+
+    public void createIntroPanel(){
+        Table table = new Table();
+        Drawable background = createSolidColorDrawable(Color.WHITE);
+        stage1.addActor(table);
+        // Gdx.input.setInputProcessor(stage1);
+        table.setBackground(background);
+        table.setSize(Gdx.graphics.getWidth() * 0.9f,Gdx.graphics.getHeight() * 0.9f);
+        table.setPosition(Gdx.graphics.getWidth() * 0.05f,Gdx.graphics.getHeight() * 0.05f);
+        Label label = new Label("Game Instructions",game.getSkin(),"title");
+        table.add(label).padBottom(80).center().row();
+        label.getStyle().font.getData().setScale(0.5f);
+        button = new TextButton("Start now", game.getSkin());
+
+        button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor){
+                Gdx.app.log("start game", "Start game");
+                table.remove(); // Change to the game screen when the button is pressed
+                game.resume();
+            }});
+        table.add(button); // TODO: fix button
+        button.setPosition(200, 200); // Set a clear position on the stage
+    }
 
     /**
      * Updates the camera's zoom smoothly based on the target zoom level.
@@ -318,7 +310,7 @@ public class GameScreen extends InputAdapter implements Screen {
         updateZoom(delta); // Smoothly adjust zoom
         handleInput(); // handle input of the keys
         player.update(delta); // ALL the player functionalities are here
-        for (ChasingEnemy enemy : tiles.chasingEnemies){
+        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)){
             enemy.update(delta);
         }
 
@@ -338,13 +330,6 @@ public class GameScreen extends InputAdapter implements Screen {
         player.say("""
                 The quick brown fox jumps over the lazy dog.
                 Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.
-                Blowzy night-frumps vex'd Jack Q.
-                Příliš žluťoučký kůň úpěl ďábelské ódy.
-                This pangram contains four As, one B, two Cs, one D, thirty Es, six Fs,\s
-                five Gs, seven Hs, eleven Is, one J, one K, two Ls, two Ms, eighteen Ns,\s
-                fifteen Os, two Ps, one Q, five Rs, twenty-seven Ss, eighteen Ts, two Us,\s
-                seven Vs, eight Ws, two Xs, three Ys, & one Z.
-                Die Polizisten beruhigten Mutter und Tochter, halfen dem Mädchen, seine Zähne zu putzen, und brachten es dann ins Bett.
                 """, game.getSpriteBatch(),
                 true, sinusInput, 0.05f);
 
@@ -373,7 +358,8 @@ public class GameScreen extends InputAdapter implements Screen {
             float x = position.getX();
             float y = position.getY();
             // Calculate the angle using arc tangent, adjusting for the coordinate system of LibGDX
-            float angle = (float) Math.toDegrees(Math.atan2(y - player.getY(), x - player.getX())); // atan2 is a useful version of atan;
+            // atan2 is a useful version of atan: angle := (float) Math.toDegrees(Math.atan2(y - player.getY(), x - player.getX()));
+            float angle = MathUtils.atan2Deg(y - player.getY(), x - player.getX()); // equiv. as the above comment, but for
             angle = (angle + 270) % 360; // rotate counter-clockwise by 90° and normalize to [0, 360)
             return angle;
         }
@@ -452,6 +438,7 @@ public class GameScreen extends InputAdapter implements Screen {
         float angle = getAngle(exitPosition);
 
         if (angle > 0) hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
+
     }
 
     /**
@@ -515,13 +502,6 @@ public class GameScreen extends InputAdapter implements Screen {
             }
 
             enemy.draw(game.getSpriteBatch(), mobGuyAnimation.getKeyFrame(sinusInput, true));
-            /*game.getSpriteBatch().draw(
-                    game.getCharacterIdleAnimation().getKeyFrame(sinusInput, true),
-                    player.getOriginX(),
-                    player.getOriginY(),
-                    player.getWidthOnScreen(),
-                    player.getHeightOnScreen()
-            );*/
         }
     }
 
@@ -668,7 +648,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     @Override
     public void dispose() {
-        shapeRenderer.dispose();
+        shapeRenderer.dispose(); //TODO: if not used even the project is finished, delete this.
         mapRenderer.dispose();
         hudObjectRenderer.dispose();
     }

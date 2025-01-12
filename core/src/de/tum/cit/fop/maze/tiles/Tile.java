@@ -20,6 +20,8 @@ public class Tile extends StaticTiledMapTile{
 
     protected boolean[][] hitPixmap; // stores the precomputed alpha map
 
+    private static final Map<String, Pixmap> tilePixmapCache = new HashMap<>();
+
     public Tile(TextureRegion textureRegion) {
         super(textureRegion);
         this.tilePosition = null;
@@ -116,8 +118,6 @@ public class Tile extends StaticTiledMapTile{
     }
 
     public static Pixmap getPixmap(TextureRegion tileRegion) {
-        final Map<String, Pixmap> tilePixmapCache = new HashMap<>();
-
         String key = tileRegion.getTexture().toString() + tileRegion.getRegionX() + tileRegion.getRegionY();
         if (!tilePixmapCache.containsKey(key)) {
             Texture tileTexture = tileRegion.getTexture();

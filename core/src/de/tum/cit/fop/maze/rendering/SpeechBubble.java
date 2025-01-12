@@ -62,7 +62,7 @@ public class SpeechBubble {
         this.letterWidth = new float[256]; // extended-ascii to include letters like ä, ö, ü
         for (int i = ' '; i<='ü'; i++){
             letterWidth[i] = getLetterWidth(font, Character.toString((char) i));
-            System.out.println(Character.toString(i)+ ": " + letterWidth[i]);
+            //System.out.println(Character.toString(i)+ ": " + letterWidth[i]);
         }
     }
 

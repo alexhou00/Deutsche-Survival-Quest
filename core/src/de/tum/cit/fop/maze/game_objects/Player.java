@@ -22,14 +22,14 @@ import static java.lang.Math.abs;
  * Represents the main player character in the maze game, handling movement, collision, and state.
  */
 public class Player extends Character {
-    private final boolean hasKey;
+    //private final boolean hasKey;
     private boolean isMoving;
     private boolean isHurt = false;
     private float hurtTimer = 0f; // Timer for the red tint
 
     GameScreen gameScreen;
 
-    private final TiledMapTileLayer collisionLayer;
+    //private final TiledMapTileLayer collisionLayer;
     float targetVelX, targetVelY;
     int lastHorizontalDirection = 0, lastVerticalDirection = 0;
 
@@ -55,10 +55,10 @@ public class Player extends Character {
      */
     public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, GameScreen gameScreen, Tiles tiles) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, tiles);
-        this.hasKey = false;
+        //this.hasKey = false;
         this.isMoving = false;
         // this.speed = BASE_SPEED; // normal speed when moving either vertically or horizontally
-        this.collisionLayer = tiles.layer;
+        //this.collisionLayer = tiles.layer;
         // this.tiles = tiles;
         this.gameScreen = gameScreen;
     }

@@ -195,8 +195,8 @@ public class ChasingEnemy extends Character {
         dirY /= distance;
 
         // Set the velocity towards the target
-        velX = (float) (Math.tanh(dirX))/*((dirX>0)?1:-1)*/ * ENEMY_BASE_SPEED; // tanh is between 1~-1
-        velY = (float) (Math.tanh(dirY))/*((dirY>0)?1:-1)*/ * ENEMY_BASE_SPEED;
+        velX = (float) (Math.tanh(dirX)) * ENEMY_BASE_SPEED; // tanh is between 1~-1 and preserves the sign. it looks like something like this: ___/‾‾‾
+        velY = (float) (Math.tanh(dirY)) * ENEMY_BASE_SPEED;
         //Gdx.app.log("Enemy Move", "velocity: " + velocityX + ", " + velocityY);
         // Predict new position
         float newX = x + velX * delta;
