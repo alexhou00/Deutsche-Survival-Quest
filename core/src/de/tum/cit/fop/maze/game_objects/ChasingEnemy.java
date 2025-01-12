@@ -1,13 +1,16 @@
 package de.tum.cit.fop.maze.game_objects;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import de.tum.cit.fop.maze.base.Character;
 import de.tum.cit.fop.maze.screens.GameScreen;
+import de.tum.cit.fop.maze.tiles.Wall;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 
@@ -26,7 +29,8 @@ public class ChasingEnemy extends Character {
     private float randomMoveCooldown;
 
     // To hold the current random target
-    private float randomTargetX, randomTargetY;
+    private final float randomTargetX;
+    private final float randomTargetY;
 
     private Player player = null;
 
@@ -68,8 +72,9 @@ public class ChasingEnemy extends Character {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE),
                 width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives);
         this.collisionLayer = collisionLayer;
-        this.targetX = x; // Start at the enemy's initial position
-        this.targetY = y;
+        this.targetX = 0; // Start at the enemy's initial position
+        this.targetY = 0;
+        setRandomTarget();
         this.detectionRadius = 300f; // Default detection radius
         this.isChasing = false;
         this.randomMoveCooldown = RANDOM_MOVE_TIME;
@@ -96,6 +101,7 @@ public class ChasingEnemy extends Character {
             // If the player is within the detection radius, chase the player
             isChasing = true;
             chase(player, delta); // Call the chase method
+            Gdx.app.log("Enemy", "Chasing the player");
         } else {
             // If the player is outside the detection radius, move randomly
             isChasing = false;
@@ -104,8 +110,10 @@ public class ChasingEnemy extends Character {
                 // Set a new random target position
                 setRandomTarget();
                 randomMoveCooldown = RANDOM_MOVE_TIME; // Reset cooldown
+                Gdx.app.log("Enemy", "Reset cooldown");
             }
             moveTowardsTarget(delta); // Gradually move towards the random target
+            //Gdx.app.log("Enemy", "Move Randomly");
         }
 
         // Check for collision between the enemy and the player
@@ -118,8 +126,7 @@ public class ChasingEnemy extends Character {
      *
      * @param player The player object.
      */
-
-    //like the damge player in trap class
+    //like the damage player in trap class
     private void attackPlayer(Player player) {
         if (this.getHitbox().overlaps(player.getHitbox())) {
             player.loseLives(1);
@@ -181,7 +188,7 @@ public class ChasingEnemy extends Character {
         // Set the velocity towards the target
         float velocityX = dirX * ENEMY_BASE_SPEED;
         float velocityY = dirY * ENEMY_BASE_SPEED;
-
+        //Gdx.app.log("Enemy Move", "velocity: " + velocityX + ", " + velocityY);
         // Predict new position
         float newX = x + velocityX * delta;
         float newY = y + velocityY * delta;
@@ -213,11 +220,12 @@ public class ChasingEnemy extends Character {
         // Check if the tile is walkable (assuming 1 is a solid tile and 0 is a walkable tile)
         TiledMapTileLayer.Cell cell = collisionLayer.getCell(tileX, tileY);
 
-        if (cell != null) {
+        if (cell != null && cell.getTile() != null) {
             // If the cell is not null, it means there's something at that position.
             // Check if the tile is a solid object that the enemy cannot pass through
-            return cell.getTile().getProperties().containsKey("walkable") &&
-                    (Boolean) cell.getTile().getProperties().get("walkable");
+            /*return cell.getTile().getProperties().containsKey("walkable") &&
+                    (Boolean) cell.getTile().getProperties().get("walkable");*/
+            return (cell.getTile() instanceof Wall);
         }
 
         // If there's no tile at the target position, assume it's walkable
@@ -225,8 +233,21 @@ public class ChasingEnemy extends Character {
     }
 
     private void setRandomTarget() {
-        randomTargetX = MathUtils.random(hitboxWidthOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2);
+        /*randomTargetX = MathUtils.random(hitboxWidthOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2);
         randomTargetY = MathUtils.random(hitboxHeightOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
+   */
+        boolean moveHorizontally = MathUtils.randomBoolean(); // Randomly decide whether to move horizontally or vertically
+
+        if (moveHorizontally) {
+            // Horizontal movement: Keep the same y-coordinate, change x-coordinate
+            targetX = MathUtils.random(hitboxWidthOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2);
+            targetY = y; // Maintain the current y-coordinate
+        } else {
+            // Vertical movement: Keep the same x-coordinate, change y-coordinate
+            targetX = x; // Maintain the current x-coordinate
+            targetY = MathUtils.random(hitboxHeightOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
+        }
+
     }
 
     /**

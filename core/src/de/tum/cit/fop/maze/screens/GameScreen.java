@@ -316,6 +316,9 @@ public class GameScreen extends InputAdapter implements Screen {
         updateZoom(delta); // Smoothly adjust zoom
         handleInput(); // handle input of the keys
         player.update(delta); // ALL the player functionalities are here
+        for (ChasingEnemy enemy : tiles.chasingEnemies){
+            enemy.update(delta);
+        }
 
         renderGameWorld();
 
