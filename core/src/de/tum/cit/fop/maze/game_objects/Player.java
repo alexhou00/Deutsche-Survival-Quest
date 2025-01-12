@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
+import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.base.Character;
 import de.tum.cit.fop.maze.tiles.SpeedBoost;
@@ -196,13 +197,8 @@ public class Player extends Character {
 
         for (Trap trap : traps) {
             if (trap.isTouching(this) && !isHurt) {
-                loseLives(trap.getDamage());
+                loseLives(trap.getDamage(), trap);
                 System.out.println("Be careful!! You hit a trap:O");
-                //isInvulnerable = true;
-                targetVelX = (abs(targetVelX) > 50) ? -targetVelX : -targetVelX*5/*(((targetVelX>0) ? 1 : -1) * -500)*/;
-                velX = (abs(velX) > 50) ? -velX : -velX*5/*(((velX>0) ? 1 : -1) * -500)*/;
-                targetVelY = (abs(targetVelY) > 50) ? -targetVelY : -targetVelY*5/*(((targetVelY>0) ? 1 : -1) * -500)*/;
-                velY = (abs(velY) > 50) ? -velY : -velY*5/*(((velY>0) ? 1 : -1) * -500)*/;
             }
         }
 
@@ -214,7 +210,7 @@ public class Player extends Character {
         }*/
     }
 
-    public void loseLives(float amount){//or damage idk
+    public void loseLives(float amount, GameObject source){//or damage idk
         lives -= amount;
 
         if (lives <= 0){
@@ -226,6 +222,8 @@ public class Player extends Character {
 
         isHurt = true;
         hurtTimer = 0.8f;
+
+        bounceBack(source);
     }
 
     /**
@@ -275,6 +273,4 @@ public class Player extends Character {
     public float getHurtTimer() {
         return hurtTimer;
     }
-
-
 }

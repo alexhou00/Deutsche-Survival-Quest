@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import de.tum.cit.fop.maze.base.Character;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.screens.GameScreen;
@@ -26,10 +27,13 @@ public class ChasingEnemy extends Character {
     private static final float ENEMY_BASE_SPEED = 180f;// we can change it when we want to
 
     // Time to wait before the enemy moves randomly again
-    private static final float RANDOM_MOVE_TIME = 2f;
+    private static final float RANDOM_MOVE_TIME = 6f;
     private float randomMoveCooldown;
 
     private Player player = null;
+
+    private static final float DAMAGE_COOLDOWN_TIME = 2.0f; // 2-second cooldown
+    private float damageCooldown = 0;
 
     /**
      * Constructs a new Enemy instance with specified parameters.
@@ -71,7 +75,7 @@ public class ChasingEnemy extends Character {
         this.targetX = 0; // Start at the enemy's initial position
         this.targetY = 0;
         setRandomTarget();
-        this.detectionRadius = 300f; // Default detection radius
+        this.detectionRadius = 500f; // Default detection radius
         this.isChasing = false;
         this.randomMoveCooldown = RANDOM_MOVE_TIME;
         //this.randomTargetX = x; // Initial random target position
@@ -92,6 +96,11 @@ public class ChasingEnemy extends Character {
     public void update(float delta) {
         if (paused) return; // Check if the game is paused
 
+        if (damageCooldown > 0) {
+            damageCooldown -= delta;
+        }
+
+        // rectangle.set();
         // Check if the player is within the detection radius
         if (isPlayerWithinDetectionRadius(player)) {
             // If the player is within the detection radius, chase the player
@@ -105,7 +114,6 @@ public class ChasingEnemy extends Character {
             if (randomMoveCooldown <= 0) {
                 // Set a new random target position
                 setRandomTarget();
-                randomMoveCooldown = RANDOM_MOVE_TIME; // Reset cooldown
                 Gdx.app.log("Enemy", "Reset cooldown");
             }
             moveTowardsTarget(delta); // Gradually move towards the random target
@@ -124,9 +132,13 @@ public class ChasingEnemy extends Character {
      */
     //like the damage player in trap class
     private void attackPlayer(Player player) {
-        if (this.getHitbox().overlaps(player.getHitbox())) {
-            player.loseLives(1);
+        if (damageCooldown <=0 && this.isTouching(player)) {
+            player.loseLives(1, this);
+            bounceBack(player);
+            damageCooldown = DAMAGE_COOLDOWN_TIME; // Reset the cooldown
             System.out.println("The enemy touched the player! Player loses 1 life.");
+            System.out.println("this.hitbox: " + this.getHitbox());
+            System.out.println("player.hitbox: " + player.getHitbox());
         }
     }
 
@@ -166,7 +178,7 @@ public class ChasingEnemy extends Character {
     private void chase(Player player, float delta) {
         targetX = player.getX();
         targetY = player.getY();
-        moveTowardsTarget(delta);
+        if (damageCooldown <= 0) moveTowardsTarget(delta);
     }
 
     /**
@@ -183,20 +195,22 @@ public class ChasingEnemy extends Character {
         dirY /= distance;
 
         // Set the velocity towards the target
-        float velocityX = dirX * ENEMY_BASE_SPEED;
-        float velocityY = dirY * ENEMY_BASE_SPEED;
+        velX = dirX * ENEMY_BASE_SPEED;
+        velY = dirY * ENEMY_BASE_SPEED;
         //Gdx.app.log("Enemy Move", "velocity: " + velocityX + ", " + velocityY);
         // Predict new position
-        float newX = x + velocityX * delta;
-        float newY = y + velocityY * delta;
+        float newX = x + velX * delta;
+        float newY = y + velY * delta;
 
         // Check if the enemy can move to the new position (collision detection)
         if (canMoveTo(newX, y)) {
             x = newX; // Move horizontally if no collision
         }
+        else setRandomTarget();
         if (canMoveTo(x, newY)) {
             y = newY; // Move vertically if no collision
         }
+        else setRandomTarget();
 
         // Constrain enemy position within the game world boundaries
         x = MathUtils.clamp(x, hitboxWidthOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2);
@@ -246,6 +260,7 @@ public class ChasingEnemy extends Character {
             targetY = MathUtils.random(hitboxHeightOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
         }
 
+        randomMoveCooldown = RANDOM_MOVE_TIME; // Reset cooldown
     }
 
     /**

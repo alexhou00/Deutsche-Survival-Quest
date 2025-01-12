@@ -9,6 +9,7 @@ import de.tum.cit.fop.maze.tiles.Tile;
 import de.tum.cit.fop.maze.tiles.Wall;
 
 import static de.tum.cit.fop.maze.util.Constants.TILE_SCREEN_SIZE;
+import static java.lang.Math.abs;
 
 /**
  * Represents a DYNAMIC character in the maze game, such as our player or any moving enemy. <br>
@@ -204,5 +205,34 @@ public abstract class Character extends GameObject {
     // Cloud-shaped Speech Bubble for thoughts
     public void think(String text, SpriteBatch batch) {
         speechBubble.render(batch, text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.THOUGHT);
+    }
+
+    public static float bounceVelocity(float v1){
+        // assuming m2 is Infinite and the collision is elastic
+        return (abs(v1) > 50) ? -v1 : -v1*5; // if not fast enough, times 5
+    }
+
+    public static float bounceVelocity(float v1, float v2) {
+        // v1 is the velocity of this, v2 is the velocity of the other
+        // assuming m1 and m2 are the same mass, and the collision is elastic
+        System.out.println(v1 + " " + v2);
+        float vc = (v1+v2)/2f;
+        System.out.println("Vc: " + vc);
+        float vf = 2 * vc - v1;
+        return (abs(vf) > 50) ? vf : vf*5;
+    }
+
+    public void bounceBack(GameObject source){
+        if (source instanceof Character){
+            velX = bounceVelocity(velX, ((Character) source).getVelX());
+            velY = bounceVelocity(velY, ((Character) source).getVelY());
+        }
+        else {
+            //isInvulnerable = true;
+            //targetVelX = (abs(targetVelX) > 50) ? -targetVelX : -targetVelX*5/*(((targetVelX>0) ? 1 : -1) * -500)*/;
+            velX = bounceVelocity(velX)/*(((velX>0) ? 1 : -1) * -500)*/;
+            //targetVelY = (abs(targetVelY) > 50) ? -targetVelY : -targetVelY*5/*(((targetVelY>0) ? 1 : -1) * -500)*/;
+            velY = bounceVelocity(velY)/*(((velY>0) ? 1 : -1) * -500)*/;
+        }
     }
 }

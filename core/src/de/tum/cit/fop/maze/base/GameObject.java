@@ -35,7 +35,7 @@ public abstract class GameObject {
         this.heightOnScreen = heightOnScreen;
         this.hitboxWidthOnScreen = widthOnScreen * hitboxWidth / width;
         this.hitboxHeightOnScreen = heightOnScreen * hitboxHeight / height;
-        this.hitbox = null;
+        this.hitbox = new Rectangle(x - hitboxWidthOnScreen / 2, y - hitboxWidthOnScreen / 2, hitboxWidthOnScreen, hitboxHeightOnScreen);
     }
 
     public float getX() {
@@ -111,7 +111,7 @@ public abstract class GameObject {
     }
 
     public Rectangle getHitbox() {
-        hitbox = new Rectangle(x - hitboxWidthOnScreen / 2, y - hitboxWidthOnScreen / 2, hitboxWidthOnScreen, hitboxHeightOnScreen);
+        hitbox.set(x - hitboxWidthOnScreen / 2, y - hitboxWidthOnScreen / 2, hitboxWidthOnScreen, hitboxHeightOnScreen);
         return hitbox;
     }
 

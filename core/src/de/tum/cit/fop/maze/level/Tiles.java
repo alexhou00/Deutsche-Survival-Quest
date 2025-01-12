@@ -361,7 +361,7 @@ public class Tiles {
                         Position chasingEnemyPosition = new Position(x, y, TILES);
                         int worldX = chasingEnemyPosition.getTileX();
                         int worldY = chasingEnemyPosition.getTileY();
-                        chasingEnemies.add(new ChasingEnemy(tile.getTextureRegion(), worldX, worldY, 32, 32, 32, 32, 64, 64, 3, this));
+                        chasingEnemies.add(new ChasingEnemy(tile.getTextureRegion(), worldX, worldY, 16, 16, 10, 16, 64, 64, 3, this));
 
                     }
                     else { // if it is neither a trap nor a key, which is the default one
