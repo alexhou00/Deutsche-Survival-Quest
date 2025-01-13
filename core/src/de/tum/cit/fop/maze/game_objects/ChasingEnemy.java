@@ -107,7 +107,7 @@ public class ChasingEnemy extends Character {
 
         // Check for collision between the enemy and the player
         attackPlayer(player); // Check if the enemy touched the player
-        checkCollisions();
+        checkCollisions(delta);
     }
 
     /**
@@ -213,11 +213,12 @@ public class ChasingEnemy extends Character {
                 MathUtils.clamp(y, hitboxHeightOnScreen / 2 + 1, getWorldHeight() - hitboxHeightOnScreen / 2 - 1) != y){
             return false;
         }*/
+        if (isTouchingTraps()) return false;
         return super.canMoveTo(x,y);
     }
 
     //for traps and enemies
-    private void checkCollisions() {
+    private void checkCollisions(float delta) {
         // Access traps and enemies through GameManager
         Array<Trap> traps = tiles.traps;
         // ChasingEnemy chasingEnemies = gameScreen.tiles.chasingEnemies.get(0); //TODO: change the .get(0)
@@ -227,6 +228,9 @@ public class ChasingEnemy extends Character {
         for (Trap trap : new Array.ArrayIterator<>(traps)) {
             if (trap.isTouching(this)) {
                 System.out.println("A chasing enemy has hit a trap :O00");
+                // step back to original
+                x += ((trap.getX() - x) > 0) ? -1 * velX * delta : 1 * velX * delta;
+                y += ((trap.getY() - y) > 0) ? -1 * velY * delta : 1 * velY * delta;
             }
         }
 
@@ -237,6 +241,15 @@ public class ChasingEnemy extends Character {
                 enemy.checkPlayerCollision(this);
             }
         }*/
+    }
+
+    private boolean isTouchingTraps() {
+        for (Trap trap : new Array.ArrayIterator<>(tiles.traps)) {
+            if (trap.isTouching(this)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void setRandomTarget(float minX, float minY, float maxX, float maxY) {
