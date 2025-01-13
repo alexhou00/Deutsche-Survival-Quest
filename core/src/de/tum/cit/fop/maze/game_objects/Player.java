@@ -196,15 +196,23 @@ public class Player extends Character {
 
         // Check for collision with traps
 
-        for (Trap trap : traps) {
-            if (trap.isTouching(this) && !isHurt) {
-                loseLives(trap.getDamage(), trap);
-                System.out.println("Be careful!! You hit a trap:O");
+        for (Trap trap : new Array.ArrayIterator<>(traps)) {
+            if (trap.isTouching(this)) {
+                if (!isHurt){
+                    loseLives(trap.getDamage(), trap);
+                    System.out.println("Be careful!! You hit a trap:O");
+                    break;
+                }
+                else{ // is hurt, prevent player from going through a trap, when, for example, an enemy attacks that force the player to step back
+                    x += ((trap.getX() - x) > 0) ? -1 : 1;
+                    y += ((trap.getY() - y) > 0) ? -1 : 1;
+                }
+
             }
         }
 
         // Check for collision with enemies
-        for (ChasingEnemy enemy : tiles.chasingEnemies) {
+        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)) {
             if (enemy.isTouching(this) && !isHurt) {
                 bounceBack(enemy);
             }
