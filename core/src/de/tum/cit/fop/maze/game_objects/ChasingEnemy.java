@@ -32,9 +32,9 @@ public class ChasingEnemy extends Character {
     private static final float RANDOM_MOVE_TIME = 6f;
     private float randomMoveCooldown;
     private static final float DAMAGE_COOLDOWN_TIME = 2.0f; // 2-second cooldown
-    private float damageCooldown = 0;/*
+    private float damageCooldown = 0;
     private static final int MAX_DAMAGE_TIMES = 3;
-    private int damageTimes = 0;*/
+    private int damageTimes = 0;
 
     private Player player = null;
 
@@ -86,19 +86,29 @@ public class ChasingEnemy extends Character {
 
         // rectangle.set();
         // Check if the player is within the detection radius
-        if (isPlayerWithinDetectionRadius(player)) {
+        if (isPlayerWithinDetectionRadius(player) && damageTimes<3) {
             // If the player is within the detection radius, chase the player
             isChasing = true;
             chase(player, delta); // Call the chase method
             Gdx.app.log("Enemy", "Chasing the player");
         } else {
             // If the player is outside the detection radius, move randomly
+            if (isChasing){ // previously, it was chasing
+                float dx = player.getX() - x; // dx > 0 means the player is on the right side, < 0 if on the left.
+                float dy = player.getY() - y; // same for dy
+                // reset the target (randomly), especially, in the opposite direction (quadrant) of the player
+                setRandomTarget(((dx > 0) ? 0 : x * 1.5f),
+                        ((dy > 0) ? 0 : y * 1.5f),
+                        ((dx > 0) ? x * 0.5f : getWorldWidth()),
+                        ((dy > 0) ? y * 0.5f : getWorldHeight()));
+            }
             isChasing = false;
             randomMoveCooldown -= delta; // Decrease cooldown time
             // damageTimes = 0;
             if (randomMoveCooldown <= 0) {
                 // Set a new random target position
                 setRandomTarget();
+                damageTimes = 0;
                 Gdx.app.log("Enemy", "Reset cooldown");
             }
             moveTowardsTarget(delta); // Gradually move towards the random target
@@ -122,7 +132,7 @@ public class ChasingEnemy extends Character {
             player.loseLives(1, this);
             bounceBack(player);
             damageCooldown = DAMAGE_COOLDOWN_TIME; // Reset the cooldown
-            //damageTimes++;
+            damageTimes++;
             System.out.println("The enemy touched the player! Player loses 1 life.");
             System.out.println("this.hitbox: " + this.getHitbox());
             System.out.println("player.hitbox: " + player.getHitbox());
@@ -189,16 +199,16 @@ public class ChasingEnemy extends Character {
         velY = (float) (Math.tanh(dirY)) * ENEMY_BASE_SPEED;
         //Gdx.app.log("Enemy Move", "velocity: " + velocityX + ", " + velocityY);
         // Predict new position
-        float newX = x + velX * delta;
-        float newY = y + velY * delta;
+        float newX = x + velX * delta * 2;
+        float newY = y + velY * delta * 2;
 
         // Check if the enemy can move to the new position (collision detection)
         if (canMoveTo(newX, y)) {
-            x = newX; // Move horizontally if no collision
+            x = x + velX * delta; // Move horizontally if no collision
         }
         else setRandomTarget();
         if (canMoveTo(x, newY)) {
-            y = newY; // Move vertically if no collision
+            y = y + velY * delta; // Move vertically if no collision
         }
         else setRandomTarget();
 
@@ -229,8 +239,13 @@ public class ChasingEnemy extends Character {
             if (trap.isTouching(this)) {
                 System.out.println("A chasing enemy has hit a trap :O00");
                 // step back to original
-                x += ((trap.getX() - x) > 0) ? -1 * velX * delta : 1 * velX * delta;
-                y += ((trap.getY() - y) > 0) ? -1 * velY * delta : 1 * velY * delta;
+                float dx = ((trap.getX() - x) > 0) ? -1 * velX * delta : 1 * velX * delta;
+                float dy = ((trap.getY() - y) > 0) ? -1 * velY * delta : 1 * velY * delta;
+                if (super.canMoveTo(x + dx, y + dy)){ // only detect touching walls, so step back to where there are no walls
+                    x += dx;
+                    y += dy;
+                }
+                setRandomTarget();
             }
         }
 
