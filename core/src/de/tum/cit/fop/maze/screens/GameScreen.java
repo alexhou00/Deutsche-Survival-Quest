@@ -90,7 +90,9 @@ public class GameScreen extends InputAdapter implements Screen {
     Animation<TextureRegion> playerAnimation;
     Animation<TextureRegion> mobGuyAnimation;
 
-    //ChasingEnemy chasingEnemy;
+    // Timer to track how long the stamina bar should stay visible after refill
+    private float staminaTimer = 0f;
+    private static final float STAMINA_DISPLAY_TIME = 1f; // Duration to show stamina bar in seconds
 
 
 
@@ -338,13 +340,16 @@ public class GameScreen extends InputAdapter implements Screen {
                     """, game.getSpriteBatch(),
                 true, player.getSpeechBubble().getElapsedTime(), 0.03f);
 
-        moveCamera();
-
         game.getSpriteBatch().end(); // Important to call this after drawing everything
+
+        renderStamina();
+
+        moveCamera();
 
         stage1.act(delta);
         stage1.draw(); // Draw the
         // renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
+
         renderHUD();
 
     }
@@ -510,6 +515,43 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+    private void renderStamina(){
+        float currentStamina = player.getStamina();
+        //if (currentStamina >= Player.maxStamina) return;
+
+        if (currentStamina >= Player.maxStamina) {
+            // Start the timer if stamina is full
+            staminaTimer += Gdx.graphics.getDeltaTime();
+            if (staminaTimer > STAMINA_DISPLAY_TIME) {
+                // Hide the stamina bar if timer exceeds the display duration
+                return;
+            }
+        } else {
+            // Reset the timer when stamina is not full
+            staminaTimer = 0f;
+        }
+
+        Gdx.gl.glLineWidth(5f); // Set line width for better visibility
+        int staminaRadius = 10;
+        float offsetX = -player.getHitboxWidthOnScreen() / 2 - 5;
+        float offsetY = player.getHitboxHeightOnScreen() / 2 + 5;
+        float staminaX = player.getX() + offsetX;// + staminaRadius / 2;
+        float staminaY = player.getY() + offsetY;// - staminaRadius;
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        // Draw the background circle (full arc for reference)
+        shapeRenderer.setColor(Color.DARK_GRAY);
+        shapeRenderer.arc(staminaX, staminaY, staminaRadius, 0, 360); // arc's 0° (where it starts drawing) starts at +x of the cartesian plane
+
+        // Draw the stamina arc
+        shapeRenderer.setColor(Color.LIME);
+        float angle = (player.getStamina() / Player.maxStamina) * 360f; // Calculate the angle based on stamina
+        shapeRenderer.arc(staminaX, staminaY, staminaRadius, 90 - angle, angle); // Draw arc clockwise
+
+        shapeRenderer.end();
+    }
+
     /**
      * Renders the Heads-Up Display (HUD), including player stats and health.
      */
@@ -522,6 +564,7 @@ public class GameScreen extends InputAdapter implements Screen {
         variablesToShow.put("player.y", player.getY());
         variablesToShow.put("player.speed", player.getSpeed());
         variablesToShow.put("camera zoom", camera.zoom);
+        variablesToShow.put("player.stamina", player.getStamina());
         drawVariables(variablesToShow);
 
         game.getSpriteBatch().end();
