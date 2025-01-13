@@ -28,6 +28,10 @@ public class SpeechBubble {
 
     private final BitmapFont font;
 
+    private boolean visible; // Flag to control visibility
+    private float visibleDuration; // Duration to show the bubble
+    private float elapsedTime; // Tracks the elapsed time
+
     private static final int SMALL_LETTER_AE = 228;
     private static final int SMALL_LETTER_OE = 246;
     private static final int SMALL_LETTER_UE = 252;
@@ -67,6 +71,8 @@ public class SpeechBubble {
     }
 
     public void render(SpriteBatch batch, String text, float x, float y, float yOffset, BubbleType type) {
+        if (!visible) return; // Do not render if the bubble is not visible
+
         TextureRegion tailRegion = switch (type) {
             case NORMAL -> speechTailRegion;
             case SCREAM -> screamTailRegion;
@@ -141,14 +147,14 @@ public class SpeechBubble {
         font.getData().setScale(1f); // Reset the font scale after rendering
     }
 
-    /*public void update(float delta) {
+    public void update(float delta) {
         if (visible) {
             elapsedTime += delta;
             if (elapsedTime >= visibleDuration) {
                 hide(); // Automatically hide the bubble after the duration
             }
         }
-    }*/
+    }
 
     public enum BubbleType {
         NORMAL, SCREAM, THOUGHT
@@ -179,4 +185,23 @@ public class SpeechBubble {
         }
         return length;
     }
+
+    public void show(float duration) {
+        this.visible = true;
+        this.visibleDuration = duration;
+        this.elapsedTime = 0; // Reset elapsed time
+    }
+
+    public void hide() {
+        this.visible = false;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public float getElapsedTime() {
+        return elapsedTime;
+    }
+
 }

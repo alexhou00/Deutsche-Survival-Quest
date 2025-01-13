@@ -28,13 +28,17 @@ public abstract class Character extends GameObject {
      * */
     protected float velX, velY, speed;
 
-    private final SpeechBubble speechBubble;
+    protected final SpeechBubble speechBubble;
 
     //protected GameScreen gameScreen;
 
     protected boolean paused;
 
     protected final Tiles tiles;
+
+    protected float SPEECH_COOLDOWN_TIME = 5;
+    protected float speechCooldown = SPEECH_COOLDOWN_TIME;
+    public boolean canSpeak = true;
 
     /**
      * Constructs a new Character instance with specified parameters.
@@ -130,7 +134,8 @@ public abstract class Character extends GameObject {
 
 
     public void update(float delta){
-        //speechBubble.update(delta);
+        speechBubble.update(delta);
+        speechCooldown -= delta;
     }
 
     public void pause(){
@@ -177,9 +182,17 @@ public abstract class Character extends GameObject {
         this.speed = speed;
     }
 
+    public SpeechBubble getSpeechBubble() {
+        return speechBubble;
+    }
+
+
     // Normal Speech Bubble
     public void say(String text, SpriteBatch batch) {
-        speechBubble.render(batch, text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.NORMAL);
+        if ( (batch != null)/*speechCooldown > 0*/){
+            speechBubble.render(batch, text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.NORMAL);
+        }
+
     }
 
     // Normal Speech Bubble

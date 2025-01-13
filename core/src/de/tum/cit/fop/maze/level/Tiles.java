@@ -106,11 +106,9 @@ public class Tiles {
      *
      * @param mapFilePath       Path to the map properties file.
      * @param tileSheetPath     Path to the tile sheet image.
-     * @param mapWidthInTiles   Width of the map in tiles.
-     * @param mapHeightInTiles  Height of the map in tiles.
      * @return The created {@link TiledMap} object.
      */
-    public TiledMap loadTiledMap(String mapFilePath, String tileSheetPath, String ObstacleSheetPath, int mapWidthInTiles, int mapHeightInTiles) {
+    public TiledMap loadTiledMap(String mapFilePath, String tileSheetPath, String ObstacleSheetPath) {
         // To completely load the tiled map,
         // FIRST,
         // Load the tile sheet
@@ -123,7 +121,7 @@ public class Tiles {
 
         // THIRD,
         // Put the tiles on the map. And if the tile is a trap/enemy, create a trap/enemy.
-        return createTiledMap(mapData, mapWidthInTiles, mapHeightInTiles);
+        return createTiledMap(mapData, horizontalTilesCount, verticalTilesCount);
     }
 
 
@@ -280,6 +278,8 @@ public class Tiles {
      */
     private ObjectMap<String, Array<Integer>> parsePropertiesFile(String filePath) {
         ObjectMap<String, Array<Integer>> mapData = new ObjectMap<>();
+        horizontalTilesCount = 1;
+        verticalTilesCount = 1; // reset when new level starts
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;

@@ -118,6 +118,8 @@ public class ChasingEnemy extends Character {
         // Check for collision between the enemy and the player
         attackPlayer(player); // Check if the enemy touched the player
         checkCollisions(delta);
+
+        super.update(delta);
     }
 
     /**
@@ -191,8 +193,8 @@ public class ChasingEnemy extends Character {
         // Normalize the direction vector
         float distance = (float) Math.sqrt(dirX * dirX + dirY * dirY);
         if (distance < ENEMY_BASE_SPEED * delta * 2) return;
-        dirX /= distance;
-        dirY /= distance;
+        dirX = dirX / distance * 3; // dirX is in [-3, 3], scaling for the input of tanh
+        dirY = dirY / distance * 3;
 
         // Set the velocity towards the target
         velX = (float) (Math.tanh(dirX)) * ENEMY_BASE_SPEED; // tanh is between 1~-1 and preserves the sign. it looks like something like this: ___/‾‾‾

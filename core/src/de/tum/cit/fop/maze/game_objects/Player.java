@@ -255,6 +255,8 @@ public class Player extends Character {
                 hurtTimer = 0;
             }
         }
+
+        super.update(delta);
     }
 
     @Override
