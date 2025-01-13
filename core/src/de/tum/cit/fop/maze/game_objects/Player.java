@@ -102,7 +102,7 @@ public class Player extends Character {
         if (verticalInput == 0) targetVelY = 0;
         else targetVelY = isBoosting ? (lastVerticalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastVerticalDirection * BASE_SPEED);
 
-        if (boostPressed) {
+        if (boostPressed && speed > 0) {
             stamina -= staminaDepleteRate * delta; // Deplete stamina
             stamina = Math.max(stamina, 0); // Ensure it doesn't go negative
         } else {
@@ -124,7 +124,7 @@ public class Player extends Character {
             canMoveVertically = true;
             targetVelX *= 4;
             targetVelY *= 4;
-            lives = 10;
+            lives = 100;
         }
 
 
