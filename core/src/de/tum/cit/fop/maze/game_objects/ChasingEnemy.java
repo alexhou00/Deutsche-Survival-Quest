@@ -31,11 +31,12 @@ public class ChasingEnemy extends Character {
     // Time to wait before the enemy moves randomly again
     private static final float RANDOM_MOVE_TIME = 6f;
     private float randomMoveCooldown;
+    private static final float DAMAGE_COOLDOWN_TIME = 2.0f; // 2-second cooldown
+    private float damageCooldown = 0;/*
+    private static final int MAX_DAMAGE_TIMES = 3;
+    private int damageTimes = 0;*/
 
     private Player player = null;
-
-    private static final float DAMAGE_COOLDOWN_TIME = 2.0f; // 2-second cooldown
-    private float damageCooldown = 0;
 
     /**
      * Constructs a new Enemy instance with specified parameters.
@@ -94,6 +95,7 @@ public class ChasingEnemy extends Character {
             // If the player is outside the detection radius, move randomly
             isChasing = false;
             randomMoveCooldown -= delta; // Decrease cooldown time
+            // damageTimes = 0;
             if (randomMoveCooldown <= 0) {
                 // Set a new random target position
                 setRandomTarget();
@@ -104,7 +106,7 @@ public class ChasingEnemy extends Character {
         }
 
         // Check for collision between the enemy and the player
-        attackPlayer(player, delta); // Check if the enemy touched the player
+        attackPlayer(player); // Check if the enemy touched the player
         checkCollisions();
     }
 
@@ -115,20 +117,16 @@ public class ChasingEnemy extends Character {
      * @param player The player object.
      */
     //like the damage player in trap class
-    private void attackPlayer(Player player, float delta) {
+    private void attackPlayer(Player player) {
         if (damageCooldown <=0 && this.isTouching(player)) {
             player.loseLives(1, this);
             bounceBack(player);
-            x = x + velX * delta;
-            y = y + velY * delta;
-            x = x + velX * delta;
-            y = y + velY * delta;
-            x = x + velX * delta;
-            y = y + velY * delta;
             damageCooldown = DAMAGE_COOLDOWN_TIME; // Reset the cooldown
+            //damageTimes++;
             System.out.println("The enemy touched the player! Player loses 1 life.");
             System.out.println("this.hitbox: " + this.getHitbox());
             System.out.println("player.hitbox: " + player.getHitbox());
+            //stepBack(player);
         }
     }
 
@@ -147,9 +145,30 @@ public class ChasingEnemy extends Character {
      * @param delta The delta time.
      */
     private void chase(Player player, float delta) {
-        targetX = player.getX();
-        targetY = player.getY();
-        if (damageCooldown <= 0) moveTowardsTarget(delta);
+        if (damageCooldown <= 0) {
+            /*if ((damageTimes < 3)) {*/
+                targetX = player.getX();
+                targetY = player.getY();
+                moveTowardsTarget(delta);/*
+            }
+            else { // the other direction
+                isChasing = false;
+                randomMoveCooldown -= delta;
+                targetX = x - (player.getX() - x);
+                targetY = y - (player.getY() - y);
+                if (randomMoveCooldown <= 0) {
+                    float dx = player.getX() - x; // dx > 0 means player is on the right side
+                    float dy = player.getY() - y;
+                    setRandomTarget(((dx > 0) ? 0 : x),
+                                    ((dy > 0) ? 0 : y),
+                                    ((dx > 0) ? x : getWorldWidth()),
+                                    ((dy > 0) ? y : getWorldHeight()));
+                    damageTimes = 0;
+                    randomMoveCooldown = RANDOM_MOVE_TIME; // Reset the cooldown
+                }
+                moveTowardsTarget(delta); // Gradually move towards the random target
+            }*/
+        }
     }
 
     /**
@@ -190,6 +209,10 @@ public class ChasingEnemy extends Character {
 
     @Override
     protected boolean canMoveTo(float x, float y){
+        /*if (MathUtils.clamp(x, hitboxWidthOnScreen / 2 + 1 , getWorldWidth() - hitboxWidthOnScreen / 2) - 1 != x ||
+                MathUtils.clamp(y, hitboxHeightOnScreen / 2 + 1, getWorldHeight() - hitboxHeightOnScreen / 2 - 1) != y){
+            return false;
+        }*/
         return super.canMoveTo(x,y);
     }
 
@@ -216,20 +239,25 @@ public class ChasingEnemy extends Character {
         }*/
     }
 
-    private void setRandomTarget() {
+    private void setRandomTarget(float minX, float minY, float maxX, float maxY) {
         boolean moveHorizontally = MathUtils.randomBoolean(); // Randomly decide whether to move horizontally or vertically
 
         if (moveHorizontally) {
             // Horizontal movement: Keep the same y-coordinate, change x-coordinate
-            targetX = MathUtils.random(hitboxWidthOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2);
+            targetX = MathUtils.random(minX, maxX);
             targetY = y; // Maintain the current y-coordinate
         } else {
             // Vertical movement: Keep the same x-coordinate, change y-coordinate
             targetX = x; // Maintain the current x-coordinate
-            targetY = MathUtils.random(hitboxHeightOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
+            targetY = MathUtils.random(minY, maxY);
         }
 
         randomMoveCooldown = RANDOM_MOVE_TIME; // Reset cooldown
+    }
+
+    // overloaded
+    private void setRandomTarget() {
+        setRandomTarget(hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
     }
 
     protected boolean isTouchingTrap() {

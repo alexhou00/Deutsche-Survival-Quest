@@ -228,4 +228,16 @@ public abstract class Character extends GameObject {
             velY = bounceVelocity(velY)/*(((velY>0) ? 1 : -1) * -500)*/;
         }
     }
+
+    protected void stepBack(GameObject from) {
+        float overlapX = this.getHitbox().x - from.getHitbox().x;
+        float overlapY = this.getHitbox().y - from.getHitbox().y;
+
+        // Push the character away from the other based on overlap
+        if (Math.abs(overlapX) > Math.abs(overlapY)) {
+            x += overlapX > 0 ? Math.abs(overlapX) : -Math.abs(overlapX);
+        } else {
+            y += overlapY > 0 ? Math.abs(overlapY) : -Math.abs(overlapY);
+        }
+    }
 }
