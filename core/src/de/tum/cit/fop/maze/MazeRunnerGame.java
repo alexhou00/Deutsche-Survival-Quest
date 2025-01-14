@@ -220,6 +220,14 @@ public class MazeRunnerGame extends Game {
 
     }
 
+    public Music getBackgroundMusic() {
+        return backgroundMusic;
+    }
+
+    public void setBackgroundMusic(Music backgroundMusic) {
+        this.backgroundMusic = backgroundMusic;
+    }
+
     /**
      * Cleans up resources when the game is disposed.
      */
