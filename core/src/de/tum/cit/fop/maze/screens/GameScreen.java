@@ -341,50 +341,50 @@ public class GameScreen extends InputAdapter implements Screen {
             return; // Skip the rest of the game logic when paused
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-                game.goToMenu();
-                return;
-            }
+            game.goToMenu();
+            return;
+        }
 
-            if (player.getLives() <= 0) {
-                game.goToGameOverScreen();  // Trigger game over screen
-                return;
-            }
+        if (player.getLives() <= 0) {
+            game.goToGameOverScreen();  // Trigger game over screen
+            return;
+        }
 
-            ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
-            camera.update(); // Update the camera
+        ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
+        camera.update(); // Update the camera
 
-            // Move text in a circular path to have an example of a moving object
-            sinusInput += delta;  // sinusInput is like `time`, storing the time for animation
+        // Move text in a circular path to have an example of a moving object
+        sinusInput += delta;  // sinusInput is like `time`, storing the time for animation
 
-            updateZoom(delta); // Smoothly adjust zoom
-            handleInput(); // handle input of the keys
-            player.update(delta); // ALL the player functionalities are here
-            for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)){
-                enemy.update(delta);
-            }
+        updateZoom(delta); // Smoothly adjust zoom
+        handleInput(); // handle input of the keys
+        player.update(delta); // ALL the player functionalities are here
+        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)) {
+            enemy.update(delta);
+        }
 
-            renderGameWorld();
+        renderGameWorld();
 
-            game.checkExitToNextLevel(player);
+        game.checkExitToNextLevel(player);
 
-            game.getSpriteBatch().begin();
-            renderTrap();
-            // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
-            renderChasingEnemy();
-            renderPlayer();
-            renderArrow();
-            renderKey();
+        game.getSpriteBatch().begin();
+        renderTrap();
+        // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
+        renderChasingEnemy();
+        renderPlayer();
+        renderArrow();
+        renderKey();
 
-            if (player.canSpeak) {
-                player.getSpeechBubble().show(5.0f);
-                player.canSpeak = false;
-            }
+        if (player.canSpeak) {
+            player.getSpeechBubble().show(5.0f);
+            player.canSpeak = false;
+        }
 
-            player.say("""
-                    The quick brown fox jumps over the lazy dog.
-                    Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.
-                    """, game.getSpriteBatch(),
-                    true, player.getSpeechBubble().getElapsedTime(), 0.03f);
+        player.say("""
+                        The quick brown fox jumps over the lazy dog.
+                        Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.
+                        """, game.getSpriteBatch(),
+                true, player.getSpeechBubble().getElapsedTime(), 0.03f);
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
 
@@ -397,7 +397,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
 
         renderHUD();
-}
+    }
         private void renderPausedState() {
             createPausePanel();
         }
