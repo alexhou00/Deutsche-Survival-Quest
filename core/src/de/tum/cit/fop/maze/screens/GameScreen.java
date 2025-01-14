@@ -1,6 +1,7 @@
 package de.tum.cit.fop.maze.screens;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -32,7 +34,6 @@ import de.tum.cit.fop.maze.game_objects.Player;
 import de.tum.cit.fop.maze.game_objects.Trap;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.rendering.ElementRenderer;
-import de.tum.cit.fop.maze.rendering.PopUpPanel;
 import de.tum.cit.fop.maze.rendering.SpotlightEffect;
 import de.tum.cit.fop.maze.util.Position;
 
@@ -91,6 +92,9 @@ public class GameScreen extends InputAdapter implements Screen {
     Animation<TextureRegion> mobGuyAnimation;
 
     //ChasingEnemy chasingEnemy;
+
+    private boolean isPaused;
+
 
 
 
@@ -195,19 +199,26 @@ public class GameScreen extends InputAdapter implements Screen {
         this.pause();
         Gdx.input.setInputProcessor(stage1);
         //Gdx.app.log("Size" ,  horizontalTilesCount + "x" + verticalTilesCount);
+
+        this.isPaused = false;
+
+        //createPausePanel();
     }
 
     public void createIntroPanel(){
         Table table = new Table();
         Drawable background = createSolidColorDrawable(Color.WHITE);
         stage1.addActor(table);
+
         // Gdx.input.setInputProcessor(stage1);
         table.setBackground(background);
         table.setSize(Gdx.graphics.getWidth() * 0.9f,Gdx.graphics.getHeight() * 0.9f);
         table.setPosition(Gdx.graphics.getWidth() * 0.05f,Gdx.graphics.getHeight() * 0.05f);
+
         Label label = new Label("Game Instructions",game.getSkin(),"title");
         table.add(label).padBottom(80).center().row();
         label.getStyle().font.getData().setScale(0.5f);
+
         button = new TextButton("Start now", game.getSkin());
 
         button.addListener(new ChangeListener() {
@@ -220,6 +231,35 @@ public class GameScreen extends InputAdapter implements Screen {
         table.add(button); // TODO: fix button
         button.setPosition(200, 200); // Set a clear position on the stage
     }
+
+    public void createPausePanel() {
+        System.out.println("pause panel created");
+
+        Table pausePanel = new Table();
+        Drawable background = createSolidColorDrawable(Color.GRAY); // Semi-transparent background
+        stage1.addActor(pausePanel);
+
+        pausePanel.setBackground(background);
+        pausePanel.setSize(Gdx.graphics.getWidth() * 0.8f, Gdx.graphics.getHeight() * 0.6f);
+        pausePanel.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.2f);
+
+        Label pauseLabel = new Label("Game Paused", game.getSkin(), "title");
+        pausePanel.add(pauseLabel).padBottom(80).center().row();
+        pauseLabel.getStyle().font.getData().setScale(0.5f);
+
+        Button resumeButton =  new TextButton("Resume", game.getSkin());
+        resumeButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor){
+                Gdx.app.log("start game", "Start game");
+                pauseLabel.remove(); // Change to the game screen when the button is pressed
+                game.resume();
+            }});
+        pausePanel.add(resumeButton); // TODO: fix button
+        resumeButton.setPosition(200, 200); // Set a clear position on the stage
+    }
+
+
 
     /**
      * Updates the camera's zoom smoothly based on the target zoom level.
@@ -290,63 +330,86 @@ public class GameScreen extends InputAdapter implements Screen {
     // Screen interface methods with necessary functionality
     @Override
     public void render(float delta) {
-        // Check for escape key press to go back to the menu
+        handlePauseInput();
+        if (isPaused) {
+            // Render paused state and prevent game updates
+            //renderPausedState();
+            createPausePanel();
+            return; // Skip the rest of the game logic when paused
+        }
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            game.goToMenu();
-            return;
-        }
+                game.goToMenu();
+                return;
+            }
 
-        if (player.getLives() <= 0) {
-            game.goToGameOverScreen();  // Trigger game over screen
-            return;
-        }
+            if (player.getLives() <= 0) {
+                game.goToGameOverScreen();  // Trigger game over screen
+                return;
+            }
 
-        ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
-        camera.update(); // Update the camera
+            ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
+            camera.update(); // Update the camera
 
-        // Move text in a circular path to have an example of a moving object
-        sinusInput += delta;  // sinusInput is like `time`, storing the time for animation
+            // Move text in a circular path to have an example of a moving object
+            sinusInput += delta;  // sinusInput is like `time`, storing the time for animation
 
-        updateZoom(delta); // Smoothly adjust zoom
-        handleInput(); // handle input of the keys
-        player.update(delta); // ALL the player functionalities are here
-        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)){
-            enemy.update(delta);
-        }
+            updateZoom(delta); // Smoothly adjust zoom
+            handleInput(); // handle input of the keys
+            player.update(delta); // ALL the player functionalities are here
+            for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)){
+                enemy.update(delta);
+            }
 
-        renderGameWorld();
+            renderGameWorld();
 
-        game.checkExitToNextLevel(player);
+            game.checkExitToNextLevel(player);
 
+            game.getSpriteBatch().begin();
+            renderTrap();
+            // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
+            renderChasingEnemy();
+            renderPlayer();
+            renderArrow();
+            renderKey();
 
-        game.getSpriteBatch().begin();
-        renderTrap();
-        // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
-        renderChasingEnemy();
-        renderPlayer();
-        renderArrow();
-        renderKey();
+            if (player.canSpeak) {
+                player.getSpeechBubble().show(5.0f);
+                player.canSpeak = false;
+            }
 
-        if (player.canSpeak) {
-            player.getSpeechBubble().show(5.0f);
-            player.canSpeak = false;
-        }
-
-        player.say("""
+            player.say("""
                     The quick brown fox jumps over the lazy dog.
                     Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.
                     """, game.getSpriteBatch(),
-                true, player.getSpeechBubble().getElapsedTime(), 0.03f);
+                    true, player.getSpeechBubble().getElapsedTime(), 0.03f);
 
-        moveCamera();
+            moveCamera();
 
-        game.getSpriteBatch().end(); // Important to call this after drawing everything
+            game.getSpriteBatch().end(); // Important to call this after drawing everything
 
-        stage1.act(delta);
-        stage1.draw(); // Draw the
-        // renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
-        renderHUD();
+            stage1.act(delta);
+            stage1.draw(); // Draw the
+            // renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
+            renderHUD();
+    }
+    private void renderPausedState() {
+        createPausePanel();
 
+    }
+
+    private void update(float delta) {
+        if (!isPaused) {
+            // Update characters
+            player.update(delta);
+
+            // Update enemies
+            for (ChasingEnemy enemy : tiles.chasingEnemies) {
+                enemy.update(delta);
+            }
+
+            // Update timer
+           // gameTimer += delta;
+        }
     }
 
     /**
@@ -446,6 +509,21 @@ public class GameScreen extends InputAdapter implements Screen {
 
     }
 
+    private void handlePauseInput(){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && !isPaused) {
+            isPaused = true; // Set the game to paused
+            createPausePanel(); // Show the pause panel
+            Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
+        }
+
+        // If the Enter key is pressed and the game is paused, resume the game
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isPaused) {
+            isPaused = false; // Set the game to unpaused
+            stage1.clear(); // Clear the pause panel from the screen
+            Gdx.input.setInputProcessor(null); // Remove the input processor for the pause menu (resume game input)
+        }
+    }
+
     /**
      * Renders the collectible key in the game world if it hasn't been collected.
      * The key is rendered at its designated position on the map and checks for
@@ -484,9 +562,9 @@ public class GameScreen extends InputAdapter implements Screen {
         // check for collision with player and collect key if touching
         if (key.isTouching(player)){
             key.collect();
+
         }
     }
-
 
     private void renderTrap(){
         for (Trap trap : new Array.ArrayIterator<>(tiles.traps)){ // for (trap : tiles.traps){
@@ -645,6 +723,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
     @Override
     public void show() {
+        createPausePanel();
+        Gdx.input.setInputProcessor(stage1);
     }
 
     @Override

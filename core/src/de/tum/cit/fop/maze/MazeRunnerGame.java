@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.game_objects.Player;
+import de.tum.cit.fop.maze.screens.PauseScreen;
 import de.tum.cit.fop.maze.tiles.Exit;
 import de.tum.cit.fop.maze.screens.GameOverScreen;
 import de.tum.cit.fop.maze.screens.GameScreen;
@@ -34,8 +35,6 @@ public class MazeRunnerGame extends Game {
     }
 
     private int gameLevel;
-
-
     // Sprite Batch for rendering
     private SpriteBatch spriteBatch;
 
@@ -55,6 +54,7 @@ public class MazeRunnerGame extends Game {
 
     Music backgroundMusic;
     private boolean isMuted;
+
 
     /**
      * Constructor for MazeRunnerGame.
@@ -79,13 +79,14 @@ public class MazeRunnerGame extends Game {
 
         // Play some background music
         // Background sound
-        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3")); // TODO: Change this bg music first
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3")); // TODO: Change this bg music first
         //TODO: create another milder new background music for MenuScreen
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
 
         goToMenu(); // Navigate to the menu screen
     }
+
 
     /**
      * Switches to the menu screen.
@@ -157,6 +158,7 @@ public class MazeRunnerGame extends Game {
             e.printStackTrace();
         }
     }
+
 
     /**
      * Loads the character animation from the character.png file.

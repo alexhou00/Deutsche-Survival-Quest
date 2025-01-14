@@ -2,6 +2,7 @@ package de.tum.cit.fop.maze.game_objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -36,6 +37,7 @@ public class Player extends Character {
     private static final float BASE_SPEED = 240f; // normal speed when moving either vertically or horizontally
     private static final float BOOST_MULTIPLIER = 2f; // the speed will be multiplied by this number when the SHIFT key is pressed
     private static final float SMOOTH_FACTOR = 5f; // the lower the value, the smoother it gets (and needs more time to stop)
+    Music soundEffect;
 
     /**
      * Constructor for Player. This is our main character <br>
@@ -220,6 +222,8 @@ public class Player extends Character {
     }
 
     public void loseLives(float amount, GameObject source){//or damage idk
+        soundEffect = Gdx.audio.newMusic(Gdx.files.internal("01._damage_grunt_male.wav"));
+        soundEffect.play();
         lives -= amount;
 
         if (lives <= 0){
