@@ -15,7 +15,7 @@ def xml_to_properties(xml_file, properties_file):
     layers = root.findall("layer")
     properties_dict = {}
 
-    keyPosition = input("keyPosition=")
+    keyPosition = input("(enter nothing if already specified) keyPosition=")
 
     for layer in layers:
         data = layer.find("data").text.strip()
@@ -48,7 +48,7 @@ def xml_to_properties(xml_file, properties_file):
     
         # Write to .properties file
         with open(properties_file, "w") as f:
-            f.write(f"keyPosition={keyPosition}\n")
+            if keyPosition != "": f.write(f"keyPosition={keyPosition}\n")
             for key, indices in properties_dict.items():
                 indices_str = ",".join(map(str, indices))
                 f.write(f"{key}={indices_str}\n")

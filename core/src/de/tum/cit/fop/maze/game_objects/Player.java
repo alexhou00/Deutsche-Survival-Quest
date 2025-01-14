@@ -28,6 +28,11 @@ public class Player extends Character {
     private boolean isHurt = false;
     private float hurtTimer = 0f; // Timer for the red tint
 
+    private float stamina;
+    public static final float maxStamina = 100f; // Maximum stamina value
+    private static final float staminaRegenRate = 15f; // Stamina regenerate per second
+    private static final float staminaDepleteRate = 25f; // Stamina depletion per second
+
     GameScreen gameScreen;
 
     //private final TiledMapTileLayer collisionLayer;
@@ -63,6 +68,7 @@ public class Player extends Character {
         //this.collisionLayer = tiles.layer;
         // this.tiles = tiles;
         this.gameScreen = gameScreen;
+        this.stamina = maxStamina; // Initialize stamina to max
     }
 
     private void handleMovement() {
@@ -91,11 +97,21 @@ public class Player extends Character {
 
         // speed is doubled (times the `BOOST_MULTIPLIER`) when: (1) SHIFT key is hold OR (2) touching a speed boost tile
         // final speed is speed * FPS (delta), since the speed should be independent of the FPS
-        boolean isBoost = boostPressed || isPointWithinWholeTileOf(x, y, 0, -heightOnScreen/2, SpeedBoost.class); // if the bottom-center is touching a speed boost tile
+        boolean canBoost = stamina > staminaDepleteRate * delta;
+        boolean isBoosting = (canBoost && boostPressed) || isPointWithinWholeTileOf(x, y, 0, -heightOnScreen/2, SpeedBoost.class); // if the bottom-center is touching a speed boost tile
         if (horizontalInput == 0) targetVelX = 0; // remember that velocities are signed, and the sign indicates the direction
-        else targetVelX = isBoost ? (lastHorizontalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastHorizontalDirection * BASE_SPEED); // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
+        else targetVelX = isBoosting ? (lastHorizontalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastHorizontalDirection * BASE_SPEED); // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
         if (verticalInput == 0) targetVelY = 0;
-        else targetVelY = isBoost ? (lastVerticalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastVerticalDirection * BASE_SPEED);
+        else targetVelY = isBoosting ? (lastVerticalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastVerticalDirection * BASE_SPEED);
+
+        if (boostPressed && speed > 0) {
+            stamina -= staminaDepleteRate * delta; // Deplete stamina
+            stamina = Math.max(stamina, 0); // Ensure it doesn't go negative
+        } else {
+            stamina += staminaRegenRate * delta; // Regenerate stamina
+            stamina = Math.min(stamina, maxStamina); // Cap at maxStamina
+        }
+
 
         // predict new positions for collision checking
         float newXTest = x + velX * delta;
@@ -110,7 +126,7 @@ public class Player extends Character {
             canMoveVertically = true;
             targetVelX *= 4;
             targetVelY *= 4;
-            lives = 10;
+            lives = 100;
         }
 
 
@@ -287,5 +303,9 @@ public class Player extends Character {
 
     public float getHurtTimer() {
         return hurtTimer;
+    }
+
+    public float getStamina() {
+        return stamina;
     }
 }
