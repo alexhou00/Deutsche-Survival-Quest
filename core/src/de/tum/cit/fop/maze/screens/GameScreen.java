@@ -335,15 +335,12 @@ public class GameScreen extends InputAdapter implements Screen {
     public void render(float delta) {
         handlePauseInput();
         if (isPaused) {
-            // Render paused state and prevent game updates
-            //renderPausedState();
-            createPausePanel();
             return; // Skip the rest of the game logic when paused
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        /*if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.goToMenu();
             return;
-        }
+        }*/
 
         if (player.getLives() <= 0) {
             game.goToGameOverScreen();  // Trigger game over screen
@@ -398,9 +395,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
         renderHUD();
     }
-        private void renderPausedState() {
+   /* private void renderPausedState() {
+        if (isPaused) {
             createPausePanel();
         }
+    }*/
 
     private void update(float delta) {
         if (!isPaused) {
@@ -517,17 +516,32 @@ public class GameScreen extends InputAdapter implements Screen {
     private void handlePauseInput(){
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && !isPaused) {
             isPaused = true; // Set the game to paused
+            game.getBackgroundMusic().pause();
             createPausePanel(); // Show the pause panel
-            Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
+            inputMultiplexer.addProcessor(stage1);
+            //Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
         }
 
         // If the Enter key is pressed and the game is paused, resume the game
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isPaused) {
             isPaused = false; // Set the game to unpaused
+            game.getBackgroundMusic().play();
             stage1.clear(); // Clear the pause panel from the screen
-            Gdx.input.setInputProcessor(null); // Remove the input processor for the pause menu (resume game input)
+            inputMultiplexer.removeProcessor(stage1);
+            //Gdx.input.setInputProcessor(null); // Remove the input processor for the pause menu (resume game input)
         }
     }
+    /*private void handlePauseInput() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) { // Assuming "P" pauses the game
+            if (isPaused == true) {
+                createPausePanel();
+                inputMultiplexer.addProcessor(stage1); // Add pause stage
+            } else if (isPaused== false) {
+                stage1.clear(); // Clear the pause panel
+                inputMultiplexer.removeProcessor(stage1); // Remove pause stage
+            }
+        }
+    }*/
 
     /**
      * Renders the collectible key in the game world if it hasn't been collected.
@@ -766,8 +780,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
     @Override
     public void show() {
-        createPausePanel();
-        Gdx.input.setInputProcessor(stage1);
+      //  createPausePanel();
+       // Gdx.input.setInputProcessor(stage1);
     }
 
     @Override
