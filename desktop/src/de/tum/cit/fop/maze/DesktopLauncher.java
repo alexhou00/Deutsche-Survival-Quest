@@ -21,7 +21,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setTitle("Deutsche Survival Quest"); // Set the window title
 		//TODO: Change the name
-		config.setWindowIcon(Files.FileType.Internal, ("icon-128.png"));
+		config.setWindowIcon(Files.FileType.Internal, ("icons/icon-128.png"));
 
 		// Get the display mode of the current monitor
 		Graphics.DisplayMode displayMode = Lwjgl3ApplicationConfiguration.getDisplayMode();

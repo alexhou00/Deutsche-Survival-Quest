@@ -83,14 +83,14 @@ public class MazeRunnerGame extends Game {
         // Play some background music
         // Background sound
         //CHANGE BACKGROUND MUSIC
-        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Bruno_Belotti_-_Nel_giardino_dello_Zar__Polka_Loop.mp3")); // TODO: Change this bg music first
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("music/Bruno_Belotti_-_Nel_giardino_dello_Zar__Polka_Loop.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
 
-        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("010614songidea(copycat).mp3"));
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("music/010614songidea(copycat).mp3"));
         menuMusic.setLooping(true);
 
-        pauseMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
+        pauseMusic = Gdx.audio.newMusic(Gdx.files.internal("music/A cup of tea.mp3"));
         pauseMusic.setLooping(true);
 
         /*gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
@@ -99,8 +99,8 @@ public class MazeRunnerGame extends Game {
         victoryMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
         victoryMusic.setLooping(true);*/
 
-        soundEffectKey = Gdx.audio.newMusic(Gdx.files.internal("Accept.mp3"));
-        soundEffectHurt = Gdx.audio.newMusic(Gdx.files.internal("01._damage_grunt_male.wav"));
+        soundEffectKey = Gdx.audio.newMusic(Gdx.files.internal("sounds/Accept.mp3"));
+        soundEffectHurt = Gdx.audio.newMusic(Gdx.files.internal("sounds/01._damage_grunt_male.wav"));
 
 
         goToMenu(); // Navigate to the menu screen

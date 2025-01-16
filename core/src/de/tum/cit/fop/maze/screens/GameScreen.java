@@ -193,8 +193,8 @@ public class GameScreen extends InputAdapter implements Screen {
         // Load and compile shaders
         ShaderProgram.pedantic = false; // Allow non-pedantic GLSL code
         shader = new ShaderProgram(
-                Gdx.files.internal("default.vert"),
-                Gdx.files.internal("hurtEffect.frag")
+                Gdx.files.internal("effects/default.vert"),
+                Gdx.files.internal("effects/hurtEffect.frag")
         );
         if (!shader.isCompiled()) {
             Gdx.app.error("ShaderError", shader.getLog());
