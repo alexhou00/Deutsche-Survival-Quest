@@ -34,6 +34,10 @@ public class MazeRunnerGame extends Game {
         return gameLevel;
     }
 
+    public void setGameLevel(int gameLevel) {
+        this.gameLevel = gameLevel;
+    }
+
     private int gameLevel;
     // Sprite Batch for rendering
     private SpriteBatch spriteBatch;
