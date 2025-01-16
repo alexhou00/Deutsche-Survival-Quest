@@ -154,7 +154,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Position keyPosition = tiles.getKeyTilePosition().convertTo(PIXELS);
         float keyX = keyPosition.getX();
         float keyY = keyPosition.getY();
-        key = new Key(keyX, keyY, TILE_SIZE,TILE_SIZE,10,9,TILE_SCREEN_SIZE, TILE_SCREEN_SIZE);
+        key = new Key(keyX, keyY, TILE_SIZE,TILE_SIZE,10,9,TILE_SCREEN_SIZE, TILE_SCREEN_SIZE, game);
         // After loading the tiles,
         // get the array of tiles from our tile generator: tiles.getTiles()
         // and then get the texture region where our key is at
@@ -517,6 +517,7 @@ public class GameScreen extends InputAdapter implements Screen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && !isPaused) {
             isPaused = true; // Set the game to paused
             game.getBackgroundMusic().pause();
+            game.getPauseMusic().play();
             createPausePanel(); // Show the pause panel
             inputMultiplexer.addProcessor(stage1);
             //Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
@@ -526,6 +527,7 @@ public class GameScreen extends InputAdapter implements Screen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isPaused) {
             isPaused = false; // Set the game to unpaused
             game.getBackgroundMusic().play();
+            game.getPauseMusic().pause();
             stage1.clear(); // Clear the pause panel from the screen
             inputMultiplexer.removeProcessor(stage1);
             //Gdx.input.setInputProcessor(null); // Remove the input processor for the pause menu (resume game input)
