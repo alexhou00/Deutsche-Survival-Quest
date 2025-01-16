@@ -26,7 +26,6 @@ public class MenuScreen implements Screen {
     private final Stage stage;
     MazeRunnerGame game;
     Texture backgroundTexture;
-    private final Map<String, TextButton> buttons;
     SelectLevelScreen selectLevelScreen;
 
     /**
@@ -55,7 +54,9 @@ public class MenuScreen implements Screen {
         stage.addActor(table); // Add the table to the stage
 
         // Add a label as a title
-        table.add(new Label("Deutsche Survival Quest", game.getSkin(), "title")).padBottom(80).row();
+        Label title = new Label("Deutsche Survival Quest", game.getSkin(), "title");
+        title.getStyle().font.getData().setScale(0.75f);
+        table.add(title).padBottom(80).row();
 
         // Create and add a button to go to the game screen
         /*
@@ -73,7 +74,7 @@ public class MenuScreen implements Screen {
         final float BUTTON_WIDTH = 300f; // Button width
         final float BUTTON_PADDING = 10f; // Vertical padding
 
-        buttons = new LinkedHashMap<>();
+        Map<String, TextButton> buttons = new LinkedHashMap<>();
         buttons.put("startGameButton", new TextButton("Start Game", game.getSkin()));
         buttons.put("selectLevelButton", new TextButton("Select Level", game.getSkin()));
         buttons.put("exitGameButton", new TextButton("Exit Game", game.getSkin()));
@@ -107,8 +108,7 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.log("MenuScreen", "Exit Game button pressed");
-                Gdx.app.exit();
-                System.exit(-1);
+                game.exitGame();
             }
         });
 

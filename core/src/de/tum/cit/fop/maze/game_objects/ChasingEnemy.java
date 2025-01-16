@@ -1,20 +1,13 @@
 package de.tum.cit.fop.maze.game_objects;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.base.Character;
-import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.level.Tiles;
-import de.tum.cit.fop.maze.screens.GameScreen;
-import de.tum.cit.fop.maze.tiles.Wall;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 
@@ -78,7 +71,7 @@ public class ChasingEnemy extends Character {
 
     @Override
     public void update(float delta) {
-        if (paused) return; // Check if the game is paused
+        if (paused) return;
 
         if (damageCooldown > 0) {
             damageCooldown -= delta;
@@ -313,16 +306,6 @@ public class ChasingEnemy extends Character {
      */
     public void draw(SpriteBatch batch, TextureRegion textureRegion) {
         batch.draw(textureRegion, x - widthOnScreen / 2, y - heightOnScreen / 2, widthOnScreen, heightOnScreen);
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
     }
 
     @Override

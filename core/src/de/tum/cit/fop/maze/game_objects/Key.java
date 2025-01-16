@@ -1,9 +1,11 @@
 package de.tum.cit.fop.maze.game_objects;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.base.StaticObject;
 
 /**
@@ -13,7 +15,7 @@ import de.tum.cit.fop.maze.base.StaticObject;
 public class Key extends StaticObject {
 
     private boolean isCollected;
-    Music soundEffectKey;
+    MazeRunnerGame game;
 
     /**
      * Constructs a Key object with specified position, size, hitbox dimensions,
@@ -28,10 +30,10 @@ public class Key extends StaticObject {
      * @param widthOnScreen   the width of the key's representation on the screen
      * @param heightOnScreen  the height of the key's representation on the screen
      */
-    public Key(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen) {
+    public Key(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, MazeRunnerGame game) {
         super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
         this.isCollected = false;
-        this.soundEffectKey = Gdx.audio.newMusic(Gdx.files.internal("Accept.mp3"));
+        this.game = game;
     }
 
     public boolean collisionWithPlayer(Player player) {
@@ -45,7 +47,7 @@ public class Key extends StaticObject {
     public void collect() {
         if (this.isCollected) return; // prevent recollecting
         isCollected = true;
-        soundEffectKey.play();
+       game.getSoundEffectKey().play();
         System.out.println("Key collected!"); // Debug message
     }
 

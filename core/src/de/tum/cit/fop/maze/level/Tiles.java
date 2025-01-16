@@ -22,7 +22,8 @@ import java.util.stream.IntStream;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
 
-/** this is like a TilesManager or ".properties" File Reader
+/** this is like a TilesManager or ".properties" File Reader,
+ * or more specifically, a LevelManager
  * It manages tile (and also other objects for the level) creation for each level
  */
 public class Tiles {
@@ -302,7 +303,7 @@ public class Tiles {
                     Position position = stringToPosition(positionStr, TILES);
                     if (horizontalTilesCount < position.getTileX() + 1) {
                         horizontalTilesCount = position.getTileX()+1;
-                        Gdx.app.log("MapParser", "horizontal tiles count updated to " + horizontalTilesCount);
+                        //Gdx.app.debug("MapParser", "horizontal tiles count updated to " + horizontalTilesCount);
                     }
                     if (verticalTilesCount < position.getTileY() + 1) verticalTilesCount = position.getTileY() + 1;
                 }

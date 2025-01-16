@@ -1,5 +1,6 @@
 package de.tum.cit.fop.maze;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -56,7 +57,7 @@ public class MazeRunnerGame extends Game {
 
     Texture backgroundTexture;
 
-    Music backgroundMusic;
+    Music backgroundMusic, menuMusic, pauseMusic,  gameOverMusic, victoryMusic, soundEffectKey, soundEffectHurt;
     private boolean isMuted;
 
 
@@ -75,6 +76,8 @@ public class MazeRunnerGame extends Game {
      */
     @Override
     public void create() {
+        //Gdx.app.setLogLevel(Application.LOG_ERROR);
+
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         this.loadCharacterAnimation(); // Load character animation
@@ -83,12 +86,38 @@ public class MazeRunnerGame extends Game {
 
         // Play some background music
         // Background sound
-        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3")); // TODO: Change this bg music first
-        //TODO: create another milder new background music for MenuScreen
+        //CHANGE BACKGROUND MUSIC
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Bruno_Belotti_-_Nel_giardino_dello_Zar__Polka_Loop.mp3")); // TODO: Change this bg music first
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
 
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("010614songidea(copycat).mp3"));
+        menuMusic.setLooping(true);
+
+        pauseMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
+        pauseMusic.setLooping(true);
+
+        /*gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
+        gameOverMusic.setLooping(true);
+
+        victoryMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
+        victoryMusic.setLooping(true);*/
+
+        soundEffectKey = Gdx.audio.newMusic(Gdx.files.internal("Accept.mp3"));
+        soundEffectHurt = Gdx.audio.newMusic(Gdx.files.internal("01._damage_grunt_male.wav"));
+
+
         goToMenu(); // Navigate to the menu screen
+    }
+
+
+    public void selectLevel() {
+
+    }
+
+    public void exitGame(){
+        Gdx.app.exit();
+        System.exit(-1);
     }
 
 
@@ -100,6 +129,8 @@ public class MazeRunnerGame extends Game {
             menuScreen = new MenuScreen(this);
         }
         this.setScreen(menuScreen); // Set the current screen to MenuScreen
+        backgroundMusic.pause();
+        menuMusic.play();
 
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
@@ -119,6 +150,8 @@ public class MazeRunnerGame extends Game {
         if (gameScreen == null) {
             gameLevel = 1; // TODO: this will be changed in the future once we can select our own levels
             gameScreen = new GameScreen(this);
+            menuMusic.pause();
+            backgroundMusic.play();
         }
         this.setScreen(gameScreen); // Set the current screen to MenuScreen
 
@@ -224,6 +257,14 @@ public class MazeRunnerGame extends Game {
 
     }
 
+    public Music getBackgroundMusic() {
+        return backgroundMusic;
+    }
+
+    public void setBackgroundMusic(Music backgroundMusic) {
+        this.backgroundMusic = backgroundMusic;
+    }
+
     /**
      * Cleans up resources when the game is disposed.
      */
@@ -288,6 +329,37 @@ public class MazeRunnerGame extends Game {
         isMuted = muted;
     }
 
+    public MenuScreen getMenuScreen() {
+        return menuScreen;
+    }
+
+    public GameOverScreen getGameOverScreen() {
+        return gameOverScreen;
+    }
+
+    public Music getGameOverMusic() {
+        return gameOverMusic;
+    }
+
+    public Music getVictoryMusic() {
+        return victoryMusic;
+    }
+
+    public Music getSoundEffectKey() {
+        return soundEffectKey;
+    }
+
+    public Music getSoundEffectHurt() {
+        return soundEffectHurt;
+    }
+
+    public Music getPauseMusic() {
+        return pauseMusic;
+    }
+
+    public Music getMenuMusic() {
+        return menuMusic;
+    }
 
     public void checkExitToNextLevel(Player player) {
         if (player.isCenterTouchingTile(Exit.class) && gameScreen.getKey().isCollected()){

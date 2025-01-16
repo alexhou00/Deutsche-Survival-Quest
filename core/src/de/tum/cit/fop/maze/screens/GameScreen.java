@@ -42,6 +42,7 @@ import java.util.Map;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
+import static de.tum.cit.fop.maze.util.Position.getWorldCoordinateInPixels;
 import static java.lang.Math.abs;
 
 
@@ -128,7 +129,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // since both stage1 (for intro panel) and the GameScreen (for scrolling) handle inputs
         inputMultiplexer.addProcessor(stage1); // the stage is for the intro panel
         inputMultiplexer.addProcessor(this);  // used to detect mouse scrolls
-        Gdx.input.setInputProcessor(inputMultiplexer);
+        Gdx.input.setInputProcessor(stage1);
 
         // Load textures for HUD
         hudObjectRenderer = new ElementRenderer("objects.png");
@@ -154,7 +155,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Position keyPosition = tiles.getKeyTilePosition().convertTo(PIXELS);
         float keyX = keyPosition.getX();
         float keyY = keyPosition.getY();
-        key = new Key(keyX, keyY, TILE_SIZE,TILE_SIZE,10,9,TILE_SCREEN_SIZE, TILE_SCREEN_SIZE);
+        key = new Key(keyX, keyY, TILE_SIZE,TILE_SIZE,10,9,TILE_SCREEN_SIZE, TILE_SCREEN_SIZE, game);
         // After loading the tiles,
         // get the array of tiles from our tile generator: tiles.getTiles()
         // and then get the texture region where our key is at
@@ -199,11 +200,10 @@ public class GameScreen extends InputAdapter implements Screen {
             Gdx.app.error("ShaderError", shader.getLog());
         }
 
-        this.pause();
+        this.pause(false); // pause the game but don't create a pause panel
         Gdx.input.setInputProcessor(stage1);
         //Gdx.app.log("Size" ,  horizontalTilesCount + "x" + verticalTilesCount);
 
-        this.isPaused = false;
 
         //createPausePanel();
     }
@@ -230,6 +230,10 @@ public class GameScreen extends InputAdapter implements Screen {
                 Gdx.app.log("start game", "Start game");
                 table.remove(); // Change to the game screen when the button is pressed
                 game.resume();
+                // Reset the player's position to start position just in case there's velocity from the previous level
+                // and that the player would go into the walls because the collision detecting hasn't start yet
+                player.setX(getWorldCoordinateInPixels(tiles.entrance.getTileX()));
+                player.setY(getWorldCoordinateInPixels(tiles.entrance.getTileY()));
             }});
         table.add(button); // TODO: fix button
         button.setPosition(200, 200); // Set a clear position on the stage
@@ -238,16 +242,18 @@ public class GameScreen extends InputAdapter implements Screen {
     public void createPausePanel() {
         System.out.println("pause panel created");
 
-        Table pausePanel = new Table();
+        Table pausePanelTable = new Table();
         Drawable background = createSolidColorDrawable(Color.GRAY); // Semi-transparent background
-        stage1.addActor(pausePanel);
+        stage1.addActor(pausePanelTable);
 
-        pausePanel.setBackground(background);
-        pausePanel.setSize(Gdx.graphics.getWidth() * 0.8f, Gdx.graphics.getHeight() * 0.6f);
-        pausePanel.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.2f);
+        final float BUTTON_PADDING = 10f; // Vertical padding
+
+        pausePanelTable.setBackground(background);
+        pausePanelTable.setSize(Gdx.graphics.getWidth() * 0.8f, Gdx.graphics.getHeight() * 0.6f);
+        pausePanelTable.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.2f);
 
         Label pauseLabel = new Label("Game Paused", game.getSkin(), "title");
-        pausePanel.add(pauseLabel).padBottom(80).center().row();
+        pausePanelTable.add(pauseLabel).padBottom(80).center().row();
         pauseLabel.getStyle().font.getData().setScale(0.5f);
 
         Button resumeButton =  new TextButton("Resume", game.getSkin());
@@ -256,10 +262,39 @@ public class GameScreen extends InputAdapter implements Screen {
             public void changed(ChangeEvent event, Actor actor){
                 Gdx.app.log("start game", "Start game");
                 pauseLabel.remove(); // Change to the game screen when the button is pressed
+                pausePanelTable.remove();
                 game.resume();
+                isPaused = false;
             }});
-        pausePanel.add(resumeButton); // TODO: fix button
-        resumeButton.setPosition(200, 200); // Set a clear position on the stage
+        pausePanelTable.add(resumeButton).padBottom(BUTTON_PADDING).row(); // row() is to add new row, or else elements will stay on the same row
+        // resumeButton.setPosition(200, 200); // Set a clear position on the stage
+
+        Button selectLevelButton =  new TextButton("Select Level", game.getSkin());
+        selectLevelButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor){
+                game.selectLevel();
+            }});
+        pausePanelTable.add(selectLevelButton).padBottom(BUTTON_PADDING).row();
+        //selectLevelButton.setPosition(100, 400); // Set a clear position on the stage
+
+        Button goToMenuButton =  new TextButton("Back to Menu", game.getSkin());
+        goToMenuButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor){
+                game.goToMenu();
+            }});
+        pausePanelTable.add(goToMenuButton).padBottom(BUTTON_PADDING).row();
+        //goToMenuButton.setPosition(900, 600); // Set a clear position on the stage
+
+        Button ExitGameButton =  new TextButton("Exit Game", game.getSkin());
+        ExitGameButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor){
+                game.exitGame();
+            }});
+        pausePanelTable.add(ExitGameButton).padBottom(BUTTON_PADDING).row();
+        //ExitGameButton.setPosition(200, 800); // Set a clear position on the stage
     }
 
 
@@ -281,6 +316,7 @@ public class GameScreen extends InputAdapter implements Screen {
      */
     @Override
     public boolean scrolled(float amountX, float amountY) {
+        if (isPaused) return true;
         targetZoom += amountY * 0.1f; // Adjust sensitivity as needed
         targetZoom = MathUtils.clamp(targetZoom, MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL); // Clamp zoom level
         Gdx.app.log("GameScreen", "mouse scrolled to adjust zoom");
@@ -334,16 +370,12 @@ public class GameScreen extends InputAdapter implements Screen {
     @Override
     public void render(float delta) {
         handlePauseInput();
-        if (isPaused) {
-            // Render paused state and prevent game updates
-            //renderPausedState();
-            createPausePanel();
-            return; // Skip the rest of the game logic when paused
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        // https://stackoverflow.com/questions/46080673/libgdx-game-pause-state-animation-flicker-bug
+        // we couldn't stop drawing even if the game is paused
+        /*if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.goToMenu();
             return;
-        }
+        }*/
 
         if (player.getLives() <= 0) {
             game.goToGameOverScreen();  // Trigger game over screen
@@ -354,7 +386,7 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.update(); // Update the camera
 
         // Move text in a circular path to have an example of a moving object
-        sinusInput += delta;  // sinusInput is like `time`, storing the time for animation
+        sinusInput += ((!isPaused) ? delta : 0);  // sinusInput is like `time`, storing the time for animation
 
         updateZoom(delta); // Smoothly adjust zoom
         handleInput(); // handle input of the keys
@@ -389,6 +421,7 @@ public class GameScreen extends InputAdapter implements Screen {
         game.getSpriteBatch().end(); // Important to call this after drawing everything
 
         renderStamina();
+        drawMapBorder();
 
         moveCamera();
 
@@ -398,9 +431,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
         renderHUD();
     }
-        private void renderPausedState() {
+   /* private void renderPausedState() {
+        if (isPaused) {
             createPausePanel();
         }
+    }*/
 
     private void update(float delta) {
         if (!isPaused) {
@@ -415,6 +450,32 @@ public class GameScreen extends InputAdapter implements Screen {
             // Update timer
            // gameTimer += delta;
         }
+    }
+
+    public void drawMapBorder() {
+        // if (mapTiles.isEmpty()) return;
+
+        // Set up ShapeRenderer to match game world projection
+        shapeRenderer.setProjectionMatrix(game.getSpriteBatch().getProjectionMatrix());
+
+        // Begin drawing with filled shapes for the border
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.WHITE); // Set border color
+
+        // Draw top border (horizontal)
+        shapeRenderer.rect(0, getWorldHeight(), getWorldWidth(), TILE_SIZE);
+
+        // Draw bottom border (horizontal)
+        shapeRenderer.rect(0, -TILE_SIZE, getWorldWidth(), TILE_SIZE);
+
+        // Draw left border (vertical)
+        shapeRenderer.rect(-TILE_SIZE, -TILE_SIZE, TILE_SIZE, (getWorldHeight() + (2*TILE_SIZE)));
+
+        // Draw right border (vertical)
+        shapeRenderer.rect(getWorldWidth() , -TILE_SIZE, TILE_SIZE, (getWorldHeight() + (2*TILE_SIZE)));
+
+        // End drawing the border
+        shapeRenderer.end();
     }
 
     /**
@@ -516,18 +577,25 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private void handlePauseInput(){
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && !isPaused) {
-            isPaused = true; // Set the game to paused
-            createPausePanel(); // Show the pause panel
-            Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
+            pause();
         }
 
         // If the Enter key is pressed and the game is paused, resume the game
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isPaused) {
-            isPaused = false; // Set the game to unpaused
-            stage1.clear(); // Clear the pause panel from the screen
-            Gdx.input.setInputProcessor(null); // Remove the input processor for the pause menu (resume game input)
+            resume();
         }
     }
+    /*private void handlePauseInput() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) { // Assuming "P" pauses the game
+            if (isPaused == true) {
+                createPausePanel();
+                inputMultiplexer.addProcessor(stage1); // Add pause stage
+            } else if (isPaused== false) {
+                stage1.clear(); // Clear the pause panel
+                inputMultiplexer.removeProcessor(stage1); // Remove pause stage
+            }
+        }
+    }*/
 
     /**
      * Renders the collectible key in the game world if it hasn't been collected.
@@ -743,31 +811,62 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.setToOrtho(false);
         hudCamera.setToOrtho(false, width, height); // Adjust HUD camera to new screen size
         player.resume();
+        for (var panel : stage1.getActors()){
+            panel.setSize(Gdx.graphics.getWidth() * 0.9f,Gdx.graphics.getHeight() * 0.9f);
+        }
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
 
 
-    @Override
-    public void pause() {
+    public void pause(boolean createPausePanel) {
         Gdx.app.log("GameScreen", "Game paused");
+        // Stop processing input temporarily
+        //Gdx.input.setInputProcessor(null); // Disable input handling during pause
+        isPaused = true; // Set the game to paused
+
+        game.getBackgroundMusic().pause();
+        game.getPauseMusic().play();
 
         player.pause();
-        // Stop processing input temporarily
-        Gdx.input.setInputProcessor(null); // Disable input handling during pause
+        for (ChasingEnemy enemy : tiles.chasingEnemies){
+            enemy.pause();
+        }
+
+        if (createPausePanel) createPausePanel(); // Show the pause panel
+
+        //inputMultiplexer.addProcessor(stage1);
+        Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
+    }
+
+    @Override
+    public void pause() { // Overloading method
+        pause(true);
     }
 
     @Override
     public void resume() {
         Gdx.app.log("GameScreen", "Game resumed");
-        player.resume();
+
         Gdx.input.setInputProcessor(inputMultiplexer);
+        isPaused = false; // Set the game to unpaused
+
+        game.getBackgroundMusic().play();
+        game.getPauseMusic().pause();
+
+        player.resume();
+        for (ChasingEnemy enemy : tiles.chasingEnemies){
+            enemy.resume();
+        }
+
+        stage1.clear(); // Clear the pause panel from the screen
+        inputMultiplexer.removeProcessor(stage1);
     }
 
     @Override
     public void show() {
-        createPausePanel();
-        Gdx.input.setInputProcessor(stage1);
+      //  createPausePanel();
+       // Gdx.input.setInputProcessor(stage1);
     }
 
     @Override
@@ -776,7 +875,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
     @Override
     public void dispose() {
-        shapeRenderer.dispose(); //TODO: if not used even the project is finished, delete this.
+        //shapeRenderer.dispose(); //TODO: if not used even the project is finished, delete this.
+        // TODO: i think we shouldn't even dispose the shapeRenderer, right?
         mapRenderer.dispose();
         hudObjectRenderer.dispose();
     }
@@ -811,4 +911,7 @@ public class GameScreen extends InputAdapter implements Screen {
         return key;
     }
 
+    public boolean isPaused() {
+        return isPaused;
+    }
 }

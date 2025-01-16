@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.base.Character;
@@ -14,9 +15,8 @@ import de.tum.cit.fop.maze.tiles.Tile;
 import de.tum.cit.fop.maze.tiles.Wall;
 import de.tum.cit.fop.maze.screens.GameScreen;
 
-import java.util.List;
-
 import static de.tum.cit.fop.maze.util.Constants.*;
+import static de.tum.cit.fop.maze.util.Position.*;
 import static java.lang.Math.abs;
 
 /**
@@ -24,6 +24,7 @@ import static java.lang.Math.abs;
  */
 public class Player extends Character {
     //private final boolean hasKey;
+
     private boolean isMoving;
     private boolean isHurt = false;
     private float hurtTimer = 0f; // Timer for the red tint
@@ -34,6 +35,7 @@ public class Player extends Character {
     private static final float staminaDepleteRate = 25f; // Stamina depletion per second
 
     GameScreen gameScreen;
+    MazeRunnerGame game;
 
     //private final TiledMapTileLayer collisionLayer;
     float targetVelX, targetVelY;
@@ -42,7 +44,7 @@ public class Player extends Character {
     private static final float BASE_SPEED = 240f; // normal speed when moving either vertically or horizontally
     private static final float BOOST_MULTIPLIER = 2f; // the speed will be multiplied by this number when the SHIFT key is pressed
     private static final float SMOOTH_FACTOR = 5f; // the lower the value, the smoother it gets (and needs more time to stop)
-    Music soundEffect;
+
 
     /**
      * Constructor for Player. This is our main character <br>
@@ -61,19 +63,20 @@ public class Player extends Character {
      * @param lives             Number of lives the player starts with.
      */
     public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, GameScreen gameScreen, Tiles tiles) {
-        super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, tiles);
+        super(getWorldCoordinateInPixels(tileX), getWorldCoordinateInPixels(tileY), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, tiles);
         //this.hasKey = false;
         this.isMoving = false;
         // this.speed = BASE_SPEED; // normal speed when moving either vertically or horizontally
         //this.collisionLayer = tiles.layer;
         // this.tiles = tiles;
         this.gameScreen = gameScreen;
+        this.game = gameScreen.game;
         this.stamina = maxStamina; // Initialize stamina to max
     }
 
     private void handleMovement() {
         float delta = Gdx.graphics.getDeltaTime();
-
+        Gdx.app.log("player", "running in handle movement");
         // define keys pressed to handle keys for player movement; both WASD, and the arrow keys are used
         boolean rightPressed = !isHurt && (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D));
         boolean leftPressed = !isHurt && (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A));
@@ -238,8 +241,7 @@ public class Player extends Character {
     }
 
     public void loseLives(float amount, GameObject source){//or damage idk
-        soundEffect = Gdx.audio.newMusic(Gdx.files.internal("01._damage_grunt_male.wav"));
-        soundEffect.play();
+       game.getSoundEffectHurt().play();
         lives -= amount;
 
         if (lives <= 0){
@@ -263,7 +265,7 @@ public class Player extends Character {
      */
     @Override
     public void update(float delta) {
-        if (paused) return;
+        if (gameScreen.isPaused()) return;
         handleMovement();
         checkCollisions();
 
@@ -307,5 +309,9 @@ public class Player extends Character {
 
     public float getStamina() {
         return stamina;
+    }
+
+    public void setPaused(boolean paused){
+        this.paused = paused;
     }
 }

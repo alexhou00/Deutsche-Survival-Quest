@@ -1,14 +1,14 @@
 Value  | Type
 -----------------------------
-0      | Wall
+0      | Wall (the most regular one)
 1      | Entry point
 2      | Exit
 3      | Trap (static)
 4      | Enemy (dynamic)
 5      | Key
 6~9    | variants of the basic ground tile
-10     | Ground Tile
-12~14 | More Exits
+10     | Ground Tile (the most regular one)
+12~14  | More Exits
 18~19  | More Ground Tiles
 20~79  | More Walls (or any collidable obstacles that doesn't harm like luggage conveyor belt)
 80~89  | More Traps

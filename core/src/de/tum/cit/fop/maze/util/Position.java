@@ -99,6 +99,10 @@ public class Position {
         return new Position(newX, newY, targetUnit);
     }
 
+    public static float getWorldCoordinateInPixels(int tileCoordinate){
+        return (tileCoordinate + 0.5f) * TILE_SCREEN_SIZE;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
