@@ -365,6 +365,10 @@ public class MazeRunnerGame extends Game {
         return menuMusic;
     }
 
+    public Music getVictorySoundEffect() {
+        return victorySoundEffect;
+    }
+
     public void checkExitToNextLevel(Player player) {
         if (player.isCenterTouchingTile(Exit.class) && gameScreen.getKey().isCollected()){
             gameLevel += 1;

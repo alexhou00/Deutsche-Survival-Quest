@@ -319,23 +319,26 @@ public class GameScreen extends InputAdapter implements Screen {
         victoryPanelTable.add(victoryLabel).padBottom(80).center().row();
         victoryLabel.getStyle().font.getData().setScale(0.5f);
 
-        Button playAgainButton = new TextButton("Play Again", game.getSkin());
+        Button nextLevelButton =  new TextButton("Next Level", game.getSkin());
+        nextLevelButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor){
+                Gdx.app.log("next level", "Next Level");
+                victoryLabel.remove(); // Change to the game screen when the button is pressed
+                victoryPanelTable.remove();
+                game.resume();
+                isPaused = false;
+            }});
+        victoryPanelTable.add(nextLevelButton).padBottom(BUTTON_PADDING).row();
+
+        /*Button playAgainButton = new TextButton("Play Again", game.getSkin());
         playAgainButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //game.restartLevel(); // Restart the current level
             }
         });
-        victoryPanelTable.add(playAgainButton).padBottom(BUTTON_PADDING).row();
-
-        Button selectLevelButton = new TextButton("Select Level", game.getSkin());
-        selectLevelButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                game.selectLevel(); // Navigate to the level selection screen
-            }
-        });
-        victoryPanelTable.add(selectLevelButton).padBottom(BUTTON_PADDING).row();
+        victoryPanelTable.add(playAgainButton).padBottom(BUTTON_PADDING).row();*/
 
         Button goToMenuButton = new TextButton("Back to Menu", game.getSkin());
         goToMenuButton.addListener(new ChangeListener() {
@@ -346,14 +349,14 @@ public class GameScreen extends InputAdapter implements Screen {
         });
         victoryPanelTable.add(goToMenuButton).padBottom(BUTTON_PADDING).row();
 
-        Button exitGameButton = new TextButton("Exit Game", game.getSkin());
+        /*Button exitGameButton = new TextButton("Exit Game", game.getSkin());
         exitGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.exitGame(); // Exit the game
             }
         });
-        victoryPanelTable.add(exitGameButton).padBottom(BUTTON_PADDING).row();
+        victoryPanelTable.add(exitGameButton).padBottom(BUTTON_PADDING).row();*/
     }
 
 
@@ -452,10 +455,15 @@ public class GameScreen extends InputAdapter implements Screen {
         for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)) {
             enemy.update(delta);
         }
-        if (key.isCollected() && player.isCenterTouchingTile(Exit.class)) {
-            createVictoryPanel();
-            //isPaused = true; // Optional: Pause the game if necessary
-            //game.pause(); // If you want to pause all updates
+
+        if (!isPaused) {
+            //super.render(delta); // Continue game updates
+            if (key.isCollected() && player.isCenterTouchingTile(Exit.class)) {
+                createVictoryPanel();
+                isPaused = true;
+                game.pause(); // Pause game updates
+                game.getVictorySoundEffect(); // Play only the victory music
+            }
         }
 
         renderGameWorld();
