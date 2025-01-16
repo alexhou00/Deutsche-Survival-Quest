@@ -790,7 +790,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
     @Override
     public void dispose() {
-        shapeRenderer.dispose(); //TODO: if not used even the project is finished, delete this.
+        //shapeRenderer.dispose(); //TODO: if not used even the project is finished, delete this.
+        // TODO: i think we shouldn't even dispose the shapeRenderer, right?
         mapRenderer.dispose();
         hudObjectRenderer.dispose();
     }

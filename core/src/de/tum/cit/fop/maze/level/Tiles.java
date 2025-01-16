@@ -22,7 +22,8 @@ import java.util.stream.IntStream;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
 
-/** this is like a TilesManager or ".properties" File Reader
+/** this is like a TilesManager or ".properties" File Reader,
+ * or more specifically, a LevelManager
  * It manages tile (and also other objects for the level) creation for each level
  */
 public class Tiles {
