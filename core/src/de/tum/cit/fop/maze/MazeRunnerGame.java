@@ -1,5 +1,6 @@
 package de.tum.cit.fop.maze;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -71,6 +72,8 @@ public class MazeRunnerGame extends Game {
      */
     @Override
     public void create() {
+        //Gdx.app.setLogLevel(Application.LOG_ERROR);
+
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         this.loadCharacterAnimation(); // Load character animation

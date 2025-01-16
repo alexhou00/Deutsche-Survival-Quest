@@ -303,7 +303,7 @@ public class Tiles {
                     Position position = stringToPosition(positionStr, TILES);
                     if (horizontalTilesCount < position.getTileX() + 1) {
                         horizontalTilesCount = position.getTileX()+1;
-                        Gdx.app.log("MapParser", "horizontal tiles count updated to " + horizontalTilesCount);
+                        //Gdx.app.debug("MapParser", "horizontal tiles count updated to " + horizontalTilesCount);
                     }
                     if (verticalTilesCount < position.getTileY() + 1) verticalTilesCount = position.getTileY() + 1;
                 }

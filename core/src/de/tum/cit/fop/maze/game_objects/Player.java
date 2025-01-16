@@ -15,9 +15,8 @@ import de.tum.cit.fop.maze.tiles.Tile;
 import de.tum.cit.fop.maze.tiles.Wall;
 import de.tum.cit.fop.maze.screens.GameScreen;
 
-import java.util.List;
-
 import static de.tum.cit.fop.maze.util.Constants.*;
+import static de.tum.cit.fop.maze.util.Position.*;
 import static java.lang.Math.abs;
 
 /**
@@ -64,7 +63,7 @@ public class Player extends Character {
      * @param lives             Number of lives the player starts with.
      */
     public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, GameScreen gameScreen, Tiles tiles) {
-        super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, tiles);
+        super(getWorldCoordinateInPixels(tileX), getWorldCoordinateInPixels(tileY), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, tiles);
         //this.hasKey = false;
         this.isMoving = false;
         // this.speed = BASE_SPEED; // normal speed when moving either vertically or horizontally
@@ -77,7 +76,7 @@ public class Player extends Character {
 
     private void handleMovement() {
         float delta = Gdx.graphics.getDeltaTime();
-
+        Gdx.app.log("player", "running in handle movement");
         // define keys pressed to handle keys for player movement; both WASD, and the arrow keys are used
         boolean rightPressed = !isHurt && (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D));
         boolean leftPressed = !isHurt && (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A));
@@ -266,7 +265,7 @@ public class Player extends Character {
      */
     @Override
     public void update(float delta) {
-        if (paused) return;
+        if (gameScreen.isPaused()) return;
         handleMovement();
         checkCollisions();
 
@@ -310,5 +309,9 @@ public class Player extends Character {
 
     public float getStamina() {
         return stamina;
+    }
+
+    public void setPaused(boolean paused){
+        this.paused = paused;
     }
 }

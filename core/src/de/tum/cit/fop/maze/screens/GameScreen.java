@@ -42,6 +42,7 @@ import java.util.Map;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
+import static de.tum.cit.fop.maze.util.Position.getWorldCoordinateInPixels;
 import static java.lang.Math.abs;
 
 
@@ -128,7 +129,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // since both stage1 (for intro panel) and the GameScreen (for scrolling) handle inputs
         inputMultiplexer.addProcessor(stage1); // the stage is for the intro panel
         inputMultiplexer.addProcessor(this);  // used to detect mouse scrolls
-        Gdx.input.setInputProcessor(inputMultiplexer);
+        Gdx.input.setInputProcessor(stage1);
 
         // Load textures for HUD
         hudObjectRenderer = new ElementRenderer("objects.png");
@@ -229,6 +230,10 @@ public class GameScreen extends InputAdapter implements Screen {
                 Gdx.app.log("start game", "Start game");
                 table.remove(); // Change to the game screen when the button is pressed
                 game.resume();
+                // Reset the player's position to start position just in case there's velocity from the previous level
+                // and that the player would go into the walls because the collision detecting hasn't start yet
+                player.setX(getWorldCoordinateInPixels(tiles.entrance.getTileX()));
+                player.setY(getWorldCoordinateInPixels(tiles.entrance.getTileY()));
             }});
         table.add(button); // TODO: fix button
         button.setPosition(200, 200); // Set a clear position on the stage
@@ -311,6 +316,7 @@ public class GameScreen extends InputAdapter implements Screen {
      */
     @Override
     public boolean scrolled(float amountX, float amountY) {
+        if (isPaused) return true;
         targetZoom += amountY * 0.1f; // Adjust sensitivity as needed
         targetZoom = MathUtils.clamp(targetZoom, MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL); // Clamp zoom level
         Gdx.app.log("GameScreen", "mouse scrolled to adjust zoom");
@@ -415,6 +421,7 @@ public class GameScreen extends InputAdapter implements Screen {
         game.getSpriteBatch().end(); // Important to call this after drawing everything
 
         renderStamina();
+        drawMapBorder();
 
         moveCamera();
 
@@ -443,6 +450,32 @@ public class GameScreen extends InputAdapter implements Screen {
             // Update timer
            // gameTimer += delta;
         }
+    }
+
+    public void drawMapBorder() {
+        // if (mapTiles.isEmpty()) return;
+
+        // Set up ShapeRenderer to match game world projection
+        shapeRenderer.setProjectionMatrix(game.getSpriteBatch().getProjectionMatrix());
+
+        // Begin drawing with filled shapes for the border
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.WHITE); // Set border color
+
+        // Draw top border (horizontal)
+        shapeRenderer.rect(0, getWorldHeight(), getWorldWidth(), TILE_SIZE);
+
+        // Draw bottom border (horizontal)
+        shapeRenderer.rect(0, -TILE_SIZE, getWorldWidth(), TILE_SIZE);
+
+        // Draw left border (vertical)
+        shapeRenderer.rect(-TILE_SIZE, -TILE_SIZE, TILE_SIZE, (getWorldHeight() + (2*TILE_SIZE)));
+
+        // Draw right border (vertical)
+        shapeRenderer.rect(getWorldWidth() , -TILE_SIZE, TILE_SIZE, (getWorldHeight() + (2*TILE_SIZE)));
+
+        // End drawing the border
+        shapeRenderer.end();
     }
 
     /**
@@ -778,6 +811,9 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.setToOrtho(false);
         hudCamera.setToOrtho(false, width, height); // Adjust HUD camera to new screen size
         player.resume();
+        for (var panel : stage1.getActors()){
+            panel.setSize(Gdx.graphics.getWidth() * 0.9f,Gdx.graphics.getHeight() * 0.9f);
+        }
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
@@ -785,37 +821,44 @@ public class GameScreen extends InputAdapter implements Screen {
 
     public void pause(boolean createPausePanel) {
         Gdx.app.log("GameScreen", "Game paused");
-        player.pause();
         // Stop processing input temporarily
         //Gdx.input.setInputProcessor(null); // Disable input handling during pause
         isPaused = true; // Set the game to paused
+
         game.getBackgroundMusic().pause();
         game.getPauseMusic().play();
+
+        player.pause();
         for (ChasingEnemy enemy : tiles.chasingEnemies){
             enemy.pause();
         }
+
         if (createPausePanel) createPausePanel(); // Show the pause panel
-        inputMultiplexer.addProcessor(stage1);
-        //Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
+
+        //inputMultiplexer.addProcessor(stage1);
+        Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
     }
 
     @Override
     public void pause() { // Overloading method
         pause(true);
-
     }
 
     @Override
     public void resume() {
         Gdx.app.log("GameScreen", "Game resumed");
-        player.resume();
+
         Gdx.input.setInputProcessor(inputMultiplexer);
         isPaused = false; // Set the game to unpaused
+
         game.getBackgroundMusic().play();
         game.getPauseMusic().pause();
+
+        player.resume();
         for (ChasingEnemy enemy : tiles.chasingEnemies){
             enemy.resume();
         }
+
         stage1.clear(); // Clear the pause panel from the screen
         inputMultiplexer.removeProcessor(stage1);
     }
@@ -868,4 +911,7 @@ public class GameScreen extends InputAdapter implements Screen {
         return key;
     }
 
+    public boolean isPaused() {
+        return isPaused;
+    }
 }
