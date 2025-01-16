@@ -203,7 +203,6 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(stage1);
         //Gdx.app.log("Size" ,  horizontalTilesCount + "x" + verticalTilesCount);
 
-        this.isPaused = false;
 
         //createPausePanel();
     }
@@ -238,16 +237,18 @@ public class GameScreen extends InputAdapter implements Screen {
     public void createPausePanel() {
         System.out.println("pause panel created");
 
-        Table pausePanel = new Table();
+        Table pausePanelTable = new Table();
         Drawable background = createSolidColorDrawable(Color.GRAY); // Semi-transparent background
-        stage1.addActor(pausePanel);
+        stage1.addActor(pausePanelTable);
 
-        pausePanel.setBackground(background);
-        pausePanel.setSize(Gdx.graphics.getWidth() * 0.8f, Gdx.graphics.getHeight() * 0.6f);
-        pausePanel.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.2f);
+        final float BUTTON_PADDING = 10f; // Vertical padding
+
+        pausePanelTable.setBackground(background);
+        pausePanelTable.setSize(Gdx.graphics.getWidth() * 0.8f, Gdx.graphics.getHeight() * 0.6f);
+        pausePanelTable.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.2f);
 
         Label pauseLabel = new Label("Game Paused", game.getSkin(), "title");
-        pausePanel.add(pauseLabel).padBottom(80).center().row();
+        pausePanelTable.add(pauseLabel).padBottom(80).center().row();
         pauseLabel.getStyle().font.getData().setScale(0.5f);
 
         Button resumeButton =  new TextButton("Resume", game.getSkin());
@@ -256,12 +257,39 @@ public class GameScreen extends InputAdapter implements Screen {
             public void changed(ChangeEvent event, Actor actor){
                 Gdx.app.log("start game", "Start game");
                 pauseLabel.remove(); // Change to the game screen when the button is pressed
-                pausePanel.remove();
+                pausePanelTable.remove();
                 game.resume();
                 isPaused = false;
             }});
-        pausePanel.add(resumeButton); // TODO: fix button
-        resumeButton.setPosition(200, 200); // Set a clear position on the stage
+        pausePanelTable.add(resumeButton).padBottom(BUTTON_PADDING).row(); // row() is to add new row, or else elements will stay on the same row
+        // resumeButton.setPosition(200, 200); // Set a clear position on the stage
+
+        Button selectLevelButton =  new TextButton("Select Level", game.getSkin());
+        selectLevelButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor){
+                game.selectLevel();
+            }});
+        pausePanelTable.add(selectLevelButton).padBottom(BUTTON_PADDING).row();
+        //selectLevelButton.setPosition(100, 400); // Set a clear position on the stage
+
+        Button goToMenuButton =  new TextButton("Back to Menu", game.getSkin());
+        goToMenuButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor){
+                game.goToMenu();
+            }});
+        pausePanelTable.add(goToMenuButton).padBottom(BUTTON_PADDING).row();
+        //goToMenuButton.setPosition(900, 600); // Set a clear position on the stage
+
+        Button ExitGameButton =  new TextButton("Exit Game", game.getSkin());
+        ExitGameButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor){
+                game.exitGame();
+            }});
+        pausePanelTable.add(ExitGameButton).padBottom(BUTTON_PADDING).row();
+        //ExitGameButton.setPosition(200, 800); // Set a clear position on the stage
     }
 
 
@@ -336,6 +364,8 @@ public class GameScreen extends InputAdapter implements Screen {
     @Override
     public void render(float delta) {
         handlePauseInput();
+        // https://stackoverflow.com/questions/46080673/libgdx-game-pause-state-animation-flicker-bug
+        // we couldn't stop drawing even if the game is paused
         /*if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.goToMenu();
             return;

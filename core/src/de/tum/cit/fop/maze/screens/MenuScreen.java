@@ -26,7 +26,6 @@ public class MenuScreen implements Screen {
     private final Stage stage;
     MazeRunnerGame game;
     Texture backgroundTexture;
-    private final Map<String, TextButton> buttons;
 
     /**
      * Constructor for MenuScreen. Sets up the camera, viewport, stage, and UI elements.
@@ -72,7 +71,7 @@ public class MenuScreen implements Screen {
         final float BUTTON_WIDTH = 300f; // Button width
         final float BUTTON_PADDING = 10f; // Vertical padding
 
-        buttons = new LinkedHashMap<>();
+        Map<String, TextButton> buttons = new LinkedHashMap<>();
         buttons.put("startGameButton", new TextButton("Start Game", game.getSkin()));
         buttons.put("selectLevelButton", new TextButton("Select Level", game.getSkin()));
         buttons.put("exitGameButton", new TextButton("Exit Game", game.getSkin()));
@@ -98,7 +97,7 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.log("MenuScreen", "Select Level button pressed");
-
+                game.selectLevel();
             }
         });
 
@@ -106,8 +105,7 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.log("MenuScreen", "Exit Game button pressed");
-                Gdx.app.exit();
-                System.exit(-1);
+                game.exitGame();
             }
         });
 

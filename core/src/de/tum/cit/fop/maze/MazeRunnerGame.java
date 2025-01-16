@@ -104,6 +104,16 @@ public class MazeRunnerGame extends Game {
     }
 
 
+    public void selectLevel() {
+
+    }
+
+    public void exitGame(){
+        Gdx.app.exit();
+        System.exit(-1);
+    }
+
+
     /**
      * Switches to the menu screen.
      */
