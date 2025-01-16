@@ -199,7 +199,7 @@ public class GameScreen extends InputAdapter implements Screen {
             Gdx.app.error("ShaderError", shader.getLog());
         }
 
-        this.pause();
+        this.pause(false); // pause the game but don't create a pause panel
         Gdx.input.setInputProcessor(stage1);
         //Gdx.app.log("Size" ,  horizontalTilesCount + "x" + verticalTilesCount);
 
@@ -256,7 +256,9 @@ public class GameScreen extends InputAdapter implements Screen {
             public void changed(ChangeEvent event, Actor actor){
                 Gdx.app.log("start game", "Start game");
                 pauseLabel.remove(); // Change to the game screen when the button is pressed
+                pausePanel.remove();
                 game.resume();
+                isPaused = false;
             }});
         pausePanel.add(resumeButton); // TODO: fix button
         resumeButton.setPosition(200, 200); // Set a clear position on the stage
@@ -334,9 +336,6 @@ public class GameScreen extends InputAdapter implements Screen {
     @Override
     public void render(float delta) {
         handlePauseInput();
-        /*if (isPaused) {
-            return; // Skip the rest of the game logic when paused
-        }*/
         /*if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.goToMenu();
             return;
@@ -515,26 +514,12 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private void handlePauseInput(){
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && !isPaused) {
-            isPaused = true; // Set the game to paused
-            game.getBackgroundMusic().pause();
-            for (ChasingEnemy enemy : tiles.chasingEnemies){
-                enemy.pause();
-            }
-            createPausePanel(); // Show the pause panel
-            inputMultiplexer.addProcessor(stage1);
-            //Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
+            pause();
         }
 
         // If the Enter key is pressed and the game is paused, resume the game
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isPaused) {
-            isPaused = false; // Set the game to unpaused
-            game.getBackgroundMusic().play();
-            for (ChasingEnemy enemy : tiles.chasingEnemies){
-                enemy.resume();
-            }
-            stage1.clear(); // Clear the pause panel from the screen
-            inputMultiplexer.removeProcessor(stage1);
-            //Gdx.input.setInputProcessor(null); // Remove the input processor for the pause menu (resume game input)
+            resume();
         }
     }
     /*private void handlePauseInput() {
@@ -768,13 +753,25 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
 
-    @Override
-    public void pause() {
+    public void pause(boolean createPausePanel) {
         Gdx.app.log("GameScreen", "Game paused");
-
         player.pause();
         // Stop processing input temporarily
-        Gdx.input.setInputProcessor(null); // Disable input handling during pause
+        //Gdx.input.setInputProcessor(null); // Disable input handling during pause
+        isPaused = true; // Set the game to paused
+        game.getBackgroundMusic().pause();
+        for (ChasingEnemy enemy : tiles.chasingEnemies){
+            enemy.pause();
+        }
+        if (createPausePanel) createPausePanel(); // Show the pause panel
+        inputMultiplexer.addProcessor(stage1);
+        //Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
+    }
+
+    @Override
+    public void pause() { // Overloading method
+        pause(true);
+
     }
 
     @Override
@@ -782,6 +779,13 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.app.log("GameScreen", "Game resumed");
         player.resume();
         Gdx.input.setInputProcessor(inputMultiplexer);
+        isPaused = false; // Set the game to unpaused
+        game.getBackgroundMusic().play();
+        for (ChasingEnemy enemy : tiles.chasingEnemies){
+            enemy.resume();
+        }
+        stage1.clear(); // Clear the pause panel from the screen
+        inputMultiplexer.removeProcessor(stage1);
     }
 
     @Override

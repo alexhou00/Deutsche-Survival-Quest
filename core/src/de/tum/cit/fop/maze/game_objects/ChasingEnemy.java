@@ -71,10 +71,7 @@ public class ChasingEnemy extends Character {
 
     @Override
     public void update(float delta) {
-        if (paused) {
-            Gdx.app.log("Enemy", "Enemy Paused");
-            return;
-        }
+        if (paused) return;
 
         if (damageCooldown > 0) {
             damageCooldown -= delta;
