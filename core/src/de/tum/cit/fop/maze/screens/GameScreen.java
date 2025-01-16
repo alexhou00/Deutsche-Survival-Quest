@@ -213,7 +213,7 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createIntroPanel(){
-        game.getPauseMusic().pause();
+       // game.getPauseMusic().pause();
         Table table = new Table();
         Drawable background = createSolidColorDrawable(Color.WHITE);
         stage1.addActor(table);
