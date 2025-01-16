@@ -10,6 +10,7 @@ package de.tum.cit.fop.maze.base;
  */
 
 public abstract class StaticObject extends GameObject {
+
     /**
      * Constructs a new StaticObject instance with specified parameters.
      *

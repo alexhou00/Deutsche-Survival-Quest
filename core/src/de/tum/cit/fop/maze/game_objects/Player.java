@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.base.Character;
@@ -24,6 +25,7 @@ import static java.lang.Math.abs;
  */
 public class Player extends Character {
     //private final boolean hasKey;
+
     private boolean isMoving;
     private boolean isHurt = false;
     private float hurtTimer = 0f; // Timer for the red tint
@@ -34,6 +36,7 @@ public class Player extends Character {
     private static final float staminaDepleteRate = 25f; // Stamina depletion per second
 
     GameScreen gameScreen;
+    MazeRunnerGame game;
 
     //private final TiledMapTileLayer collisionLayer;
     float targetVelX, targetVelY;
@@ -42,7 +45,7 @@ public class Player extends Character {
     private static final float BASE_SPEED = 240f; // normal speed when moving either vertically or horizontally
     private static final float BOOST_MULTIPLIER = 2f; // the speed will be multiplied by this number when the SHIFT key is pressed
     private static final float SMOOTH_FACTOR = 5f; // the lower the value, the smoother it gets (and needs more time to stop)
-    Music soundEffect;
+
 
     /**
      * Constructor for Player. This is our main character <br>
@@ -68,6 +71,7 @@ public class Player extends Character {
         //this.collisionLayer = tiles.layer;
         // this.tiles = tiles;
         this.gameScreen = gameScreen;
+        this.game = gameScreen.game;
         this.stamina = maxStamina; // Initialize stamina to max
     }
 
@@ -238,8 +242,7 @@ public class Player extends Character {
     }
 
     public void loseLives(float amount, GameObject source){//or damage idk
-        soundEffect = Gdx.audio.newMusic(Gdx.files.internal("01._damage_grunt_male.wav"));
-        soundEffect.play();
+       game.getSoundEffectHurt().play();
         lives -= amount;
 
         if (lives <= 0){

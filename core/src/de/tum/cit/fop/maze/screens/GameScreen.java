@@ -154,7 +154,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Position keyPosition = tiles.getKeyTilePosition().convertTo(PIXELS);
         float keyX = keyPosition.getX();
         float keyY = keyPosition.getY();
-        key = new Key(keyX, keyY, TILE_SIZE,TILE_SIZE,10,9,TILE_SCREEN_SIZE, TILE_SCREEN_SIZE);
+        key = new Key(keyX, keyY, TILE_SIZE,TILE_SIZE,10,9,TILE_SCREEN_SIZE, TILE_SCREEN_SIZE, game);
         // After loading the tiles,
         // get the array of tiles from our tile generator: tiles.getTiles()
         // and then get the texture region where our key is at
@@ -760,6 +760,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //Gdx.input.setInputProcessor(null); // Disable input handling during pause
         isPaused = true; // Set the game to paused
         game.getBackgroundMusic().pause();
+        game.getPauseMusic().play();
         for (ChasingEnemy enemy : tiles.chasingEnemies){
             enemy.pause();
         }
@@ -781,6 +782,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(inputMultiplexer);
         isPaused = false; // Set the game to unpaused
         game.getBackgroundMusic().play();
+        game.getPauseMusic().pause();
         for (ChasingEnemy enemy : tiles.chasingEnemies){
             enemy.resume();
         }
