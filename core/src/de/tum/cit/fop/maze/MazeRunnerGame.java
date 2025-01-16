@@ -53,7 +53,7 @@ public class MazeRunnerGame extends Game {
 
     Texture backgroundTexture;
 
-    Music backgroundMusic, menuMusic, pauseMusic,  gameOverMusic, victoryMusic, soundEffectKey, soundEffectHurt;
+    Music backgroundMusic, menuMusic, pauseMusic,  gameOverMusic, victorySoundEffect, victoryMusic, soundEffectKey, soundEffectHurt;
     private boolean isMuted;
 
 
@@ -93,12 +93,13 @@ public class MazeRunnerGame extends Game {
         pauseMusic = Gdx.audio.newMusic(Gdx.files.internal("music/A cup of tea.mp3"));
         pauseMusic.setLooping(true);
 
-        /*gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
+        gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("music/No Hope.wav"));
         gameOverMusic.setLooping(true);
 
-        victoryMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
-        victoryMusic.setLooping(true);*/
+        //victoryMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
+        //victoryMusic.setLooping(true);
 
+        victorySoundEffect = Gdx.audio.newMusic(Gdx.files.internal("sounds/Lively Meadow Victory Fanfare.mp3"));
         soundEffectKey = Gdx.audio.newMusic(Gdx.files.internal("sounds/Accept.mp3"));
         soundEffectHurt = Gdx.audio.newMusic(Gdx.files.internal("sounds/01._damage_grunt_male.wav"));
 
@@ -126,6 +127,8 @@ public class MazeRunnerGame extends Game {
         }
         this.setScreen(menuScreen); // Set the current screen to MenuScreen
         backgroundMusic.pause();
+        gameOverMusic.pause();
+        pauseMusic.pause();
         menuMusic.play();
 
         if (gameScreen != null) {
@@ -146,6 +149,8 @@ public class MazeRunnerGame extends Game {
         if (gameScreen == null) {
             gameLevel = 1; // TODO: this will be changed in the future once we can select our own levels
             gameScreen = new GameScreen(this);
+            gameOverMusic.pause();
+            pauseMusic.play();
             menuMusic.pause();
             backgroundMusic.play();
         }
@@ -174,6 +179,9 @@ public class MazeRunnerGame extends Game {
 
             // Set the screen to GameOverScreen
             this.setScreen(gameOverScreen);
+            backgroundMusic.pause();
+            pauseMusic.pause();
+            gameOverMusic.play();
 
             // Dispose of other screens if necessary
             if (gameScreen != null) {
@@ -364,6 +372,7 @@ public class MazeRunnerGame extends Game {
             gameScreen = new GameScreen(this);
             gameScreen.getKey().setCollected(false);
             this.setScreen(gameScreen);
+            victorySoundEffect.play();
             Gdx.app.log("MazeRunnerGame", "Set Screen to Game Screen");
         }
     }
