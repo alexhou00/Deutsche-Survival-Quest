@@ -41,7 +41,7 @@ public class SpeechBubble {
     private static final int CAPITAL_LETTER_UE = 220;
 
     public SpeechBubble() {
-        this.texture = new Texture(Gdx.files.internal("objects.png"));
+        this.texture = new Texture(Gdx.files.internal("original/objects.png"));
         this.speechTailRegion = new TextureRegion(texture, 192, 224, 16, 24);
         this.screamTailRegion = new TextureRegion(texture, 192 + 16, 224, 16, 24);
         this.thoughtTailRegion = new TextureRegion(texture, 192 + 16 * 2, 224, 16, 24);

@@ -197,8 +197,8 @@ public class MazeRunnerGame extends Game {
      * Loads the character animation from the character.png file.
      */
     private void loadCharacterAnimation() {
-        Texture walkSheet = new Texture(Gdx.files.internal("character.png")); // TODO: Redesign our character
-        Texture mobGuySheet = new Texture(Gdx.files.internal("mob_guy.png"));
+        Texture walkSheet = new Texture(Gdx.files.internal("characters/character.png")); // TODO: Redesign our character
+        Texture mobGuySheet = new Texture(Gdx.files.internal("characters/mob_guy.png"));
 
 
         int frameWidth = 16;
