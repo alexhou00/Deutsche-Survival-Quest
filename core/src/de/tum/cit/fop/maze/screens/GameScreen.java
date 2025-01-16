@@ -334,9 +334,9 @@ public class GameScreen extends InputAdapter implements Screen {
     @Override
     public void render(float delta) {
         handlePauseInput();
-        if (isPaused) {
+        /*if (isPaused) {
             return; // Skip the rest of the game logic when paused
-        }
+        }*/
         /*if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.goToMenu();
             return;
@@ -351,7 +351,7 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.update(); // Update the camera
 
         // Move text in a circular path to have an example of a moving object
-        sinusInput += delta;  // sinusInput is like `time`, storing the time for animation
+        sinusInput += ((!isPaused) ? delta : 0);  // sinusInput is like `time`, storing the time for animation
 
         updateZoom(delta); // Smoothly adjust zoom
         handleInput(); // handle input of the keys
@@ -518,6 +518,9 @@ public class GameScreen extends InputAdapter implements Screen {
             isPaused = true; // Set the game to paused
             game.getBackgroundMusic().pause();
             game.getPauseMusic().play();
+            for (ChasingEnemy enemy : tiles.chasingEnemies){
+                enemy.pause();
+            }
             createPausePanel(); // Show the pause panel
             inputMultiplexer.addProcessor(stage1);
             //Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
@@ -528,6 +531,9 @@ public class GameScreen extends InputAdapter implements Screen {
             isPaused = false; // Set the game to unpaused
             game.getBackgroundMusic().play();
             game.getPauseMusic().pause();
+            for (ChasingEnemy enemy : tiles.chasingEnemies){
+                enemy.resume();
+            }
             stage1.clear(); // Clear the pause panel from the screen
             inputMultiplexer.removeProcessor(stage1);
             //Gdx.input.setInputProcessor(null); // Remove the input processor for the pause menu (resume game input)
