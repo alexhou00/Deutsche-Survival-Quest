@@ -28,10 +28,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.fop.maze.*;
-import de.tum.cit.fop.maze.game_objects.ChasingEnemy;
-import de.tum.cit.fop.maze.game_objects.Key;
-import de.tum.cit.fop.maze.game_objects.Player;
-import de.tum.cit.fop.maze.game_objects.Trap;
+import de.tum.cit.fop.maze.game_objects.*;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.rendering.ElementRenderer;
 import de.tum.cit.fop.maze.rendering.SpotlightEffect;
@@ -58,23 +55,21 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final OrthographicCamera camera;
     private final OrthographicCamera hudCamera; // HUD camera. HUD uses another camera so that it does not follow the player and is fixed on the screen.
+    // For zooming
+    private float targetZoom; // targetZoom stores the intermediate zoom value so that we can zoom smoothly
 
     private final BitmapFont font;
     private final ShapeRenderer shapeRenderer; // For drawing shapes like health bars
+    private final OrthogonalTiledMapRenderer mapRenderer;
+    private final ElementRenderer hudObjectRenderer; // Hearts and other objects on the HUD
 
     private float sinusInput = 0f;  // work as a timer to create a smooth animation with trig functions
-
-    // For zooming
-    private float targetZoom; // targetZoom stores the intermediate zoom value so that we can zoom smoothly
 
     private final Player player;
     public Tiles tiles; // Tile system for the map
     private final Key key;
     TextureRegion keyRegion;
-
-    private final OrthogonalTiledMapRenderer mapRenderer;
-
-    private final ElementRenderer hudObjectRenderer; // Hearts and other objects on the HUD
+    private final Array<Collectibles> collectibles;
 
     private final SpotlightEffect spotlightEffect;
 
@@ -83,7 +78,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final ShaderProgram shader;
     private final Stage stage1;
-    private TextButton button;
 
     // Show all the variables in the bottom-left corner here
     // Variables to show, stored in a map (LinkedHashMap preserves the order)
@@ -124,8 +118,6 @@ public class GameScreen extends InputAdapter implements Screen {
         Viewport viewport1 = new ScreenViewport(hudCamera);
         stage1 = new Stage(viewport1, game.getSpriteBatch());
 
-        game.getPauseMusic();
-
         createIntroPanel();
 
 
@@ -164,6 +156,11 @@ public class GameScreen extends InputAdapter implements Screen {
         // get the array of tiles from our tile generator: tiles.getTiles()
         // and then get the texture region where our key is at
         keyRegion = tiles.getTileset()[Tiles.KEY].getTextureRegion();
+        collectibles = new Array<>();
+
+        // Create collectibles
+        collectibles.add(new Collectibles(100, 200, 32, 32, 32, 32, 32, 32, Collectibles.Type.HEART));
+        collectibles.add(new Collectibles(300, 400, 32, 32, 32, 32, 32, 32, Collectibles.Type.HEART));
 
         // Set up map renderer
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many
@@ -227,7 +224,7 @@ public class GameScreen extends InputAdapter implements Screen {
         table.add(label).padBottom(80).center().row();
         label.getStyle().font.getData().setScale(0.5f);
 
-        button = new TextButton("Start now", game.getSkin());
+        TextButton button = new TextButton("Start now", game.getSkin());
 
         button.addListener(new ChangeListener() {
             @Override
@@ -451,9 +448,13 @@ public class GameScreen extends InputAdapter implements Screen {
 
         updateZoom(delta); // Smoothly adjust zoom
         handleInput(); // handle input of the keys
+
         player.update(delta); // ALL the player functionalities are here
         for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)) {
             enemy.update(delta);
+        }
+        for (Collectibles collectible : collectibles) {
+            collectible.update();
         }
 
         if (!isPaused) {
@@ -483,6 +484,7 @@ public class GameScreen extends InputAdapter implements Screen {
         renderPlayer();
         renderArrow();
         renderKey();
+        renderCollectibles();
 
         renderSpeechBubble();
 
@@ -638,6 +640,13 @@ public class GameScreen extends InputAdapter implements Screen {
         float angle = getAngle(exitPosition);
 
         if (angle > 0) hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
+
+    }
+
+    private void renderCollectibles(){
+        for (Collectibles collectible : collectibles) {
+            collectible.render(game.getSpriteBatch(), game.getHeartAnimation().getKeyFrame(sinusInput, true));
+        }
 
     }
 

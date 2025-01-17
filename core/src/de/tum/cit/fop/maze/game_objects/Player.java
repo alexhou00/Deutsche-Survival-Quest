@@ -76,7 +76,7 @@ public class Player extends Character {
 
     private void handleMovement() {
         float delta = Gdx.graphics.getDeltaTime();
-        Gdx.app.log("player", "running in handle movement");
+        //Gdx.app.log("player", "running in handle movement");
         // define keys pressed to handle keys for player movement; both WASD, and the arrow keys are used
         boolean rightPressed = !isHurt && (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D));
         boolean leftPressed = !isHurt && (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A));

@@ -51,6 +51,8 @@ public class MazeRunnerGame extends Game {
 
     private Map<String, Animation<TextureRegion>> mobGuyAnimations;
 
+    private Animation<TextureRegion> heartAnimation;
+
     Texture backgroundTexture;
 
     Music backgroundMusic, menuMusic, pauseMusic,  gameOverMusic, victorySoundEffect, victoryMusic, soundEffectKey, soundEffectHurt;
@@ -76,7 +78,7 @@ public class MazeRunnerGame extends Game {
 
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
-        this.loadCharacterAnimation(); // Load character animation
+        this.loadAnimation(); // Load character animation
 
         backgroundTexture = new Texture("background.png");
 
@@ -204,9 +206,10 @@ public class MazeRunnerGame extends Game {
     /**
      * Loads the character animation from the character.png file.
      */
-    private void loadCharacterAnimation() {
+    private void loadAnimation() {
         Texture walkSheet = new Texture(Gdx.files.internal("characters/character.png")); // TODO: Redesign our character
         Texture mobGuySheet = new Texture(Gdx.files.internal("characters/mob_guy.png"));
+        Texture objectSheet = new Texture(Gdx.files.internal("original/objects.png"));
 
 
         int frameWidth = 16;
@@ -225,6 +228,8 @@ public class MazeRunnerGame extends Game {
         mobGuyFrames.put("up", new Array<>(TextureRegion.class));
         mobGuyFrames.put("left", new Array<>(TextureRegion.class));
         mobGuyFrames.put("right", new Array<>(TextureRegion.class));
+
+        Array<TextureRegion> heartFrames = new Array<>(TextureRegion.class);
 
                 // Add all frames to the animation
         int framesXOffset = 0; // define how many frames of X to shift to start extracting our character on "character.png"
@@ -245,6 +250,11 @@ public class MazeRunnerGame extends Game {
             mobGuyFrames.get("up").add(new TextureRegion(mobGuySheet, mobFrameSize * animationFrames * 3 + (col) * mobFrameSize, 0, mobFrameSize, mobFrameSize));
         }
 
+        heartFrames.add(new TextureRegion(objectSheet, 2, 51, 11, 11));
+        heartFrames.add(new TextureRegion(objectSheet, 2+16, 51, 11, 11));
+        heartFrames.add(new TextureRegion(objectSheet, 2+16*2, 51, 11, 11));
+        heartFrames.add(new TextureRegion(objectSheet, 2+16*3, 51, 11, 11));
+
 
 
         characterDownAnimation = new Animation<>(0.1f, downFrames);
@@ -258,6 +268,8 @@ public class MazeRunnerGame extends Game {
         mobGuyAnimations.put("left", new Animation<>(0.1f, mobGuyFrames.get("left")));
         mobGuyAnimations.put("right", new Animation<>(0.1f, mobGuyFrames.get("right")));
         mobGuyAnimations.put("up", new Animation<>(0.1f, mobGuyFrames.get("up")));
+
+        heartAnimation = new Animation<>(0.1f, heartFrames);
 
     }
 
@@ -314,6 +326,10 @@ public class MazeRunnerGame extends Game {
 
     public Map<String, Animation<TextureRegion>> getMobGuyAnimations() {
         return mobGuyAnimations;
+    }
+
+    public Animation<TextureRegion> getHeartAnimation() {
+        return heartAnimation;
     }
 
     public Texture getBackgroundTexture() {
