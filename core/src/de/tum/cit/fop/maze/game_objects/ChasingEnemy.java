@@ -1,6 +1,7 @@
 package de.tum.cit.fop.maze.game_objects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -18,6 +19,7 @@ public class ChasingEnemy extends Character {
     private final float detectionRadius;
     private boolean isChasing;
     private final TextureRegion enemyTexture;
+    private final TextureRegion alertSymbolTexture;
 
     private static final float ENEMY_BASE_SPEED = 180f;// we can change it when we want to
 
@@ -62,6 +64,7 @@ public class ChasingEnemy extends Character {
 
         // Load the enemy's texture
         this.enemyTexture = textureRegion; // Texture("mobs.png"); // Make sure the path matches your assets folder
+        this.alertSymbolTexture = new TextureRegion(new Texture(Gdx.files.internal("original/objects.png")), 32, 130, 13, 12);
     }
 
     public void init(Player player) {
@@ -306,6 +309,7 @@ public class ChasingEnemy extends Character {
      */
     public void draw(SpriteBatch batch, TextureRegion textureRegion) {
         batch.draw(textureRegion, x - widthOnScreen / 2, y - heightOnScreen / 2, widthOnScreen, heightOnScreen);
+        if (isChasing) batch.draw(alertSymbolTexture, x - 13 * 2, y + heightOnScreen / 1.5f, 13 * 4, 12 * 4);
     }
 
     @Override
