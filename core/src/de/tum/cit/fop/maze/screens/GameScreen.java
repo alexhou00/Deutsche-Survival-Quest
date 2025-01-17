@@ -399,6 +399,12 @@ public class GameScreen extends InputAdapter implements Screen {
 
         game.checkExitToNextLevel(player);
 
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        drawMapBorder();
+        renderStamina();
+        shapeRenderer.end();
+
         game.getSpriteBatch().begin();
         renderTrap();
         // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
@@ -407,26 +413,15 @@ public class GameScreen extends InputAdapter implements Screen {
         renderArrow();
         renderKey();
 
-        if (player.canSpeak) {
-            player.getSpeechBubble().show(5.0f);
-            player.canSpeak = false;
-        }
-
-        player.say("""
-                        The quick brown fox jumps over the lazy dog.
-                        Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.
-                        """, game.getSpriteBatch(),
-                true, player.getSpeechBubble().getElapsedTime(), 0.03f);
+        renderSpeechBubble();
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
 
-        renderStamina();
-        drawMapBorder();
 
         moveCamera();
 
         stage1.act(delta);
-        stage1.draw(); // Draw the
+        stage1.draw(); // stage1 is for the panels, like the intro panel and the pause panel
         // renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
 
         renderHUD();
@@ -456,10 +451,10 @@ public class GameScreen extends InputAdapter implements Screen {
         // if (mapTiles.isEmpty()) return;
 
         // Set up ShapeRenderer to match game world projection
-        shapeRenderer.setProjectionMatrix(game.getSpriteBatch().getProjectionMatrix());
+        //shapeRenderer.setProjectionMatrix(game.getSpriteBatch().getProjectionMatrix());
 
         // Begin drawing with filled shapes for the border
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        //shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.WHITE); // Set border color
 
         // Draw top border (horizontal)
@@ -475,7 +470,7 @@ public class GameScreen extends InputAdapter implements Screen {
         shapeRenderer.rect(getWorldWidth() , -TILE_SIZE, TILE_SIZE, (getWorldHeight() + (2*TILE_SIZE)));
 
         // End drawing the border
-        shapeRenderer.end();
+        //shapeRenderer.end();
     }
 
     /**
@@ -573,6 +568,19 @@ public class GameScreen extends InputAdapter implements Screen {
 
         if (angle > 0) hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
 
+    }
+
+    private void renderSpeechBubble(){
+        if (player.canSpeak) {
+            player.getSpeechBubble().show(5.0f);
+            player.canSpeak = false;
+        }
+
+        player.say("""
+                        The quick brown fox jumps over the lazy dog.
+                        Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.
+                        """, game.getSpriteBatch(),
+                true, player.getSpeechBubble().getElapsedTime(), 0.03f);
     }
 
     private void handlePauseInput(){
@@ -683,8 +691,8 @@ public class GameScreen extends InputAdapter implements Screen {
         float offsetY = player.getHitboxHeightOnScreen() / 2 + 5;
         float staminaX = player.getX() + offsetX;// + staminaRadius / 2;
         float staminaY = player.getY() + offsetY;// - staminaRadius;
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        //shapeRenderer.setProjectionMatrix(camera.combined);
+        //shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         // Draw the background circle (full arc for reference)
         shapeRenderer.setColor(Color.DARK_GRAY);
@@ -695,7 +703,7 @@ public class GameScreen extends InputAdapter implements Screen {
         float angle = (player.getStamina() / Player.maxStamina) * 360f; // Calculate the angle based on stamina
         shapeRenderer.arc(staminaX, staminaY, staminaRadius, 90 - angle, angle); // Draw arc clockwise
 
-        shapeRenderer.end();
+        //shapeRenderer.end();
     }
 
     /**
@@ -875,8 +883,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
     @Override
     public void dispose() {
-        //shapeRenderer.dispose(); //TODO: if not used even the project is finished, delete this.
-        // TODO: i think we shouldn't even dispose the shapeRenderer, right?
+        //shapeRenderer.dispose();
+        // i think we shouldn't even dispose the shapeRenderer, right? (else the program will exit unexpectedly)
         mapRenderer.dispose();
         hudObjectRenderer.dispose();
     }
