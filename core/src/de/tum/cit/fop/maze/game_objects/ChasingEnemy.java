@@ -11,6 +11,7 @@ import de.tum.cit.fop.maze.base.Character;
 import de.tum.cit.fop.maze.level.Tiles;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
+import static java.lang.Math.abs;
 
 public class ChasingEnemy extends Character {
 
@@ -30,6 +31,8 @@ public class ChasingEnemy extends Character {
     private float damageCooldown = 0;
     private static final int MAX_DAMAGE_TIMES = 3;
     private int damageTimes = 0;
+    private final float ALERT_SHOWING_TIME = 1.5f;
+    private float alertTime = 0;
 
     private Player player = null;
 
@@ -82,8 +85,11 @@ public class ChasingEnemy extends Character {
 
         // rectangle.set();
         // Check if the player is within the detection radius
-        if (isPlayerWithinDetectionRadius(player) && damageTimes<3) {
+        if (isPlayerWithinDetectionRadius(player) && damageTimes < MAX_DAMAGE_TIMES) {
             // If the player is within the detection radius, chase the player
+            if (!isChasing){ // previously, it wasn't chasing
+                alertTime = ALERT_SHOWING_TIME; // reset the time that the exclamation mark [!] need to be shown
+            }
             isChasing = true;
             chase(player, delta); // Call the chase method
             Gdx.app.log("Enemy", "Chasing the player");
@@ -104,8 +110,6 @@ public class ChasingEnemy extends Character {
             if (randomMoveCooldown <= 0) {
                 // Set a new random target position
                 setRandomTarget();
-                damageTimes = 0;
-                Gdx.app.log("Enemy", "Reset cooldown");
             }
             moveTowardsTarget(delta); // Gradually move towards the random target
             //Gdx.app.log("Enemy", "Move Randomly");
@@ -153,6 +157,7 @@ public class ChasingEnemy extends Character {
      * @param delta The delta time.
      */
     private void chase(Player player, float delta) {
+        alertTime -= delta;
         if (damageCooldown <= 0) {
             /*if ((damageTimes < 3)) {*/
                 targetX = player.getX();
@@ -188,7 +193,11 @@ public class ChasingEnemy extends Character {
 
         // Normalize the direction vector
         float distance = (float) Math.sqrt(dirX * dirX + dirY * dirY);
-        if (distance < ENEMY_BASE_SPEED * delta * 2) return;
+        if (distance < ENEMY_BASE_SPEED * delta * 2){ // if already arrived at the target (distance is within the error)
+            setRandomTarget();
+            return;
+        }
+
         dirX = dirX / distance * 3; // dirX is in [-3, 3], scaling for the input of tanh
         dirY = dirY / distance * 3;
 
@@ -204,11 +213,13 @@ public class ChasingEnemy extends Character {
         if (canMoveTo(newX, y)) {
             x = x + velX * delta; // Move horizontally if no collision
         }
-        else setRandomTarget();
+        else
+            setRandomTarget();
         if (canMoveTo(x, newY)) {
             y = y + velY * delta; // Move vertically if no collision
         }
-        else setRandomTarget();
+        else
+            setRandomTarget();
 
         // Constrain enemy position within the game world boundaries
         x = MathUtils.clamp(x, hitboxWidthOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2);
@@ -237,8 +248,8 @@ public class ChasingEnemy extends Character {
             if (trap.isTouching(this)) {
                 System.out.println("A chasing enemy has hit a trap :O00");
                 // step back to original
-                float dx = ((trap.getX() - x) > 0) ? -1 * velX * delta : 1 * velX * delta;
-                float dy = ((trap.getY() - y) > 0) ? -1 * velY * delta : 1 * velY * delta;
+                float dx = ((trap.getX() - x) > 0) ? -1 * abs(velX) * delta : 1 * abs(velX) * delta; // if trap is on the right then
+                float dy = ((trap.getY() - y) > 0) ? -1 * abs(velY) * delta : 1 * abs(velY) * delta;
                 if (super.canMoveTo(x + dx, y + dy)){ // only detect touching walls, so step back to where there are no walls
                     x += dx;
                     y += dy;
@@ -279,9 +290,12 @@ public class ChasingEnemy extends Character {
         }
 
         randomMoveCooldown = RANDOM_MOVE_TIME; // Reset cooldown
+
+        damageTimes = 0;
+        Gdx.app.log("Enemy", "Reset cooldown");
     }
 
-    // overloaded
+    // overloaded, default to the entire screen
     private void setRandomTarget() {
         setRandomTarget(hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
     }
@@ -309,7 +323,7 @@ public class ChasingEnemy extends Character {
      */
     public void draw(SpriteBatch batch, TextureRegion textureRegion) {
         batch.draw(textureRegion, x - widthOnScreen / 2, y - heightOnScreen / 2, widthOnScreen, heightOnScreen);
-        if (isChasing) batch.draw(alertSymbolTexture, x - 13 * 2, y + heightOnScreen / 1.5f, 13 * 4, 12 * 4);
+        if (alertTime>0 && isChasing) batch.draw(alertSymbolTexture, x - 13 * 2, y + heightOnScreen / 1.5f, 13 * 4, 12 * 4);
     }
 
     @Override
