@@ -93,7 +93,7 @@ public class ChasingEnemy extends Character {
             }
             isChasing = true;
             chase(player, delta); // Call the chase method
-            Gdx.app.log("Enemy", "Chasing the player");
+            //Gdx.app.log("Enemy", "Chasing the player");
         } else {
             // If the player is outside the detection radius, move randomly
             if (!isPlayerWithinDetectionRadius(player)) // if player isn't close enough anymore
@@ -141,8 +141,8 @@ public class ChasingEnemy extends Character {
             damageCooldown = DAMAGE_COOLDOWN_TIME; // Reset the cooldown
             damageTimes++;
             System.out.println("The enemy touched the player! Player loses 1 life.");
-            System.out.println("this.hitbox: " + this.getHitbox());
-            System.out.println("player.hitbox: " + player.getHitbox());
+            //System.out.println("this.hitbox: " + this.getHitbox());
+            //System.out.println("player.hitbox: " + player.getHitbox());
             //stepBack(player);
         }
     }

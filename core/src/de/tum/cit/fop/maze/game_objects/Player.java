@@ -45,6 +45,7 @@ public class Player extends Character {
     private static final float BOOST_MULTIPLIER = 2f; // the speed will be multiplied by this number when the SHIFT key is pressed
     private static final float SMOOTH_FACTOR = 5f; // the lower the value, the smoother it gets (and needs more time to stop)
 
+    private static final float SPEED_THRESHOLD = 5; // a number to determine if the player has stopped moving or not. if lower than this number, it is considered that the player has stopped moving.
 
     /**
      * Constructor for Player. This is our main character <br>
@@ -96,7 +97,7 @@ public class Player extends Character {
         if (downPressed) lastVerticalDirection = -1;
 
         // to have the player stop the animation if none of the keys are pressed or continues with the animation otherwise
-        isMoving = (abs(velX) > 5 || abs(velY) >5);  // horizontalInput != 0 || verticalInput != 0;
+        isMoving = (abs(velX) > SPEED_THRESHOLD || abs(velY) > SPEED_THRESHOLD);  // horizontalInput != 0 || verticalInput != 0;
 
         // speed is doubled (times the `BOOST_MULTIPLIER`) when: (1) SHIFT key is hold OR (2) touching a speed boost tile
         // final speed is speed * FPS (delta), since the speed should be independent of the FPS
@@ -107,10 +108,10 @@ public class Player extends Character {
         if (verticalInput == 0) targetVelY = 0;
         else targetVelY = isBoosting ? (lastVerticalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastVerticalDirection * BASE_SPEED);
 
-        if (boostPressed && speed > 0) {
+        if (boostPressed && speed > SPEED_THRESHOLD && !isHurt) { // if SHIFT is pressed and the player is indeed moving, plus if not being restricted in movement (because of the enemy attack)
             stamina -= staminaDepleteRate * delta; // Deplete stamina
             stamina = Math.max(stamina, 0); // Ensure it doesn't go negative
-        } else {
+        } else if (!isHurt) { // if the player is being hurt, it doesn't regen either
             stamina += staminaRegenRate * delta; // Regenerate stamina
             stamina = Math.min(stamina, maxStamina); // Cap at maxStamina
         }
@@ -145,8 +146,8 @@ public class Player extends Character {
         velY += (targetVelY - velY) * SMOOTH_FACTOR * delta;
 
         // reset last movement direction if the velocity drops below the threshold
-        if (abs(velX) < 5) lastHorizontalDirection = 0;
-        if (abs(velY) < 5) lastVerticalDirection = 0;
+        if (abs(velX) < SPEED_THRESHOLD) lastHorizontalDirection = 0;
+        if (abs(velY) < SPEED_THRESHOLD) lastVerticalDirection = 0;
 
         // update the player's coordinates
         float newX = x + velX * delta; // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
