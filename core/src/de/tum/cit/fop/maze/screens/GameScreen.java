@@ -35,6 +35,7 @@ import de.tum.cit.fop.maze.rendering.SpotlightEffect;
 import de.tum.cit.fop.maze.tiles.Exit;
 import de.tum.cit.fop.maze.util.Position;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -156,11 +157,13 @@ public class GameScreen extends InputAdapter implements Screen {
         // get the array of tiles from our tile generator: tiles.getTiles()
         // and then get the texture region where our key is at
         keyRegion = tiles.getTileset()[Tiles.KEY].getTextureRegion();
-        collectibles = new Array<>();
 
+        collectibles = new Array<>();
+        System.out.println(Arrays.deepToString(tiles.getTileEnumOnMap()));
+        spawnCollectibles();
         // Create collectibles
-        collectibles.add(new Collectibles(100, 200, 32, 32, 32, 32, 32, 32, Collectibles.Type.HEART));
-        collectibles.add(new Collectibles(300, 400, 32, 32, 32, 32, 32, 32, Collectibles.Type.HEART));
+        //collectibles.add(new Collectibles(100, 200, 32, 32, 32, 32, 32, 32, Collectibles.Type.HEART));
+        //collectibles.add(new Collectibles(300, 400, 32, 32, 32, 32, 32, 32, Collectibles.Type.HEART));
 
         // Set up map renderer
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many
@@ -183,8 +186,12 @@ public class GameScreen extends InputAdapter implements Screen {
         //chasingEnemy.add(chasingEnemy1); // Add enemy targeting the player*/
         //chasingEnemy = new ChasingEnemy(0, 0, 32, 32, 32, 32, 64, 64, 3, this, tiles.layer, player); //new TextureRegion(new Texture(Gdx.files.internal( "mob_guy.png")), 0, 0, 32, 32));
 
+        // for whatever that requires touching the player
         for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)){
             enemy.init(player);
+        }
+        for (Collectibles collectible : new Array.ArrayIterator<>(collectibles)){
+            collectible.init(player, game.getSoundEffectKey());
         }
 
         //popUpPanel = new PopUpPanel();
@@ -207,6 +214,32 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
         //createPausePanel();
+    }
+
+    private void spawnCollectibles() {
+        // Get the 2D array of tiles
+        // Find all "OTHER" tiles
+        Array<Position> emptyTiles = new Array<>();
+        for (int x = 0; x < tiles.getTileEnumOnMap().length; x++) {
+            for (int y = 0; y < tiles.getTileEnumOnMap()[x].length; y++) {
+                if (tiles.getTileEnumOnMap()[x][y] == Tiles.TileType.OTHER) {
+                    emptyTiles.add(new Position(x, y, TILES));
+                }
+            }
+        }
+
+        // Randomly select 5 unique "OTHER" tiles
+        int collectiblesToGenerate = Math.min(5, emptyTiles.size);
+        for (int i = 0; i < collectiblesToGenerate; i++) {
+            int randomIndex = MathUtils.random(emptyTiles.size - 1);
+            Position position = emptyTiles.removeIndex(randomIndex).convertTo(PIXELS); // Remove selected position to avoid duplicates
+            float worldX = position.getX();
+            float worldY = position.getY();
+
+            // Generate a collectible at the selected position
+            collectibles.add(new Collectibles(worldX, worldY, 11, 11, 11, 11,
+                    48, 48, Collectibles.Type.HEART));
+        }
     }
 
     public void createIntroPanel(){
@@ -453,8 +486,13 @@ public class GameScreen extends InputAdapter implements Screen {
         for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)) {
             enemy.update(delta);
         }
-        for (Collectibles collectible : collectibles) {
-            collectible.update();
+        for (int i = collectibles.size - 1; i >= 0; i--) {
+            Collectibles collectible = collectibles.get(i);
+            if (collectible.isCollected()) {
+                collectibles.removeIndex(i);
+            } else {
+                collectible.update();
+            }
         }
 
         if (!isPaused) {
@@ -645,7 +683,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private void renderCollectibles(){
         for (Collectibles collectible : collectibles) {
-            collectible.render(game.getSpriteBatch(), game.getHeartAnimation().getKeyFrame(sinusInput, true));
+            collectible.render(game.getSpriteBatch(), game.getHeartAnimation().getKeyFrame(sinusInput/1.5f, true));
         }
 
     }

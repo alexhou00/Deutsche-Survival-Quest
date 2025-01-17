@@ -1,5 +1,7 @@
 package de.tum.cit.fop.maze.game_objects;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.tum.cit.fop.maze.base.GameObject;
@@ -15,6 +17,10 @@ public class Collectibles extends GameObject {
     private final Type type; // The type of collectible
     private boolean collected; // Whether the collectible has been picked up
     private final TextureRegion textureRegion; // Texture to render the collectible
+
+    private Player player = null;
+
+    Music soundEffectCollect;
 
     /**
      * Constructs a new GameObject instance with specified parameters.
@@ -33,6 +39,11 @@ public class Collectibles extends GameObject {
         this.type = type;
         this.textureRegion = null; //textureRegion;
         this.collected = false;
+    }
+
+    public void init(Player player, Music soundEffect) {
+        this.player = player;
+        this.soundEffectCollect = soundEffect;
     }
 
     /**
@@ -76,6 +87,17 @@ public class Collectibles extends GameObject {
      * Could include logic like animations or interactions in the future.
      */
     public void update() {
-        // Placeholder for future logic (e.g., animations)
+        // Placeholder for looping logic
+        if (!isCollected() && isTouching(player)){
+            collected = true;
+            soundEffectCollect.play();
+            switch (this.getType()) {
+                case HEART:
+                    player.setLives(player.getLives() + 1);
+                    break;
+                case SPEED_BOOST:
+
+            }
+        }
     }
 }

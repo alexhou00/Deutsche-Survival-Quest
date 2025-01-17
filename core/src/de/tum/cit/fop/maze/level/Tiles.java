@@ -81,6 +81,19 @@ public class Tiles {
             .boxed()
             .collect(Collectors.toSet());
 
+    public enum TileType{
+        WALL,
+        ENTRANCE,
+        EXIT,
+        KEY,
+        TRAP,
+        ENEMY,
+        SPEED_BOOST,
+        OTHER // like the ground
+    }
+
+    private TileType[][] tileEnumOnMap;
+
     /**
      * Constructor: initializes the Tiles object with default values.
      */
@@ -195,6 +208,7 @@ public class Tiles {
             if (isPositionKnown){
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                tileEnumOnMap[x][y] = TileType.WALL;
             }
 
             return tile;
@@ -207,6 +221,7 @@ public class Tiles {
                 entrance.setTilePosition(new Position(x, y, TILES));
                 tileOnMap[x][y] = entrance;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                tileEnumOnMap[x][y] = TileType.ENTRANCE;
             }
 
             return entrance;
@@ -220,6 +235,7 @@ public class Tiles {
                 exits.add(exit);
                 tileOnMap[x][y] = exit;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                tileEnumOnMap[x][y] = TileType.EXIT;
             }
 
 
@@ -232,6 +248,7 @@ public class Tiles {
             if (isPositionKnown){
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                tileEnumOnMap[x][y] = TileType.TRAP;
             }
 
             return tile;
@@ -243,6 +260,7 @@ public class Tiles {
             if (isPositionKnown){
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                tileEnumOnMap[x][y] = TileType.ENEMY;
             }
             return tile;
         }
@@ -254,6 +272,7 @@ public class Tiles {
             if (isPositionKnown){
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                tileEnumOnMap[x][y] = TileType.SPEED_BOOST;
             }
 
             return tile;
@@ -265,6 +284,7 @@ public class Tiles {
             if (isPositionKnown){
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                tileEnumOnMap[x][y] = TileType.OTHER;
             }
 
             return tile;
@@ -326,6 +346,7 @@ public class Tiles {
         TiledMap map = new TiledMap();
 
         tileOnMap = new Tile[mapWidthInTiles][mapHeightInTiles]; // stores the tile in that cell that is on the most upper layer
+        tileEnumOnMap = new TileType[mapWidthInTiles][mapHeightInTiles];
 
         // iterate every layer, since there could be two of them
         // (the first one is the ground, and the second is some additional stuff on it)
@@ -466,6 +487,15 @@ public class Tiles {
     public Tile getTileOnMap(int x, int y) {
         return tileOnMap[x][y];
     }
+
+    public TileType[][] getTileEnumOnMap() {
+        return tileEnumOnMap;
+    }
+
+    public TileType getTileEnumOnMap(int x, int y) {
+        return tileEnumOnMap[x][y];
+    }
+
 
     public Exit getNearestExit(float playerX, float playerY){
         // find the nearest exit to (x,y) to this.exits
