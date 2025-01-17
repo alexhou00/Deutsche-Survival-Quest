@@ -8,6 +8,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.base.Character;
+import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.level.Tiles;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
@@ -95,6 +96,8 @@ public class ChasingEnemy extends Character {
             Gdx.app.log("Enemy", "Chasing the player");
         } else {
             // If the player is outside the detection radius, move randomly
+            if (!isPlayerWithinDetectionRadius(player)) // if player isn't close enough anymore
+                damageTimes = 0; // immediately reset back the times it has damaged the player
             if (isChasing){ // previously, it was chasing
                 float dx = player.getX() - x; // dx > 0 means the player is on the right side, < 0 if on the left.
                 float dy = player.getY() - y; // same for dy
@@ -110,6 +113,8 @@ public class ChasingEnemy extends Character {
             if (randomMoveCooldown <= 0) {
                 // Set a new random target position
                 setRandomTarget();
+                damageTimes = 0; // reset damage times
+                Gdx.app.log("Enemy", "Reset cooldown");
             }
             moveTowardsTarget(delta); // Gradually move towards the random target
             //Gdx.app.log("Enemy", "Move Randomly");
@@ -248,23 +253,27 @@ public class ChasingEnemy extends Character {
             if (trap.isTouching(this)) {
                 System.out.println("A chasing enemy has hit a trap :O00");
                 // step back to original
-                float dx = ((trap.getX() - x) > 0) ? -1 * abs(velX) * delta : 1 * abs(velX) * delta; // if trap is on the right then
-                float dy = ((trap.getY() - y) > 0) ? -1 * abs(velY) * delta : 1 * abs(velY) * delta;
-                if (super.canMoveTo(x + dx, y + dy)){ // only detect touching walls, so step back to where there are no walls
-                    x += dx;
-                    y += dy;
-                }
-                setRandomTarget();
+                stepBackABit(delta, trap);
             }
         }
 
 
         // Check for collision with enemies
-        /*for (ChasingEnemy enemy : chasingEnemies) {
-            if (enemy.isTouching(this)) {
-                enemy.checkPlayerCollision(this);
+        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)) {
+            if (!enemy.equals(this) && enemy.isTouching(this)) {
+                stepBackABit(delta, enemy);
             }
-        }*/
+        }
+    }
+
+    private void stepBackABit(float delta, GameObject other){
+        float dx = ((other.getX() - x) > 0) ? -1 * abs(velX) * delta : 1 * abs(velX) * delta; // if trap is on the right then
+        float dy = ((other.getY() - y) > 0) ? -1 * abs(velY) * delta : 1 * abs(velY) * delta;
+        if (super.canMoveTo(x + dx, y + dy)){ // only detect touching walls, so step back to where there are no walls
+            x += dx;
+            y += dy;
+        }
+        setRandomTarget();
     }
 
     private boolean isTouchingTraps() {
@@ -290,9 +299,6 @@ public class ChasingEnemy extends Character {
         }
 
         randomMoveCooldown = RANDOM_MOVE_TIME; // Reset cooldown
-
-        damageTimes = 0;
-        Gdx.app.log("Enemy", "Reset cooldown");
     }
 
     // overloaded, default to the entire screen
