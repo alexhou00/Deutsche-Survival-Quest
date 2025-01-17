@@ -226,7 +226,13 @@ public class GameScreen extends InputAdapter implements Screen {
         }
 
         // Randomly select 5 unique "OTHER" tiles
-        int collectiblesToGenerate = Math.min(25, emptyTiles.size);
+        generateCollectibles(emptyTiles, Collectibles.Type.HEART, 5, 11, 48);
+
+        generateCollectibles(emptyTiles, Collectibles.Type.COIN, 5, 11, 48);
+    }
+
+    private void generateCollectibles(Array<Position> emptyTiles, Collectibles.Type type, int numberToGenerate, int imageSize, float sizeOnScreen) {
+        int collectiblesToGenerate = Math.min(numberToGenerate, emptyTiles.size);
         for (int i = 0; i < collectiblesToGenerate; i++) {
             int randomIndex = MathUtils.random(emptyTiles.size - 1);
             Position position = emptyTiles.removeIndex(randomIndex).convertTo(PIXELS); // Remove selected position to avoid duplicates
@@ -234,8 +240,8 @@ public class GameScreen extends InputAdapter implements Screen {
             float worldY = position.getY();
 
             // Generate a collectible at the selected position
-            collectibles.add(new Collectibles(worldX, worldY, 11, 11, 11, 11,
-                    48, 48, Collectibles.Type.HEART));
+            collectibles.add(new Collectibles(worldX, worldY, imageSize, imageSize, imageSize, imageSize,
+                    sizeOnScreen, sizeOnScreen, type));
         }
     }
 
@@ -680,7 +686,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private void renderCollectibles(){
         for (Collectibles collectible : collectibles) {
-            collectible.render(game.getSpriteBatch(), game.getHeartAnimation().getKeyFrame(sinusInput/1.5f, true));
+            if (collectible.getType().equals(Collectibles.Type.HEART))
+                collectible.render(game.getSpriteBatch(), game.getHeartAnimation().getKeyFrame(sinusInput/1.5f, true));
+            else if (collectible.getType().equals(Collectibles.Type.COIN)){
+                collectible.render(game.getSpriteBatch(), game.getCoinAnimation().getKeyFrame(sinusInput/1.5f, true));
+            }
         }
 
     }
@@ -833,7 +843,7 @@ public class GameScreen extends InputAdapter implements Screen {
         variablesToShow.put("player.y", player.getY());
         variablesToShow.put("player.speed", player.getSpeed());
         variablesToShow.put("camera zoom", camera.zoom);
-        variablesToShow.put("player.stamina", player.getStamina());
+        variablesToShow.put("player.coins", (float) player.getCoins());
         drawVariables(variablesToShow);
 
         game.getSpriteBatch().end();

@@ -11,7 +11,8 @@ public class Collectibles extends GameObject {
     public enum Type{
         HEART,
         SPEED_BOOST,
-        SHIELD
+        SHIELD,
+        COIN
     }
 
     private final Type type; // The type of collectible
@@ -95,7 +96,9 @@ public class Collectibles extends GameObject {
                 case HEART:
                     player.setLives(player.getLives() + 1);
                     break;
-                case SPEED_BOOST:
+                case COIN:
+                    player.setCoins(player.getCoins() + 1);
+                    break;
 
             }
         }

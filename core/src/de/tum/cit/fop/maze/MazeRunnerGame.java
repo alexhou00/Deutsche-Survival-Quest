@@ -52,6 +52,7 @@ public class MazeRunnerGame extends Game {
     private Map<String, Animation<TextureRegion>> mobGuyAnimations;
 
     private Animation<TextureRegion> heartAnimation;
+    private Animation<TextureRegion> coinAnimation;
 
     Texture backgroundTexture;
 
@@ -230,6 +231,7 @@ public class MazeRunnerGame extends Game {
         mobGuyFrames.put("right", new Array<>(TextureRegion.class));
 
         Array<TextureRegion> heartFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> coinFrames = new Array<>(TextureRegion.class);
 
                 // Add all frames to the animation
         int framesXOffset = 0; // define how many frames of X to shift to start extracting our character on "character.png"
@@ -255,6 +257,9 @@ public class MazeRunnerGame extends Game {
         heartFrames.add(new TextureRegion(objectSheet, 2+16*2, 51, 11, 11));
         heartFrames.add(new TextureRegion(objectSheet, 2+16*3, 51, 11, 11));
 
+        for (int i=0;i<4;i++)
+            coinFrames.add(new TextureRegion(objectSheet, 2+16*i, 66, 11, 11));
+
 
 
         characterDownAnimation = new Animation<>(0.1f, downFrames);
@@ -270,6 +275,7 @@ public class MazeRunnerGame extends Game {
         mobGuyAnimations.put("up", new Animation<>(0.1f, mobGuyFrames.get("up")));
 
         heartAnimation = new Animation<>(0.1f, heartFrames);
+        coinAnimation = new Animation<>(0.1f, coinFrames);
 
     }
 
@@ -331,6 +337,11 @@ public class MazeRunnerGame extends Game {
     public Animation<TextureRegion> getHeartAnimation() {
         return heartAnimation;
     }
+
+    public Animation<TextureRegion> getCoinAnimation() {
+        return coinAnimation;
+    }
+
 
     public Texture getBackgroundTexture() {
         return backgroundTexture;

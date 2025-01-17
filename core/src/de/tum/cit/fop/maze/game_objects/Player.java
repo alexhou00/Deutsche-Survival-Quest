@@ -29,6 +29,8 @@ public class Player extends Character {
     private boolean isHurt = false;
     private float hurtTimer = 0f; // Timer for the red tint
 
+    private int coins = 0;
+
     private float stamina;
     public static final float maxStamina = 100f; // Maximum stamina value
     private static final float staminaRegenRate = 15f; // Stamina regenerate per second
@@ -314,5 +316,13 @@ public class Player extends Character {
 
     public void setPaused(boolean paused){
         this.paused = paused;
+    }
+
+    public int getCoins() {
+        return coins;
+    }
+
+    public void setCoins(int coins) {
+        this.coins = coins;
     }
 }
