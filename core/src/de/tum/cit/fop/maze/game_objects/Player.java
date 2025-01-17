@@ -129,7 +129,7 @@ public class Player extends Character {
             canMoveVertically = true;
             targetVelX *= 4;
             targetVelY *= 4;
-            lives = 100;
+            lives = 5;
         }
 
 

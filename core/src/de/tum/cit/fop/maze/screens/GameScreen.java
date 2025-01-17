@@ -35,6 +35,7 @@ import de.tum.cit.fop.maze.game_objects.Trap;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.rendering.ElementRenderer;
 import de.tum.cit.fop.maze.rendering.SpotlightEffect;
+import de.tum.cit.fop.maze.tiles.Exit;
 import de.tum.cit.fop.maze.util.Position;
 
 import java.util.LinkedHashMap;
@@ -123,7 +124,10 @@ public class GameScreen extends InputAdapter implements Screen {
         Viewport viewport1 = new ScreenViewport(hudCamera);
         stage1 = new Stage(viewport1, game.getSpriteBatch());
 
+        game.getPauseMusic();
+
         createIntroPanel();
+
 
         // We use an InputMultiplexer instead of only stage or "this",
         // since both stage1 (for intro panel) and the GameScreen (for scrolling) handle inputs
@@ -209,6 +213,7 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createIntroPanel(){
+       // game.getPauseMusic().pause();
         Table table = new Table();
         Drawable background = createSolidColorDrawable(Color.WHITE);
         stage1.addActor(table);
@@ -297,6 +302,62 @@ public class GameScreen extends InputAdapter implements Screen {
         //ExitGameButton.setPosition(200, 800); // Set a clear position on the stage
     }
 
+    public void createVictoryPanel() {
+        System.out.println("Victory panel created");
+
+        Table victoryPanelTable = new Table();
+        Drawable background = createSolidColorDrawable(Color.GOLD); // Gold background to signify victory
+        stage1.addActor(victoryPanelTable);
+
+        final float BUTTON_PADDING = 10f; // Vertical padding
+
+        victoryPanelTable.setBackground(background);
+        victoryPanelTable.setSize(Gdx.graphics.getWidth() * 0.8f, Gdx.graphics.getHeight() * 0.6f);
+        victoryPanelTable.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.2f);
+
+        Label victoryLabel = new Label("Victory!", game.getSkin(), "title");
+        victoryPanelTable.add(victoryLabel).padBottom(80).center().row();
+        victoryLabel.getStyle().font.getData().setScale(0.5f);
+
+        Button nextLevelButton =  new TextButton("Next Level", game.getSkin());
+        nextLevelButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor){
+                Gdx.app.log("next level", "Next Level");
+                victoryLabel.remove(); // Change to the game screen when the button is pressed
+                victoryPanelTable.remove();
+                game.resume();
+                isPaused = false;
+            }});
+        victoryPanelTable.add(nextLevelButton).padBottom(BUTTON_PADDING).row();
+
+        /*Button playAgainButton = new TextButton("Play Again", game.getSkin());
+        playAgainButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //game.restartLevel(); // Restart the current level
+            }
+        });
+        victoryPanelTable.add(playAgainButton).padBottom(BUTTON_PADDING).row();*/
+
+        Button goToMenuButton = new TextButton("Back to Menu", game.getSkin());
+        goToMenuButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.goToMenu(); // Navigate back to the main menu
+            }
+        });
+        victoryPanelTable.add(goToMenuButton).padBottom(BUTTON_PADDING).row();
+
+        /*Button exitGameButton = new TextButton("Exit Game", game.getSkin());
+        exitGameButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.exitGame(); // Exit the game
+            }
+        });
+        victoryPanelTable.add(exitGameButton).padBottom(BUTTON_PADDING).row();*/
+    }
 
 
     /**
@@ -393,6 +454,16 @@ public class GameScreen extends InputAdapter implements Screen {
         player.update(delta); // ALL the player functionalities are here
         for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)) {
             enemy.update(delta);
+        }
+
+        if (!isPaused) {
+            //super.render(delta); // Continue game updates
+            if (key.isCollected() && player.isCenterTouchingTile(Exit.class)) {
+                createVictoryPanel();
+                isPaused = true;
+                game.pause(); // Pause game updates
+                game.getVictorySoundEffect(); // Play only the victory music
+            }
         }
 
         renderGameWorld();
