@@ -376,6 +376,7 @@ public class Tiles {
                         float worldY = trapPosition.getY();
                         // a new instance of trap is created here
                         traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,16,16,TILE_SCREEN_SIZE * 0.8f, TILE_SCREEN_SIZE * 0.8f, 1));
+                        tileEnumOnMap[x][y] = TileType.TRAP;  // fixing the problem that somehow hearts is spawning on traps, it's actually because createTile() is not called so that tileEnumOnMap isn't updated
                     }
 
                     else if (CHASING_ENEMIES.contains(tileValue)){//an enemy or a chasing enemy i myself don't know it yet
@@ -385,7 +386,6 @@ public class Tiles {
                         int worldX = chasingEnemyPosition.getTileX();
                         int worldY = chasingEnemyPosition.getTileY();
                         chasingEnemies.add(new ChasingEnemy(tile.getTextureRegion(), worldX, worldY, 16, 16, 10, 16, 64, 64, 3, this));
-
                     }
                     else { // if it is neither a trap nor a key, which is the default one
 

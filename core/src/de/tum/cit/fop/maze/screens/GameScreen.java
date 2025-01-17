@@ -161,9 +161,6 @@ public class GameScreen extends InputAdapter implements Screen {
         collectibles = new Array<>();
         System.out.println(Arrays.deepToString(tiles.getTileEnumOnMap()));
         spawnCollectibles();
-        // Create collectibles
-        //collectibles.add(new Collectibles(100, 200, 32, 32, 32, 32, 32, 32, Collectibles.Type.HEART));
-        //collectibles.add(new Collectibles(300, 400, 32, 32, 32, 32, 32, 32, Collectibles.Type.HEART));
 
         // Set up map renderer
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many
@@ -222,14 +219,14 @@ public class GameScreen extends InputAdapter implements Screen {
         Array<Position> emptyTiles = new Array<>();
         for (int x = 0; x < tiles.getTileEnumOnMap().length; x++) {
             for (int y = 0; y < tiles.getTileEnumOnMap()[x].length; y++) {
-                if (tiles.getTileEnumOnMap()[x][y] == Tiles.TileType.OTHER) {
+                if (tiles.getTileEnumOnMap()[x][y] == Tiles.TileType.OTHER || tiles.getTileEnumOnMap()[x][y] == null) {
                     emptyTiles.add(new Position(x, y, TILES));
                 }
             }
         }
 
         // Randomly select 5 unique "OTHER" tiles
-        int collectiblesToGenerate = Math.min(5, emptyTiles.size);
+        int collectiblesToGenerate = Math.min(25, emptyTiles.size);
         for (int i = 0; i < collectiblesToGenerate; i++) {
             int randomIndex = MathUtils.random(emptyTiles.size - 1);
             Position position = emptyTiles.removeIndex(randomIndex).convertTo(PIXELS); // Remove selected position to avoid duplicates
@@ -518,11 +515,11 @@ public class GameScreen extends InputAdapter implements Screen {
         game.getSpriteBatch().begin();
         renderTrap();
         // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
+        renderCollectibles();
         renderChasingEnemy();
         renderPlayer();
         renderArrow();
         renderKey();
-        renderCollectibles();
 
         renderSpeechBubble();
 
