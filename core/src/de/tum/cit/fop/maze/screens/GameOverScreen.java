@@ -47,7 +47,9 @@ public class GameOverScreen implements Screen {
         stage.addActor(table); // Add the table to the stage
 
         // Add a label as a title
-        table.add(new Label("Game Over", game.getSkin(), "title")).padBottom(80).row();
+        Label title = new Label("Game Over", game.getSkin(), "title");
+        title.getStyle().font.getData().setScale(0.75f);
+        table.add(title).padBottom(80).row();
 
         // Add buttons for restarting or exiting the game
         final float BUTTON_WIDTH = 300f;
