@@ -356,14 +356,11 @@ public class GameScreen extends InputAdapter implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor){
                 Gdx.app.log("next level", "Next Level");
-                game.setGameLevel(game.getGameLevel() + 1); // Increment level
+                game.setGameLevel(game.getGameLevel() + 1);
                 game.getVictorySoundEffect().stop();
-                game.getBackgroundMusic().stop();
-                dispose();
-                GameScreen gameScreen = new GameScreen(game); // Initialize new game screen
-                gameScreen.getKey().setCollected(false);
-                game.setScreen(gameScreen);
+                game.startNextLevel();
             }});
+
         victoryPanelTable.add(nextLevelButton).padBottom(BUTTON_PADDING).row();
 
         /*Button playAgainButton = new TextButton("Play Again", game.getSkin());
@@ -504,7 +501,7 @@ public class GameScreen extends InputAdapter implements Screen {
             if (!isPaused) {
                 createVictoryPanel(); // Show the victory panel
                 isPaused = true;
-                game.pause(); // Pause the game
+                game.pause();
                 game.getBackgroundMusic().pause();
                 game.getPauseMusic().pause();
                 game.getVictorySoundEffect().play();
@@ -544,11 +541,12 @@ public class GameScreen extends InputAdapter implements Screen {
 
         renderHUD();
     }
-   /* private void renderPausedState() {
-        if (isPaused) {
-            createPausePanel();
-        }
-    }*/
+
+    public void setPaused(boolean paused) {
+        this.isPaused = paused;
+    }
+
+
 
     private void update(float delta) {
         if (!isPaused) {

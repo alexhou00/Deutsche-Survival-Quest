@@ -416,6 +416,27 @@ public class MazeRunnerGame extends Game {
             Gdx.app.log("MazeRunnerGame", "Set Screen to Game Screen");*/
         }
     }
+
+    public void startNextLevel() {
+        Gdx.app.log("MazeRunnerGame", "Starting next level: " + (gameLevel));
+
+        // Dispose of the current screen
+        if (gameScreen != null) {
+            gameScreen.dispose();
+        }
+
+        // Create and set the new game screen
+        gameScreen = new GameScreen(this);
+        setScreen(gameScreen);
+
+        // Reset any necessary states in the new screen
+        gameScreen.getKey().setCollected(false);
+
+        // Ensure the game is not paused for the new level
+        gameScreen.setPaused(false);
+    }
+
+
     public void setGameLevel(int level) {
         this.gameLevel = level;
     }
