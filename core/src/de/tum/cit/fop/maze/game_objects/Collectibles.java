@@ -2,6 +2,7 @@ package de.tum.cit.fop.maze.game_objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.tum.cit.fop.maze.base.GameObject;
@@ -21,7 +22,7 @@ public class Collectibles extends GameObject {
 
     private Player player = null;
 
-    Music soundEffectCollect;
+    Sound soundEffectCollect;
 
     /**
      * Constructs a new GameObject instance with specified parameters.
@@ -42,7 +43,7 @@ public class Collectibles extends GameObject {
         this.collected = false;
     }
 
-    public void init(Player player, Music soundEffect) {
+    public void init(Player player, Sound soundEffect) {
         this.player = player;
         this.soundEffectCollect = soundEffect;
     }

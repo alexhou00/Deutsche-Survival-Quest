@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -56,7 +57,8 @@ public class MazeRunnerGame extends Game {
 
     Texture backgroundTexture;
 
-    Music backgroundMusic, menuMusic, pauseMusic,  gameOverMusic, victorySoundEffect, victoryMusic, soundEffectKey, soundEffectHurt;
+    Music backgroundMusic, menuMusic, pauseMusic,  gameOverMusic, victorySoundEffect, victoryMusic;
+    Sound soundEffectKey, soundEffectHurt;
     private boolean isMuted;
 
 
@@ -103,8 +105,8 @@ public class MazeRunnerGame extends Game {
         //victoryMusic.setLooping(true);
 
         victorySoundEffect = Gdx.audio.newMusic(Gdx.files.internal("sounds/Lively Meadow Victory Fanfare.mp3"));
-        soundEffectKey = Gdx.audio.newMusic(Gdx.files.internal("sounds/Accept.mp3"));
-        soundEffectHurt = Gdx.audio.newMusic(Gdx.files.internal("sounds/01._damage_grunt_male.wav"));
+        soundEffectKey = Gdx.audio.newSound(Gdx.files.internal("sounds/Accept.mp3"));
+        soundEffectHurt = Gdx.audio.newSound(Gdx.files.internal("sounds/01._damage_grunt_male.wav"));
 
 
         goToMenu(); // Navigate to the menu screen
@@ -376,11 +378,11 @@ public class MazeRunnerGame extends Game {
         return victoryMusic;
     }
 
-    public Music getSoundEffectKey() {
+    public Sound getSoundEffectKey() {
         return soundEffectKey;
     }
 
-    public Music getSoundEffectHurt() {
+    public Sound getSoundEffectHurt() {
         return soundEffectHurt;
     }
 
