@@ -2,8 +2,6 @@ package de.tum.cit.fop.maze.game_objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.MazeRunnerGame;
@@ -11,8 +9,6 @@ import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.base.Character;
 import de.tum.cit.fop.maze.tiles.SpeedBoost;
-import de.tum.cit.fop.maze.tiles.Tile;
-import de.tum.cit.fop.maze.tiles.Wall;
 import de.tum.cit.fop.maze.screens.GameScreen;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
@@ -220,7 +216,7 @@ public class Player extends Character {
 
         // Check for collision with traps
 
-        for (Trap trap : new Array.ArrayIterator<>(traps)) {
+        for (Trap trap : iterate(traps)) {
             if (trap.isTouching(this)) {
                 if (!isHurt){
                     loseLives(trap.getDamage(), trap);
@@ -236,7 +232,7 @@ public class Player extends Character {
         }
 
         // Check for collision with enemies
-        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)) {
+        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)) {
             if (enemy.isTouching(this) && !isHurt) {
                 bounceBack(enemy);
             }

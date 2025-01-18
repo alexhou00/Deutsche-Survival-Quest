@@ -249,7 +249,7 @@ public class ChasingEnemy extends Character {
 
         // Check for collision with traps
 
-        for (Trap trap : new Array.ArrayIterator<>(traps)) {
+        for (Trap trap : iterate(traps)) {
             if (trap.isTouching(this)) {
                 System.out.println("A chasing enemy has hit a trap :O00");
                 // step back to original
@@ -259,7 +259,7 @@ public class ChasingEnemy extends Character {
 
 
         // Check for collision with enemies
-        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)) {
+        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)) {
             if (!enemy.equals(this) && enemy.isTouching(this)) {
                 stepBackABit(delta, enemy);
             }
@@ -277,7 +277,7 @@ public class ChasingEnemy extends Character {
     }
 
     private boolean isTouchingTraps() {
-        for (Trap trap : new Array.ArrayIterator<>(tiles.traps)) {
+        for (Trap trap : iterate(tiles.traps)) {
             if (trap.isTouching(this)) {
                 return true;
             }
@@ -307,7 +307,7 @@ public class ChasingEnemy extends Character {
     }
 
     protected boolean isTouchingTrap() {
-        for (Trap trap : new Array.ArrayIterator<>(tiles.traps)) {
+        for (Trap trap : iterate(tiles.traps)) {
             if (trap.isTouching(this)) {
                 return true;
             }

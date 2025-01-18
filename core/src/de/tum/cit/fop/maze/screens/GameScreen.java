@@ -1,7 +1,6 @@
 package de.tum.cit.fop.maze.screens;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -184,10 +183,10 @@ public class GameScreen extends InputAdapter implements Screen {
         //chasingEnemy = new ChasingEnemy(0, 0, 32, 32, 32, 32, 64, 64, 3, this, tiles.layer, player); //new TextureRegion(new Texture(Gdx.files.internal( "mob_guy.png")), 0, 0, 32, 32));
 
         // for whatever that requires touching the player
-        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)){
+        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){
             enemy.init(player);
         }
-        for (Collectibles collectible : new Array.ArrayIterator<>(collectibles)){
+        for (Collectibles collectible : iterate(collectibles)){
             collectible.init(player, game.getSoundEffectKey());
         }
 
@@ -269,7 +268,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 table.remove(); // Change to the game screen when the button is pressed
                 game.resume();
                 // Reset the player's position to start position just in case there's velocity from the previous level
-                // and that the player would go into the walls because the collision detecting hasn't start yet
+                // and that the player would go into the walls because the collision detecting hasn't started yet
                 player.setX(getWorldCoordinateInPixels(tiles.entrance.getTileX()));
                 player.setY(getWorldCoordinateInPixels(tiles.entrance.getTileY()));
             }});
@@ -489,7 +488,7 @@ public class GameScreen extends InputAdapter implements Screen {
         handleInput(); // handle input of the keys
 
         player.update(delta); // ALL the player functionalities are here
-        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)) {
+        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)) {
             enemy.update(delta);
         }
         for (int i = collectibles.size - 1; i >= 0; i--) {
@@ -557,7 +556,7 @@ public class GameScreen extends InputAdapter implements Screen {
             player.update(delta);
 
             // Update enemies
-            for (ChasingEnemy enemy : tiles.chasingEnemies) {
+            for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)) {
                 enemy.update(delta);
             }
 
@@ -691,7 +690,7 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     private void renderCollectibles(){
-        for (Collectibles collectible : collectibles) {
+        for (Collectibles collectible : iterate(collectibles)) {
             if (collectible.getType().equals(Collectibles.Type.HEART))
                 collectible.render(game.getSpriteBatch(), game.getHeartAnimation().getKeyFrame(sinusInput/1.5f, true));
             else if (collectible.getType().equals(Collectibles.Type.COIN)){
@@ -779,13 +778,13 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     private void renderTrap(){
-        for (Trap trap : new Array.ArrayIterator<>(tiles.traps)){ // for (trap : tiles.traps){
+        for (Trap trap : iterate(tiles.traps)){ // for (trap : tiles.traps){
             trap.draw(game.getSpriteBatch());
         }
     }
     private void renderChasingEnemy(){
         //chasingEnemy.draw(game.getSpriteBatch());
-        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)){ // for (ChasingEnemy enemy : tiles.chasingEnemies)
+        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){ // for (ChasingEnemy enemy : tiles.chasingEnemies)
 
             if (abs(enemy.getVelX()) > abs(enemy.getVelY())){ // x velocity > y velocity -> either left or right
                 if (enemy.getVelX() < 0) mobGuyAnimation = game.getMobGuyAnimations().get("left");
@@ -808,7 +807,7 @@ public class GameScreen extends InputAdapter implements Screen {
             // Start the timer if stamina is full
             staminaTimer += Gdx.graphics.getDeltaTime();
             if (staminaTimer > STAMINA_DISPLAY_TIME) {
-                // Hide the stamina bar if timer exceeds the display duration
+                // Hide the stamina bar if the timer exceeds the display duration
                 return;
             }
         } else {
@@ -950,7 +949,7 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.setToOrtho(false);
         hudCamera.setToOrtho(false, width, height); // Adjust HUD camera to new screen size
         player.resume();
-        for (var panel : stage1.getActors()){
+        for (var panel : iterate(stage1.getActors())){
             panel.setSize(Gdx.graphics.getWidth() * 0.9f,Gdx.graphics.getHeight() * 0.9f);
         }
         Gdx.input.setInputProcessor(inputMultiplexer);
@@ -962,13 +961,13 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.app.log("GameScreen", "Game paused");
         // Stop processing input temporarily
         //Gdx.input.setInputProcessor(null); // Disable input handling during pause
-        isPaused = true; // Set the game to paused
+        isPaused = true; // Set the game to "paused"
 
         game.getBackgroundMusic().pause();
         game.getPauseMusic().play();
 
         player.pause();
-        for (ChasingEnemy enemy : tiles.chasingEnemies){
+        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){
             enemy.pause();
         }
 
@@ -994,7 +993,7 @@ public class GameScreen extends InputAdapter implements Screen {
         game.getPauseMusic().pause();
 
         player.resume();
-        for (ChasingEnemy enemy : tiles.chasingEnemies){
+        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){
             enemy.resume();
         }
 
@@ -1043,7 +1042,7 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void getCreateVictoryPanel(){
-        getCreateVictoryPanel();
+        getCreateVictoryPanel(); // TODO: THIS WILL RECURSE INFINITELY, MAKE SURE NOT TO DO SO WHEN YOU WANT TO USE THIS METHOD
     }
 
     public OrthographicCamera getCamera() {
