@@ -11,7 +11,7 @@ import de.tum.cit.fop.maze.screens.GameScreen;
 import de.tum.cit.fop.maze.tiles.Tile;
 import de.tum.cit.fop.maze.tiles.Wall;
 
-import static de.tum.cit.fop.maze.util.Constants.TILE_SCREEN_SIZE;
+import static de.tum.cit.fop.maze.util.Constants.*;
 import static java.lang.Math.abs;
 
 /**
@@ -123,8 +123,12 @@ public abstract class Character extends GameObject {
      */
     protected boolean isTileInstanceOf(int tileX, int tileY, Class<?> objectClass) {
         try {
-            Tile tile = tiles.getTileOnMap(tileX, tileY);
-            return objectClass.isInstance(tile);
+            if (tileX < horizontalTilesCount && tileY < verticalTilesCount){
+                Tile tile = tiles.getTileOnMap(tileX, tileY);
+                return objectClass.isInstance(tile);
+            }
+            else
+                return false;
         }
         catch (ArrayIndexOutOfBoundsException e){
             Gdx.app.error("Player", e.getMessage());

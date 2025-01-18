@@ -32,6 +32,7 @@ public class Player extends Character {
     public static final float maxStamina = 100f; // Maximum stamina value
     private static final float staminaRegenRate = 15f; // Stamina regenerate per second
     private static final float staminaDepleteRate = 25f; // Stamina depletion per second
+    private float currentStaminaMultiplier = 1;
 
     GameScreen gameScreen;
     MazeRunnerGame game;
@@ -114,8 +115,10 @@ public class Player extends Character {
             stamina -= staminaDepleteRate * delta; // Deplete stamina
             stamina = Math.max(stamina, 0); // Ensure it doesn't go negative
         } else if (!isHurt) { // if the player is being hurt, it doesn't regen either
-            stamina += staminaRegenRate * delta; // Regenerate stamina
-            stamina = Math.min(stamina, maxStamina); // Cap at maxStamina
+            if (currentStaminaMultiplier == 1 || stamina < maxStamina) // filter out when stamina multiplied and there's excess stamina (filter out his case)
+                stamina += staminaRegenRate * delta; // Regenerate stamina
+
+            stamina = Math.min(stamina, maxStamina * currentStaminaMultiplier); // Cap at maxStamina
         }
 
 
@@ -331,6 +334,18 @@ public class Player extends Character {
 
     public void setCoins(int coins) {
         this.coins = coins;
+    }
+
+    public void setStamina(float stamina) {
+        this.stamina = stamina;
+    }
+
+    public float getCurrentStaminaMultiplier() {
+        return currentStaminaMultiplier;
+    }
+
+    public void setCurrentStaminaMultiplier(float currentStaminaMultiplier) {
+        this.currentStaminaMultiplier = currentStaminaMultiplier;
     }
 
     @Override

@@ -88,8 +88,8 @@ public class GameScreen extends InputAdapter implements Screen {
     Animation<TextureRegion> mobGuyAnimation;
 
     // Timer to track how long the stamina bar should stay visible after refill
-    private float staminaTimer = 0f;
     private static final float STAMINA_DISPLAY_TIME = 1f; // Duration to show stamina bar in seconds
+    private float staminaTimer = STAMINA_DISPLAY_TIME; // set the timer to max first to prevent from showing at the very beginning
 
     private boolean isPaused;
 
@@ -146,7 +146,7 @@ public class GameScreen extends InputAdapter implements Screen {
             case 1 -> tiledMap = tiles.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             case 2 -> tiledMap = tiles.loadTiledMap("maps/level-2-map.properties", Gdx.files.internal("tilesets/level2_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             case 3 -> tiledMap = tiles.loadTiledMap("maps/level-3-map.properties", Gdx.files.internal("tilesets/level3_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
-            case 4 -> tiledMap = tiles.loadTiledMap("maps/level-n-map.properties", Gdx.files.internal("tilesets/germanbar_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+            case 4 -> tiledMap = tiles.loadTiledMap("maps/level-4-map.properties", Gdx.files.internal("tilesets/germanbar_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             default -> tiledMap = tiles.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path()); // TODO: problems reading other maps given by the tutors
         }
 
@@ -233,9 +233,11 @@ public class GameScreen extends InputAdapter implements Screen {
         generateCollectibles(emptyTiles, Collectibles.Type.HEART, 5, 11, 48);
 
         generateCollectibles(emptyTiles, Collectibles.Type.COIN, 5, 11, 48);
+
+        generateCollectibles(emptyTiles, Collectibles.Type.STAMINA, 1, 16, 96);
     }
 
-    private void generateCollectibles(Array<Position> emptyTiles, Collectibles.Type type, int numberToGenerate, int imageSize, float sizeOnScreen) {
+    private void generateCollectibles(Array<Position> emptyTiles, Collectibles.Type type, int numberToGenerate, int originalSize, float sizeOnScreen) {
         int collectiblesToGenerate = Math.min(numberToGenerate, emptyTiles.size);
         for (int i = 0; i < collectiblesToGenerate; i++) {
             int randomIndex = MathUtils.random(emptyTiles.size - 1);
@@ -244,7 +246,7 @@ public class GameScreen extends InputAdapter implements Screen {
             float worldY = position.getY();
 
             // Generate a collectible at the selected position
-            collectibles.add(new Collectibles(worldX, worldY, imageSize, imageSize, imageSize, imageSize,
+            collectibles.add(new Collectibles(worldX, worldY, originalSize, originalSize, originalSize, originalSize,
                     sizeOnScreen, sizeOnScreen, type));
         }
     }
@@ -546,7 +548,6 @@ public class GameScreen extends InputAdapter implements Screen {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         drawMapBorder();
-        renderStamina();
         shapeRenderer.end();
 
         game.getSpriteBatch().begin();
@@ -562,6 +563,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
 
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.setAutoShapeType(true);
+        shapeRenderer.begin();
+        renderStamina();
+        shapeRenderer.end();
 
         moveCamera();
 
@@ -724,6 +730,9 @@ public class GameScreen extends InputAdapter implements Screen {
             else if (collectible.getType().equals(Collectibles.Type.COIN)){
                 collectible.render(game.getSpriteBatch(), game.getCoinAnimation().getKeyFrame(sinusInput/1.5f, true));
             }
+            else if (collectible.getType().equals(Collectibles.Type.STAMINA)){
+                collectible.render(game.getSpriteBatch(), game.getStaminaPotionAnimation().getKeyFrame(sinusInput/1.5f, true));
+            }
         }
 
     }
@@ -831,20 +840,8 @@ public class GameScreen extends InputAdapter implements Screen {
         float currentStamina = player.getStamina();
         //if (currentStamina >= Player.maxStamina) return;
 
-        if (currentStamina >= Player.maxStamina) {
-            // Start the timer if stamina is full
-            staminaTimer += Gdx.graphics.getDeltaTime();
-            if (staminaTimer > STAMINA_DISPLAY_TIME) {
-                // Hide the stamina bar if the timer exceeds the display duration
-                return;
-            }
-        } else {
-            // Reset the timer when stamina is not full
-            staminaTimer = 0f;
-        }
-
-        Gdx.gl.glLineWidth(5f); // Set line width for better visibility
-        int staminaRadius = 10;
+        Gdx.gl.glLineWidth((int)(5f / camera.zoom)); // Set line width for better visibility
+        int staminaRadius = 12;
         float offsetX = -player.getHitboxWidthOnScreen() / 2 - 5;
         float offsetY = player.getHitboxHeightOnScreen() / 2 + 5;
         float staminaX = player.getX() + offsetX;// + staminaRadius / 2;
@@ -852,8 +849,33 @@ public class GameScreen extends InputAdapter implements Screen {
         //shapeRenderer.setProjectionMatrix(camera.combined);
         //shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
+
+        if (currentStamina >= Player.maxStamina) {
+            // Start the timer if stamina is full
+            staminaTimer += Gdx.graphics.getDeltaTime();
+            if (currentStamina > Player.maxStamina + 2){
+                shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+                shapeRenderer.setColor(Color.OLIVE);
+                float angle = ((player.getStamina() - Player.maxStamina) / Player.maxStamina) * 360f; // Calculate the angle based on stamina
+                shapeRenderer.arc(staminaX, staminaY, staminaRadius * 1.6f, 90 - angle, angle); // Draw arc clockwise
+
+            }
+            if (player.getCurrentStaminaMultiplier() == 1 &&
+                    staminaTimer > STAMINA_DISPLAY_TIME) {
+                // Hide the stamina bar if the timer exceeds the display duration
+                return;
+
+            }
+        } else {
+            // Reset the timer when stamina is not full
+            staminaTimer = 0f;
+            player.setCurrentStaminaMultiplier(1); // immediately set the multiplier back right after the player uses up the extra stamina
+        }
+
+
         // Draw the background circle (full arc for reference)
         shapeRenderer.setColor(Color.DARK_GRAY);
+        shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.arc(staminaX, staminaY, staminaRadius, 0, 360); // arc's 0° (where it starts drawing) starts at +x of the cartesian plane
 
         // Draw the stamina arc
@@ -876,7 +898,7 @@ public class GameScreen extends InputAdapter implements Screen {
         variablesToShow.put("player.y", player.getY());
         variablesToShow.put("player.speed", player.getSpeed());
         variablesToShow.put("camera zoom", camera.zoom);
-        variablesToShow.put("player.coins", (float) player.getCoins());
+        variablesToShow.put("player.stamina", player.getStamina());
         drawVariables(variablesToShow);
 
         game.getSpriteBatch().end();

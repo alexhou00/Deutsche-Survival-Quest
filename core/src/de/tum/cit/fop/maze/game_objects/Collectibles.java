@@ -13,7 +13,8 @@ public class Collectibles extends GameObject {
         HEART,
         SPEED_BOOST,
         SHIELD,
-        COIN
+        COIN,
+        STAMINA
     }
 
     private final Type type; // The type of collectible
@@ -99,6 +100,10 @@ public class Collectibles extends GameObject {
                     break;
                 case COIN:
                     player.setCoins(player.getCoins() + 1);
+                    break;
+                case STAMINA:
+                    player.setCurrentStaminaMultiplier(2);
+                    player.setStamina(Player.maxStamina * player.getCurrentStaminaMultiplier()); // 100 * 2
                     break;
 
             }
