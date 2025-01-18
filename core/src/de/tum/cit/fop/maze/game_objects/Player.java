@@ -244,7 +244,7 @@ public class Player extends Character {
     }
 
     public void loseLives(float amount, GameObject source){//or damage idk
-       game.getSoundEffectHurt().play();
+       game.getSoundEffectHurt().play(1.0f, 1.0594631f, 0f); // x2.0f is one octave higher (think of the freq.)
         lives -= amount;
 
         if (lives <= 0){
