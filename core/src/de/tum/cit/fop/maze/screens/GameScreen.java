@@ -93,6 +93,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private boolean isPaused;
 
+    private int totalCoins;
+
 
 
 
@@ -208,8 +210,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(stage1);
         //Gdx.app.log("Size" ,  horizontalTilesCount + "x" + verticalTilesCount);
 
-
-        //createPausePanel();
+        this.totalCoins = 5;
     }
 
     private void spawnCollectibles() {
@@ -223,6 +224,8 @@ public class GameScreen extends InputAdapter implements Screen {
                 }
             }
         }
+
+        totalCoins = emptyTiles.size;
 
         // Randomly select 5 unique "OTHER" tiles
         generateCollectibles(emptyTiles, Collectibles.Type.HEART, 5, 11, 48);
@@ -351,19 +354,23 @@ public class GameScreen extends InputAdapter implements Screen {
         victoryPanelTable.add(victoryLabel).padBottom(80).center().row();
         victoryLabel.getStyle().font.getData().setScale(0.5f);
 
+        String grade = calculateScore();
+
+        // Display the score/grade in the victory panel
+        Label scoreLabel = new Label("Score: " + grade + " (" + player.getCoins() + "/" + totalCoins + ")", game.getSkin());
+        scoreLabel.getStyle().font.getData().setScale(0.6f);
+        victoryPanelTable.add(scoreLabel).padBottom(40).center().row();
+
         Button nextLevelButton =  new TextButton("Next Level", game.getSkin());
         nextLevelButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor){
                 Gdx.app.log("next level", "Next Level");
-                game.setGameLevel(game.getGameLevel() + 1); // Increment level
+                game.setGameLevel(game.getGameLevel() + 1);
                 game.getVictorySoundEffect().stop();
-                game.getBackgroundMusic().stop();
-                dispose();
-                GameScreen gameScreen = new GameScreen(game); // Initialize new game screen
-                gameScreen.getKey().setCollected(false);
-                game.setScreen(gameScreen);
+                game.startNextLevel();
             }});
+
         victoryPanelTable.add(nextLevelButton).padBottom(BUTTON_PADDING).row();
 
         /*Button playAgainButton = new TextButton("Play Again", game.getSkin());
@@ -392,6 +399,24 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         });
         victoryPanelTable.add(exitGameButton).padBottom(BUTTON_PADDING).row();*/
+    }
+
+    private String calculateScore(){
+        // Calculate the score
+        String score = "";
+
+        if (player.getCoins() == totalCoins) {
+            score = "A";
+        } else if (player.getCoins() == totalCoins - 1) {
+            score = "B";
+        } else if (player.getCoins() == totalCoins - 2) {
+            score = "C";
+        } else if (player.getCoins() == totalCoins - 3) {
+            score = "D";
+        } else {
+            score = "F";
+        }
+        return score;
     }
 
 
@@ -504,7 +529,7 @@ public class GameScreen extends InputAdapter implements Screen {
             if (!isPaused) {
                 createVictoryPanel(); // Show the victory panel
                 isPaused = true;
-                game.pause(); // Pause the game
+                game.pause();
                 game.getBackgroundMusic().pause();
                 game.getPauseMusic().pause();
                 game.getVictorySoundEffect().play();
@@ -544,11 +569,12 @@ public class GameScreen extends InputAdapter implements Screen {
 
         renderHUD();
     }
-   /* private void renderPausedState() {
-        if (isPaused) {
-            createPausePanel();
-        }
-    }*/
+
+    public void setPaused(boolean paused) {
+        this.isPaused = paused;
+    }
+
+
 
     private void update(float delta) {
         if (!isPaused) {
@@ -856,6 +882,14 @@ public class GameScreen extends InputAdapter implements Screen {
         // hudObjectRenderer use another rendering batch, so we have to end the batch first, and start it again
         game.getSpriteBatch().begin();
         hudObjectRenderer.drawHearts(game.getSpriteBatch(), player.getLives(), 20, Gdx.graphics.getHeight() - 26f - 20, 32, 2);
+
+        String coinText = "Coins: " + player.getCoins() + "/" + totalCoins;
+        font.draw(game.getSpriteBatch(), coinText, 20, Gdx.graphics.getHeight() - 50);
+
+        String keyStatus = key.isCollected() ? "Key Collected!" : "Find The Key!";
+        font.draw(game.getSpriteBatch(), keyStatus, 20, Gdx.graphics.getHeight() - 80);
+
+
         /* Health bar
         // Draw health bar
         float healthBarWidth = 180f;

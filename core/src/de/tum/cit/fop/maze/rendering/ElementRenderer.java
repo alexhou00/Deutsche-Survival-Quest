@@ -15,7 +15,7 @@ import static de.tum.cit.fop.maze.util.Constants.MAX_PLAYER_LIVES;
 public class ElementRenderer {
 
     private final Texture texture;
-    private final TextureRegion fullHeartRegion, threeQuartersHeartRegion, halfHeartRegion, oneQuarterHeartRegion, emptyHeartRegion;
+    private final TextureRegion fullHeartRegion, threeQuartersHeartRegion, halfHeartRegion, oneQuarterHeartRegion, emptyHeartRegion, coinRegion;
 
     private final Sprite arrow;
 
@@ -29,12 +29,18 @@ public class ElementRenderer {
         oneQuarterHeartRegion = extractHeart(texture, 112);
         emptyHeartRegion = extractHeart(texture, 128);
 
+        coinRegion = extractCoin(texture, 928);
+
         TextureRegion arrowRegion = new TextureRegion(texture, 490, 10, 20, 10);
         arrow = new Sprite(arrowRegion);
     }
 
     private TextureRegion extractHeart(Texture texture, int x) {
         return new TextureRegion(texture, x, 2, 14, 13);
+    }
+
+    private TextureRegion extractCoin(Texture texture, int x) {
+        return new TextureRegion(texture, x, 0, 14, 13);
     }
 
 
@@ -77,6 +83,18 @@ public class ElementRenderer {
             }
         }
     }
+
+    /*public void drawCoins(SpriteBatch batch, int collectedCoins, int totalCoins, float startX, float startY, float spacing, float scale) {
+        // Draw collected coins
+        for (int i = 0; i < collectedCoins; i++) {
+            batch.draw(coinRegion, startX + i * spacing, startY, 14 * scale, 14 * scale);
+        }
+
+        // Draw empty coins (optional for total coin display)
+        for (int i = collectedCoins; i < totalCoins; i++) {
+            batch.draw(coinRegion, startX + i * spacing, startY, 14 * scale, 14 * scale);
+        }
+    }*/
 
     public void drawArrow(SpriteBatch batch, float degrees, float x, float y) {
         // drawing a sprite is different from drawing a texture region
