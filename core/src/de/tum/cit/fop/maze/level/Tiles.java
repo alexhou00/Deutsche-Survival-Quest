@@ -90,7 +90,8 @@ public class Tiles {
         TRAP,
         ENEMY,
         SPEED_BOOST,
-        OTHER // like the ground
+        OTHER, // like the ground
+        EXTRA // like the train, consider to be ground but coins shouldn't be generated there
     }
 
     private TileType[][] tileEnumOnMap;
@@ -285,7 +286,10 @@ public class Tiles {
             if (isPositionKnown){
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
-                tileEnumOnMap[x][y] = TileType.OTHER;
+                if (index < ENEMY_SECOND)
+                    tileEnumOnMap[x][y] = TileType.OTHER;
+                else // if index too large, it is considered to be special like a train
+                    tileEnumOnMap[x][y] = TileType.EXTRA;
             }
 
             return tile;
