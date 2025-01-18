@@ -142,7 +142,7 @@ public class GameScreen extends InputAdapter implements Screen {
         TiledMap tiledMap;
         switch (game.getGameLevel()) {
             case 1 -> tiledMap = tiles.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
-            case 3 -> tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+            case 3 -> tiledMap = tiles.loadTiledMap("maps/level-2-map.properties", Gdx.files.internal("tilesets/level2_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             case 2 -> tiledMap = tiles.loadTiledMap("maps/level-n-map.properties", Gdx.files.internal("tilesets/germanbar_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             default -> tiledMap = tiles.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path()); // TODO: problems reading other maps given by the tutors
         }
