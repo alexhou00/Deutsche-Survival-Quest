@@ -365,6 +365,7 @@ public class GameScreen extends InputAdapter implements Screen {
         scoreLabel.getStyle().font.getData().setScale(0.6f);
         victoryPanelTable.add(scoreLabel).padBottom(40).center().row();
 
+        font.getData().setScale(1f);
         Button nextLevelButton =  new TextButton("Next Level", game.getSkin());
         nextLevelButton.addListener(new ChangeListener() {
             @Override
@@ -607,7 +608,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Begin drawing with filled shapes for the border
         //shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.WHITE); // Set border color
+        shapeRenderer.setColor(Color.GRAY); // Set border color
 
         // Draw top border (horizontal)
         shapeRenderer.rect(0, getWorldHeight(), getWorldWidth(), TILE_SIZE);
