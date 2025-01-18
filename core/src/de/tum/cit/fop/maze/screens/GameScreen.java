@@ -354,6 +354,13 @@ public class GameScreen extends InputAdapter implements Screen {
         victoryPanelTable.add(victoryLabel).padBottom(80).center().row();
         victoryLabel.getStyle().font.getData().setScale(0.5f);
 
+        String grade = calculateScore();
+
+        // Display the score/grade in the victory panel
+        Label scoreLabel = new Label("Score: " + grade + " (" + player.getCoins() + "/" + totalCoins + ")", game.getSkin());
+        scoreLabel.getStyle().font.getData().setScale(0.6f);
+        victoryPanelTable.add(scoreLabel).padBottom(40).center().row();
+
         Button nextLevelButton =  new TextButton("Next Level", game.getSkin());
         nextLevelButton.addListener(new ChangeListener() {
             @Override
@@ -392,6 +399,24 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         });
         victoryPanelTable.add(exitGameButton).padBottom(BUTTON_PADDING).row();*/
+    }
+
+    private String calculateScore(){
+        // Calculate the score
+        String score = "";
+
+        if (player.getCoins() == totalCoins) {
+            score = "A";
+        } else if (player.getCoins() == totalCoins - 1) {
+            score = "B";
+        } else if (player.getCoins() == totalCoins - 2) {
+            score = "C";
+        } else if (player.getCoins() == totalCoins - 3) {
+            score = "D";
+        } else {
+            score = "F";
+        }
+        return score;
     }
 
 
