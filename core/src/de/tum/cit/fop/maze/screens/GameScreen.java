@@ -142,8 +142,8 @@ public class GameScreen extends InputAdapter implements Screen {
         TiledMap tiledMap;
         switch (game.getGameLevel()) {
             case 1 -> tiledMap = tiles.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
-            case 2 -> tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
-            case 3 -> tiledMap = tiles.loadTiledMap("maps/level-n-map.properties", Gdx.files.internal("tilesets/germanbar_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+            case 3 -> tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+            case 2 -> tiledMap = tiles.loadTiledMap("maps/level-n-map.properties", Gdx.files.internal("tilesets/germanbar_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             default -> tiledMap = tiles.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path()); // TODO: problems reading other maps given by the tutors
         }
 
@@ -168,7 +168,7 @@ public class GameScreen extends InputAdapter implements Screen {
         player = new Player(
                 tiles.entrance.getTileX(),
                 tiles.entrance.getTileY(),
-                16, 32, 12, 19, 64f, 128f, 200f,
+                16, 32, 12, 17, 64f, 128f, 200f,
                 this, tiles);//"this" is already a game screen
 
         // Initialize traps and add one trap (you can add more as needed)
@@ -1015,8 +1015,8 @@ public class GameScreen extends InputAdapter implements Screen {
     public void dispose() {
         //shapeRenderer.dispose();
         // i think we shouldn't even dispose the shapeRenderer, right? (else the program will exit unexpectedly)
-        mapRenderer.dispose();
-        hudObjectRenderer.dispose();
+        //mapRenderer.dispose();
+        //hudObjectRenderer.dispose();
     }
 
 

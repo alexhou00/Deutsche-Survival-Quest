@@ -3,6 +3,7 @@ package de.tum.cit.fop.maze.game_objects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.base.GameObject;
@@ -71,6 +72,9 @@ public class Player extends Character {
         this.gameScreen = gameScreen;
         this.game = gameScreen.game;
         this.stamina = maxStamina; // Initialize stamina to max
+        if (tiles.isCameraAngled()){
+            this.hitboxHeight /= 2;
+        }
     }
 
     private void handleMovement() {
@@ -170,12 +174,19 @@ public class Player extends Character {
         }
 
         // Constrain Player to World Boundaries
-        x = MathUtils.clamp(x, hitboxWidthOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2);
-        y = MathUtils.clamp(y, hitboxHeightOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
+        x = MathUtils.clamp(x, getHitboxWidthOnScreen() / 2, getWorldWidth() - getHitboxWidthOnScreen() / 2);
+        y = MathUtils.clamp(y, getHitboxHeightOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
 
         if (rightPressed || leftPressed || upPressed || downPressed){
             // Gdx.app.log("Player", "x: " + x + "; y: " + y);
         }
+    }
+
+    @Override
+    protected boolean canMoveTo(float x, float y){
+        if (tiles.isCameraAngled()) // not completely top-down 90° view; instead, it's with a slightly angled view
+            y -= getHitboxHeightOnScreen()/2; // hitboxHeight is updated, this is the center of the lower-half of the current hitbox
+        return super.canMoveTo(x,y);
     }
 
     /**
@@ -320,5 +331,10 @@ public class Player extends Character {
 
     public void setCoins(int coins) {
         this.coins = coins;
+    }
+
+    @Override
+    public Rectangle getHitbox() {
+        return super.getHitbox();
     }
 }

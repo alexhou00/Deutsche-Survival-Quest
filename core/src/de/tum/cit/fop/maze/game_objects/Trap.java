@@ -79,9 +79,9 @@ public class Trap extends GameObject {
 
         // Calculate the overlapping region of the two hitboxes
         int startX = Math.max((int) thisHitbox.x, (int) otherHitbox.x);
-        int startY = Math.max((int) thisHitbox.y, (int) otherHitbox.y - 12); // IDK why -12, it'd just offset adjust
+        int startY = Math.max((int) thisHitbox.y, (int) otherHitbox.y/* - 12*/); // IDK why -12, it'd just offset adjust
         int endX = Math.min((int) (thisHitbox.x + thisHitbox.width), (int) (otherHitbox.x + otherHitbox.width));
-        int endY = Math.min((int) (thisHitbox.y + thisHitbox.height), (int) (otherHitbox.y - 12 + otherHitbox.height));
+        int endY = Math.min((int) (thisHitbox.y + thisHitbox.height), (int) (otherHitbox.y/* - 12*/ + otherHitbox.height));
 
         // Iterate through each pixel in the overlapping region
         for (int x = startX; x < endX; x++) {

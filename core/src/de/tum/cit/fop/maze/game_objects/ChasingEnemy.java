@@ -227,8 +227,8 @@ public class ChasingEnemy extends Character {
             setRandomTarget();
 
         // Constrain enemy position within the game world boundaries
-        x = MathUtils.clamp(x, hitboxWidthOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2);
-        y = MathUtils.clamp(y, hitboxHeightOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
+        x = MathUtils.clamp(x, getHitboxWidthOnScreen() / 2, getWorldWidth() - getHitboxWidthOnScreen() / 2);
+        y = MathUtils.clamp(y, getHitboxHeightOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
     }
 
     @Override
@@ -303,7 +303,7 @@ public class ChasingEnemy extends Character {
 
     // overloaded, default to the entire screen
     private void setRandomTarget() {
-        setRandomTarget(hitboxWidthOnScreen / 2, hitboxHeightOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
+        setRandomTarget(getHitboxWidthOnScreen() / 2, getHitboxHeightOnScreen() / 2, getWorldWidth() - getHitboxWidthOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
     }
 
     protected boolean isTouchingTrap() {

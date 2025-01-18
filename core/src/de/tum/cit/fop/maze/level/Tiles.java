@@ -30,6 +30,7 @@ public class Tiles {
     public TiledMapTileLayer layer;
 
     private Position keyTilePosition;
+    private boolean cameraAngled = false;
     public Array<Trap> traps;
 
     public Array<ChasingEnemy> chasingEnemies;
@@ -310,7 +311,7 @@ public class Tiles {
                 String[] parts = line.split("="); // split into key-value, parts[0] is position (String) and parts[1] is the tileType or tileValue
                 if (parts.length != 2) continue; // ignore malformed lines
 
-                if (!Objects.equals(parts[0], "keyPosition")){ // null-safe equal, the key is NOT "keyPosition"
+                if (parts[0].matches("\\d+, *\\d+")){ // the key is matching the pattern of the coordinate format
                     String positionStr = parts[0];
                     String[] tileTypes = parts[1].split(","); // Handle multiple tile types (could contain the key)
 
@@ -327,8 +328,14 @@ public class Tiles {
                     }
                     if (verticalTilesCount < position.getTileY() + 1) verticalTilesCount = position.getTileY() + 1;
                 }
-                else{ // the key in the key-value is "keyPosition" which allows us to place the key on float positions
-                    keyTilePosition = stringToPosition(parts[1], TILES).convertTo(PIXELS);
+                else{ // the key in the key-value is some other key like, "keyPosition". which allows us to place the key on float positions
+                    switch(parts[0]){
+                        case "keyPosition" -> keyTilePosition = stringToPosition(parts[1], TILES).convertTo(PIXELS);
+                        case "angled" -> {
+                            if (Objects.equals(parts[1], "true")) // null-safe equal
+                                cameraAngled = true;
+                        }
+                    }
                 }
 
 
@@ -523,4 +530,7 @@ public class Tiles {
         return nearestExit;
     }
 
+    public boolean isCameraAngled() {
+        return cameraAngled;
+    }
 }
