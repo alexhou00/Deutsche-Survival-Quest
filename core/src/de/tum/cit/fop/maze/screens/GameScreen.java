@@ -882,8 +882,13 @@ public class GameScreen extends InputAdapter implements Screen {
         // hudObjectRenderer use another rendering batch, so we have to end the batch first, and start it again
         game.getSpriteBatch().begin();
         hudObjectRenderer.drawHearts(game.getSpriteBatch(), player.getLives(), 20, Gdx.graphics.getHeight() - 26f - 20, 32, 2);
+
         String coinText = "Coins: " + player.getCoins() + "/" + totalCoins;
-        font.draw(game.getSpriteBatch(), coinText, 20, Gdx.graphics.getHeight() - 50); // Adjust the position if needed
+        font.draw(game.getSpriteBatch(), coinText, 20, Gdx.graphics.getHeight() - 50);
+
+        String keyStatus = key.isCollected() ? "Key Collected!" : "Find The Key!";
+        font.draw(game.getSpriteBatch(), keyStatus, 20, Gdx.graphics.getHeight() - 80);
+
 
         /* Health bar
         // Draw health bar
