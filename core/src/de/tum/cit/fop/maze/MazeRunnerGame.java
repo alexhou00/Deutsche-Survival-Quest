@@ -400,14 +400,26 @@ public class MazeRunnerGame extends Game {
 
     public void checkExitToNextLevel(Player player) {
         if (player.isCenterTouchingTile(Exit.class) && gameScreen.getKey().isCollected()){
-            gameLevel += 1;
+            Gdx.app.log("MazeRunnerGame", "Player is at the exit and has the key.");
+            gameScreen.createVictoryPanel();
+
+            //gameScreen.isPaused();
+            //pauseMusic.pause();
+            //victorySoundEffect.play();
+
+            /*gameLevel += 1;
             gameScreen.dispose();
             gameScreen = new GameScreen(this);
             gameScreen.getKey().setCollected(false);
             this.setScreen(gameScreen);
-            victorySoundEffect.play();
-            Gdx.app.log("MazeRunnerGame", "Set Screen to Game Screen");
+
+            Gdx.app.log("MazeRunnerGame", "Set Screen to Game Screen");*/
         }
     }
+    public void setGameLevel(int level) {
+        this.gameLevel = level;
+    }
+
+
 
 }

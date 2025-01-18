@@ -357,10 +357,13 @@ public class GameScreen extends InputAdapter implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor){
                 Gdx.app.log("next level", "Next Level");
-                victoryLabel.remove(); // Change to the game screen when the button is pressed
-                victoryPanelTable.remove();
-                game.resume();
-                isPaused = false;
+                game.setGameLevel(game.getGameLevel() + 1); // Increment level
+                game.getVictorySoundEffect().stop();
+                game.getBackgroundMusic().stop();
+                dispose();
+                GameScreen gameScreen = new GameScreen(game); // Initialize new game screen
+                gameScreen.getKey().setCollected(false);
+                game.setScreen(gameScreen);
             }});
         victoryPanelTable.add(nextLevelButton).padBottom(BUTTON_PADDING).row();
 
@@ -498,19 +501,21 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         }
 
-        if (!isPaused) {
-            //super.render(delta); // Continue game updates
-            if (key.isCollected() && player.isCenterTouchingTile(Exit.class)) {
-                createVictoryPanel();
+        if (key.isCollected() && player.isCenterTouchingTile(Exit.class)) {
+            if (!isPaused) {
+                createVictoryPanel(); // Show the victory panel
                 isPaused = true;
-                game.pause(); // Pause game updates
-                game.getVictorySoundEffect(); // Play only the victory music
+                game.pause(); // Pause the game
+                game.getBackgroundMusic().pause();
+                game.getPauseMusic().pause();
+                game.getVictorySoundEffect().play();
             }
         }
 
+        game.checkExitToNextLevel(player);
+
         renderGameWorld();
 
-        game.checkExitToNextLevel(player);
 
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -671,6 +676,7 @@ public class GameScreen extends InputAdapter implements Screen {
         }
         game.getSpriteBatch().setShader(null); // end the shader so we only shade the player
     }
+
 
     private void renderArrow(){
         // Draw arrow that points at the exit
@@ -1034,6 +1040,10 @@ public class GameScreen extends InputAdapter implements Screen {
             font.draw(hudBatch, String.format("%s: %.2f", varName, displayedValue), BORDER_OFFSET, BORDER_OFFSET + variablesToShow.size() * Y_OFFSET - Y_OFFSET * currentLine);
             currentLine++;
         }
+    }
+
+    public void getCreateVictoryPanel(){
+        getCreateVictoryPanel();
     }
 
     public OrthographicCamera getCamera() {
