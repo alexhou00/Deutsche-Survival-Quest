@@ -55,6 +55,7 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> heartAnimation;
     private Animation<TextureRegion> coinAnimation;
     private Animation<TextureRegion> staminaPotionAnimation;
+    private Animation<TextureRegion> pretzelAnimation;
 
     Texture backgroundTexture;
 
@@ -236,6 +237,7 @@ public class MazeRunnerGame extends Game {
         Array<TextureRegion> heartFrames = new Array<>(TextureRegion.class);
         Array<TextureRegion> coinFrames = new Array<>(TextureRegion.class);
         Array<TextureRegion> staminaPotionFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> pretzelFrames = new Array<>(TextureRegion.class);
 
                 // Add all frames to the animation
         int framesXOffset = 0; // define how many frames of X to shift to start extracting our character on "character.png"
@@ -267,6 +269,9 @@ public class MazeRunnerGame extends Game {
         for (int i=0;i<3;i++)
             staminaPotionFrames.add(new TextureRegion(objectSheet, 288+32*i, 64, 32, 32));
 
+        for (int i=0;i<6;i++)
+            pretzelFrames.add(new TextureRegion(objectSheet, 128+32*i, 128, 32, 32));
+
 
 
         characterDownAnimation = new Animation<>(0.1f, downFrames);
@@ -284,6 +289,7 @@ public class MazeRunnerGame extends Game {
         heartAnimation = new Animation<>(0.1f, heartFrames);
         coinAnimation = new Animation<>(0.1f, coinFrames);
         staminaPotionAnimation = new Animation<>(0.1f, staminaPotionFrames);
+        pretzelAnimation = new Animation<>(0.1f, pretzelFrames);
 
     }
 
@@ -352,6 +358,10 @@ public class MazeRunnerGame extends Game {
 
     public Animation<TextureRegion>  getStaminaPotionAnimation() {
         return staminaPotionAnimation;
+    }
+
+    public Animation<TextureRegion> getPretzelAnimation() {
+        return pretzelAnimation;
     }
 
     public Texture getBackgroundTexture() {

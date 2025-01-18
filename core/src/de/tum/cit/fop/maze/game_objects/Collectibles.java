@@ -11,6 +11,7 @@ public class Collectibles extends GameObject {
 
     public enum Type{
         HEART,
+        PRETZEL,
         SPEED_BOOST,
         SHIELD,
         COIN,
@@ -97,6 +98,9 @@ public class Collectibles extends GameObject {
             switch (this.getType()) {
                 case HEART:
                     player.setLives(player.getLives() + 1);
+                    break;
+                case PRETZEL:
+                    player.setLives(player.getLives() + 1.25f);
                     break;
                 case COIN:
                     player.setCoins(player.getCoins() + 1);

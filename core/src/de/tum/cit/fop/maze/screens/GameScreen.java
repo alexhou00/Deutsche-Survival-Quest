@@ -171,7 +171,7 @@ public class GameScreen extends InputAdapter implements Screen {
         player = new Player(
                 tiles.entrance.getTileX(),
                 tiles.entrance.getTileY(),
-                16, 32, 12, 17, 64f, 128f, 200f,
+                16, 32, 12, 17, 64f, 128f, 10f,
                 this, tiles);//"this" is already a game screen
 
         // Initialize traps and add one trap (you can add more as needed)
@@ -231,6 +231,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Randomly select 5 unique "OTHER" tiles
         generateCollectibles(emptyTiles, Collectibles.Type.HEART, 5, 11, 48);
+        generateCollectibles(emptyTiles, Collectibles.Type.PRETZEL, 3, 28, 72);
 
         generateCollectibles(emptyTiles, Collectibles.Type.COIN, 5, 11, 48);
 
@@ -728,7 +729,9 @@ public class GameScreen extends InputAdapter implements Screen {
         for (Collectibles collectible : iterate(collectibles)) {
             if (collectible.getType().equals(Collectibles.Type.HEART))
                 collectible.render(game.getSpriteBatch(), game.getHeartAnimation().getKeyFrame(sinusInput/1.5f, true));
-            else if (collectible.getType().equals(Collectibles.Type.COIN)){
+            else if (collectible.getType().equals(Collectibles.Type.PRETZEL)){
+                collectible.render(game.getSpriteBatch(), game.getPretzelAnimation().getKeyFrame(sinusInput/1.5f, true));
+            }else if (collectible.getType().equals(Collectibles.Type.COIN)){
                 collectible.render(game.getSpriteBatch(), game.getCoinAnimation().getKeyFrame(sinusInput/1.5f, true));
             }
             else if (collectible.getType().equals(Collectibles.Type.STAMINA)){
