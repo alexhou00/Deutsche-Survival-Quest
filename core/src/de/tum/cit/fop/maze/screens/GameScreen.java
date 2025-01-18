@@ -93,6 +93,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private boolean isPaused;
 
+    private int totalCoins;
+
 
 
 
@@ -208,8 +210,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(stage1);
         //Gdx.app.log("Size" ,  horizontalTilesCount + "x" + verticalTilesCount);
 
-
-        //createPausePanel();
+        this.totalCoins = 5;
     }
 
     private void spawnCollectibles() {
@@ -223,6 +224,8 @@ public class GameScreen extends InputAdapter implements Screen {
                 }
             }
         }
+
+        totalCoins = emptyTiles.size;
 
         // Randomly select 5 unique "OTHER" tiles
         generateCollectibles(emptyTiles, Collectibles.Type.HEART, 5, 11, 48);
@@ -854,6 +857,9 @@ public class GameScreen extends InputAdapter implements Screen {
         // hudObjectRenderer use another rendering batch, so we have to end the batch first, and start it again
         game.getSpriteBatch().begin();
         hudObjectRenderer.drawHearts(game.getSpriteBatch(), player.getLives(), 20, Gdx.graphics.getHeight() - 26f - 20, 32, 2);
+        String coinText = "Coins: " + player.getCoins() + "/" + totalCoins;
+        font.draw(game.getSpriteBatch(), coinText, 20, Gdx.graphics.getHeight() - 50); // Adjust the position if needed
+
         /* Health bar
         // Draw health bar
         float healthBarWidth = 180f;
