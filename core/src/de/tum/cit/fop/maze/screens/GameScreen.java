@@ -212,6 +212,16 @@ public class GameScreen extends InputAdapter implements Screen {
         this.totalCoins = 5;
     }
 
+    /**
+     * Identifies all empty tiles on the map and prepares them for spawning collectibles.
+     *
+     * <p>This method iterates through the 2D array of tiles on the map, checking each tile's type.
+     * If the tile is of type {@code OTHER} or is {@code null}, it is considered an empty tile and
+     * added to a list of potential positions for spawning collectibles.
+     *
+     * <p>The positions of these empty tiles are stored as {@link Position} objects in an array,
+     * ready for further processing.
+     */
     private void spawnCollectibles() {
         // Get the 2D array of tiles
         // to find all "OTHER" tiles
@@ -236,6 +246,25 @@ public class GameScreen extends InputAdapter implements Screen {
         generateCollectibles(emptyTiles, Collectibles.Type.STAMINA, 1, 16, 96);
     }
 
+    /**
+     * Generates a specified number of collectibles at random positions from a list of empty tiles.
+     *
+     * <p>The method selects random positions from the provided {@code emptyTiles} array, ensuring no duplicate
+     * positions are used. It then creates collectibles of the specified type and adds them to the game world.
+     *
+     * <p>The following steps are performed:
+     * <ul>
+     *     <li>Determine the number of collectibles to generate based on the available empty tiles and the requested amount.</li>
+     *     <li>Randomly select positions, avoiding duplicates by removing them from the {@code emptyTiles} array.</li>
+     *     <li>Create collectibles at the selected positions with the specified size and type.</li>
+     * </ul>
+     *
+     * @param emptyTiles       an array of positions where collectibles can be placed
+     * @param type             the type of collectibles to generate
+     * @param numberToGenerate the desired number of collectibles to generate
+     * @param originalSize     the original size of the collectible in world units
+     * @param sizeOnScreen     the size of the collectible as it appears on the screen
+     */
     private void generateCollectibles(Array<Position> emptyTiles, Collectibles.Type type, int numberToGenerate, int originalSize, float sizeOnScreen) {
         int collectiblesToGenerate = Math.min(numberToGenerate, emptyTiles.size);
 
@@ -446,6 +475,21 @@ public class GameScreen extends InputAdapter implements Screen {
         victoryPanelTable.add(exitGameButton).padBottom(BUTTON_PADDING).row();*/
     }
 
+    /**
+     * Calculates the player's score based on the number of coins collected.
+     *
+     * <p>The score is determined by comparing the number of coins the player has collected
+     * with the total number of coins available in the game. The following scoring system is applied:
+     * <ul>
+     *     <li>"A" if the player has collected all the coins</li>
+     *     <li>"B" if the player has collected all but one coin</li>
+     *     <li>"C" if the player has collected all but two coins</li>
+     *     <li>"D" if the player has collected all but three coins</li>
+     *     <li>"F" if the player has collected fewer than three coins less than the total</li>
+     * </ul>
+     *
+     * @return a string representing the player's score ("A", "B", "C", "D", or "F")
+     */
     private String calculateScore(){
         // Calculate the score
         String score = "";
@@ -818,6 +862,11 @@ public class GameScreen extends InputAdapter implements Screen {
                 true, player.getSpeechBubble().getElapsedTime(), 0.03f);
     }
 
+    /**
+     * Handles input for pausing and resuming the game.
+     *
+     * <p>The game pauses when the Escape key is pressed, and resumes when the Enter key is pressed while paused.
+     */
     private void handlePauseInput(){
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && !isPaused) {
             pause();
@@ -828,17 +877,6 @@ public class GameScreen extends InputAdapter implements Screen {
             resume();
         }
     }
-    /*private void handlePauseInput() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) { // Assuming "P" pauses the game
-            if (isPaused == true) {
-                createPausePanel();
-                inputMultiplexer.addProcessor(stage1); // Add pause stage
-            } else if (isPaused== false) {
-                stage1.clear(); // Clear the pause panel
-                inputMultiplexer.removeProcessor(stage1); // Remove pause stage
-            }
-        }
-    }*/
 
     /**
      * Renders the collectible key in the game world if it hasn't been collected.
