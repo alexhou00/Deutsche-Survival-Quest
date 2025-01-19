@@ -148,6 +148,15 @@ public class ChasingEnemy extends Character {
     }
 
 
+    /**
+     * Checks if the given player is within the detection radius of this object.
+     *
+     * <p>The detection is based on the squared Euclidean distance between the player's
+     * position and this object's position, compared to the square of the detection radius.
+     *
+     * @param player the {@link Player} whose position is to be checked
+     * @return {@code true} if the player is within the detection radius; {@code false} otherwise
+     */
     private boolean isPlayerWithinDetectionRadius(Player player) {
         float dx = player.getX() - x;
         float dy = player.getY() - y;
@@ -241,6 +250,21 @@ public class ChasingEnemy extends Character {
         return super.canMoveTo(x,y);
     }
 
+    /**
+     * Checks and handles collisions between this object and traps or other enemies.
+     *
+     * <p>This method iterates over the traps and chasing enemies in the game world,
+     * detecting collisions and taking appropriate actions such as stepping back to
+     * avoid overlapping.
+     *
+     * <ul>
+     *     <li>Traps: If a collision with a trap is detected, the object steps back slightly.</li>
+     *     <li>Enemies: If a collision with another chasing enemy is detected, the object
+     *     also steps back to prevent overlapping.</li>
+     * </ul>
+     *
+     * @param delta the time elapsed since the last frame, used for calculating step-back movement
+     */
     //for traps and enemies
     private void checkCollisions(float delta) {
         // Access traps and enemies through GameManager
@@ -266,16 +290,36 @@ public class ChasingEnemy extends Character {
         }
     }
 
-    private void stepBackABit(float delta, GameObject other){
+    /**
+     * Moves this object slightly away from another game object to prevent overlap.
+     *
+     * <p>The direction and magnitude of the step-back are determined based on the
+     * relative position of the other object and the current velocity of this object.
+     * If the other object is to the right or above, the movement is in the opposite direction.
+     * The method also ensures the step-back avoids walls or obstacles by checking movement validity.
+     *
+     * <p>After stepping back, a new random target is set for this object.
+     *
+     * @param delta the time elapsed since the last frame, used to calculate the movement distance
+     * @param other the {@link GameObject} that this object collided with
+     */
+    private void stepBackABit(float delta, GameObject other) {
         float dx = ((other.getX() - x) > 0) ? -1 * abs(velX) * delta : 1 * abs(velX) * delta; // if trap is on the right then
         float dy = ((other.getY() - y) > 0) ? -1 * abs(velY) * delta : 1 * abs(velY) * delta;
-        if (super.canMoveTo(x + dx, y + dy)){ // only detect touching walls, so step back to where there are no walls
+        if (super.canMoveTo(x + dx, y + dy)) { // only detect touching walls, so step back to where there are no walls
             x += dx;
             y += dy;
         }
         setRandomTarget();
     }
-
+    /**
+     * Checks if this object is currently touching any traps in the game world.
+     *
+     * <p>The method iterates through all traps in the game and determines if
+     * a collision exists between this object and any trap using the {@code isTouching} method.
+     *
+     * @return {@code true} if this object is touching at least one trap; {@code false} otherwise
+     */
     private boolean isTouchingTraps() {
         for (Trap trap : iterate(tiles.traps)) {
             if (trap.isTouching(this)) {
@@ -285,6 +329,24 @@ public class ChasingEnemy extends Character {
         return false;
     }
 
+    /**
+     * Sets a random target position for this object within the specified bounds.
+     *
+     * <p>The method randomly determines whether to move horizontally or vertically:
+     * <ul>
+     *     <li>If moving horizontally, the target's x-coordinate is randomly selected
+     *     within the given range, while the y-coordinate remains unchanged.
+     *     <li>If moving vertically, the target's y-coordinate is randomly selected
+     *     within the given range, while the x-coordinate remains unchanged.</li>
+     * </ul>
+     *
+     * <p>After setting the target, the random movement cooldown is reset to its default value.
+     *
+     * @param minX the minimum x-coordinate for the random target
+     * @param minY the minimum y-coordinate for the random target
+     * @param maxX the maximum x-coordinate for the random target
+     * @param maxY the maximum y-coordinate for the random target
+     */
     private void setRandomTarget(float minX, float minY, float maxX, float maxY) {
         boolean moveHorizontally = MathUtils.randomBoolean(); // Randomly decide whether to move horizontally or vertically
 
@@ -301,11 +363,23 @@ public class ChasingEnemy extends Character {
         randomMoveCooldown = RANDOM_MOVE_TIME; // Reset cooldown
     }
 
+    /**
+     * Sets a random target position for this object, defaulting to the entire screen.
+     *
+     * <p>This method uses the object's dimensions and the world boundaries to determine
+     * the range for the random target. It ensures the target position is within the screen,
+     * avoiding edges by taking the object's hitbox size into account.
+     *
+     * <p>This is a convenience method that calls the parameterized {@link #setRandomTarget(float, float, float, float)}
+     * with default bounds based on the screen size and object dimensions.
+     */
     // overloaded, default to the entire screen
     private void setRandomTarget() {
         setRandomTarget(getHitboxWidthOnScreen() / 2, getHitboxHeightOnScreen() / 2, getWorldWidth() - getHitboxWidthOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
     }
 
+
+    //TODO decide on do we need this
     protected boolean isTouchingTrap() {
         for (Trap trap : iterate(tiles.traps)) {
             if (trap.isTouching(this)) {

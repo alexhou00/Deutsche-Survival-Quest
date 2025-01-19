@@ -332,14 +332,23 @@ public class GameScreen extends InputAdapter implements Screen {
         pausePanelTable.add(goToMenuButton).padBottom(BUTTON_PADDING).row();
         //goToMenuButton.setPosition(900, 600); // Set a clear position on the stage
 
-        Button ExitGameButton =  new TextButton("Exit Game", game.getSkin());
-        ExitGameButton.addListener(new ChangeListener() {
+        Button exitGameButton =  new TextButton("Exit Game", game.getSkin());
+        exitGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor){
                 game.exitGame();
             }});
-        pausePanelTable.add(ExitGameButton).padBottom(BUTTON_PADDING).row();
+        pausePanelTable.add(exitGameButton).padBottom(BUTTON_PADDING).row();
         //ExitGameButton.setPosition(200, 800); // Set a clear position on the stage
+
+        resumeButton.setPosition(pausePanelTable.getX() + pausePanelTable.getWidth() / 2 - resumeButton.getWidth() / 2,
+                pausePanelTable.getY() + pausePanelTable.getHeight() - 100);
+        selectLevelButton.setPosition(pausePanelTable.getX() + pausePanelTable.getWidth() / 2 - selectLevelButton.getWidth() / 2,
+                resumeButton.getY() - 60);
+        goToMenuButton.setPosition(pausePanelTable.getX() + pausePanelTable.getWidth() / 2 - goToMenuButton.getWidth() / 2,
+                selectLevelButton.getY() - 60);
+        exitGameButton.setPosition(pausePanelTable.getX() + pausePanelTable.getWidth() / 2 - exitGameButton.getWidth() / 2,
+                goToMenuButton.getY() - 60);
     }
 
     public void createVictoryPanel() {
