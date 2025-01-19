@@ -14,20 +14,34 @@ import java.util.Map;
 import static de.tum.cit.fop.maze.util.Constants.TILE_SCREEN_SIZE;
 import static de.tum.cit.fop.maze.util.Constants.TILE_SIZE;
 
+/**
+ * Represents a generic tile in the game, with hitbox and position functionalities.
+ */
 public class Tile extends StaticTiledMapTile{
     private float worldX, worldY;
     private Position tilePosition;
 
     protected boolean[][] hitPixmap; // stores the precomputed alpha map
 
-    private static final Map<String, Pixmap> tilePixmapCache = new HashMap<>();
+    private static final Map<String, Pixmap> tilePixmapCache = new HashMap<>(); // saving the pixmap first
 
+    /**
+     * Constructs a Tile with the specified texture region.
+     *
+     * @param textureRegion The texture region for the tile.
+     */
     public Tile(TextureRegion textureRegion) {
         super(textureRegion);
         this.tilePosition = null;
         this.hitPixmap = null;
     }
 
+    /**
+     * Returns the tile position in tile units.
+     *
+     * @return The position of the tile.
+     * @throws IllegalStateException If the tile position is not initialized.
+     */
     public Position getTilePosition() {
         if (tilePosition != null)
             return tilePosition;
@@ -35,6 +49,11 @@ public class Tile extends StaticTiledMapTile{
             throw new IllegalStateException("Tile position has not been initialized");
     }
 
+    /**
+     * Sets the position of the tile in tile units and updates the hitbox.
+     *
+     * @param tilePosition The new position of the tile.
+     */
     public void setTilePosition(Position tilePosition) {
         this.tilePosition = tilePosition.convertTo(Position.PositionUnit.TILES);
 
@@ -55,10 +74,18 @@ public class Tile extends StaticTiledMapTile{
          */
     }
 
+    /**
+     * Prints the hit pixel map to the console for debugging purposes.
+     */
     void printHitPixmap(){
         printHitPixmap(hitPixmap);
     }
 
+    /**
+     * Prints the specified hit pixel map to the console for debugging purposes.
+     *
+     * @param hitPixmap The hit pixel map to print.
+     */
     public static void printHitPixmap(boolean[][] hitPixmap) {
         int width = hitPixmap[0].length;
         int height = hitPixmap.length;
@@ -72,19 +99,43 @@ public class Tile extends StaticTiledMapTile{
     }
 
 
+    /**
+     * Returns the x-coordinate of the tile in tile units.
+     * It simplifies the length of the method getting tileX
+     *
+     * @return The x-coordinate of the tile.
+     */
     public int getTileX(){
         return this.tilePosition.getTileX();
     }
 
+
+    /**
+     * Returns the y-coordinate of the tile in tile units.
+     * It simplifies the length of the method getting tileY
+     *
+     * @return The y-coordinate of the tile.
+     */
     public int getTileY(){
         return this.tilePosition.getTileY();
     }
 
+    /**
+     * Sets the hit pixel map based on the texture region.
+     */
     protected void setHitPixmap() {
         Pixmap pixmap = getTilePixmap(this.getTextureRegion());
         hitPixmap = createHitPixmap(this.getTextureRegion(), pixmap);
     }
 
+    /**
+     * Creates a hit pixel map based on the texture region and pixmap.
+     * The alpha calculation is performed here
+     *
+     * @param textureRegion The texture region of the tile.
+     * @param tilePixmap    The pixmap of the tile.
+     * @return A 2D boolean array representing the hit pixel map.
+     */
     public static boolean[][] createHitPixmap(TextureRegion textureRegion, Pixmap tilePixmap) {
         int startX = textureRegion.getRegionX();
         int startY = textureRegion.getRegionY();
