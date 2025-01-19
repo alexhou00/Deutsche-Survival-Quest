@@ -325,12 +325,6 @@ public class ChasingEnemy extends Character {
      *
      * @return {@code true} if this object is touching at least one trap; {@code false} otherwise
      */
-
-    /**
-     * Checks if this object is touching any traps currently present in the game world.
-     *
-     * @return {@code true} if the object is touching any traps, {@code false} otherwise.
-     */
     private boolean isTouchingTraps() {
         for (Trap trap : iterate(tiles.traps)) {
             if (trap.isTouching(this)) {
