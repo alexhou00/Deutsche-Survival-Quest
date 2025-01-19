@@ -14,6 +14,8 @@ import de.tum.cit.fop.maze.level.Tiles;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static java.lang.Math.abs;
 
+/**
+ * Represents an enemy as a DYNAMIC obstacle in the maze game */
 public class ChasingEnemy extends Character {
 
     private final TiledMapTileLayer collisionLayer;
@@ -75,7 +77,14 @@ public class ChasingEnemy extends Character {
         this.player = player;
     }
 
-
+    /**
+     * Updates the object's state and behavior based on the current game context.
+     *
+     * <p>This method manages the object's movement, collision detection, interaction with
+     * the player, and other behaviors, such as chasing the player or moving randomly.</p>
+     *
+     * @param delta the time in seconds since the last frame.
+     */
     @Override
     public void update(float delta) {
         if (paused) return;
@@ -220,6 +229,7 @@ public class ChasingEnemy extends Character {
         }
         else
             setRandomTarget();
+
         if (canMoveTo(x, newY)) {
             y = y + velY * delta; // Move vertically if no collision
         }
@@ -231,6 +241,10 @@ public class ChasingEnemy extends Character {
         y = MathUtils.clamp(y, getHitboxHeightOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
     }
 
+    /**
+     * Determines if the player can move to the specified position on the game world. (to prevent going through walls when moving)
+     * Overriding the "super" 's method to check also for the traps
+     */
     @Override
     protected boolean canMoveTo(float x, float y){
         /*if (MathUtils.clamp(x, hitboxWidthOnScreen / 2 + 1 , getWorldWidth() - hitboxWidthOnScreen / 2) - 1 != x ||
@@ -241,6 +255,12 @@ public class ChasingEnemy extends Character {
         return super.canMoveTo(x,y);
     }
 
+    /**
+     * Checks and handles collisions between this object and traps or enemies in the game world. <br>
+     * Handles reaction to collisions by stepping back
+     *
+     * @param delta the time in seconds since the last frame.
+     */
     //for traps and enemies
     private void checkCollisions(float delta) {
         // Access traps and enemies through GameManager
@@ -266,6 +286,15 @@ public class ChasingEnemy extends Character {
         }
     }
 
+    /**
+     * Moves the object slightly backward in the opposite direction of the specified GameObject.
+     *
+     * <p>This method adjusts the object's position to avoid overlapping with the specified
+     * GameObject (traps in this case) while ensuring the new position is valid.</p>
+     *
+     * @param delta the time in seconds since the last frame.
+     * @param other the GameObject causing the collision.
+     */
     private void stepBackABit(float delta, GameObject other){
         float dx = ((other.getX() - x) > 0) ? -1 * abs(velX) * delta : 1 * abs(velX) * delta; // if trap is on the right then
         float dy = ((other.getY() - y) > 0) ? -1 * abs(velY) * delta : 1 * abs(velY) * delta;
@@ -276,6 +305,11 @@ public class ChasingEnemy extends Character {
         setRandomTarget();
     }
 
+    /**
+     * Checks if this object is touching any traps currently present in the game world.
+     *
+     * @return {@code true} if the object is touching any traps, {@code false} otherwise.
+     */
     private boolean isTouchingTraps() {
         for (Trap trap : iterate(tiles.traps)) {
             if (trap.isTouching(this)) {
@@ -285,6 +319,14 @@ public class ChasingEnemy extends Character {
         return false;
     }
 
+    /**
+     * Sets a random target position for the object within the specified bounds.
+     *
+     * @param minX the minimum x-coordinate for the target.
+     * @param minY the minimum y-coordinate for the target.
+     * @param maxX the maximum x-coordinate for the target.
+     * @param maxY the maximum y-coordinate for the target.
+     */
     private void setRandomTarget(float minX, float minY, float maxX, float maxY) {
         boolean moveHorizontally = MathUtils.randomBoolean(); // Randomly decide whether to move horizontally or vertically
 
@@ -301,7 +343,10 @@ public class ChasingEnemy extends Character {
         randomMoveCooldown = RANDOM_MOVE_TIME; // Reset cooldown
     }
 
-    // overloaded, default to the entire screen
+    /**
+     * Sets a random target position for the object,
+     * Overloading method defaulting to the entire screen bounds.
+     */
     private void setRandomTarget() {
         setRandomTarget(getHitboxWidthOnScreen() / 2, getHitboxHeightOnScreen() / 2, getWorldWidth() - getHitboxWidthOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
     }

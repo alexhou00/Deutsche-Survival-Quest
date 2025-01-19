@@ -141,7 +141,9 @@ public class Tiles {
     }
 
 
-    // Loads tile images and obstacle images from the specified file paths and organizes them into an array of Tile objects.
+    /** Loads tile images and obstacle images from the specified file paths
+     * and organizes them into an array of Tile objects.
+     */
     private Tile[] loadTileSheet(String tileSheetPath, String ObstacleSheetPath) {
         var tileSheet = new Texture(tileSheetPath);//represents the main tile sheet image.
         var obstacleSheet = new Texture(ObstacleSheetPath);//represents the main tile sheet image.
@@ -352,6 +354,15 @@ public class Tiles {
         return mapData;
     }
 
+    /**
+     * Put the tiles on the {@link TiledMap} based on the given map data and dimensions.
+     * And if the tile is a trap/enemy, create a trap/enemy.
+     *
+     * @param mapData an object map (like the mapping or the dict, not the drawing map) containing tile data.
+     * @param mapWidthInTiles the width of the map in tiles.
+     * @param mapHeightInTiles the height of the map in tiles.
+     * @return the created {@link TiledMap}.
+     */
     private TiledMap createTiledMap(ObjectMap<String, Array<Integer>> mapData, int mapWidthInTiles, int mapHeightInTiles) {
         // Create a TiledMap
         TiledMap map = new TiledMap();
@@ -471,6 +482,13 @@ public class Tiles {
         }
     }
 
+    /**
+     * Converts a string representation of coordinates "x,y" into a {@link Position}.
+     *
+     * @param string the string in the format "x,y".
+     * @param unit   the unit of the position, either {@link Position.PositionUnit#TILES} or {@link Position.PositionUnit#PIXELS}.
+     * @return a {@link Position} object representing the parsed coordinates.
+     */
     private Position stringToPosition(String string, Position.PositionUnit unit) {
         String[] parts = string.split(",");
         float x = (Float.parseFloat(parts[0]) % 1 == 0) ? Integer.parseInt(parts[0]) : Float.parseFloat(parts[0]);
@@ -499,15 +517,36 @@ public class Tiles {
         return tileOnMap[x][y];
     }
 
+    /**
+     * Returns the 2D array of {@link TileType} representing the map layout.
+     *
+     * @return a 2D array of tile types on the map.
+     */
     public TileType[][] getTileEnumOnMap() {
         return tileEnumOnMap;
     }
 
+    /**
+     * Retrieves the {@link TileType} at the specified coordinates on the map.
+     * Equivalent to {@link Tiles#getTileEnumOnMap() getTileEnumOnMap()[x][y]}
+     *
+     * @param x the x-coordinate of the tile.
+     * @param y the y-coordinate of the tile.
+     * @return the tile type at the specified coordinates.
+     */
     public TileType getTileEnumOnMap(int x, int y) {
         return tileEnumOnMap[x][y];
     }
 
 
+    /**
+     * Finds the nearest {@link Exit} to the given player coordinates.
+     *
+     * @param playerX the x-coordinate of the player.
+     * @param playerY the y-coordinate of the player.
+     * @return the nearest exit to the player's position.
+     * @throws IllegalStateException if no exits are available on the map.
+     */
     public Exit getNearestExit(float playerX, float playerY){
         // find the nearest exit to (x,y) to this.exits
         if (exits == null || exits.isEmpty()) {
@@ -534,6 +573,12 @@ public class Tiles {
         return nearestExit;
     }
 
+    /**
+     * Checks if the current map's perspective requires the camera to be slightly angled
+     * rather than completely 2D top-down view.
+     *
+     * @return {@code true} if the camera is angled, {@code false} otherwise.
+     */
     public boolean isCameraAngled() {
         return cameraAngled;
     }

@@ -17,6 +17,20 @@ public class Trap extends GameObject {
 
     private boolean[][] hitPixmap; // stores the precomputed alpha map
 
+    /**
+     * Constructs a Trap object with the specified parameters.
+     *
+     * @param textureRegion the texture region representing the appearance of the trap.
+     * @param x the x-coordinate of the trap.
+     * @param y the y-coordinate of the trap.
+     * @param width the width of the trap in world units.
+     * @param height the height of the trap in world units.
+     * @param hitboxWidth the width of the trap's hitbox in world units.
+     * @param hitboxHeight the height of the trap's hitbox in world units.
+     * @param widthOnScreen the width of the trap when rendered on the screen.
+     * @param heightOnScreen the height of the trap when rendered on the screen.
+     * @param damage the amount of damage this trap inflicts on a player.
+     */
     public Trap(TextureRegion textureRegion, float x, float y, int width, int height, int hitboxWidth, int hitboxHeight,
                 float widthOnScreen, float heightOnScreen, float damage) {
         super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
@@ -25,7 +39,11 @@ public class Trap extends GameObject {
         setHitPixmap();
     }
 
-    // Render the trap using SpriteBatch
+    /**
+     * Renders the trap using the specified SpriteBatch.
+     *
+     * @param batch the SpriteBatch used for rendering.
+     */
     public void draw(SpriteBatch batch) {
         batch.draw(trapTexture, x - widthOnScreen / 2, y - heightOnScreen / 2, widthOnScreen, heightOnScreen);
         // printHitPixmap();
@@ -55,7 +73,16 @@ public class Trap extends GameObject {
         return getPixmap(tileRegion);
     }
 
-    /** Override the original rectangle overlapping method to this hitPixmap detection*/
+    /**
+     * Determines if this object is touching another GameObject using pixel-perfect collision detection.
+     *
+     * <p>This method overrides the default rectangle overlap detection by incorporating
+     * precomputed alpha maps for pixel-perfect collision detection. The method calculates the
+     * overlapping region of the hitboxes and checks the alpha values to determine collision.</p>
+     *
+     * @param object the other GameObject to check collision with.
+     * @return {@code true} if this object is touching the specified GameObject, {@code false} otherwise.
+     */
     @Override
     public boolean isTouching(GameObject object) {
         /*Precomputed Alpha Maps:

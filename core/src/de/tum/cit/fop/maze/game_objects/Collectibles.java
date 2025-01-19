@@ -78,7 +78,7 @@ public class Collectibles extends GameObject {
     }
 
     /**
-     * Gets the type of this collectible.
+     * Gets the type of this collectible. (e.g., HEART, COIN...)
      *
      * @return The type of collectible.
      */
@@ -87,8 +87,7 @@ public class Collectibles extends GameObject {
     }
 
     /**
-     * Updates the collectible's state.
-     * Could include logic like animations or interactions in the future.
+     * implement the functionalities of each type of collectibles
      */
     public void update() {
         // Placeholder for looping logic
