@@ -34,9 +34,7 @@ import de.tum.cit.fop.maze.rendering.SpotlightEffect;
 import de.tum.cit.fop.maze.tiles.Exit;
 import de.tum.cit.fop.maze.util.Position;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
@@ -93,7 +91,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private boolean isPaused;
 
-    private int totalCoins;
+    private final int totalCoins; // total maximal number of coins that the player should get
 
 
 
@@ -227,7 +225,7 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         }
 
-        totalCoins = emptyTiles.size;
+        //totalCoins = emptyTiles.size;
 
         // Randomly select 5 unique "OTHER" tiles
         generateCollectibles(emptyTiles, Collectibles.Type.HEART, 5, 11, 48);
@@ -240,8 +238,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private void generateCollectibles(Array<Position> emptyTiles, Collectibles.Type type, int numberToGenerate, int originalSize, float sizeOnScreen) {
         int collectiblesToGenerate = Math.min(numberToGenerate, emptyTiles.size);
+
+        List<Position> occupiedSectionIndexes = new ArrayList<>();
+
         for (int i = 0; i < collectiblesToGenerate; i++) {
-            int randomIndex = MathUtils.random(emptyTiles.size - 1);
+            int randomIndex = findRandomIndex(emptyTiles, collectiblesToGenerate, occupiedSectionIndexes, type);
             Position position = emptyTiles.removeIndex(randomIndex).convertTo(PIXELS); // Remove selected position to avoid duplicates
             float worldX = position.getX();
             float worldY = position.getY();
@@ -250,6 +251,35 @@ public class GameScreen extends InputAdapter implements Screen {
             collectibles.add(new Collectibles(worldX, worldY, originalSize, originalSize, originalSize, originalSize,
                     sizeOnScreen, sizeOnScreen, type));
         }
+    }
+
+    public int findRandomIndex(Array<Position> emptyTiles, int collectiblesToGenerate, List<Position> occupiedSectionIndexes, Collectibles.Type type){
+        // prevent duplicate sections
+        int randomIndex;
+        Position sectionIndex;
+        // Find an unused section index
+        do {
+            randomIndex = MathUtils.random(emptyTiles.size - 1);
+            sectionIndex = getSectionIndex(emptyTiles.get(randomIndex), collectiblesToGenerate);
+        } while (occupiedSectionIndexes.contains(sectionIndex));
+        System.out.println(occupiedSectionIndexes.contains(sectionIndex));
+        occupiedSectionIndexes.add(sectionIndex);
+        for (int j=-1;j<=1;j+=2) occupiedSectionIndexes.add(new Position(sectionIndex.getTileX() + j, sectionIndex.getTileY(),TILES));//int[]{sectionIndex[0] + j, sectionIndex[1]});
+        for (int j=-1;j<=1;j+=2) occupiedSectionIndexes.add(new Position(sectionIndex.getTileX(), sectionIndex.getTileY() + j,TILES));//int[]{sectionIndex[0],sectionIndex[1] + j});
+
+        System.out.println(type.toString() + " at " + sectionIndex);
+        for (var a : occupiedSectionIndexes) System.out.print( a.getTileX() + ", " +  a.getTileY() + ";  ");
+        System.out.println();
+        return randomIndex;
+    }
+
+    public Position getSectionIndex(Position position, int collectiblesToGenerate) {
+        int mapWidth = horizontalTilesCount;
+        int mapHeight = verticalTilesCount;
+        int sectionSideCount = ((collectiblesToGenerate + 5) / 2); // \left(\operatorname{floor}\left(\frac{x+3}{\left(2\right)}\right)\right)^{2} > x
+        int sectionWidth = mapWidth / sectionSideCount;
+        int sectionHeight = mapHeight / sectionSideCount;
+        return new Position((float) (position.getTileX() / sectionWidth), (float) (position.getTileY() / sectionHeight), TILES);
     }
 
     public void createIntroPanel(){
