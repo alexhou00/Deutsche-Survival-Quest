@@ -85,7 +85,7 @@ public class MazeRunnerGame extends Game {
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         this.loadAnimation(); // Load character animation
 
-        backgroundTexture = new Texture("background.png");
+        backgroundTexture = new Texture("backgrounds/background.png");
 
         // Play some background music
         // Background sound

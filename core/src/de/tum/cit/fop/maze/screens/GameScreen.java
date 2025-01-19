@@ -288,7 +288,7 @@ public class GameScreen extends InputAdapter implements Screen {
         System.out.println("pause panel created");
 
         Table pausePanelTable = new Table();
-        Drawable background = createSolidColorDrawable(Color.GRAY); // Semi-transparent background
+        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));// Semi-transparent background
         stage1.addActor(pausePanelTable);
 
         final float BUTTON_PADDING = 10f; // Vertical padding
