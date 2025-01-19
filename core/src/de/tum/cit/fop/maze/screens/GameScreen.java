@@ -34,9 +34,7 @@ import de.tum.cit.fop.maze.rendering.SpotlightEffect;
 import de.tum.cit.fop.maze.tiles.Exit;
 import de.tum.cit.fop.maze.util.Position;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
@@ -93,7 +91,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private boolean isPaused;
 
-    private int totalCoins;
+    private final int totalCoins; // total maximal number of coins that the player should get
 
 
 
@@ -216,7 +214,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private void spawnCollectibles() {
         // Get the 2D array of tiles
-        // Find all "OTHER" tiles
+        // to find all "OTHER" tiles
         Array<Position> emptyTiles = new Array<>();
         for (int x = 0; x < tiles.getTileEnumOnMap().length; x++) {
             for (int y = 0; y < tiles.getTileEnumOnMap()[x].length; y++) {
@@ -227,7 +225,7 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         }
 
-        totalCoins = emptyTiles.size;
+        //totalCoins = emptyTiles.size;
 
         // Randomly select 5 unique "OTHER" tiles
         generateCollectibles(emptyTiles, Collectibles.Type.HEART, 5, 11, 48);
@@ -240,8 +238,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private void generateCollectibles(Array<Position> emptyTiles, Collectibles.Type type, int numberToGenerate, int originalSize, float sizeOnScreen) {
         int collectiblesToGenerate = Math.min(numberToGenerate, emptyTiles.size);
+
+        List<Position> occupiedSectionIndexes = new ArrayList<>();
+
         for (int i = 0; i < collectiblesToGenerate; i++) {
-            int randomIndex = MathUtils.random(emptyTiles.size - 1);
+            int randomIndex = findRandomIndex(emptyTiles, collectiblesToGenerate, occupiedSectionIndexes, type);
             Position position = emptyTiles.removeIndex(randomIndex).convertTo(PIXELS); // Remove selected position to avoid duplicates
             float worldX = position.getX();
             float worldY = position.getY();
@@ -250,6 +251,35 @@ public class GameScreen extends InputAdapter implements Screen {
             collectibles.add(new Collectibles(worldX, worldY, originalSize, originalSize, originalSize, originalSize,
                     sizeOnScreen, sizeOnScreen, type));
         }
+    }
+
+    public int findRandomIndex(Array<Position> emptyTiles, int collectiblesToGenerate, List<Position> occupiedSectionIndexes, Collectibles.Type type){
+        // prevent duplicate sections
+        int randomIndex;
+        Position sectionIndex;
+        // Find an unused section index
+        do {
+            randomIndex = MathUtils.random(emptyTiles.size - 1);
+            sectionIndex = getSectionIndex(emptyTiles.get(randomIndex), collectiblesToGenerate);
+        } while (occupiedSectionIndexes.contains(sectionIndex));
+        System.out.println(occupiedSectionIndexes.contains(sectionIndex));
+        occupiedSectionIndexes.add(sectionIndex);
+        for (int j=-1;j<=1;j+=2) occupiedSectionIndexes.add(new Position(sectionIndex.getTileX() + j, sectionIndex.getTileY(),TILES));//int[]{sectionIndex[0] + j, sectionIndex[1]});
+        for (int j=-1;j<=1;j+=2) occupiedSectionIndexes.add(new Position(sectionIndex.getTileX(), sectionIndex.getTileY() + j,TILES));//int[]{sectionIndex[0],sectionIndex[1] + j});
+
+        System.out.println(type.toString() + " at " + sectionIndex);
+        for (var a : occupiedSectionIndexes) System.out.print( a.getTileX() + ", " +  a.getTileY() + ";  ");
+        System.out.println();
+        return randomIndex;
+    }
+
+    public Position getSectionIndex(Position position, int collectiblesToGenerate) {
+        int mapWidth = horizontalTilesCount;
+        int mapHeight = verticalTilesCount;
+        int sectionSideCount = ((collectiblesToGenerate + 5) / 2); // \left(\operatorname{floor}\left(\frac{x+3}{\left(2\right)}\right)\right)^{2} > x
+        int sectionWidth = mapWidth / sectionSideCount;
+        int sectionHeight = mapHeight / sectionSideCount;
+        return new Position((float) (position.getTileX() / sectionWidth), (float) (position.getTileY() / sectionHeight), TILES);
     }
 
     public void createIntroPanel(){
@@ -459,6 +489,12 @@ public class GameScreen extends InputAdapter implements Screen {
         return true; // Return true to indicate the event was handled
     }
 
+    /**
+     * Creates a single-pixel Drawable object with a solid color.
+     *
+     * @param color the color of the drawable pixel
+     * @return a Drawable object filled with the specified color
+     */
     private Drawable createSolidColorDrawable(Color color) {
         // Create a Pixmap with the solid color
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -502,6 +538,13 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+
+    /**
+     * Renders the game screen, updating and drawing all game elements.
+     * Note that this is the main loop of the game
+     *
+     * @param delta the time in seconds since the last frame was rendered (1/60 seconds if running smoothly)
+     */
     // Screen interface methods with necessary functionality
     @Override
     public void render(float delta) {
@@ -610,6 +653,9 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+    /**
+     * Draws a thick border around the tiled map using shapeRenderer
+     */
     public void drawMapBorder() {
         // if (mapTiles.isEmpty()) return;
 
@@ -721,7 +767,9 @@ public class GameScreen extends InputAdapter implements Screen {
         game.getSpriteBatch().setShader(null); // end the shader so we only shade the player
     }
 
-
+    /**
+     * Renders an arrow pointing towards the nearest exit.
+     */
     private void renderArrow(){
         // Draw arrow that points at the exit
         Position exitPosition = null;
@@ -734,6 +782,9 @@ public class GameScreen extends InputAdapter implements Screen {
 
     }
 
+    /**
+     * Renders collectible items with appropriate animations based on their type.
+     */
     private void renderCollectibles(){
         for (Collectibles collectible : iterate(collectibles)) {
             if (collectible.getType().equals(Collectibles.Type.HEART))
@@ -750,6 +801,10 @@ public class GameScreen extends InputAdapter implements Screen {
 
     }
 
+    /**
+     * Displays the speech bubble I wrote
+     * Specify the duration (5 seconds) of the player can speak and shows the text.
+     */
     private void renderSpeechBubble(){
         if (player.canSpeak) {
             player.getSpeechBubble().show(5.0f);
@@ -827,11 +882,18 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+    /**
+     * Renders all traps on the map.
+     */
     private void renderTrap(){
         for (Trap trap : iterate(tiles.traps)){ // for (trap : tiles.traps){
             trap.draw(game.getSpriteBatch());
         }
     }
+
+    /**
+     * Renders chasing enemies with appropriate animations based on their movement direction.
+     */
     private void renderChasingEnemy(){
         //chasingEnemy.draw(game.getSpriteBatch());
         for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){ // for (ChasingEnemy enemy : tiles.chasingEnemies)
@@ -849,6 +911,10 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+    /**
+     * Draws the player's stamina wheel,
+     * including an overflow arc if potion is collected.
+     */
     private void renderStamina(){
         float currentStamina = player.getStamina();
         //if (currentStamina >= Player.maxStamina) return;
@@ -868,13 +934,13 @@ public class GameScreen extends InputAdapter implements Screen {
             staminaTimer += Gdx.graphics.getDeltaTime();
             if (currentStamina > Player.maxStamina + 2){
                 shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-                shapeRenderer.setColor(Color.OLIVE);
+                shapeRenderer.setColor(new Color(0x16b816ff));
                 float angle = ((player.getStamina() - Player.maxStamina) / Player.maxStamina) * 360f; // Calculate the angle based on stamina
                 shapeRenderer.arc(staminaX, staminaY, staminaRadius * 1.6f, 90 - angle, angle); // Draw arc clockwise
 
             }
-            if (player.getCurrentStaminaMultiplier() == 1 &&
-                    staminaTimer > STAMINA_DISPLAY_TIME) {
+            if (player.getCurrentStaminaMultiplier() == 1 && // if the current multiplier is 1 (either didn't collect potion or extra stamina has used up)
+                    staminaTimer > STAMINA_DISPLAY_TIME) { // and if the time has passed,
                 // Hide the stamina bar if the timer exceeds the display duration
                 return;
 
@@ -950,11 +1016,20 @@ public class GameScreen extends InputAdapter implements Screen {
         game.getSpriteBatch().end();
     }
 
+    /**
+     * Renders a spotlight effect at the specified position
+     * It can be used to introduce some new feature and have the user focus on it
+     * or create a night time effect which only areas around the player is brightened
+     *
+     * @param x the x-coordinate of the spotlight center
+     * @param y the y-coordinate of the spotlight center
+     * @param spotlightRadius the radius of the spotlight circle
+     */
     private void renderSpotlightEffect(float x, float y, float spotlightRadius) {
         Position screenCoordinates = getScreenCoordinates(x, y);
         float xOnScreen = screenCoordinates.getX();
         float yOnScreen = screenCoordinates.getY();
-        Gdx.app.log("GameScreen", "screen x: " + xOnScreen + "; screen y: " + yOnScreen);
+        //Gdx.app.log("GameScreen", "screen x: " + xOnScreen + "; screen y: " + yOnScreen);
         spotlightEffect.render(camera, x, y, spotlightRadius, 0.8f);
     }
 
@@ -1027,7 +1102,15 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
 
-
+    /**
+     * Pauses the game, optionally creating a pause panel.
+     * This method is automatically called upon the window to lose the focus
+     * (like user switches to another window or minimize the game window).
+     * Also, the method is called when the user intends to pause the game
+     * (like pressing the pause game button)
+     *
+     * @param createPausePanel true to create a pause panel, false otherwise
+     */
     public void pause(boolean createPausePanel) {
         Gdx.app.log("GameScreen", "Game paused");
         // Stop processing input temporarily
@@ -1048,11 +1131,21 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
     }
 
+    /**
+     * Overloading method of {@link GameScreen#pause(boolean)} which defaults to creating a pause panel
+     */
     @Override
     public void pause() { // Overloading method
         pause(true);
     }
 
+    /**
+     * Resumes the game, restoring input processing and gameplay state.
+     * This method is automatically called upon the window to regain the focus
+     * (like user switches back to the game window)
+     * Also, the method is called when user intends to resume the game
+     * (like pressing the resume game button)
+     */
     @Override
     public void resume() {
         Gdx.app.log("GameScreen", "Game resumed");

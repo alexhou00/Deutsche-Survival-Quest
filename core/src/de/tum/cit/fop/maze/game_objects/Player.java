@@ -78,6 +78,18 @@ public class Player extends Character {
         }
     }
 
+    /**
+     * Handles the player's movement, including:
+     * <ul>
+     *   <li>Reading input from keyboard keys for movement and boosting</li>
+     *   <li>Calculating velocities for smooth movement</li>
+     *   <li>Managing stamina for boost usage and regeneration</li>
+     *   <li>Preventing movement through obstacles based on collision checks</li>
+     *   <li>Clamping the player's position within world boundaries</li>
+     * </ul>
+     * Movement directions are determined based on WASD or arrow keys, and
+     * speed adjustments account for boosting or diagonal movement.
+     */
     private void handleMovement() {
         float delta = Gdx.graphics.getDeltaTime();
         //Gdx.app.log("player", "running in handle movement");
@@ -185,6 +197,16 @@ public class Player extends Character {
         }
     }
 
+    /**
+     * Determines if the player can move to the specified position on the game world. (to prevent going through walls when moving)
+     * Overriding the "super" 's method
+     * to make some adjustment for a slightly angled camera view by modifying the y-coordinate to align
+     * with the center of the player's lower hitbox.
+     *
+     * @param x the x-coordinate to check for movement
+     * @param y the y-coordinate to check for movement
+     * @return {@code true} if the player can move to the specified position; {@code false} otherwise
+     */
     @Override
     protected boolean canMoveTo(float x, float y){
         if (tiles.isCameraAngled()) // not completely top-down 90° view; instead, it's with a slightly angled view
@@ -222,11 +244,16 @@ public class Player extends Character {
         return isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).isPointInTile(x + offsetX, y + offsetY);
     }
 
+    /**
+     * Checks for collisions between the player and traps or enemies in the game.
+     * Handles the effects of collisions, such as reducing the player's lives,
+     * bouncing back from enemies, and adjusting the player's position to prevent
+     * unintended movement through traps when already hurt.
+     */
     //for traps and enemies
     private void checkCollisions() {
         // Access traps and enemies through GameManager
         Array<Trap> traps = tiles.traps;
-        // ChasingEnemy chasingEnemies = gameScreen.tiles.chasingEnemies.get(0); //TODO: change the .get(0)
 
         // Check for collision with traps
 
@@ -273,6 +300,7 @@ public class Player extends Character {
     /**
      * Updates the player's state based on the elapsed time.
      * First, we handle the movement based on our keyboard input
+     * Then, we check the player's collision with traps and enemies
      *
      * @param delta The time in seconds since the last update.
      */
@@ -291,7 +319,7 @@ public class Player extends Character {
             }
         }
 
-        super.update(delta);
+        super.update(delta); // still need to update everything that a character should
     }
 
     @Override

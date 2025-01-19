@@ -3,18 +3,35 @@ package de.tum.cit.fop.maze.tiles;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+/**
+ * Represents a speed boost tile, which is a specialized type of wall tile.
+ * It may contain non-through regions, so it is a child class of Wall
+ * Speed boost tiles allow the player to move faster when touching them.
+ */
 public class SpeedBoost extends Wall {
     public SpeedBoost(TextureRegion textureRegion) {
         super(textureRegion);
     }
 
+    /**
+     * Overrides the hit map generation for speed boost tiles.
+     * The hit map is customized to include specific regions of the tile that should be treated as collidable.
+     */
     @Override
     protected void setHitPixmap() {
         Pixmap pixmap = getTilePixmap(this.getTextureRegion());
         hitPixmap = createHitPixmapForSpeedBoost(this.getTextureRegion(), pixmap);
     }
 
-    /** Compare the static method, createHitPixmap, in Tiles.java*/
+    /**
+     * Compare the static method, {@link Tile#createHitPixmap(TextureRegion, Pixmap)}
+     * Creates a hit map for the speed boost tile based on the texture's pixel data.
+     * A pixel is marked as collidable if it is black enough and has sufficient opacity.
+     *
+     * @param textureRegion The {@link TextureRegion} of the tile.
+     * @param tilePixmap    The {@link Pixmap} representing the pixel data of the tile.
+     * @return A 2D boolean array indicating collidable pixels.
+     */
     public static boolean[][] createHitPixmapForSpeedBoost(TextureRegion textureRegion, Pixmap tilePixmap) {
         int startX = textureRegion.getRegionX();
         int startY = textureRegion.getRegionY();
