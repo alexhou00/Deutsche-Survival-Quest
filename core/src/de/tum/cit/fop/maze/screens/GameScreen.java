@@ -859,7 +859,7 @@ public class GameScreen extends InputAdapter implements Screen {
             staminaTimer += Gdx.graphics.getDeltaTime();
             if (currentStamina > Player.maxStamina + 2){
                 shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-                shapeRenderer.setColor(Color.OLIVE);
+                shapeRenderer.setColor(new Color(0x16b816ff));
                 float angle = ((player.getStamina() - Player.maxStamina) / Player.maxStamina) * 360f; // Calculate the angle based on stamina
                 shapeRenderer.arc(staminaX, staminaY, staminaRadius * 1.6f, 90 - angle, angle); // Draw arc clockwise
 
