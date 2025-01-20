@@ -326,6 +326,19 @@ public class GameScreen extends InputAdapter implements Screen {
         table.add(label).padBottom(80).center().row();
         label.getStyle().font.getData().setScale(0.5f);
 
+        String instructionsText = "Welcome TUM student!\n" +
+                "As you arrive in Germany for your studies in Heilbronn, you will have to complete some challenges to settle in and start your studies. " +
+                "You will start at the airport, then figure out how to use the public transportation, which will be the Deutsche Bahn in this case, " +
+                "complete your city registration, chill in a Brauerei, and of course discover the beautiful Altstadt of Heilbronn:)\n\n" +
+                "During your journey, unfortunately, not everything will be as easy... First of all, you will need to collect a key for each level to move on with your journey. " +
+                "Also, you must remain alert, as there will be some traps, enemies, and surprises set for you to keep you from completing your journey.\n\n" +
+                "Good Luck!!\n\n[Press any key to continue with level 1 instructions]";
+        Label.LabelStyle instructionsStyle = new Label.LabelStyle();
+
+        instructionsStyle.font.getData().setScale(0.4f); // Make the font smaller
+        instructionsStyle.font.getData().markupEnabled = true; // Enable markup for styling
+        instructionsStyle.font.setColor(Color.DARK_GRAY); // Optional: Change text color
+
         TextButton button = new TextButton("Start now", game.getSkin());
 
         button.addListener(new ChangeListener() {
@@ -927,6 +940,10 @@ public class GameScreen extends InputAdapter implements Screen {
         for (Trap trap : iterate(tiles.traps)){ // for (trap : tiles.traps){
             trap.draw(game.getSpriteBatch());
         }
+    }
+
+    private void renderPortal(){
+
     }
 
     /**

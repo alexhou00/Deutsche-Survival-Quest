@@ -1,9 +1,11 @@
 package de.tum.cit.fop.maze.game_objects;
 
 import de.tum.cit.fop.maze.base.StaticObject;
+import de.tum.cit.fop.maze.level.Tiles;
 
 /** The third obstacle, rather than static traps & enemies, it must be something ingenious. Use your imagination and experience in videogames.*/
 public class Portal extends StaticObject {
+    Tiles tiles = new Tiles();
     private float elapsedTime; // Tracks time for the portal's state
     private boolean isActive; // Indicates if the portal is active
     private final float activeDuration = 5f; // Duration for which the portal is active
@@ -51,16 +53,11 @@ public class Portal extends StaticObject {
         return isActive;
     }
 
-    /*/**
-     * Handles interaction when the player touches the portal.
-     *
-     * @param player The player interacting with the portal.
-     * @param startPosition The position to which the player should be transported.
-     */
-   /* public void onPlayerTouch(Player player) {
+
+    public void onPlayerTouch(Player player, Key key) {
         if (isActive) {
-            player.setPosition(startPosition); // Transport player back to the start position
-            player.loseKey(); // Remove the key from the player
+            player.setPosition(tiles.entrance.getTileX(), tiles.entrance.getTileY());
+            key.returnToPosition(); // Remove the key from the player
         }
-    }*/
+    }
 }

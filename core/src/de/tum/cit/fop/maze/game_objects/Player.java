@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.base.GameObject;
@@ -45,6 +46,9 @@ public class Player extends Character {
 
     private static final float SPEED_THRESHOLD = 5; // a number to determine if the player has stopped moving or not. if lower than this number, it is considered that the player has stopped moving.
 
+
+
+
     /**
      * Constructor for Player. This is our main character <br>
      *
@@ -63,6 +67,7 @@ public class Player extends Character {
      */
     public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, GameScreen gameScreen, Tiles tiles) {
         super(getWorldCoordinateInPixels(tileX), getWorldCoordinateInPixels(tileY), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, tiles);
+
         this.isMoving = false;
         // this.speed = BASE_SPEED; // normal speed when moving either vertically or horizontally
         //this.collisionLayer = tiles.layer;
@@ -73,7 +78,15 @@ public class Player extends Character {
         if (tiles.isCameraAngled()){
             this.hitboxHeight /= 2;
         }
+
     }
+
+    public void setPosition(int tileX, int tileY) {
+        this.x = tileX;
+        this.y = tileY;
+    }
+
+    // Optional: Getter for X-coordinate
 
     /**
      * Handles the player's movement, including:
@@ -317,6 +330,12 @@ public class Player extends Character {
         }
 
         super.update(delta); // still need to update everything that a character should
+    }
+    /**
+     * Resets the player's position to the start position.
+     */
+    public void resetToStartPosition() {
+        hitbox.setPosition(tiles.entrance.getTileX(), tiles.entrance.getTileY());
     }
 
     @Override

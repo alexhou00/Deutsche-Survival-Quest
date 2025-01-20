@@ -51,6 +51,20 @@ public class Key extends StaticObject {
         System.out.println("Key collected!"); // Debug message
     }
 
+    /**
+     * Resets the key to its original position and marks it as uncollected.
+     */
+    public void returnToPosition() {
+        setPosition(x, y);
+        setCollected(false); // Reset the collected status
+        System.out.println("Key returned to original position: (" + x + ", " + y + ")");
+    }
+
+    public void setPosition(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public boolean isCollected() {
         return isCollected;
     }
