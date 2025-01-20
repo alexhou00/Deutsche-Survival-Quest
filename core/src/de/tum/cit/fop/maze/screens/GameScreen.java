@@ -34,7 +34,6 @@ import de.tum.cit.fop.maze.rendering.SpotlightEffect;
 import de.tum.cit.fop.maze.tiles.Exit;
 import de.tum.cit.fop.maze.util.Position;
 
-import javax.sound.sampled.Port;
 import java.util.*;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
@@ -320,14 +319,14 @@ public class GameScreen extends InputAdapter implements Screen {
             randomIndex = MathUtils.random(emptyTiles.size - 1);
             sectionIndex = getSectionIndex(emptyTiles.get(randomIndex), collectiblesToGenerate);
         } while (occupiedSectionIndexes.contains(sectionIndex));
-        System.out.println(occupiedSectionIndexes.contains(sectionIndex));
+        //System.out.println(occupiedSectionIndexes.contains(sectionIndex));
         occupiedSectionIndexes.add(sectionIndex);
         for (int j=-1;j<=1;j+=2) occupiedSectionIndexes.add(new Position(sectionIndex.getTileX() + j, sectionIndex.getTileY(),TILES));//int[]{sectionIndex[0] + j, sectionIndex[1]});
         for (int j=-1;j<=1;j+=2) occupiedSectionIndexes.add(new Position(sectionIndex.getTileX(), sectionIndex.getTileY() + j,TILES));//int[]{sectionIndex[0],sectionIndex[1] + j});
 
-        System.out.println(type.toString() + " at " + sectionIndex);
-        for (var a : occupiedSectionIndexes) System.out.print( a.getTileX() + ", " +  a.getTileY() + ";  ");
-        System.out.println();
+        //System.out.println(type.toString() + " at " + sectionIndex);
+        //for (var a : occupiedSectionIndexes) System.out.print( a.getTileX() + ", " +  a.getTileY() + ";  ");
+        //System.out.println();
         return randomIndex;
     }
 
@@ -384,8 +383,9 @@ public class GameScreen extends InputAdapter implements Screen {
                 player.setX(getWorldCoordinateInPixels(tiles.entrance.getTileX()));
                 player.setY(getWorldCoordinateInPixels(tiles.entrance.getTileY()));
             }});
-        table.add(button); // TODO: fix button
-        button.setPosition(200, 200); // Set a clear position on the stage
+        table.add(button).padTop(20).center().row();// TODO: fix button
+        // Use table layout to position button
+        //button.setPosition(200, 200); // Set a clear position on the stage
     }
 
     public void createPausePanel() {
@@ -1203,7 +1203,8 @@ public class GameScreen extends InputAdapter implements Screen {
         for (var panel : iterate(stage1.getActors())){
             panel.setSize(Gdx.graphics.getWidth() * 0.9f,Gdx.graphics.getHeight() * 0.9f);
         }
-        Gdx.input.setInputProcessor(inputMultiplexer);
+        stage1.getViewport().update(width, height, true); // This keeps the stage's coordinate system consistent.
+        Gdx.input.setInputProcessor(stage1);
     }
 
 
@@ -1267,7 +1268,7 @@ public class GameScreen extends InputAdapter implements Screen {
         }
 
         stage1.clear(); // Clear the pause panel from the screen
-        inputMultiplexer.removeProcessor(stage1);
+        //inputMultiplexer.removeProcessor(stage1);
     }
 
     @Override
