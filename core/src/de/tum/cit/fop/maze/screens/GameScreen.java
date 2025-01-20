@@ -118,7 +118,6 @@ public class GameScreen extends InputAdapter implements Screen {
         Viewport viewport1 = new ScreenViewport(hudCamera);
         stage1 = new Stage(viewport1, game.getSpriteBatch());
 
-        createIntroPanel();
 
 
         // We use an InputMultiplexer instead of only stage or "this",
@@ -132,6 +131,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
+        createIntroPanel();
 
         game.setMuted(false);
         shapeRenderer = new ShapeRenderer();
@@ -333,11 +333,14 @@ public class GameScreen extends InputAdapter implements Screen {
                 "During your journey, unfortunately, not everything will be as easy... First of all, you will need to collect a key for each level to move on with your journey. " +
                 "Also, you must remain alert, as there will be some traps, enemies, and surprises set for you to keep you from completing your journey.\n\n" +
                 "Good Luck!!\n\n[Press any key to continue with level 1 instructions]";
-        Label.LabelStyle instructionsStyle = new Label.LabelStyle();
 
-        instructionsStyle.font.getData().setScale(0.4f); // Make the font smaller
-        instructionsStyle.font.getData().markupEnabled = true; // Enable markup for styling
-        instructionsStyle.font.setColor(Color.DARK_GRAY); // Optional: Change text color
+        BitmapFont instructionsFont = new BitmapFont();
+        Label.LabelStyle instructionsStyle = new Label.LabelStyle(instructionsFont, Color.DARK_GRAY);
+        //font.getData().setScale(0.4f); // Make the font smaller
+        //font.getData().markupEnabled = true; // Enable markup for styling
+        //font.setColor(Color.DARK_GRAY); // Optional: Change text color
+        Label label2 = new Label(instructionsText, instructionsStyle);
+        table.add(label2).padBottom(80).center().row();
 
         TextButton button = new TextButton("Start now", game.getSkin());
 
