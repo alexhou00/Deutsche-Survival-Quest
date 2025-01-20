@@ -78,7 +78,6 @@ public class MazeRunnerGame extends Game {
         super();
     }
 
-
     /**
      * Called when the game is created. Initializes the SpriteBatch and Skin.
      */
