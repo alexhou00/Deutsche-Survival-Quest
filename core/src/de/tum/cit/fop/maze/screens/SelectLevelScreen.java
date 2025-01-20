@@ -1,6 +1,7 @@
 package de.tum.cit.fop.maze.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -18,7 +19,7 @@ import de.tum.cit.fop.maze.MazeRunnerGame;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SelectLevelScreen implements Screen {
+public class SelectLevelScreen implements Screen  {
 
     private final Stage stage;
     MazeRunnerGame game;
@@ -41,6 +42,8 @@ public class SelectLevelScreen implements Screen {
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
+
+        // used to detect mouse scrolls
 
         table.add(new Label("Deutsche Survival Quest", game.getSkin())).padBottom(80).row();
 //        TextButton Level1 = new TextButton("Level 1", game.getSkin());
@@ -83,6 +86,7 @@ buttons.put("Level 3", new TextButton("Level 3", game.getSkin()));
 buttons.put("Level 4", new TextButton("Level 4", game.getSkin()));
 buttons.put("Level 5", new TextButton("Level 5", game.getSkin()));
 buttons.put("Level 6", new TextButton("Level 6", game.getSkin()));
+
 Gdx.app.log("SelectLevelScreen", "screen created ");
  for (Map.Entry<String, TextButton> entry : buttons.entrySet()) {
      TextButton button = entry.getValue();
@@ -93,39 +97,51 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
          game.setGameLevel(1);
-         game.setScreen(new GameScreen(game));
+         game.goToGame();
      }
  });
  buttons.get("Level 2").addListener(new ChangeListener() {
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
          game.setGameLevel(2);
+         game.goToGame();
      }
  });
  buttons.get("Level 3").addListener(new ChangeListener() {
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
          game.setGameLevel(3);
+         game.goToGame();
      }
  });
  buttons.get("Level 4").addListener(new ChangeListener() {
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
          game.setGameLevel(4);
+         game.goToGame();
      }
  });
  buttons.get("Level 5").addListener(new ChangeListener() {
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
          game.setGameLevel(5);
+         game.goToGame();
      }
  });
  buttons.get("Level 6").addListener(new ChangeListener() {
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
          game.setGameLevel(6);
+         game.goToGame();
      }
  });
+ table.add(buttons.get("Level 1")).padTop(5).row();
+ table.add(buttons.get("Level 2")).padTop(5).row();
+ table.add(buttons.get("Level 3")).padTop(5).row();
+ table.add(buttons.get("Level 4")).padTop(5).row();
+ table.add(buttons.get("Level 5")).padTop(5).row();
+ table.add(buttons.get("Level 6")).padTop(5).row();
+ table.padTop(-800);
 
 
 
@@ -154,12 +170,16 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
 
     @Override
     public void show() {
-
+ Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        game.getSpriteBatch().begin();
+        game.getSpriteBatch().end();
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        stage.draw();
     }
 
     @Override
