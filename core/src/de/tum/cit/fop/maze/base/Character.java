@@ -11,7 +11,7 @@ import de.tum.cit.fop.maze.screens.GameScreen;
 import de.tum.cit.fop.maze.tiles.Tile;
 import de.tum.cit.fop.maze.tiles.Wall;
 
-import static de.tum.cit.fop.maze.util.Constants.TILE_SCREEN_SIZE;
+import static de.tum.cit.fop.maze.util.Constants.*;
 import static java.lang.Math.abs;
 
 /**
@@ -78,22 +78,22 @@ public abstract class Character extends GameObject {
         // Points to check along each edge (more points = more accurate but slower)
         int numPointsToCheck = 20;
         // Check top edge
-        for (int i = (int) (-hitboxWidthOnScreen / 2); i <= hitboxWidthOnScreen / 2; i += (int) (hitboxWidthOnScreen / numPointsToCheck))
-            if (isPointWithinInstanceOf(x, y, i, -hitboxHeightOnScreen / 2, Wall.class))
+        for (int i = (int) (-getHitboxWidthOnScreen() / 2); i <= getHitboxWidthOnScreen() / 2; i += (int) (getHitboxWidthOnScreen() / numPointsToCheck))
+            if (isPointWithinInstanceOf(x, y, i, -getHitboxHeightOnScreen() / 2, Wall.class))
                 return false;
         // Check bottom edge
-        for (int i = (int) (-hitboxWidthOnScreen / 2); i <= hitboxWidthOnScreen / 2; i += (int) (hitboxWidthOnScreen / numPointsToCheck)) {
-            if (isPointWithinInstanceOf(x, y, i, hitboxHeightOnScreen / 2, Wall.class))
+        for (int i = (int) (-getHitboxWidthOnScreen() / 2); i <= getHitboxWidthOnScreen() / 2; i += (int) (getHitboxWidthOnScreen() / numPointsToCheck)) {
+            if (isPointWithinInstanceOf(x, y, i, getHitboxHeightOnScreen() / 2, Wall.class))
                 return false;
         }
         // Check left edge
-        for (int j = (int) (-hitboxHeightOnScreen / 2); j <= hitboxHeightOnScreen / 2; j += (int) (hitboxHeightOnScreen / numPointsToCheck)) {
-            if (isPointWithinInstanceOf(x, y, -hitboxWidthOnScreen / 2, j, Wall.class))
+        for (int j = (int) (-getHitboxHeightOnScreen() / 2); j <= getHitboxHeightOnScreen() / 2; j += (int) (getHitboxHeightOnScreen() / numPointsToCheck)) {
+            if (isPointWithinInstanceOf(x, y, -getHitboxWidthOnScreen() / 2, j, Wall.class))
                 return false;
         }
         // Check right edge
-        for (int j = (int) (-hitboxHeightOnScreen / 2); j <= hitboxHeightOnScreen / 2; j += (int) (hitboxHeightOnScreen / numPointsToCheck)) {
-            if (isPointWithinInstanceOf(x, y, hitboxWidthOnScreen / 2, j, Wall.class))
+        for (int j = (int) (-getHitboxHeightOnScreen() / 2); j <= getHitboxHeightOnScreen() / 2; j += (int) (getHitboxHeightOnScreen() / numPointsToCheck)) {
+            if (isPointWithinInstanceOf(x, y, getHitboxWidthOnScreen() / 2, j, Wall.class))
                 return false;
         }
         return true;
@@ -123,8 +123,12 @@ public abstract class Character extends GameObject {
      */
     protected boolean isTileInstanceOf(int tileX, int tileY, Class<?> objectClass) {
         try {
-            Tile tile = tiles.getTileOnMap(tileX, tileY);
-            return objectClass.isInstance(tile);
+            if (tileX < horizontalTilesCount && tileY < verticalTilesCount){
+                Tile tile = tiles.getTileOnMap(tileX, tileY);
+                return objectClass.isInstance(tile);
+            }
+            else
+                return false;
         }
         catch (ArrayIndexOutOfBoundsException e){
             Gdx.app.error("Player", e.getMessage());
@@ -190,7 +194,7 @@ public abstract class Character extends GameObject {
     // Normal Speech Bubble
     public void say(String text, SpriteBatch batch) {
         if ( (batch != null)/*speechCooldown > 0*/){
-            speechBubble.render(batch, text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.NORMAL);
+            speechBubble.render(batch, text, x, y, getHeightOnScreen() / 2, SpeechBubble.BubbleType.NORMAL);
         }
 
     }
@@ -205,12 +209,12 @@ public abstract class Character extends GameObject {
 
     // Multi-edged Speech Bubble for a message out loud
     public void scream(String text, SpriteBatch batch) {
-        speechBubble.render(batch, text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.SCREAM);
+        speechBubble.render(batch, text, x, y, getHeightOnScreen() / 2, SpeechBubble.BubbleType.SCREAM);
     }
 
     // Cloud-shaped Speech Bubble for thoughts
     public void think(String text, SpriteBatch batch) {
-        speechBubble.render(batch, text, x, y, getHitboxHeightOnScreen() / 2, SpeechBubble.BubbleType.THOUGHT);
+        speechBubble.render(batch, text, x, y, getHeightOnScreen() / 2, SpeechBubble.BubbleType.THOUGHT);
     }
 
     public static float bounceVelocity(float v1){

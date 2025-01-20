@@ -47,7 +47,7 @@ public class MenuScreen implements Screen {
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
         stage = new Stage(viewport, game.getSpriteBatch()); // Create a stage for UI elements
 
-        backgroundTexture = new Texture("background.png");
+        backgroundTexture = new Texture("backgrounds/background.png");
 
         Table table = new Table(); // Create a table for layout
         table.setFillParent(true); // Make the table fill the stage
@@ -93,6 +93,7 @@ public class MenuScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.log("MenuScreen", "Start Game button pressed");
                 game.goToGame(); // Change to the game screen when button is pressed
+                game.getPauseMusic().pause();
             }
         });
 

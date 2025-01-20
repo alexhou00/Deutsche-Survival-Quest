@@ -9,9 +9,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 
-import java.util.Arrays;
-
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.hide;
 import static de.tum.cit.fop.maze.util.Constants.getWorldWidth;
 
 public class SpeechBubble {
@@ -41,7 +38,7 @@ public class SpeechBubble {
     private static final int CAPITAL_LETTER_UE = 220;
 
     public SpeechBubble() {
-        this.texture = new Texture(Gdx.files.internal("objects.png"));
+        this.texture = new Texture(Gdx.files.internal("original/objects.png"));
         this.speechTailRegion = new TextureRegion(texture, 192, 224, 16, 24);
         this.screamTailRegion = new TextureRegion(texture, 192 + 16, 224, 16, 24);
         this.thoughtTailRegion = new TextureRegion(texture, 192 + 16 * 2, 224, 16, 24);
@@ -70,6 +67,16 @@ public class SpeechBubble {
         }
     }
 
+    /**
+     * Renders a speech bubble with the specified text, position, and type.
+     *
+     * @param batch   The SpriteBatch used for rendering.
+     * @param text    The text to display inside the speech bubble.
+     * @param x       The x-coordinate for the bubble.
+     * @param y       The y-coordinate for the bubble.
+     * @param yOffset The vertical offset for positioning the bubble.
+     * @param type    The type of the speech bubble (NORMAL, SCREAM, THOUGHT).
+     */
     public void render(SpriteBatch batch, String text, float x, float y, float yOffset, BubbleType type) {
         if (!visible) return; // Do not render if the bubble is not visible
 
@@ -106,13 +113,13 @@ public class SpeechBubble {
 
         // Render the 9-patch
         float cornerSize = 14 * scale;
-        float centerWidth = bubbleWidth - 2 * cornerSize;  // (textWidth + padding * 2)  - 2 * 14 * scale
-        float centerHeight = bubbleHeight - 2 * cornerSize;
+         //centerWidth = bubbleWidth - 2 * cornerSize;  // (textWidth + padding * 2) - 2 * 14 * scale
+         //centerHeight = bubbleHeight - 2 * cornerSize;
 
         textWidth = Math.max(textWidth, cornerSize * 2);
         bubbleWidth = (textWidth + paddingX * 2);
-        centerWidth = bubbleWidth - 2 * cornerSize;
-        centerHeight = bubbleHeight - 2 * cornerSize;
+        float centerWidth = bubbleWidth - 2 * cornerSize;
+        float centerHeight = bubbleHeight - 2 * cornerSize;
 
         x = MathUtils.clamp(x, 0, getWorldWidth()-bubbleWidth);
         tailX = MathUtils.clamp(tailX, x+cornerSize, getWorldWidth()-tailRegion.getRegionWidth() * scale -cornerSize);
@@ -147,6 +154,11 @@ public class SpeechBubble {
         font.getData().setScale(1f); // Reset the font scale after rendering
     }
 
+    /**
+     * Updates the state of the speech bubble, controlling visibility based on elapsed time.
+     *
+     * @param delta The time in seconds since the last update.
+     */
     public void update(float delta) {
         if (visible) {
             elapsedTime += delta;
@@ -160,6 +172,13 @@ public class SpeechBubble {
         NORMAL, SCREAM, THOUGHT
     }
 
+    /**
+     * Calculates the width of a single letter using the specified font.
+     *
+     * @param font   The font to use for calculating the width.
+     * @param letter The letter whose width is to be calculated.
+     * @return The width of the letter.
+     */
     public float getLetterWidth(BitmapFont font, String letter){
         GlyphLayout layout = new GlyphLayout(font, letter);
         float adjust = switch (letter.charAt(0)){
@@ -172,8 +191,14 @@ public class SpeechBubble {
         return Math.max(layout.width + adjust * scale, layout.width); // width of letter "m"
     }
 
+    /**
+     * Calculates the total width of a text string based on the widths of individual characters.
+     *
+     * @param text The text string whose width is to be calculated.
+     * @return The total width of the text string.
+     */
     public float getTextWidth(String text){
-        float length = 0; //3 * scale; // 5 is the minimum, so we add base of it
+        float length = 0; //scale * 3; // 5 is the minimum, so we add base of it
         for (char c : text.toCharArray()){
             try{
                 length += letterWidth[c]; // if (c<='ü')
@@ -186,20 +211,38 @@ public class SpeechBubble {
         return length;
     }
 
+    /**
+     * Makes the speech bubble visible for the specified duration.
+     *
+     * @param duration The duration (in seconds) for which the bubble will be visible.
+     */
     public void show(float duration) {
         this.visible = true;
         this.visibleDuration = duration;
         this.elapsedTime = 0; // Reset elapsed time
     }
 
+    /**
+     * Hides the speech bubble, making it invisible.
+     */
     public void hide() {
         this.visible = false;
     }
 
+    /**
+     * Checks whether the speech bubble is currently visible.
+     *
+     * @return {@code true} if the bubble is visible, {@code false} otherwise.
+     */
     public boolean isVisible() {
         return visible;
     }
 
+    /**
+     * Gets the elapsed time since the bubble was shown.
+     *
+     * @return The elapsed time in seconds.
+     */
     public float getElapsedTime() {
         return elapsedTime;
     }

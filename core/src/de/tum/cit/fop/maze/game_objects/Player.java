@@ -2,17 +2,14 @@ package de.tum.cit.fop.maze.game_objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.base.Character;
 import de.tum.cit.fop.maze.tiles.SpeedBoost;
-import de.tum.cit.fop.maze.tiles.Tile;
-import de.tum.cit.fop.maze.tiles.Wall;
 import de.tum.cit.fop.maze.screens.GameScreen;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
@@ -29,10 +26,13 @@ public class Player extends Character {
     private boolean isHurt = false;
     private float hurtTimer = 0f; // Timer for the red tint
 
+    private int coins = 0;
+
     private float stamina;
     public static final float maxStamina = 100f; // Maximum stamina value
     private static final float staminaRegenRate = 15f; // Stamina regenerate per second
     private static final float staminaDepleteRate = 25f; // Stamina depletion per second
+    private float currentStaminaMultiplier = 1;
 
     GameScreen gameScreen;
     MazeRunnerGame game;
@@ -45,6 +45,7 @@ public class Player extends Character {
     private static final float BOOST_MULTIPLIER = 2f; // the speed will be multiplied by this number when the SHIFT key is pressed
     private static final float SMOOTH_FACTOR = 5f; // the lower the value, the smoother it gets (and needs more time to stop)
 
+    private static final float SPEED_THRESHOLD = 5; // a number to determine if the player has stopped moving or not. if lower than this number, it is considered that the player has stopped moving.
 
     /**
      * Constructor for Player. This is our main character <br>
@@ -72,11 +73,26 @@ public class Player extends Character {
         this.gameScreen = gameScreen;
         this.game = gameScreen.game;
         this.stamina = maxStamina; // Initialize stamina to max
+        if (tiles.isCameraAngled()){
+            this.hitboxHeight /= 2;
+        }
     }
 
+    /**
+     * Handles the player's movement, including:
+     * <ul>
+     *   <li>Reading input from keyboard keys for movement and boosting</li>
+     *   <li>Calculating velocities for smooth movement</li>
+     *   <li>Managing stamina for boost usage and regeneration</li>
+     *   <li>Preventing movement through obstacles based on collision checks</li>
+     *   <li>Clamping the player's position within world boundaries</li>
+     * </ul>
+     * Movement directions are determined based on WASD or arrow keys, and
+     * speed adjustments account for boosting or diagonal movement.
+     */
     private void handleMovement() {
         float delta = Gdx.graphics.getDeltaTime();
-        Gdx.app.log("player", "running in handle movement");
+        //Gdx.app.log("player", "running in handle movement");
         // define keys pressed to handle keys for player movement; both WASD, and the arrow keys are used
         boolean rightPressed = !isHurt && (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D));
         boolean leftPressed = !isHurt && (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A));
@@ -96,7 +112,7 @@ public class Player extends Character {
         if (downPressed) lastVerticalDirection = -1;
 
         // to have the player stop the animation if none of the keys are pressed or continues with the animation otherwise
-        isMoving = (abs(velX) > 5 || abs(velY) >5);  // horizontalInput != 0 || verticalInput != 0;
+        isMoving = (abs(velX) > SPEED_THRESHOLD || abs(velY) > SPEED_THRESHOLD);  // horizontalInput != 0 || verticalInput != 0;
 
         // speed is doubled (times the `BOOST_MULTIPLIER`) when: (1) SHIFT key is hold OR (2) touching a speed boost tile
         // final speed is speed * FPS (delta), since the speed should be independent of the FPS
@@ -107,12 +123,14 @@ public class Player extends Character {
         if (verticalInput == 0) targetVelY = 0;
         else targetVelY = isBoosting ? (lastVerticalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastVerticalDirection * BASE_SPEED);
 
-        if (boostPressed && speed > 0) {
+        if (boostPressed && speed > SPEED_THRESHOLD && !isHurt) { // if SHIFT is pressed and the player is indeed moving, plus if not being restricted in movement (because of the enemy attack)
             stamina -= staminaDepleteRate * delta; // Deplete stamina
             stamina = Math.max(stamina, 0); // Ensure it doesn't go negative
-        } else {
-            stamina += staminaRegenRate * delta; // Regenerate stamina
-            stamina = Math.min(stamina, maxStamina); // Cap at maxStamina
+        } else if (!isHurt) { // if the player is being hurt, it doesn't regen either
+            if (currentStaminaMultiplier == 1 || stamina < maxStamina) // filter out when stamina multiplied and there's excess stamina (filter out his case)
+                stamina += staminaRegenRate * delta; // Regenerate stamina
+
+            stamina = Math.min(stamina, maxStamina * currentStaminaMultiplier); // Cap at maxStamina
         }
 
 
@@ -129,7 +147,7 @@ public class Player extends Character {
             canMoveVertically = true;
             targetVelX *= 4;
             targetVelY *= 4;
-            lives = 100;
+            lives = 5;
         }
 
 
@@ -145,8 +163,8 @@ public class Player extends Character {
         velY += (targetVelY - velY) * SMOOTH_FACTOR * delta;
 
         // reset last movement direction if the velocity drops below the threshold
-        if (abs(velX) < 5) lastHorizontalDirection = 0;
-        if (abs(velY) < 5) lastVerticalDirection = 0;
+        if (abs(velX) < SPEED_THRESHOLD) lastHorizontalDirection = 0;
+        if (abs(velY) < SPEED_THRESHOLD) lastVerticalDirection = 0;
 
         // update the player's coordinates
         float newX = x + velX * delta; // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
@@ -171,12 +189,29 @@ public class Player extends Character {
         }
 
         // Constrain Player to World Boundaries
-        x = MathUtils.clamp(x, hitboxWidthOnScreen / 2, getWorldWidth() - hitboxWidthOnScreen / 2);
-        y = MathUtils.clamp(y, hitboxHeightOnScreen / 2, getWorldHeight() - hitboxHeightOnScreen / 2);
+        x = MathUtils.clamp(x, getHitboxWidthOnScreen() / 2, getWorldWidth() - getHitboxWidthOnScreen() / 2);
+        y = MathUtils.clamp(y, getHitboxHeightOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
 
         if (rightPressed || leftPressed || upPressed || downPressed){
             // Gdx.app.log("Player", "x: " + x + "; y: " + y);
         }
+    }
+
+    /**
+     * Determines if the player can move to the specified position on the game world. (to prevent going through walls when moving)
+     * Overriding the "super" 's method
+     * to make some adjustment for a slightly angled camera view by modifying the y-coordinate to align
+     * with the center of the player's lower hitbox.
+     *
+     * @param x the x-coordinate to check for movement
+     * @param y the y-coordinate to check for movement
+     * @return {@code true} if the player can move to the specified position; {@code false} otherwise
+     */
+    @Override
+    protected boolean canMoveTo(float x, float y){
+        if (tiles.isCameraAngled()) // not completely top-down 90° view; instead, it's with a slightly angled view
+            y -= getHitboxHeightOnScreen()/2; // hitboxHeight is updated, this is the center of the lower-half of the current hitbox
+        return super.canMoveTo(x,y);
     }
 
     /**
@@ -209,15 +244,20 @@ public class Player extends Character {
         return isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).isPointInTile(x + offsetX, y + offsetY);
     }
 
+    /**
+     * Checks for collisions between the player and traps or enemies in the game.
+     * Handles the effects of collisions, such as reducing the player's lives,
+     * bouncing back from enemies, and adjusting the player's position to prevent
+     * unintended movement through traps when already hurt.
+     */
     //for traps and enemies
     private void checkCollisions() {
         // Access traps and enemies through GameManager
         Array<Trap> traps = tiles.traps;
-        // ChasingEnemy chasingEnemies = gameScreen.tiles.chasingEnemies.get(0); //TODO: change the .get(0)
 
         // Check for collision with traps
 
-        for (Trap trap : new Array.ArrayIterator<>(traps)) {
+        for (Trap trap : iterate(traps)) {
             if (trap.isTouching(this)) {
                 if (!isHurt){
                     loseLives(trap.getDamage(), trap);
@@ -233,7 +273,7 @@ public class Player extends Character {
         }
 
         // Check for collision with enemies
-        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)) {
+        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)) {
             if (enemy.isTouching(this) && !isHurt) {
                 bounceBack(enemy);
             }
@@ -241,7 +281,7 @@ public class Player extends Character {
     }
 
     public void loseLives(float amount, GameObject source){//or damage idk
-       game.getSoundEffectHurt().play();
+       game.getSoundEffectHurt().play(1.0f, 1.0594631f, 0f); // x2.0f is one octave higher (think of the freq.)
         lives -= amount;
 
         if (lives <= 0){
@@ -260,6 +300,7 @@ public class Player extends Character {
     /**
      * Updates the player's state based on the elapsed time.
      * First, we handle the movement based on our keyboard input
+     * Then, we check the player's collision with traps and enemies
      *
      * @param delta The time in seconds since the last update.
      */
@@ -278,7 +319,7 @@ public class Player extends Character {
             }
         }
 
-        super.update(delta);
+        super.update(delta); // still need to update everything that a character should
     }
 
     @Override
@@ -313,5 +354,30 @@ public class Player extends Character {
 
     public void setPaused(boolean paused){
         this.paused = paused;
+    }
+
+    public int getCoins() {
+        return coins;
+    }
+
+    public void setCoins(int coins) {
+        this.coins = coins;
+    }
+
+    public void setStamina(float stamina) {
+        this.stamina = stamina;
+    }
+
+    public float getCurrentStaminaMultiplier() {
+        return currentStaminaMultiplier;
+    }
+
+    public void setCurrentStaminaMultiplier(float currentStaminaMultiplier) {
+        this.currentStaminaMultiplier = currentStaminaMultiplier;
+    }
+
+    @Override
+    public Rectangle getHitbox() {
+        return super.getHitbox();
     }
 }

@@ -1,7 +1,6 @@
 package de.tum.cit.fop.maze.screens;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -28,17 +27,14 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.fop.maze.*;
-import de.tum.cit.fop.maze.game_objects.ChasingEnemy;
-import de.tum.cit.fop.maze.game_objects.Key;
-import de.tum.cit.fop.maze.game_objects.Player;
-import de.tum.cit.fop.maze.game_objects.Trap;
+import de.tum.cit.fop.maze.game_objects.*;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.rendering.ElementRenderer;
 import de.tum.cit.fop.maze.rendering.SpotlightEffect;
+import de.tum.cit.fop.maze.tiles.Exit;
 import de.tum.cit.fop.maze.util.Position;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
@@ -57,23 +53,21 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final OrthographicCamera camera;
     private final OrthographicCamera hudCamera; // HUD camera. HUD uses another camera so that it does not follow the player and is fixed on the screen.
+    // For zooming
+    private float targetZoom; // targetZoom stores the intermediate zoom value so that we can zoom smoothly
 
     private final BitmapFont font;
     private final ShapeRenderer shapeRenderer; // For drawing shapes like health bars
+    private final OrthogonalTiledMapRenderer mapRenderer;
+    private final ElementRenderer hudObjectRenderer; // Hearts and other objects on the HUD
 
     private float sinusInput = 0f;  // work as a timer to create a smooth animation with trig functions
-
-    // For zooming
-    private float targetZoom; // targetZoom stores the intermediate zoom value so that we can zoom smoothly
 
     private final Player player;
     public Tiles tiles; // Tile system for the map
     private final Key key;
     TextureRegion keyRegion;
-
-    private final OrthogonalTiledMapRenderer mapRenderer;
-
-    private final ElementRenderer hudObjectRenderer; // Hearts and other objects on the HUD
+    private final Array<Collectibles> collectibles;
 
     private final SpotlightEffect spotlightEffect;
 
@@ -82,7 +76,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final ShaderProgram shader;
     private final Stage stage1;
-    private TextButton button;
 
     // Show all the variables in the bottom-left corner here
     // Variables to show, stored in a map (LinkedHashMap preserves the order)
@@ -93,10 +86,12 @@ public class GameScreen extends InputAdapter implements Screen {
     Animation<TextureRegion> mobGuyAnimation;
 
     // Timer to track how long the stamina bar should stay visible after refill
-    private float staminaTimer = 0f;
     private static final float STAMINA_DISPLAY_TIME = 1f; // Duration to show stamina bar in seconds
+    private float staminaTimer = STAMINA_DISPLAY_TIME; // set the timer to max first to prevent from showing at the very beginning
 
     private boolean isPaused;
+
+    private final int totalCoins; // total maximal number of coins that the player should get
 
 
 
@@ -125,6 +120,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         createIntroPanel();
 
+
         // We use an InputMultiplexer instead of only stage or "this",
         // since both stage1 (for intro panel) and the GameScreen (for scrolling) handle inputs
         inputMultiplexer.addProcessor(stage1); // the stage is for the intro panel
@@ -132,7 +128,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(stage1);
 
         // Load textures for HUD
-        hudObjectRenderer = new ElementRenderer("objects.png");
+        hudObjectRenderer = new ElementRenderer("original/objects.png");
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
@@ -145,10 +141,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
         TiledMap tiledMap;
         switch (game.getGameLevel()) {
-            case 1 -> tiledMap = tiles.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("level1_tileset.png").path(), Gdx.files.internal("level1_obstacles.png").path());
-            case 2 -> tiledMap = tiles.loadTiledMap("maps/level-2.properties", Gdx.files.internal("level1_tileset.png").path(), Gdx.files.internal("level1_obstacles.png").path());
-            case 3 -> tiledMap = tiles.loadTiledMap("maps/level-n-map.properties", Gdx.files.internal("germanbar_tileset.png").path(), Gdx.files.internal("level1_obstacles.png").path());
-            default -> tiledMap = tiles.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("level1_tileset.png").path(), Gdx.files.internal("level1_obstacles.png").path()); // TODO: problems reading other maps given by the tutors
+            case 1,2,3,4 -> tiledMap = tiles.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+            //case 2 -> tiledMap = tiles.loadTiledMap("maps/level-2-map.properties", Gdx.files.internal("tilesets/level2_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+            //case 3 -> tiledMap = tiles.loadTiledMap("maps/level-3-map.properties", Gdx.files.internal("tilesets/level3_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+            //case 4 -> tiledMap = tiles.loadTiledMap("maps/level-4-map.properties", Gdx.files.internal("tilesets/level4_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+            default -> tiledMap = tiles.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
         }
 
         // Initialize the key. Only after we lod the tiled map, we can access the key's position
@@ -161,6 +158,10 @@ public class GameScreen extends InputAdapter implements Screen {
         // and then get the texture region where our key is at
         keyRegion = tiles.getTileset()[Tiles.KEY].getTextureRegion();
 
+        collectibles = new Array<>();
+        System.out.println(Arrays.deepToString(tiles.getTileEnumOnMap()));
+        spawnCollectibles();
+
         // Set up map renderer
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many
 
@@ -168,7 +169,7 @@ public class GameScreen extends InputAdapter implements Screen {
         player = new Player(
                 tiles.entrance.getTileX(),
                 tiles.entrance.getTileY(),
-                16, 32, 12, 19, 64f, 128f, 200f,
+                16, 32, 12, 17, 64f, 128f, 10f,
                 this, tiles);//"this" is already a game screen
 
         // Initialize traps and add one trap (you can add more as needed)
@@ -182,8 +183,12 @@ public class GameScreen extends InputAdapter implements Screen {
         //chasingEnemy.add(chasingEnemy1); // Add enemy targeting the player*/
         //chasingEnemy = new ChasingEnemy(0, 0, 32, 32, 32, 32, 64, 64, 3, this, tiles.layer, player); //new TextureRegion(new Texture(Gdx.files.internal( "mob_guy.png")), 0, 0, 32, 32));
 
-        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)){
+        // for whatever that requires touching the player
+        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){
             enemy.init(player);
+        }
+        for (Collectibles collectible : iterate(collectibles)){
+            collectible.init(player, game.getSoundEffectKey());
         }
 
         //popUpPanel = new PopUpPanel();
@@ -193,8 +198,8 @@ public class GameScreen extends InputAdapter implements Screen {
         // Load and compile shaders
         ShaderProgram.pedantic = false; // Allow non-pedantic GLSL code
         shader = new ShaderProgram(
-                Gdx.files.internal("default.vert"),
-                Gdx.files.internal("hurtEffect.frag")
+                Gdx.files.internal("effects/default.vert"),
+                Gdx.files.internal("effects/hurtEffect.frag")
         );
         if (!shader.isCompiled()) {
             Gdx.app.error("ShaderError", shader.getLog());
@@ -204,11 +209,110 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(stage1);
         //Gdx.app.log("Size" ,  horizontalTilesCount + "x" + verticalTilesCount);
 
+        this.totalCoins = 5;
+    }
 
-        //createPausePanel();
+    /**
+     * Identifies all empty tiles on the map and prepares them for spawning collectibles.
+     *
+     * <p>This method iterates through the 2D array of tiles on the map, checking each tile's type.
+     * If the tile is of type {@code OTHER} or is {@code null}, it is considered an empty tile and
+     * added to a list of potential positions for spawning collectibles.
+     *
+     * <p>The positions of these empty tiles are stored as {@link Position} objects in an array,
+     * ready for further processing.
+     */
+    private void spawnCollectibles() {
+        // Get the 2D array of tiles
+        // to find all "OTHER" tiles
+        Array<Position> emptyTiles = new Array<>();
+        for (int x = 0; x < tiles.getTileEnumOnMap().length; x++) {
+            for (int y = 0; y < tiles.getTileEnumOnMap()[x].length; y++) {
+                Tiles.TileType tileType = tiles.getTileEnumOnMap()[x][y];
+                if ((tileType == Tiles.TileType.OTHER) || tileType == null) {
+                    emptyTiles.add(new Position(x, y, TILES));
+                }
+            }
+        }
+
+        //totalCoins = emptyTiles.size;
+
+        // Randomly select 5 unique "OTHER" tiles
+        generateCollectibles(emptyTiles, Collectibles.Type.HEART, 5, 11, 48);
+        generateCollectibles(emptyTiles, Collectibles.Type.PRETZEL, 3, 28, 72);
+
+        generateCollectibles(emptyTiles, Collectibles.Type.COIN, 5, 11, 48);
+
+        generateCollectibles(emptyTiles, Collectibles.Type.STAMINA, 1, 16, 96);
+    }
+
+    /**
+     * Generates a specified number of collectibles at random positions from a list of empty tiles.
+     *
+     * <p>The method selects random positions from the provided {@code emptyTiles} array, ensuring no duplicate
+     * positions are used. It then creates collectibles of the specified type and adds them to the game world.
+     *
+     * <p>The following steps are performed:
+     * <ul>
+     *     <li>Determine the number of collectibles to generate based on the available empty tiles and the requested amount.</li>
+     *     <li>Randomly select positions, avoiding duplicates by removing them from the {@code emptyTiles} array.</li>
+     *     <li>Create collectibles at the selected positions with the specified size and type.</li>
+     * </ul>
+     *
+     * @param emptyTiles       an array of positions where collectibles can be placed
+     * @param type             the type of collectibles to generate
+     * @param numberToGenerate the desired number of collectibles to generate
+     * @param originalSize     the original size of the collectible in world units
+     * @param sizeOnScreen     the size of the collectible as it appears on the screen
+     */
+    private void generateCollectibles(Array<Position> emptyTiles, Collectibles.Type type, int numberToGenerate, int originalSize, float sizeOnScreen) {
+        int collectiblesToGenerate = Math.min(numberToGenerate, emptyTiles.size);
+
+        List<Position> occupiedSectionIndexes = new ArrayList<>();
+
+        for (int i = 0; i < collectiblesToGenerate; i++) {
+            int randomIndex = findRandomIndex(emptyTiles, collectiblesToGenerate, occupiedSectionIndexes, type);
+            Position position = emptyTiles.removeIndex(randomIndex).convertTo(PIXELS); // Remove selected position to avoid duplicates
+            float worldX = position.getX();
+            float worldY = position.getY();
+
+            // Generate a collectible at the selected position
+            collectibles.add(new Collectibles(worldX, worldY, originalSize, originalSize, originalSize, originalSize,
+                    sizeOnScreen, sizeOnScreen, type));
+        }
+    }
+
+    public int findRandomIndex(Array<Position> emptyTiles, int collectiblesToGenerate, List<Position> occupiedSectionIndexes, Collectibles.Type type){
+        // prevent duplicate sections
+        int randomIndex;
+        Position sectionIndex;
+        // Find an unused section index
+        do {
+            randomIndex = MathUtils.random(emptyTiles.size - 1);
+            sectionIndex = getSectionIndex(emptyTiles.get(randomIndex), collectiblesToGenerate);
+        } while (occupiedSectionIndexes.contains(sectionIndex));
+        System.out.println(occupiedSectionIndexes.contains(sectionIndex));
+        occupiedSectionIndexes.add(sectionIndex);
+        for (int j=-1;j<=1;j+=2) occupiedSectionIndexes.add(new Position(sectionIndex.getTileX() + j, sectionIndex.getTileY(),TILES));//int[]{sectionIndex[0] + j, sectionIndex[1]});
+        for (int j=-1;j<=1;j+=2) occupiedSectionIndexes.add(new Position(sectionIndex.getTileX(), sectionIndex.getTileY() + j,TILES));//int[]{sectionIndex[0],sectionIndex[1] + j});
+
+        System.out.println(type.toString() + " at " + sectionIndex);
+        for (var a : occupiedSectionIndexes) System.out.print( a.getTileX() + ", " +  a.getTileY() + ";  ");
+        System.out.println();
+        return randomIndex;
+    }
+
+    public Position getSectionIndex(Position position, int collectiblesToGenerate) {
+        int mapWidth = horizontalTilesCount;
+        int mapHeight = verticalTilesCount;
+        int sectionSideCount = ((collectiblesToGenerate + 5) / 2); // \left(\operatorname{floor}\left(\frac{x+3}{\left(2\right)}\right)\right)^{2} > x
+        int sectionWidth = mapWidth / sectionSideCount;
+        int sectionHeight = mapHeight / sectionSideCount;
+        return new Position((float) (position.getTileX() / sectionWidth), (float) (position.getTileY() / sectionHeight), TILES);
     }
 
     public void createIntroPanel(){
+       // game.getPauseMusic().pause();
         Table table = new Table();
         Drawable background = createSolidColorDrawable(Color.WHITE);
         stage1.addActor(table);
@@ -222,7 +326,7 @@ public class GameScreen extends InputAdapter implements Screen {
         table.add(label).padBottom(80).center().row();
         label.getStyle().font.getData().setScale(0.5f);
 
-        button = new TextButton("Start now", game.getSkin());
+        TextButton button = new TextButton("Start now", game.getSkin());
 
         button.addListener(new ChangeListener() {
             @Override
@@ -231,7 +335,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 table.remove(); // Change to the game screen when the button is pressed
                 game.resume();
                 // Reset the player's position to start position just in case there's velocity from the previous level
-                // and that the player would go into the walls because the collision detecting hasn't start yet
+                // and that the player would go into the walls because the collision detecting hasn't started yet
                 player.setX(getWorldCoordinateInPixels(tiles.entrance.getTileX()));
                 player.setY(getWorldCoordinateInPixels(tiles.entrance.getTileY()));
             }});
@@ -243,7 +347,7 @@ public class GameScreen extends InputAdapter implements Screen {
         System.out.println("pause panel created");
 
         Table pausePanelTable = new Table();
-        Drawable background = createSolidColorDrawable(Color.GRAY); // Semi-transparent background
+        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));// Semi-transparent background
         stage1.addActor(pausePanelTable);
 
         final float BUTTON_PADDING = 10f; // Vertical padding
@@ -287,16 +391,122 @@ public class GameScreen extends InputAdapter implements Screen {
         pausePanelTable.add(goToMenuButton).padBottom(BUTTON_PADDING).row();
         //goToMenuButton.setPosition(900, 600); // Set a clear position on the stage
 
-        Button ExitGameButton =  new TextButton("Exit Game", game.getSkin());
-        ExitGameButton.addListener(new ChangeListener() {
+        Button exitGameButton =  new TextButton("Exit Game", game.getSkin());
+        exitGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor){
                 game.exitGame();
             }});
-        pausePanelTable.add(ExitGameButton).padBottom(BUTTON_PADDING).row();
+        pausePanelTable.add(exitGameButton).padBottom(BUTTON_PADDING).row();
         //ExitGameButton.setPosition(200, 800); // Set a clear position on the stage
+
+        resumeButton.setPosition(pausePanelTable.getX() + pausePanelTable.getWidth() / 2 - resumeButton.getWidth() / 2,
+                pausePanelTable.getY() + pausePanelTable.getHeight() - 100);
+        selectLevelButton.setPosition(pausePanelTable.getX() + pausePanelTable.getWidth() / 2 - selectLevelButton.getWidth() / 2,
+                resumeButton.getY() - 60);
+        goToMenuButton.setPosition(pausePanelTable.getX() + pausePanelTable.getWidth() / 2 - goToMenuButton.getWidth() / 2,
+                selectLevelButton.getY() - 60);
+        exitGameButton.setPosition(pausePanelTable.getX() + pausePanelTable.getWidth() / 2 - exitGameButton.getWidth() / 2,
+                goToMenuButton.getY() - 60);
     }
 
+    public void createVictoryPanel() {
+        System.out.println("Victory panel created");
+
+        Table victoryPanelTable = new Table();
+        Drawable background = createSolidColorDrawable(Color.GOLD); // Gold background to signify victory
+        stage1.addActor(victoryPanelTable);
+
+        final float BUTTON_PADDING = 10f; // Vertical padding
+
+        victoryPanelTable.setBackground(background);
+        victoryPanelTable.setSize(Gdx.graphics.getWidth() * 0.8f, Gdx.graphics.getHeight() * 0.6f);
+        victoryPanelTable.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.2f);
+
+        Label victoryLabel = new Label("Victory!", game.getSkin(), "title");
+        victoryPanelTable.add(victoryLabel).padBottom(80).center().row();
+        victoryLabel.getStyle().font.getData().setScale(0.5f);
+
+        String grade = calculateScore();
+
+        // Display the score/grade in the victory panel
+        Label scoreLabel = new Label("Score: " + grade + " (" + player.getCoins() + "/" + totalCoins + ")", game.getSkin());
+        scoreLabel.getStyle().font.getData().setScale(0.6f);
+        victoryPanelTable.add(scoreLabel).padBottom(40).center().row();
+
+        font.getData().setScale(1f);
+        Button nextLevelButton =  new TextButton("Next Level", game.getSkin());
+        nextLevelButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor){
+                Gdx.app.log("next level", "Next Level");
+                game.setGameLevel(game.getGameLevel() + 1);
+                game.getVictorySoundEffect().stop();
+                game.startNextLevel();
+            }});
+
+        victoryPanelTable.add(nextLevelButton).padBottom(BUTTON_PADDING).row();
+
+        /*Button playAgainButton = new TextButton("Play Again", game.getSkin());
+        playAgainButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //game.restartLevel(); // Restart the current level
+            }
+        });
+        victoryPanelTable.add(playAgainButton).padBottom(BUTTON_PADDING).row();*/
+
+        Button goToMenuButton = new TextButton("Back to Menu", game.getSkin());
+        goToMenuButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.goToMenu(); // Navigate back to the main menu
+            }
+        });
+        victoryPanelTable.add(goToMenuButton).padBottom(BUTTON_PADDING).row();
+
+        /*Button exitGameButton = new TextButton("Exit Game", game.getSkin());
+        exitGameButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.exitGame(); // Exit the game
+            }
+        });
+        victoryPanelTable.add(exitGameButton).padBottom(BUTTON_PADDING).row();*/
+    }
+
+    /**
+     * Calculates the player's score based on the number of coins collected.
+     *
+     * <p>The score is determined by comparing the number of coins the player has collected
+     * with the total number of coins available in the game. The following scoring system is applied:
+     * <ul>
+     *     <li>"A" if the player has collected all the coins</li>
+     *     <li>"B" if the player has collected all but one coin</li>
+     *     <li>"C" if the player has collected all but two coins</li>
+     *     <li>"D" if the player has collected all but three coins</li>
+     *     <li>"F" if the player has collected fewer than three coins less than the total</li>
+     * </ul>
+     *
+     * @return a string representing the player's score ("A", "B", "C", "D", or "F")
+     */
+    private String calculateScore(){
+        // Calculate the score
+        String score = "";
+
+        if (player.getCoins() == totalCoins) {
+            score = "A";
+        } else if (player.getCoins() == totalCoins - 1) {
+            score = "B";
+        } else if (player.getCoins() == totalCoins - 2) {
+            score = "C";
+        } else if (player.getCoins() == totalCoins - 3) {
+            score = "D";
+        } else {
+            score = "F";
+        }
+        return score;
+    }
 
 
     /**
@@ -323,6 +533,12 @@ public class GameScreen extends InputAdapter implements Screen {
         return true; // Return true to indicate the event was handled
     }
 
+    /**
+     * Creates a single-pixel Drawable object with a solid color.
+     *
+     * @param color the color of the drawable pixel
+     * @return a Drawable object filled with the specified color
+     */
     private Drawable createSolidColorDrawable(Color color) {
         // Create a Pixmap with the solid color
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -366,6 +582,13 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+
+    /**
+     * Renders the game screen, updating and drawing all game elements.
+     * Note that this is the main loop of the game
+     *
+     * @param delta the time in seconds since the last frame was rendered (1/60 seconds if running smoothly)
+     */
     // Screen interface methods with necessary functionality
     @Override
     public void render(float delta) {
@@ -390,52 +613,74 @@ public class GameScreen extends InputAdapter implements Screen {
 
         updateZoom(delta); // Smoothly adjust zoom
         handleInput(); // handle input of the keys
+
         player.update(delta); // ALL the player functionalities are here
-        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)) {
+        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)) {
             enemy.update(delta);
         }
+        for (int i = collectibles.size - 1; i >= 0; i--) {
+            Collectibles collectible = collectibles.get(i);
+            if (collectible.isCollected()) {
+                collectibles.removeIndex(i);
+            } else {
+                collectible.update();
+            }
+        }
+
+        if (key.isCollected() && player.isCenterTouchingTile(Exit.class)) {
+            if (!isPaused) {
+                createVictoryPanel(); // Show the victory panel
+                isPaused = true;
+                game.pause();
+                game.getBackgroundMusic().pause();
+                game.getPauseMusic().pause();
+                game.getVictorySoundEffect().play();
+            }
+        }
+
+        game.checkExitToNextLevel(player);
 
         renderGameWorld();
 
-        game.checkExitToNextLevel(player);
+
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        drawMapBorder();
+        shapeRenderer.end();
 
         game.getSpriteBatch().begin();
         renderTrap();
         // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
+        renderCollectibles();
         renderChasingEnemy();
         renderPlayer();
         renderArrow();
         renderKey();
 
-        if (player.canSpeak) {
-            player.getSpeechBubble().show(5.0f);
-            player.canSpeak = false;
-        }
-
-        player.say("""
-                        The quick brown fox jumps over the lazy dog.
-                        Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.
-                        """, game.getSpriteBatch(),
-                true, player.getSpeechBubble().getElapsedTime(), 0.03f);
+        renderSpeechBubble();
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
 
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.setAutoShapeType(true);
+        shapeRenderer.begin();
         renderStamina();
-        drawMapBorder();
+        shapeRenderer.end();
 
         moveCamera();
 
         stage1.act(delta);
-        stage1.draw(); // Draw the
+        stage1.draw(); // stage1 is for the panels, like the intro panel and the pause panel
         // renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
 
         renderHUD();
     }
-   /* private void renderPausedState() {
-        if (isPaused) {
-            createPausePanel();
-        }
-    }*/
+
+    public void setPaused(boolean paused) {
+        this.isPaused = paused;
+    }
+
+
 
     private void update(float delta) {
         if (!isPaused) {
@@ -443,7 +688,7 @@ public class GameScreen extends InputAdapter implements Screen {
             player.update(delta);
 
             // Update enemies
-            for (ChasingEnemy enemy : tiles.chasingEnemies) {
+            for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)) {
                 enemy.update(delta);
             }
 
@@ -452,15 +697,18 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+    /**
+     * Draws a thick border around the tiled map using shapeRenderer
+     */
     public void drawMapBorder() {
         // if (mapTiles.isEmpty()) return;
 
         // Set up ShapeRenderer to match game world projection
-        shapeRenderer.setProjectionMatrix(game.getSpriteBatch().getProjectionMatrix());
+        //shapeRenderer.setProjectionMatrix(game.getSpriteBatch().getProjectionMatrix());
 
         // Begin drawing with filled shapes for the border
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.WHITE); // Set border color
+        //shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.GRAY); // Set border color
 
         // Draw top border (horizontal)
         shapeRenderer.rect(0, getWorldHeight(), getWorldWidth(), TILE_SIZE);
@@ -475,7 +723,7 @@ public class GameScreen extends InputAdapter implements Screen {
         shapeRenderer.rect(getWorldWidth() , -TILE_SIZE, TILE_SIZE, (getWorldHeight() + (2*TILE_SIZE)));
 
         // End drawing the border
-        shapeRenderer.end();
+        //shapeRenderer.end();
     }
 
     /**
@@ -563,6 +811,9 @@ public class GameScreen extends InputAdapter implements Screen {
         game.getSpriteBatch().setShader(null); // end the shader so we only shade the player
     }
 
+    /**
+     * Renders an arrow pointing towards the nearest exit.
+     */
     private void renderArrow(){
         // Draw arrow that points at the exit
         Position exitPosition = null;
@@ -575,6 +826,47 @@ public class GameScreen extends InputAdapter implements Screen {
 
     }
 
+    /**
+     * Renders collectible items with appropriate animations based on their type.
+     */
+    private void renderCollectibles(){
+        for (Collectibles collectible : iterate(collectibles)) {
+            if (collectible.getType().equals(Collectibles.Type.HEART))
+                collectible.render(game.getSpriteBatch(), game.getHeartAnimation().getKeyFrame(sinusInput/1.5f, true));
+            else if (collectible.getType().equals(Collectibles.Type.PRETZEL)){
+                collectible.render(game.getSpriteBatch(), game.getPretzelAnimation().getKeyFrame(sinusInput/1.5f, true));
+            }else if (collectible.getType().equals(Collectibles.Type.COIN)){
+                collectible.render(game.getSpriteBatch(), game.getCoinAnimation().getKeyFrame(sinusInput/1.5f, true));
+            }
+            else if (collectible.getType().equals(Collectibles.Type.STAMINA)){
+                collectible.render(game.getSpriteBatch(), game.getStaminaPotionAnimation().getKeyFrame(sinusInput/1.5f, true));
+            }
+        }
+
+    }
+
+    /**
+     * Displays the speech bubble I wrote
+     * Specify the duration (5 seconds) of the player can speak and shows the text.
+     */
+    private void renderSpeechBubble(){
+        if (player.canSpeak) {
+            player.getSpeechBubble().show(5.0f);
+            player.canSpeak = false;
+        }
+
+        player.say("""
+                        The quick brown fox jumps over the lazy dog.
+                        Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.
+                        """, game.getSpriteBatch(),
+                true, player.getSpeechBubble().getElapsedTime(), 0.03f);
+    }
+
+    /**
+     * Handles input for pausing and resuming the game.
+     *
+     * <p>The game pauses when the Escape key is pressed, and resumes when the Enter key is pressed while paused.
+     */
     private void handlePauseInput(){
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && !isPaused) {
             pause();
@@ -585,17 +877,6 @@ public class GameScreen extends InputAdapter implements Screen {
             resume();
         }
     }
-    /*private void handlePauseInput() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) { // Assuming "P" pauses the game
-            if (isPaused == true) {
-                createPausePanel();
-                inputMultiplexer.addProcessor(stage1); // Add pause stage
-            } else if (isPaused== false) {
-                stage1.clear(); // Clear the pause panel
-                inputMultiplexer.removeProcessor(stage1); // Remove pause stage
-            }
-        }
-    }*/
 
     /**
      * Renders the collectible key in the game world if it hasn't been collected.
@@ -639,14 +920,21 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+    /**
+     * Renders all traps on the map.
+     */
     private void renderTrap(){
-        for (Trap trap : new Array.ArrayIterator<>(tiles.traps)){ // for (trap : tiles.traps){
+        for (Trap trap : iterate(tiles.traps)){ // for (trap : tiles.traps){
             trap.draw(game.getSpriteBatch());
         }
     }
+
+    /**
+     * Renders chasing enemies with appropriate animations based on their movement direction.
+     */
     private void renderChasingEnemy(){
         //chasingEnemy.draw(game.getSpriteBatch());
-        for (ChasingEnemy enemy : new Array.ArrayIterator<>(tiles.chasingEnemies)){ // for (ChasingEnemy enemy : tiles.chasingEnemies)
+        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){ // for (ChasingEnemy enemy : tiles.chasingEnemies)
 
             if (abs(enemy.getVelX()) > abs(enemy.getVelY())){ // x velocity > y velocity -> either left or right
                 if (enemy.getVelX() < 0) mobGuyAnimation = game.getMobGuyAnimations().get("left");
@@ -661,33 +949,50 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+    /**
+     * Draws the player's stamina wheel,
+     * including an overflow arc if potion is collected.
+     */
     private void renderStamina(){
         float currentStamina = player.getStamina();
         //if (currentStamina >= Player.maxStamina) return;
 
-        if (currentStamina >= Player.maxStamina) {
-            // Start the timer if stamina is full
-            staminaTimer += Gdx.graphics.getDeltaTime();
-            if (staminaTimer > STAMINA_DISPLAY_TIME) {
-                // Hide the stamina bar if timer exceeds the display duration
-                return;
-            }
-        } else {
-            // Reset the timer when stamina is not full
-            staminaTimer = 0f;
-        }
-
-        Gdx.gl.glLineWidth(5f); // Set line width for better visibility
-        int staminaRadius = 10;
+        Gdx.gl.glLineWidth((int)(5f / camera.zoom)); // Set line width for better visibility
+        int staminaRadius = 12;
         float offsetX = -player.getHitboxWidthOnScreen() / 2 - 5;
         float offsetY = player.getHitboxHeightOnScreen() / 2 + 5;
         float staminaX = player.getX() + offsetX;// + staminaRadius / 2;
         float staminaY = player.getY() + offsetY;// - staminaRadius;
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        //shapeRenderer.setProjectionMatrix(camera.combined);
+        //shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+
+        if (currentStamina >= Player.maxStamina) {
+            // Start the timer if stamina is full
+            staminaTimer += Gdx.graphics.getDeltaTime();
+            if (currentStamina > Player.maxStamina + 2){
+                shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+                shapeRenderer.setColor(new Color(0x16b816ff));
+                float angle = ((player.getStamina() - Player.maxStamina) / Player.maxStamina) * 360f; // Calculate the angle based on stamina
+                shapeRenderer.arc(staminaX, staminaY, staminaRadius * 1.6f, 90 - angle, angle); // Draw arc clockwise
+
+            }
+            if (player.getCurrentStaminaMultiplier() == 1 && // if the current multiplier is 1 (either didn't collect potion or extra stamina has used up)
+                    staminaTimer > STAMINA_DISPLAY_TIME) { // and if the time has passed,
+                // Hide the stamina bar if the timer exceeds the display duration
+                return;
+
+            }
+        } else {
+            // Reset the timer when stamina is not full
+            staminaTimer = 0f;
+            player.setCurrentStaminaMultiplier(1); // immediately set the multiplier back right after the player uses up the extra stamina
+        }
+
 
         // Draw the background circle (full arc for reference)
         shapeRenderer.setColor(Color.DARK_GRAY);
+        shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.arc(staminaX, staminaY, staminaRadius, 0, 360); // arc's 0° (where it starts drawing) starts at +x of the cartesian plane
 
         // Draw the stamina arc
@@ -695,7 +1000,7 @@ public class GameScreen extends InputAdapter implements Screen {
         float angle = (player.getStamina() / Player.maxStamina) * 360f; // Calculate the angle based on stamina
         shapeRenderer.arc(staminaX, staminaY, staminaRadius, 90 - angle, angle); // Draw arc clockwise
 
-        shapeRenderer.end();
+        //shapeRenderer.end();
     }
 
     /**
@@ -718,6 +1023,14 @@ public class GameScreen extends InputAdapter implements Screen {
         // hudObjectRenderer use another rendering batch, so we have to end the batch first, and start it again
         game.getSpriteBatch().begin();
         hudObjectRenderer.drawHearts(game.getSpriteBatch(), player.getLives(), 20, Gdx.graphics.getHeight() - 26f - 20, 32, 2);
+
+        String coinText = "Coins: " + player.getCoins() + "/" + totalCoins;
+        font.draw(game.getSpriteBatch(), coinText, 20, Gdx.graphics.getHeight() - 50);
+
+        String keyStatus = key.isCollected() ? "Key Collected!" : "Find The Key!";
+        font.draw(game.getSpriteBatch(), keyStatus, 20, Gdx.graphics.getHeight() - 80);
+
+
         /* Health bar
         // Draw health bar
         float healthBarWidth = 180f;
@@ -741,11 +1054,20 @@ public class GameScreen extends InputAdapter implements Screen {
         game.getSpriteBatch().end();
     }
 
+    /**
+     * Renders a spotlight effect at the specified position
+     * It can be used to introduce some new feature and have the user focus on it
+     * or create a night time effect which only areas around the player is brightened
+     *
+     * @param x the x-coordinate of the spotlight center
+     * @param y the y-coordinate of the spotlight center
+     * @param spotlightRadius the radius of the spotlight circle
+     */
     private void renderSpotlightEffect(float x, float y, float spotlightRadius) {
         Position screenCoordinates = getScreenCoordinates(x, y);
         float xOnScreen = screenCoordinates.getX();
         float yOnScreen = screenCoordinates.getY();
-        Gdx.app.log("GameScreen", "screen x: " + xOnScreen + "; screen y: " + yOnScreen);
+        //Gdx.app.log("GameScreen", "screen x: " + xOnScreen + "; screen y: " + yOnScreen);
         spotlightEffect.render(camera, x, y, spotlightRadius, 0.8f);
     }
 
@@ -811,25 +1133,33 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.setToOrtho(false);
         hudCamera.setToOrtho(false, width, height); // Adjust HUD camera to new screen size
         player.resume();
-        for (var panel : stage1.getActors()){
+        for (var panel : iterate(stage1.getActors())){
             panel.setSize(Gdx.graphics.getWidth() * 0.9f,Gdx.graphics.getHeight() * 0.9f);
         }
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
 
-
+    /**
+     * Pauses the game, optionally creating a pause panel.
+     * This method is automatically called upon the window to lose the focus
+     * (like user switches to another window or minimize the game window).
+     * Also, the method is called when the user intends to pause the game
+     * (like pressing the pause game button)
+     *
+     * @param createPausePanel true to create a pause panel, false otherwise
+     */
     public void pause(boolean createPausePanel) {
         Gdx.app.log("GameScreen", "Game paused");
         // Stop processing input temporarily
         //Gdx.input.setInputProcessor(null); // Disable input handling during pause
-        isPaused = true; // Set the game to paused
+        isPaused = true; // Set the game to "paused"
 
         game.getBackgroundMusic().pause();
         game.getPauseMusic().play();
 
         player.pause();
-        for (ChasingEnemy enemy : tiles.chasingEnemies){
+        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){
             enemy.pause();
         }
 
@@ -839,11 +1169,21 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
     }
 
+    /**
+     * Overloading method of {@link GameScreen#pause(boolean)} which defaults to creating a pause panel
+     */
     @Override
     public void pause() { // Overloading method
         pause(true);
     }
 
+    /**
+     * Resumes the game, restoring input processing and gameplay state.
+     * This method is automatically called upon the window to regain the focus
+     * (like user switches back to the game window)
+     * Also, the method is called when user intends to resume the game
+     * (like pressing the resume game button)
+     */
     @Override
     public void resume() {
         Gdx.app.log("GameScreen", "Game resumed");
@@ -855,7 +1195,7 @@ public class GameScreen extends InputAdapter implements Screen {
         game.getPauseMusic().pause();
 
         player.resume();
-        for (ChasingEnemy enemy : tiles.chasingEnemies){
+        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){
             enemy.resume();
         }
 
@@ -875,10 +1215,10 @@ public class GameScreen extends InputAdapter implements Screen {
 
     @Override
     public void dispose() {
-        //shapeRenderer.dispose(); //TODO: if not used even the project is finished, delete this.
-        // TODO: i think we shouldn't even dispose the shapeRenderer, right?
-        mapRenderer.dispose();
-        hudObjectRenderer.dispose();
+        //shapeRenderer.dispose();
+        // i think we shouldn't even dispose the shapeRenderer, right? (else the program will exit unexpectedly)
+        //mapRenderer.dispose();
+        //hudObjectRenderer.dispose();
     }
 
 
@@ -901,6 +1241,10 @@ public class GameScreen extends InputAdapter implements Screen {
             font.draw(hudBatch, String.format("%s: %.2f", varName, displayedValue), BORDER_OFFSET, BORDER_OFFSET + variablesToShow.size() * Y_OFFSET - Y_OFFSET * currentLine);
             currentLine++;
         }
+    }
+
+    public void getCreateVictoryPanel(){
+        getCreateVictoryPanel(); // TODO: THIS WILL RECURSE INFINITELY, MAKE SURE NOT TO DO SO WHEN YOU WANT TO USE THIS METHOD
     }
 
     public OrthographicCamera getCamera() {

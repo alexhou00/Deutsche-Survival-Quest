@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -55,9 +56,15 @@ public class MazeRunnerGame extends Game {
 
     private Map<String, Animation<TextureRegion>> mobGuyAnimations;
 
+    private Animation<TextureRegion> heartAnimation;
+    private Animation<TextureRegion> coinAnimation;
+    private Animation<TextureRegion> staminaPotionAnimation;
+    private Animation<TextureRegion> pretzelAnimation;
+
     Texture backgroundTexture;
 
-    Music backgroundMusic, menuMusic, pauseMusic,  gameOverMusic, victoryMusic, soundEffectKey, soundEffectHurt;
+    Music backgroundMusic, menuMusic, pauseMusic,  gameOverMusic, victorySoundEffect, victoryMusic;
+    Sound soundEffectKey, soundEffectHurt;
     private boolean isMuted;
 
 
@@ -80,31 +87,32 @@ public class MazeRunnerGame extends Game {
 
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
-        this.loadCharacterAnimation(); // Load character animation
+        this.loadAnimation(); // Load character animation
 
-        backgroundTexture = new Texture("background.png");
+        backgroundTexture = new Texture("backgrounds/background.png");
 
         // Play some background music
         // Background sound
         //CHANGE BACKGROUND MUSIC
-        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Bruno_Belotti_-_Nel_giardino_dello_Zar__Polka_Loop.mp3")); // TODO: Change this bg music first
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("music/Bruno_Belotti_-_Nel_giardino_dello_Zar__Polka_Loop.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
 
-        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("010614songidea(copycat).mp3"));
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("music/010614songidea(copycat).mp3"));
         menuMusic.setLooping(true);
 
-        pauseMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
+        pauseMusic = Gdx.audio.newMusic(Gdx.files.internal("music/A cup of tea.mp3"));
         pauseMusic.setLooping(true);
 
-        /*gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
+        gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("music/No Hope.wav"));
         gameOverMusic.setLooping(true);
 
-        victoryMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
-        victoryMusic.setLooping(true);*/
+        //victoryMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
+        //victoryMusic.setLooping(true);
 
-        soundEffectKey = Gdx.audio.newMusic(Gdx.files.internal("Accept.mp3"));
-        soundEffectHurt = Gdx.audio.newMusic(Gdx.files.internal("01._damage_grunt_male.wav"));
+        victorySoundEffect = Gdx.audio.newMusic(Gdx.files.internal("sounds/Lively Meadow Victory Fanfare.mp3"));
+        soundEffectKey = Gdx.audio.newSound(Gdx.files.internal("sounds/Accept.mp3"));
+        soundEffectHurt = Gdx.audio.newSound(Gdx.files.internal("sounds/01._damage_grunt_male.wav"));
 
 
         goToMenu(); // Navigate to the menu screen
@@ -130,6 +138,8 @@ public class MazeRunnerGame extends Game {
         }
         this.setScreen(menuScreen); // Set the current screen to MenuScreen
         backgroundMusic.pause();
+        gameOverMusic.pause();
+        pauseMusic.pause();
         menuMusic.play();
 
         if (gameScreen != null) {
@@ -150,6 +160,8 @@ public class MazeRunnerGame extends Game {
         if (gameScreen == null) {
             gameLevel = 1; // TODO: this will be changed in the future once we can select our own levels
             gameScreen = new GameScreen(this);
+            gameOverMusic.pause();
+            pauseMusic.play();
             menuMusic.pause();
             backgroundMusic.play();
         }
@@ -178,6 +190,9 @@ public class MazeRunnerGame extends Game {
 
             // Set the screen to GameOverScreen
             this.setScreen(gameOverScreen);
+            backgroundMusic.pause();
+            pauseMusic.pause();
+            gameOverMusic.play();
 
             // Dispose of other screens if necessary
             if (gameScreen != null) {
@@ -200,9 +215,10 @@ public class MazeRunnerGame extends Game {
     /**
      * Loads the character animation from the character.png file.
      */
-    private void loadCharacterAnimation() {
-        Texture walkSheet = new Texture(Gdx.files.internal("character.png")); // TODO: Redesign our character
-        Texture mobGuySheet = new Texture(Gdx.files.internal("mob_guy.png"));
+    private void loadAnimation() {
+        Texture walkSheet = new Texture(Gdx.files.internal("characters/character.png")); // TODO: Redesign our character
+        Texture mobGuySheet = new Texture(Gdx.files.internal("characters/mob_guy.png"));
+        Texture objectSheet = new Texture(Gdx.files.internal("original/objects.png"));
 
 
         int frameWidth = 16;
@@ -221,6 +237,11 @@ public class MazeRunnerGame extends Game {
         mobGuyFrames.put("up", new Array<>(TextureRegion.class));
         mobGuyFrames.put("left", new Array<>(TextureRegion.class));
         mobGuyFrames.put("right", new Array<>(TextureRegion.class));
+
+        Array<TextureRegion> heartFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> coinFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> staminaPotionFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> pretzelFrames = new Array<>(TextureRegion.class);
 
                 // Add all frames to the animation
         int framesXOffset = 0; // define how many frames of X to shift to start extracting our character on "character.png"
@@ -241,6 +262,20 @@ public class MazeRunnerGame extends Game {
             mobGuyFrames.get("up").add(new TextureRegion(mobGuySheet, mobFrameSize * animationFrames * 3 + (col) * mobFrameSize, 0, mobFrameSize, mobFrameSize));
         }
 
+        heartFrames.add(new TextureRegion(objectSheet, 2, 51, 11, 11));
+        heartFrames.add(new TextureRegion(objectSheet, 2+16, 51, 11, 11));
+        heartFrames.add(new TextureRegion(objectSheet, 2+16*2, 51, 11, 11));
+        heartFrames.add(new TextureRegion(objectSheet, 2+16*3, 51, 11, 11));
+
+        for (int i=0;i<4;i++)
+            coinFrames.add(new TextureRegion(objectSheet, 2+16*i, 66, 11, 11));
+
+        for (int i=0;i<3;i++)
+            staminaPotionFrames.add(new TextureRegion(objectSheet, 288+32*i, 64, 32, 32));
+
+        for (int i=0;i<6;i++)
+            pretzelFrames.add(new TextureRegion(objectSheet, 128+32*i, 128, 32, 32));
+
 
 
         characterDownAnimation = new Animation<>(0.1f, downFrames);
@@ -254,6 +289,11 @@ public class MazeRunnerGame extends Game {
         mobGuyAnimations.put("left", new Animation<>(0.1f, mobGuyFrames.get("left")));
         mobGuyAnimations.put("right", new Animation<>(0.1f, mobGuyFrames.get("right")));
         mobGuyAnimations.put("up", new Animation<>(0.1f, mobGuyFrames.get("up")));
+
+        heartAnimation = new Animation<>(0.1f, heartFrames);
+        coinAnimation = new Animation<>(0.1f, coinFrames);
+        staminaPotionAnimation = new Animation<>(0.1f, staminaPotionFrames);
+        pretzelAnimation = new Animation<>(0.1f, pretzelFrames);
 
     }
 
@@ -312,6 +352,22 @@ public class MazeRunnerGame extends Game {
         return mobGuyAnimations;
     }
 
+    public Animation<TextureRegion> getHeartAnimation() {
+        return heartAnimation;
+    }
+
+    public Animation<TextureRegion> getCoinAnimation() {
+        return coinAnimation;
+    }
+
+    public Animation<TextureRegion>  getStaminaPotionAnimation() {
+        return staminaPotionAnimation;
+    }
+
+    public Animation<TextureRegion> getPretzelAnimation() {
+        return pretzelAnimation;
+    }
+
     public Texture getBackgroundTexture() {
         return backgroundTexture;
     }
@@ -345,11 +401,11 @@ public class MazeRunnerGame extends Game {
         return victoryMusic;
     }
 
-    public Music getSoundEffectKey() {
+    public Sound getSoundEffectKey() {
         return soundEffectKey;
     }
 
-    public Music getSoundEffectHurt() {
+    public Sound getSoundEffectHurt() {
         return soundEffectHurt;
     }
 
@@ -361,15 +417,53 @@ public class MazeRunnerGame extends Game {
         return menuMusic;
     }
 
+    public Music getVictorySoundEffect() {
+        return victorySoundEffect;
+    }
+
     public void checkExitToNextLevel(Player player) {
         if (player.isCenterTouchingTile(Exit.class) && gameScreen.getKey().isCollected()){
-            gameLevel += 1;
+            Gdx.app.log("MazeRunnerGame", "Player is at the exit and has the key.");
+            gameScreen.createVictoryPanel();
+
+            //gameScreen.isPaused();
+            //pauseMusic.pause();
+            //victorySoundEffect.play();
+
+            /*gameLevel += 1;
             gameScreen.dispose();
             gameScreen = new GameScreen(this);
             gameScreen.getKey().setCollected(false);
             this.setScreen(gameScreen);
-            Gdx.app.log("MazeRunnerGame", "Set Screen to Game Screen");
+
+            Gdx.app.log("MazeRunnerGame", "Set Screen to Game Screen");*/
         }
     }
+
+    public void startNextLevel() {
+        Gdx.app.log("MazeRunnerGame", "Starting next level: " + (gameLevel));
+
+        // Dispose of the current screen
+        if (gameScreen != null) {
+            gameScreen.dispose();
+        }
+
+        // Create and set the new game screen
+        gameScreen = new GameScreen(this);
+        setScreen(gameScreen);
+
+        // Reset any necessary states in the new screen
+        gameScreen.getKey().setCollected(false);
+
+        // Ensure the game is not paused for the new level
+        gameScreen.setPaused(false);
+    }
+
+
+    public void setGameLevel(int level) {
+        this.gameLevel = level;
+    }
+
+
 
 }

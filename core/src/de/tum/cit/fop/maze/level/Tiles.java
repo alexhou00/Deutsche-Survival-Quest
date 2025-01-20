@@ -30,6 +30,7 @@ public class Tiles {
     public TiledMapTileLayer layer;
 
     private Position keyTilePosition;
+    private boolean cameraAngled = false;
     public Array<Trap> traps;
 
     public Array<ChasingEnemy> chasingEnemies;
@@ -81,6 +82,20 @@ public class Tiles {
             .boxed()
             .collect(Collectors.toSet());
 
+    public enum TileType{
+        WALL,
+        ENTRANCE,
+        EXIT,
+        KEY,
+        TRAP,
+        ENEMY,
+        SPEED_BOOST,
+        OTHER, // like the ground
+        EXTRA // like the train, consider to be ground but coins shouldn't be generated there
+    }
+
+    private TileType[][] tileEnumOnMap;
+
     /**
      * Constructor: initializes the Tiles object with default values.
      */
@@ -126,11 +141,13 @@ public class Tiles {
     }
 
 
-    // Loads tile images and obstacle images from the specified file paths and organizes them into an array of Tile objects.
+    /** Loads tile images and obstacle images from the specified file paths
+     * and organizes them into an array of Tile objects.
+     */
     private Tile[] loadTileSheet(String tileSheetPath, String ObstacleSheetPath) {
         var tileSheet = new Texture(tileSheetPath);//represents the main tile sheet image.
         var obstacleSheet = new Texture(ObstacleSheetPath);//represents the main tile sheet image.
-        var enemySheet = new Texture(Gdx.files.internal("mob_guy.png"));
+        var enemySheet = new Texture(Gdx.files.internal("characters/mob_guy.png"));
         //Calculates how many tiles (tileCols and tileRows) can fit horizontally and vertically in the tile sheet, assuming each tile has a fixed size (TILE_SIZE).
         int tileCols = tileSheet.getWidth() / TILE_SIZE;
         int tileRows = tileSheet.getHeight() / TILE_SIZE;
@@ -195,6 +212,7 @@ public class Tiles {
             if (isPositionKnown){
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                tileEnumOnMap[x][y] = TileType.WALL;
             }
 
             return tile;
@@ -207,6 +225,7 @@ public class Tiles {
                 entrance.setTilePosition(new Position(x, y, TILES));
                 tileOnMap[x][y] = entrance;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                tileEnumOnMap[x][y] = TileType.ENTRANCE;
             }
 
             return entrance;
@@ -220,6 +239,7 @@ public class Tiles {
                 exits.add(exit);
                 tileOnMap[x][y] = exit;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                tileEnumOnMap[x][y] = TileType.EXIT;
             }
 
 
@@ -232,6 +252,7 @@ public class Tiles {
             if (isPositionKnown){
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                tileEnumOnMap[x][y] = TileType.TRAP;
             }
 
             return tile;
@@ -243,6 +264,7 @@ public class Tiles {
             if (isPositionKnown){
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                tileEnumOnMap[x][y] = TileType.ENEMY;
             }
             return tile;
         }
@@ -254,6 +276,7 @@ public class Tiles {
             if (isPositionKnown){
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                tileEnumOnMap[x][y] = TileType.SPEED_BOOST;
             }
 
             return tile;
@@ -265,6 +288,10 @@ public class Tiles {
             if (isPositionKnown){
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
+                if (index < ENEMY_SECOND)
+                    tileEnumOnMap[x][y] = TileType.OTHER;
+                else // if index too large, it is considered to be special like a train
+                    tileEnumOnMap[x][y] = TileType.EXTRA;
             }
 
             return tile;
@@ -290,7 +317,7 @@ public class Tiles {
                 String[] parts = line.split("="); // split into key-value, parts[0] is position (String) and parts[1] is the tileType or tileValue
                 if (parts.length != 2) continue; // ignore malformed lines
 
-                if (!Objects.equals(parts[0], "keyPosition")){ // null-safe equal, the key is NOT "keyPosition"
+                if (parts[0].matches("\\d+, *\\d+")){ // the key is matching the pattern of the coordinate format
                     String positionStr = parts[0];
                     String[] tileTypes = parts[1].split(","); // Handle multiple tile types (could contain the key)
 
@@ -307,8 +334,14 @@ public class Tiles {
                     }
                     if (verticalTilesCount < position.getTileY() + 1) verticalTilesCount = position.getTileY() + 1;
                 }
-                else{ // the key in the key-value is "keyPosition" which allows us to place the key on float positions
-                    keyTilePosition = stringToPosition(parts[1], TILES).convertTo(PIXELS);
+                else{ // the key in the key-value is some other key like, "keyPosition". which allows us to place the key on float positions
+                    switch(parts[0]){
+                        case "keyPosition" -> keyTilePosition = stringToPosition(parts[1], TILES).convertTo(PIXELS);
+                        case "angled" -> {
+                            if (Objects.equals(parts[1], "true")) // null-safe equal
+                                cameraAngled = true;
+                        }
+                    }
                 }
 
 
@@ -321,11 +354,21 @@ public class Tiles {
         return mapData;
     }
 
+    /**
+     * Put the tiles on the {@link TiledMap} based on the given map data and dimensions.
+     * And if the tile is a trap/enemy, create a trap/enemy.
+     *
+     * @param mapData an object map (like the mapping or the dict, not the drawing map) containing tile data.
+     * @param mapWidthInTiles the width of the map in tiles.
+     * @param mapHeightInTiles the height of the map in tiles.
+     * @return the created {@link TiledMap}.
+     */
     private TiledMap createTiledMap(ObjectMap<String, Array<Integer>> mapData, int mapWidthInTiles, int mapHeightInTiles) {
         // Create a TiledMap
         TiledMap map = new TiledMap();
 
         tileOnMap = new Tile[mapWidthInTiles][mapHeightInTiles]; // stores the tile in that cell that is on the most upper layer
+        tileEnumOnMap = new TileType[mapWidthInTiles][mapHeightInTiles];
 
         // iterate every layer, since there could be two of them
         // (the first one is the ground, and the second is some additional stuff on it)
@@ -355,6 +398,7 @@ public class Tiles {
                         float worldY = trapPosition.getY();
                         // a new instance of trap is created here
                         traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,16,16,TILE_SCREEN_SIZE * 0.8f, TILE_SCREEN_SIZE * 0.8f, 1));
+                        tileEnumOnMap[x][y] = TileType.TRAP;  // fixing the problem that somehow hearts is spawning on traps, it's actually because createTile() is not called so that tileEnumOnMap isn't updated
                     }
 
                     else if (CHASING_ENEMIES.contains(tileValue)){//an enemy or a chasing enemy i myself don't know it yet
@@ -364,7 +408,6 @@ public class Tiles {
                         int worldX = chasingEnemyPosition.getTileX();
                         int worldY = chasingEnemyPosition.getTileY();
                         chasingEnemies.add(new ChasingEnemy(tile.getTextureRegion(), worldX, worldY, 16, 16, 10, 16, 64, 64, 3, this));
-
                     }
                     else { // if it is neither a trap nor a key, which is the default one
 
@@ -439,6 +482,13 @@ public class Tiles {
         }
     }
 
+    /**
+     * Converts a string representation of coordinates "x,y" into a {@link Position}.
+     *
+     * @param string the string in the format "x,y".
+     * @param unit   the unit of the position, either {@link Position.PositionUnit#TILES} or {@link Position.PositionUnit#PIXELS}.
+     * @return a {@link Position} object representing the parsed coordinates.
+     */
     private Position stringToPosition(String string, Position.PositionUnit unit) {
         String[] parts = string.split(",");
         float x = (Float.parseFloat(parts[0]) % 1 == 0) ? Integer.parseInt(parts[0]) : Float.parseFloat(parts[0]);
@@ -467,6 +517,36 @@ public class Tiles {
         return tileOnMap[x][y];
     }
 
+    /**
+     * Returns the 2D array of {@link TileType} representing the map layout.
+     *
+     * @return a 2D array of tile types on the map.
+     */
+    public TileType[][] getTileEnumOnMap() {
+        return tileEnumOnMap;
+    }
+
+    /**
+     * Retrieves the {@link TileType} at the specified coordinates on the map.
+     * Equivalent to {@link Tiles#getTileEnumOnMap() getTileEnumOnMap()[x][y]}
+     *
+     * @param x the x-coordinate of the tile.
+     * @param y the y-coordinate of the tile.
+     * @return the tile type at the specified coordinates.
+     */
+    public TileType getTileEnumOnMap(int x, int y) {
+        return tileEnumOnMap[x][y];
+    }
+
+
+    /**
+     * Finds the nearest {@link Exit} to the given player coordinates.
+     *
+     * @param playerX the x-coordinate of the player.
+     * @param playerY the y-coordinate of the player.
+     * @return the nearest exit to the player's position.
+     * @throws IllegalStateException if no exits are available on the map.
+     */
     public Exit getNearestExit(float playerX, float playerY){
         // find the nearest exit to (x,y) to this.exits
         if (exits == null || exits.isEmpty()) {
@@ -493,4 +573,13 @@ public class Tiles {
         return nearestExit;
     }
 
+    /**
+     * Checks if the current map's perspective requires the camera to be slightly angled
+     * rather than completely 2D top-down view.
+     *
+     * @return {@code true} if the camera is angled, {@code false} otherwise.
+     */
+    public boolean isCameraAngled() {
+        return cameraAngled;
+    }
 }

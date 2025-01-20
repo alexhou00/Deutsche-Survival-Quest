@@ -15,7 +15,7 @@ import static de.tum.cit.fop.maze.util.Constants.MAX_PLAYER_LIVES;
 public class ElementRenderer {
 
     private final Texture texture;
-    private final TextureRegion fullHeartRegion, threeQuartersHeartRegion, halfHeartRegion, oneQuarterHeartRegion, emptyHeartRegion;
+    private final TextureRegion fullHeartRegion, threeQuartersHeartRegion, halfHeartRegion, oneQuarterHeartRegion, emptyHeartRegion, coinRegion;
 
     private final Sprite arrow;
 
@@ -29,12 +29,18 @@ public class ElementRenderer {
         oneQuarterHeartRegion = extractHeart(texture, 112);
         emptyHeartRegion = extractHeart(texture, 128);
 
+        coinRegion = extractCoin(texture, 928);
+
         TextureRegion arrowRegion = new TextureRegion(texture, 490, 10, 20, 10);
         arrow = new Sprite(arrowRegion);
     }
 
     private TextureRegion extractHeart(Texture texture, int x) {
         return new TextureRegion(texture, x, 2, 14, 13);
+    }
+
+    private TextureRegion extractCoin(Texture texture, int x) {
+        return new TextureRegion(texture, x, 0, 14, 13);
     }
 
 
@@ -78,6 +84,31 @@ public class ElementRenderer {
         }
     }
 
+    /*public void drawCoins(SpriteBatch batch, int collectedCoins, int totalCoins, float startX, float startY, float spacing, float scale) {
+        // Draw collected coins
+        for (int i = 0; i < collectedCoins; i++) {
+            batch.draw(coinRegion, startX + i * spacing, startY, 14 * scale, 14 * scale);
+        }
+
+        // Draw empty coins (optional for total coin display)
+        for (int i = collectedCoins; i < totalCoins; i++) {
+            batch.draw(coinRegion, startX + i * spacing, startY, 14 * scale, 14 * scale);
+        }
+    }*/
+
+    /**
+     * Draws an arrow sprite at a specific position with a rotation.
+     *
+     * <p>This method draws an arrow sprite at the specified coordinates, rotating it by the given number of degrees.
+     * The arrow's origin and position are adjusted for proper alignment and scaling on the screen. The method uses
+     * a {@code SpriteBatch} to draw the arrow with a scaled size and adjusted rotation based on the provided
+     * parameters.
+     *
+     * @param batch the {@code SpriteBatch} used to draw the arrow on the screen
+     * @param degrees the rotation of the arrow in degrees (clockwise)
+     * @param x the x-coordinate for the position where the arrow should be drawn
+     * @param y the y-coordinate for the position where the arrow should be drawn
+     */
     public void drawArrow(SpriteBatch batch, float degrees, float x, float y) {
         // drawing a sprite is different from drawing a texture region
         // for drawing a sprite, we use sprite.draw(spriteBatch) instead of spriteBatch.draw(textureRegion)

@@ -1,5 +1,7 @@
 package de.tum.cit.fop.maze.util;
 
+import com.badlogic.gdx.utils.Array;
+
 public class Constants {
     public static final float ZOOM_SPEED = 0.1f; // Controls how quickly the camera adjusts to the target zoom
     public static final float MIN_ZOOM_LEVEL = 0.6f; // MIN is actually zoom in
@@ -20,4 +22,8 @@ public class Constants {
     }
 
     public static final int MAX_PLAYER_LIVES = 10;
+
+    public static <T> Array.ArrayIterator<T> iterate(Array<T> array){
+        return new Array.ArrayIterator<>(array);
+    }
 }
