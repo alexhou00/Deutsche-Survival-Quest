@@ -40,7 +40,7 @@ public class MazeRunnerGame extends Game {
         this.gameLevel = gameLevel;
     }
 
-    private int gameLevel;
+    private int gameLevel = 1;
     // Sprite Batch for rendering
     private SpriteBatch spriteBatch;
 
@@ -158,7 +158,8 @@ public class MazeRunnerGame extends Game {
     public void goToGame() {
         // this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
         if (gameScreen == null) {
-            gameLevel = getGameLevel(); // TODO: this will be changed in the future once we can select our own levels
+            gameLevel = getGameLevel();
+            Gdx.app.log("MazeRunnerGame", "Go to Game, LEVEL: " + gameLevel);
             gameScreen = new GameScreen(this);
             gameOverMusic.pause();
             pauseMusic.play();
@@ -281,7 +282,7 @@ public class MazeRunnerGame extends Game {
             pretzelFrames.add(new TextureRegion(objectSheet, 128+32*i, 128, 32, 32));
 
         for (int i=0;i<6;i++)
-            portalFrames.add(new TextureRegion(portalSheet, 0+32*i, 0, 32, 32));
+            portalFrames.add(new TextureRegion(portalSheet, 32 * i, 0, 32, 32));
 
 
 
