@@ -895,7 +895,7 @@ public class GameScreen extends InputAdapter implements Screen {
     }
     private void renderPortal(){
         for (Portal portal : portals) {
-            portal.render(game.getSpriteBatch(), game.getPortalAnimation().getKeyFrame(sinusInput/1.5f));
+            portal.render(game.getSpriteBatch(), game.getPortalAnimation().getKeyFrame(sinusInput/1.5f, true));
         }
 
     }
