@@ -38,7 +38,7 @@ public class SelectLevelScreen implements Screen  {
 
         Viewport viewport = new ScreenViewport(camera);
         stage = new Stage (viewport, game.getSpriteBatch());
-        backgroundTexture = new Texture("background.png");
+        backgroundTexture = new Texture("backgrounds/background.png");
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
@@ -103,8 +103,10 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
  buttons.get("Level 2").addListener(new ChangeListener() {
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
-         game.setGameLevel(2);
+        game.setGameLevel(2);
          game.goToGame();
+
+
      }
  });
  buttons.get("Level 3").addListener(new ChangeListener() {

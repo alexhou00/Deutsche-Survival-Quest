@@ -158,7 +158,7 @@ public class MazeRunnerGame extends Game {
     public void goToGame() {
         // this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
         if (gameScreen == null) {
-            gameLevel = 1; // TODO: this will be changed in the future once we can select our own levels
+            gameLevel = getGameLevel(); // TODO: this will be changed in the future once we can select our own levels
             gameScreen = new GameScreen(this);
             gameOverMusic.pause();
             pauseMusic.play();
@@ -459,10 +459,6 @@ public class MazeRunnerGame extends Game {
         gameScreen.setPaused(false);
     }
 
-
-    public void setGameLevel(int level) {
-        this.gameLevel = level;
-    }
 
 
 
