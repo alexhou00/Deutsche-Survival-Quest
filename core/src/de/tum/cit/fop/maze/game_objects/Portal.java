@@ -51,16 +51,16 @@ public class Portal extends StaticObject {
         return isActive;
     }
 
-    /**
+    /*/**
      * Handles interaction when the player touches the portal.
      *
      * @param player The player interacting with the portal.
      * @param startPosition The position to which the player should be transported.
      */
-    public void onPlayerTouch(Player player) {
+   /* public void onPlayerTouch(Player player) {
         if (isActive) {
             player.setPosition(startPosition); // Transport player back to the start position
             player.loseKey(); // Remove the key from the player
         }
-    }
+    }*/
 }

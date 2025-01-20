@@ -15,7 +15,6 @@ import de.tum.cit.fop.maze.screens.GameScreen;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.*;
 import static java.lang.Math.abs;
-
 /**
  * Represents the main player character in the maze game, handling movement, collision, and state.
  */
