@@ -1,5 +1,7 @@
 package de.tum.cit.fop.maze.game_objects;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.tum.cit.fop.maze.base.StaticObject;
 import de.tum.cit.fop.maze.level.Tiles;
 
@@ -60,4 +62,15 @@ public class Portal extends StaticObject {
             key.returnToPosition(); // Remove the key from the player
         }
     }
+
+    public void init(boolean initialState, float initialElapsedTime) {
+        this.isActive = initialState;
+        this.elapsedTime = initialElapsedTime % cycleDuration; // Ensure elapsedTime stays within the cycle
+        System.out.println("Portal initialized: isActive=" + isActive + ", elapsedTime=" + elapsedTime);
+    }
+
+    public void render(SpriteBatch batch, TextureRegion frame){
+        batch.draw(frame, getX() - getWidthOnScreen() / 2, getY() - getHeightOnScreen() / 2, getWidthOnScreen(), getHeightOnScreen());
+    }
+
 }

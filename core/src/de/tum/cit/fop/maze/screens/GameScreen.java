@@ -34,6 +34,7 @@ import de.tum.cit.fop.maze.rendering.SpotlightEffect;
 import de.tum.cit.fop.maze.tiles.Exit;
 import de.tum.cit.fop.maze.util.Position;
 
+import javax.sound.sampled.Port;
 import java.util.*;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
@@ -68,6 +69,7 @@ public class GameScreen extends InputAdapter implements Screen {
     private final Key key;
     TextureRegion keyRegion;
     private final Array<Collectibles> collectibles;
+    private final Array<Portal> portals;
 
     private final SpotlightEffect spotlightEffect;
 
@@ -162,6 +164,9 @@ public class GameScreen extends InputAdapter implements Screen {
         System.out.println(Arrays.deepToString(tiles.getTileEnumOnMap()));
         spawnCollectibles();
 
+        portals = new Array<>();
+        renderPortal();
+
         // Set up map renderer
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many
 
@@ -189,6 +194,11 @@ public class GameScreen extends InputAdapter implements Screen {
         }
         for (Collectibles collectible : iterate(collectibles)){
             collectible.init(player, game.getSoundEffectKey());
+        }
+
+        for (Portal portal : iterate(portals)){
+            portal.init(false, 20f);
+
         }
 
         //popUpPanel = new PopUpPanel();
@@ -280,6 +290,25 @@ public class GameScreen extends InputAdapter implements Screen {
             collectibles.add(new Collectibles(worldX, worldY, originalSize, originalSize, originalSize, originalSize,
                     sizeOnScreen, sizeOnScreen, type));
         }
+    }
+
+    private void generatePortals(Array<Position> emptyTiles, int width, int height, int hitboxWidth, int hitboxHeight, float sizeOnScreen){
+
+        int portalsToGenerate = Math.min(5, emptyTiles.size);
+        int randomIndex = MathUtils.random(emptyTiles.size - 1);
+
+        List<Position> occupiedSectionIndexes = new ArrayList<>();
+
+        for (int i = 0; i < portalsToGenerate; i++) {
+            Position position = emptyTiles.removeIndex(randomIndex).convertTo(PIXELS); // Remove selected position to avoid duplicates
+            float x = position.getX();
+            float y = position.getY();
+
+            portals.add(new Portal(x, y, width, height, hitboxWidth, hitboxHeight, sizeOnScreen, sizeOnScreen));
+
+
+        }
+
     }
 
     public int findRandomIndex(Array<Position> emptyTiles, int collectiblesToGenerate, List<Position> occupiedSectionIndexes, Collectibles.Type type){
@@ -653,6 +682,9 @@ public class GameScreen extends InputAdapter implements Screen {
                 game.getVictorySoundEffect().play();
             }
         }
+        /*if (player.getHitbox().overlaps(portal.getHitbox())) {
+            portal.onPlayerTouch(player, key);
+        }*/
 
         game.checkExitToNextLevel(player);
 
@@ -672,6 +704,7 @@ public class GameScreen extends InputAdapter implements Screen {
         renderPlayer();
         renderArrow();
         renderKey();
+        renderPortal();
 
         renderSpeechBubble();
 
@@ -860,6 +893,12 @@ public class GameScreen extends InputAdapter implements Screen {
         }
 
     }
+    private void renderPortal(){
+        for (Portal portal : portals) {
+            portal.render(game.getSpriteBatch(), game.getPortalAnimation().getKeyFrame(sinusInput/1.5f, true));
+        }
+
+    }
 
     /**
      * Displays the speech bubble I wrote
@@ -945,8 +984,16 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
-    private void renderPortal(){
-
+    private void spawnPortal(){
+        Array<Position> emptyTiles = new Array<>();
+        for (int x = 0; x < tiles.getTileEnumOnMap().length; x++) {
+            for (int y = 0; y < tiles.getTileEnumOnMap()[x].length; y++) {
+                Tiles.TileType tileType = tiles.getTileEnumOnMap()[x][y];
+                if ((tileType == Tiles.TileType.OTHER) || tileType == null) {
+                    emptyTiles.add(new Position(x, y, TILES));
+                }
+            }
+        }
     }
 
     /**
