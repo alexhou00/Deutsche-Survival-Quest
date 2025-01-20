@@ -60,6 +60,7 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> coinAnimation;
     private Animation<TextureRegion> staminaPotionAnimation;
     private Animation<TextureRegion> pretzelAnimation;
+    private Animation<TextureRegion> portalAnimation;
 
     Texture backgroundTexture;
 
@@ -219,6 +220,7 @@ public class MazeRunnerGame extends Game {
         Texture walkSheet = new Texture(Gdx.files.internal("characters/character.png")); // TODO: Redesign our character
         Texture mobGuySheet = new Texture(Gdx.files.internal("characters/mob_guy.png"));
         Texture objectSheet = new Texture(Gdx.files.internal("original/objects.png"));
+        Texture portalSheet = new Texture(Gdx.files.internal("portals/portal.png"));
 
 
         int frameWidth = 16;
@@ -242,6 +244,9 @@ public class MazeRunnerGame extends Game {
         Array<TextureRegion> coinFrames = new Array<>(TextureRegion.class);
         Array<TextureRegion> staminaPotionFrames = new Array<>(TextureRegion.class);
         Array<TextureRegion> pretzelFrames = new Array<>(TextureRegion.class);
+
+        Array<TextureRegion> portalFrames = new Array<>(TextureRegion.class);
+
 
                 // Add all frames to the animation
         int framesXOffset = 0; // define how many frames of X to shift to start extracting our character on "character.png"
@@ -276,6 +281,9 @@ public class MazeRunnerGame extends Game {
         for (int i=0;i<6;i++)
             pretzelFrames.add(new TextureRegion(objectSheet, 128+32*i, 128, 32, 32));
 
+        for (int i=0;i<6;i++)
+            portalFrames.add(new TextureRegion(portalSheet, 0+32*i, 0, 32, 32));
+
 
 
         characterDownAnimation = new Animation<>(0.1f, downFrames);
@@ -294,6 +302,7 @@ public class MazeRunnerGame extends Game {
         coinAnimation = new Animation<>(0.1f, coinFrames);
         staminaPotionAnimation = new Animation<>(0.1f, staminaPotionFrames);
         pretzelAnimation = new Animation<>(0.1f, pretzelFrames);
+        portalAnimation = new Animation<>(0.1f, portalFrames);
 
     }
 
@@ -367,6 +376,8 @@ public class MazeRunnerGame extends Game {
     public Animation<TextureRegion> getPretzelAnimation() {
         return pretzelAnimation;
     }
+
+    public Animation<TextureRegion> getPortalAnimation() { return portalAnimation; }
 
     public Texture getBackgroundTexture() {
         return backgroundTexture;
