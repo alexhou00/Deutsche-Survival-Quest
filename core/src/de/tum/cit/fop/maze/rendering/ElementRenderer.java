@@ -96,6 +96,19 @@ public class ElementRenderer {
         }
     }*/
 
+    /**
+     * Draws an arrow sprite at a specific position with a rotation.
+     *
+     * <p>This method draws an arrow sprite at the specified coordinates, rotating it by the given number of degrees.
+     * The arrow's origin and position are adjusted for proper alignment and scaling on the screen. The method uses
+     * a {@code SpriteBatch} to draw the arrow with a scaled size and adjusted rotation based on the provided
+     * parameters.
+     *
+     * @param batch the {@code SpriteBatch} used to draw the arrow on the screen
+     * @param degrees the rotation of the arrow in degrees (clockwise)
+     * @param x the x-coordinate for the position where the arrow should be drawn
+     * @param y the y-coordinate for the position where the arrow should be drawn
+     */
     public void drawArrow(SpriteBatch batch, float degrees, float x, float y) {
         // drawing a sprite is different from drawing a texture region
         // for drawing a sprite, we use sprite.draw(spriteBatch) instead of spriteBatch.draw(textureRegion)
