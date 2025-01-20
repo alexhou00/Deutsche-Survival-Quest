@@ -25,9 +25,15 @@ public class GameOverScreen implements Screen {
     private final Map<String, TextButton> buttons;
 
     /**
-     * Constructor for GameOverScreen. Sets up the camera, viewport, stage, and UI elements.
+     * Constructs a new GameOverScreen for the MazeRunner game.
      *
-     * @param game The main game class, used to access global resources and methods.
+     * <p>This constructor sets up the screen's user interface, including the camera, viewport, stage,
+     * background texture, title label, and buttons for restarting or exiting the game. It also defines
+     * listeners for the buttons to handle user input. When the restart button is pressed, the game restarts,
+     * and when the exit button is pressed, the application exits.
+     *
+     * @param game the MazeRunner game instance used for accessing game-related functionality such as
+     *             restarting the game and accessing the sprite batch
      */
     public GameOverScreen(MazeRunnerGame game) {
         this.game = game;
@@ -88,6 +94,19 @@ public class GameOverScreen implements Screen {
         Gdx.app.log("GameOverScreen", "ChangeListener is added.");
     }
 
+    /**
+     * Renders the GameOverScreen, including the background, labels, and UI elements (such as buttons).
+     *
+     * <p>This method is responsible for clearing the screen, drawing the background texture, rendering the
+     * debugging label, and updating the stage to ensure UI elements like buttons are visible and
+     * interactive. The {@code SpriteBatch} is used to draw the background and the label, while the stage is
+     * drawn for UI updates.
+     *
+     * <p>It also ensures {@code SpriteBatch} is started and ended properly
+     * before and after rendering elements.
+     *
+     * @param delta the time elapsed since the last frame, used for any time-based calculations
+     */
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear the screen
@@ -109,12 +128,29 @@ public class GameOverScreen implements Screen {
 
     }
 
+    /**
+     * Displays the GameOverScreen and sets up the input processor for the screen.
+     *
+     * <p>This method is called to show the GameOver screen and make it the active screen for handling user input.
+     * It sets the input processor to the current stage, ensuring that input events such as button presses
+     * are handled by the GameOver screen. It also logs that the GameOverScreen is now being displayed (for debugging).
+     */
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage); // Set the input processor to the GameOver screen
         Gdx.app.log("GameOverScreen", "GameOverScreen is now showing.");
     }
 
+    /**
+     * Resizes the viewport of the GameOverScreen when the window size changes.
+     *
+     * <p>This method is called when the window or screen size changes. It updates the viewport of the stage
+     * to match the new dimensions, ensuring that UI elements (such as buttons) are correctly positioned
+     * and scaled for the new screen size.
+     *
+     * @param i the new width of the window or screen
+     * @param i1 the new height of the window or screen
+     */
     @Override
     public void resize(int i, int i1) {
         stage.getViewport().update(i, i1, true); // Update the stage viewport on resize
