@@ -220,7 +220,7 @@ public class MazeRunnerGame extends Game {
         Texture walkSheet = new Texture(Gdx.files.internal("characters/character.png")); // TODO: Redesign our character
         Texture mobGuySheet = new Texture(Gdx.files.internal("characters/mob_guy.png"));
         Texture objectSheet = new Texture(Gdx.files.internal("original/objects.png"));
-        Texture portalSheet = new Texture(Gdx.files.internal("portals/portal.png"));
+        Texture portalSheet = new Texture(Gdx.files.internal("portals/portalRings2.png"));
 
 
         int frameWidth = 16;
