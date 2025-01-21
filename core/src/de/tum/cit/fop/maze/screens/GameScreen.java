@@ -251,7 +251,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // Randomly select 5 unique "OTHER" tiles
         generateCollectibles(emptyTiles, Collectibles.Type.HEART, 3, 16, 11, 11, 2.5f);
         generateCollectibles(emptyTiles, Collectibles.Type.PRETZEL, 3, 32,28, 28,72/28f);
-        generateCollectibles(emptyTiles, Collectibles.Type.GESUNDHEITSKARTE, 1, 32,27,18,72/28f);
+        generateCollectibles(emptyTiles, Collectibles.Type.GESUNDHEITSKARTE, 1, 32,27,21,72/28f);
 
         generateCollectibles(emptyTiles, Collectibles.Type.COIN, 5, 16,11, 11,2.5f);
 
@@ -1043,10 +1043,9 @@ public class GameScreen extends InputAdapter implements Screen {
             // Start the timer if stamina is full
             staminaTimer += Gdx.graphics.getDeltaTime();
             if (currentStamina > Player.maxStamina + 2){
-                shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-                shapeRenderer.setColor(new Color(0x16b816ff));
+                //shapeRenderer.setColor();
                 float angle = ((player.getStamina() - Player.maxStamina) / Player.maxStamina) * 360f; // Calculate the angle based on stamina
-                shapeRenderer.arc(staminaX, staminaY, staminaRadius * 1.6f, 90 - angle, angle); // Draw arc clockwise
+                drawCircularSector(shapeRenderer, new Color(0x16b816ff), staminaX, staminaY, staminaRadius * 1.6f, angle);
 
             }
             if (player.getCurrentStaminaMultiplier() == 1 && // if the current multiplier is 1 (either didn't collect potion or extra stamina has used up)
@@ -1063,16 +1062,22 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
         // Draw the background circle (full arc for reference)
-        shapeRenderer.setColor(Color.DARK_GRAY);
-        shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.arc(staminaX, staminaY, staminaRadius, 0, 360); // arc's 0° (where it starts drawing) starts at +x of the cartesian plane
+        drawCircularSector(shapeRenderer, Color.DARK_GRAY, staminaX, staminaY, staminaRadius, 360);
 
         // Draw the stamina arc
-        shapeRenderer.setColor(Color.LIME);
         float angle = (player.getStamina() / Player.maxStamina) * 360f; // Calculate the angle based on stamina
-        shapeRenderer.arc(staminaX, staminaY, staminaRadius, 90 - angle, angle); // Draw arc clockwise
+        drawCircularSector(shapeRenderer, Color.LIME, staminaX, staminaY, staminaRadius, angle);
 
         //shapeRenderer.end();
+    }
+
+    // Helper method to calculate segments needed automatically
+    private static void drawCircularSector(ShapeRenderer shapeRenderer, Color color, float x, float y, float radius, float angle){
+        // the estimation of "the number of segments" needed for a smooth a arc provided by LibGDX just sucks
+        int segments = Math.max(1, (int)((angle / (360.0f/(18 * radius))))); // arc length = 2πr ∝ r
+        shapeRenderer.set(ShapeRenderer.ShapeType.Filled); // filled by default
+        shapeRenderer.setColor(color);
+        shapeRenderer.arc(x, y, radius, 90 - angle, angle, segments); // Draw arc clockwise
     }
 
     /**
