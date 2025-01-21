@@ -672,16 +672,6 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         }
 
-        if (key.isCollected() && player.isCenterTouchingTile(Exit.class)) {
-            if (!isPaused) {
-                createVictoryPanel(); // Show the victory panel
-                isPaused = true;
-                game.pause();
-                game.getBackgroundMusic().pause();
-                game.getPauseMusic().pause();
-                game.getVictorySoundEffect().play();
-            }
-        }
         /*if (player.getHitbox().overlaps(portal.getHitbox())) {
             portal.onPlayerTouch(player, key);
         }*/
@@ -1200,8 +1190,9 @@ public class GameScreen extends InputAdapter implements Screen {
         camera.setToOrtho(false);
         hudCamera.setToOrtho(false, width, height); // Adjust HUD camera to new screen size
         player.resume();
-        for (var panel : iterate(stage1.getActors())){
-            panel.setSize(Gdx.graphics.getWidth() * 0.9f,Gdx.graphics.getHeight() * 0.9f);
+        for (var panel : iterate(stage1.getActors())){ // TODO: change the number to different values based on how they are originally created
+            panel.setSize(Gdx.graphics.getWidth() * 0.8f,Gdx.graphics.getHeight() * 0.8f);
+            panel.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.1f);
         }
         stage1.getViewport().update(width, height, true); // This keeps the stage's coordinate system consistent.
         Gdx.input.setInputProcessor(stage1);

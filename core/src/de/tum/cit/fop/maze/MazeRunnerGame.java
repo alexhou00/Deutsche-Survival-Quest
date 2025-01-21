@@ -435,7 +435,15 @@ public class MazeRunnerGame extends Game {
     public void checkExitToNextLevel(Player player) {
         if (player.isCenterTouchingTile(Exit.class) && gameScreen.getKey().isCollected()){
             Gdx.app.log("MazeRunnerGame", "Player is at the exit and has the key.");
-            gameScreen.createVictoryPanel();
+
+            if (!gameScreen.isPaused()) {
+                gameScreen.setPaused(true);
+                gameScreen.createVictoryPanel();
+                //this.pause();
+                this.getBackgroundMusic().pause();
+                this.getPauseMusic().pause();
+                this.getVictorySoundEffect().play();
+            }
 
             //gameScreen.isPaused();
             //pauseMusic.pause();
