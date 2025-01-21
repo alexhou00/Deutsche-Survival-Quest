@@ -174,7 +174,7 @@ public class GameScreen extends InputAdapter implements Screen {
         player = new Player(
                 tiles.entrance.getTileX(),
                 tiles.entrance.getTileY(),
-                16, 32, 12, 17, 64f, 128f, 10f,
+                16, 32, 12, 18, 64f, 128f, 10f,
                 this, tiles);//"this" is already a game screen
 
         // Initialize traps and add one trap (you can add more as needed)
@@ -251,7 +251,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // Randomly select 5 unique "OTHER" tiles
         generateCollectibles(emptyTiles, Collectibles.Type.HEART, 3, 16, 11, 11, 2.5f);
         generateCollectibles(emptyTiles, Collectibles.Type.PRETZEL, 3, 32,28, 28,72/28f);
-        generateCollectibles(emptyTiles, Collectibles.Type.GESUNDHEITSKARTE, 1, 32,27,21,72/28f);
+        generateCollectibles(emptyTiles, Collectibles.Type.GESUNDHEITSKARTE, 1, 32,27,18,72/28f);
 
         generateCollectibles(emptyTiles, Collectibles.Type.COIN, 5, 16,11, 11,2.5f);
 
