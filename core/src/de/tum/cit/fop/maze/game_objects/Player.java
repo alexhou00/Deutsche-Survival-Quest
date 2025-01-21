@@ -86,12 +86,33 @@ public class Player extends Character {
 
     }
 
-    public void setPosition(int tileX, int tileY) {
-        this.x = tileX;
-        this.y = tileY;
-    }
+    public void setPosition(float tileX, float tileY) {
+        // Ensure the position is valid and does not cause out-of-bounds issues.
+        if (!canMoveTo(tileX, tileY)) {
+            System.out.println("Invalid position: Cannot move to " + tileX + ", " + tileY);
+            return; // Prevent setting invalid position.
+        }
 
-    // Optional: Getter for X-coordinate
+        // Clamp position to ensure player remains within world boundaries.
+        this.x = MathUtils.clamp(tileX, getHitboxWidthOnScreen() / 2, getWorldWidth() - getHitboxWidthOnScreen() / 2);
+        this.y = MathUtils.clamp(tileY, getHitboxHeightOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
+
+        // Optionally, print debug information
+        System.out.println("Player position updated to: (" + this.x + ", " + this.y + ")");
+
+        // Reset movement-related flags and velocities to prevent inconsistencies.
+        velX = 0;
+        velY = 0;
+        targetVelX = 0;
+        targetVelY = 0;
+
+        // If the player is no longer moving, stop animations and movement flags.
+        isMoving = false;
+
+
+        //checkPortalCollisions();
+        checkCollisions();  // Recheck collisions after the position change
+    }
 
     /**
      * Handles the player's movement, including:
@@ -295,12 +316,26 @@ public class Player extends Character {
         }
 
         for (Portal portal : iterate(portals)) {
-            if (portal.isActive() && portal.isTouching(this)) {
-                // Teleport the player to the portal's start position
-                portal.onPlayerTouch(this); // This calls the portal's logic to teleport the player and return the key
-               /*if (key.isCollected()){
-                    key.returnToPosition();
-                }*/
+            System.out.println("Checking portal at: " + portal.getX() + ", " + portal.getY());
+            if (isTouching(portal)) {
+                    System.out.println("Player touched the portal");
+                    portal.onPlayerTouch(this);
+            }
+        }
+    }
+
+    public void checkPortalCollisions(Array<Portal> portals) {
+        for (Portal portal : portals) {
+            if (isTouching(portal)) {
+                System.out.println("Collision detected with portal!");
+
+                if (portal.isActive()) { // Ensure portal is active
+                    portal.onPlayerTouch(this); // Let the portal handle the teleportation logic
+                    System.out.println("Player teleported to entrance.");
+                    break; // Prevent processing other portals this frame
+                } else {
+                    System.out.println("Portal is inactive. No teleportation.");
+                }
             }
         }
     }

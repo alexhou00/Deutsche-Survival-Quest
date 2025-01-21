@@ -2,6 +2,7 @@ package de.tum.cit.fop.maze.game_objects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.base.StaticObject;
@@ -18,7 +19,8 @@ public class Portal extends StaticObject {
     private final float activeDuration = 5f; // Duration for which the portal is active
     private final float cycleDuration = 20f; // Total duration of a cycle (inactive + active)
     private Tiles tiles;
-    private Key key;
+
+    private Player player = null;
 
     /**
      * Constructs a new Portal instance with specified parameters.
@@ -37,7 +39,30 @@ public class Portal extends StaticObject {
         this.elapsedTime = 0;
         this.isActive = false;
         this.tiles = new Tiles();
+        tiles = new Tiles();
 
+        // Load the tiled map
+        /*String mapFilePath = "path/to/your/map.properties";
+        String tileSheetPath = "path/to/your/tileset.png";
+        String obstacleSheetPath = "path/to/your/obstacle_sheet.png";
+
+        TiledMap tiledMap = tiles.loadTiledMap(mapFilePath, tileSheetPath, obstacleSheetPath);*/
+
+
+
+        // Example of how you might use the tiles in the portal
+        /*Position playerPosition = player.getPosition();
+        TileType tileTypeAtPlayer = tiles.getTileEnumOnMap(playerPosition.getTileX(), playerPosition.getTileY());
+
+        if (tileTypeAtPlayer == TileType.ENTRANCE) {
+            System.out.println("Player is at the entrance.");
+        } else if (tileTypeAtPlayer == TileType.EXIT) {
+            System.out.println("Player is at the exit.");
+        }*/
+
+    }
+    public void init(Player player){
+        this.player = player;
     }
 
     /**
@@ -55,6 +80,8 @@ public class Portal extends StaticObject {
 
         // Portal is active for the first 'activeDuration' seconds, then inactive for the rest
         isActive = elapsedTime < activeDuration;
+
+        onPlayerTouch(player);
     }
 
     /**

@@ -679,6 +679,7 @@ public class GameScreen extends InputAdapter implements Screen {
             portal.update(delta);
         }
 
+        player.checkPortalCollisions(portals);
         game.checkExitToNextLevel(player);
 
         renderGameWorld();
@@ -686,6 +687,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
         drawMapBorder();
         shapeRenderer.end();
 
@@ -897,8 +899,6 @@ public class GameScreen extends InputAdapter implements Screen {
             portal.render(game.getSpriteBatch(), game.getPortalAnimation().getKeyFrame(sinusInput/1.5f, true));
 
         }
-        System.out.println("portal rendered");
-
     }
 
     /**
