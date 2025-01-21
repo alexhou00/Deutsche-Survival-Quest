@@ -97,6 +97,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
 
+
     /**
      * Constructor for GameScreen. Sets up the camera and font.
      * This will be our main screen while playing the game. So it manages everything while gaming.
@@ -164,7 +165,7 @@ public class GameScreen extends InputAdapter implements Screen {
         spawnCollectibles();
 
         portals = new Array<>();
-        renderPortal();
+        spawnPortal();
 
         // Set up map renderer
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many
@@ -196,7 +197,7 @@ public class GameScreen extends InputAdapter implements Screen {
         }
 
         for (Portal portal : iterate(portals)){
-            portal.init(false, 20f);
+            portal.init(true, 20f);
 
         }
 
@@ -219,6 +220,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //Gdx.app.log("Size" ,  horizontalTilesCount + "x" + verticalTilesCount);
 
         this.totalCoins = 5;
+
     }
 
     /**
@@ -294,24 +296,21 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
-    private void generatePortals(Array<Position> emptyTiles, int width, int height, int hitboxWidth, int hitboxHeight, float sizeOnScreen){
-
-        int portalsToGenerate = Math.min(5, emptyTiles.size);
-        int randomIndex = MathUtils.random(emptyTiles.size - 1);
-
-        List<Position> occupiedSectionIndexes = new ArrayList<>();
+    private void generatePortals(Array<Position> emptyTiles, int numberToGenerate, int width, int height, int hitboxWidth, int hitboxHeight, float sizeOnScreen) {
+        int portalsToGenerate = Math.min(numberToGenerate, emptyTiles.size);
 
         for (int i = 0; i < portalsToGenerate; i++) {
+            // Randomly select a tile index
+            int randomIndex = MathUtils.random(emptyTiles.size - 1);
             Position position = emptyTiles.removeIndex(randomIndex).convertTo(PIXELS); // Remove selected position to avoid duplicates
             float x = position.getX();
             float y = position.getY();
 
+            // Generate a portal at the selected position
             portals.add(new Portal(x, y, width, height, hitboxWidth, hitboxHeight, sizeOnScreen, sizeOnScreen));
-
-
         }
-
     }
+
 
     public int findRandomIndex(Array<Position> emptyTiles, int collectiblesToGenerate, List<Position> occupiedSectionIndexes, Collectibles.Type type){
         // prevent duplicate sections
@@ -630,13 +629,15 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
-
-    /**
-     * Renders the game screen, updating and drawing all game elements.
-     * Note that this is the main loop of the game
-     *
-     * @param delta the time in seconds since the last frame was rendered (1/60 seconds if running smoothly)
-     */
+    /*private void checkPortalCollision(Player player, Key key) {
+        for (Portal portal : portals) {
+            if (portal.isActive() && player.getHitbox().overlaps(portal.getHitbox())) {
+                portal.onPlayerTouch(player, key);
+                System.out.println("Player touched portal at: " + portal.getX() + ", " + portal.getY());
+                break; // Optional: stop further portal checks if you only want one interaction
+            }
+        }
+    }*/
     // Screen interface methods with necessary functionality
     @Override
     public void render(float delta) {
@@ -675,9 +676,9 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         }
 
-        /*if (player.getHitbox().overlaps(portal.getHitbox())) {
-            portal.onPlayerTouch(player, key);
-        }*/
+        for (Portal portal : iterate(portals)) {
+            portal.update(delta);
+        }
 
         game.checkExitToNextLevel(player);
 
@@ -693,11 +694,12 @@ public class GameScreen extends InputAdapter implements Screen {
         renderTrap();
         // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
         renderCollectibles();
+        renderPortal();
         renderChasingEnemy();
         renderPlayer();
         renderArrow();
         renderKey();
-        renderPortal();
+
 
         renderSpeechBubble();
 
@@ -888,12 +890,15 @@ public class GameScreen extends InputAdapter implements Screen {
                 collectible.render(game.getSpriteBatch(), game.getStaminaPotionAnimation().getKeyFrame(sinusInput/1.5f, true));
             }
         }
+        //System.out.println("collectable rendered ");
 
     }
     private void renderPortal(){
         for (Portal portal : portals) {
             portal.render(game.getSpriteBatch(), game.getPortalAnimation().getKeyFrame(sinusInput/1.5f, true));
+
         }
+        System.out.println("portal rendered");
 
     }
 
@@ -981,7 +986,8 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
-    private void spawnPortal(){
+    private void spawnPortal() {
+        System.out.println("Spawning portal...");
         Array<Position> emptyTiles = new Array<>();
         for (int x = 0; x < tiles.getTileEnumOnMap().length; x++) {
             for (int y = 0; y < tiles.getTileEnumOnMap()[x].length; y++) {
@@ -991,6 +997,8 @@ public class GameScreen extends InputAdapter implements Screen {
                 }
             }
         }
+        generatePortals(emptyTiles, 1, 64, 64, 48, 48, 96);
+        System.out.println("Portals generated: " + portals.size);
     }
 
     /**

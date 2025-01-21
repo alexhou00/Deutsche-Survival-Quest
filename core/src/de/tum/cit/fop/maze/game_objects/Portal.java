@@ -2,16 +2,19 @@ package de.tum.cit.fop.maze.game_objects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import de.tum.cit.fop.maze.base.StaticObject;
 import de.tum.cit.fop.maze.level.Tiles;
 
+import java.awt.*;
+
 /** The third obstacle, rather than static traps & enemies, it must be something ingenious. Use your imagination and experience in videogames.*/
 public class Portal extends StaticObject {
-    Tiles tiles = new Tiles();
     private float elapsedTime; // Tracks time for the portal's state
     private boolean isActive; // Indicates if the portal is active
     private final float activeDuration = 5f; // Duration for which the portal is active
     private final float cycleDuration = 20f; // Total duration of a cycle (inactive + active)
+    private Tiles tiles;
 
     /**
      * Constructs a new Portal instance with specified parameters.
@@ -39,11 +42,13 @@ public class Portal extends StaticObject {
     public void update(float deltaTime) {
         elapsedTime += deltaTime;
 
+        // If elapsedTime exceeds cycleDuration, reset it to keep the portal in a continuous cycle
         if (elapsedTime >= cycleDuration) {
-            elapsedTime -= cycleDuration; // Reset the cycle
+            elapsedTime -= cycleDuration; // Reset to start a new cycle
         }
 
-        isActive = elapsedTime >= (cycleDuration - activeDuration);
+        // Portal is active for the first 'activeDuration' seconds, then inactive for the rest
+        isActive = elapsedTime < activeDuration;
     }
 
     /**
@@ -70,7 +75,13 @@ public class Portal extends StaticObject {
     }
 
     public void render(SpriteBatch batch, TextureRegion frame){
-        batch.draw(frame, getX() - getWidthOnScreen() / 2, getY() - getHeightOnScreen() / 2, getWidthOnScreen(), getHeightOnScreen());
+        if (isActive) {
+            batch.draw(frame, getX() - getWidthOnScreen() / 2, getY() - getHeightOnScreen() / 2, getWidthOnScreen(), getHeightOnScreen());
+        }
     }
 
+    @Override
+    public Rectangle getHitbox() {
+        return super.getHitbox();
+    }
 }
