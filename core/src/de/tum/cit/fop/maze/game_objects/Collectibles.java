@@ -15,7 +15,8 @@ public class Collectibles extends GameObject {
         SPEED_BOOST,
         SHIELD,
         COIN,
-        STAMINA
+        STAMINA, // the potion
+        GESUNDHEITSKARTE
     }
 
     private final Type type; // The type of collectible
@@ -100,6 +101,9 @@ public class Collectibles extends GameObject {
                     break;
                 case PRETZEL:
                     player.setLives(player.getLives() + 1.25f);
+                    break;
+                case GESUNDHEITSKARTE:
+                    player.setLives(player.getLives() + 2f);
                     break;
                 case COIN:
                     player.setCoins(player.getCoins() + 1);

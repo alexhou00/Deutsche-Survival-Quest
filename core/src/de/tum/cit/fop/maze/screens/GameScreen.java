@@ -247,12 +247,13 @@ public class GameScreen extends InputAdapter implements Screen {
         //totalCoins = emptyTiles.size;
 
         // Randomly select 5 unique "OTHER" tiles
-        generateCollectibles(emptyTiles, Collectibles.Type.HEART, 5, 11, 48);
-        generateCollectibles(emptyTiles, Collectibles.Type.PRETZEL, 3, 28, 72);
+        generateCollectibles(emptyTiles, Collectibles.Type.HEART, 3, 16, 11, 11, 2.5f);
+        generateCollectibles(emptyTiles, Collectibles.Type.PRETZEL, 3, 32,28, 28,72/28f);
+        generateCollectibles(emptyTiles, Collectibles.Type.GESUNDHEITSKARTE, 1, 32,27,18,72/28f);
 
-        generateCollectibles(emptyTiles, Collectibles.Type.COIN, 5, 11, 48);
+        generateCollectibles(emptyTiles, Collectibles.Type.COIN, 5, 16,11, 11,2.5f);
 
-        generateCollectibles(emptyTiles, Collectibles.Type.STAMINA, 1, 16, 96);
+        generateCollectibles(emptyTiles, Collectibles.Type.STAMINA, 1, 32,16,22, 2.5f);
     }
 
     /**
@@ -271,10 +272,12 @@ public class GameScreen extends InputAdapter implements Screen {
      * @param emptyTiles       an array of positions where collectibles can be placed
      * @param type             the type of collectibles to generate
      * @param numberToGenerate the desired number of collectibles to generate
-     * @param originalSize     the original size of the collectible in world units
-     * @param sizeOnScreen     the size of the collectible as it appears on the screen
+     * @param frameSize        the original size of the collectible's texture region frame in pixels
+     * @param hitboxWidth      the hitbox width of the original collectible image in pixels
+     * @param hitboxHeight     the hitbox height of the original collectible image in pixels
+     * @param scale            scaling for the size of the collectible's frame as it appears on the screen
      */
-    private void generateCollectibles(Array<Position> emptyTiles, Collectibles.Type type, int numberToGenerate, int originalSize, float sizeOnScreen) {
+    private void generateCollectibles(Array<Position> emptyTiles, Collectibles.Type type, int numberToGenerate, int frameSize, int hitboxWidth, int hitboxHeight, float scale) {
         int collectiblesToGenerate = Math.min(numberToGenerate, emptyTiles.size);
 
         List<Position> occupiedSectionIndexes = new ArrayList<>();
@@ -286,8 +289,8 @@ public class GameScreen extends InputAdapter implements Screen {
             float worldY = position.getY();
 
             // Generate a collectible at the selected position
-            collectibles.add(new Collectibles(worldX, worldY, originalSize, originalSize, originalSize, originalSize,
-                    sizeOnScreen, sizeOnScreen, type));
+            collectibles.add(new Collectibles(worldX, worldY, frameSize, frameSize, hitboxWidth, hitboxHeight,
+                    frameSize * scale, frameSize * scale, type));
         }
     }
 
@@ -874,7 +877,11 @@ public class GameScreen extends InputAdapter implements Screen {
                 collectible.render(game.getSpriteBatch(), game.getHeartAnimation().getKeyFrame(sinusInput/1.5f, true));
             else if (collectible.getType().equals(Collectibles.Type.PRETZEL)){
                 collectible.render(game.getSpriteBatch(), game.getPretzelAnimation().getKeyFrame(sinusInput/1.5f, true));
-            }else if (collectible.getType().equals(Collectibles.Type.COIN)){
+            }
+            else if (collectible.getType().equals(Collectibles.Type.GESUNDHEITSKARTE)){
+                collectible.render(game.getSpriteBatch(), game.getGesundheitskarteRegion());
+            }
+            else if (collectible.getType().equals(Collectibles.Type.COIN)){
                 collectible.render(game.getSpriteBatch(), game.getCoinAnimation().getKeyFrame(sinusInput/1.5f, true));
             }
             else if (collectible.getType().equals(Collectibles.Type.STAMINA)){
@@ -1272,6 +1279,7 @@ public class GameScreen extends InputAdapter implements Screen {
     public void hide() {
     }
 
+    // TODO: Remember to dispose of any textures you create when you're done with them to prevent memory leaks.
     @Override
     public void dispose() {
         //shapeRenderer.dispose();
