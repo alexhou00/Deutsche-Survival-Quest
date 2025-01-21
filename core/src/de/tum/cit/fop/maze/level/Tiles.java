@@ -12,7 +12,6 @@ import de.tum.cit.fop.maze.game_objects.Portal;
 import de.tum.cit.fop.maze.util.Position;
 import de.tum.cit.fop.maze.game_objects.Trap;
 import de.tum.cit.fop.maze.tiles.*;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;

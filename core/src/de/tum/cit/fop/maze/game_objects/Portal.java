@@ -66,7 +66,6 @@ public class Portal extends StaticObject {
         return isActive;
     }
 
-
     public void onPlayerTouch(Player player) {
         if (isActive) {
             // Teleport the player to the entrance position (assuming tiles.entrance is initialized)

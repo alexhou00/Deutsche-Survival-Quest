@@ -270,10 +270,6 @@ public class Player extends Character {
         // Access traps and enemies through GameManager
         Array<Trap> traps = tiles.traps;
 
-
-
-        Key key;
-
         // Check for collision with traps
 
         for (Trap trap : iterate(traps)) {
