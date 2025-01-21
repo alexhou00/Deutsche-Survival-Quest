@@ -3,10 +3,13 @@ package de.tum.cit.fop.maze.game_objects;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.base.StaticObject;
 import de.tum.cit.fop.maze.level.Tiles;
 
 import java.awt.*;
+
+import static de.tum.cit.fop.maze.util.Constants.TILE_SCREEN_SIZE;
 
 /** The third obstacle, rather than static traps & enemies, it must be something ingenious. Use your imagination and experience in videogames.*/
 public class Portal extends StaticObject {
@@ -15,6 +18,7 @@ public class Portal extends StaticObject {
     private final float activeDuration = 5f; // Duration for which the portal is active
     private final float cycleDuration = 20f; // Total duration of a cycle (inactive + active)
     private Tiles tiles;
+    private Key key;
 
     /**
      * Constructs a new Portal instance with specified parameters.
@@ -32,6 +36,8 @@ public class Portal extends StaticObject {
         super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
         this.elapsedTime = 0;
         this.isActive = false;
+        this.tiles = new Tiles();
+
     }
 
     /**
@@ -61,10 +67,15 @@ public class Portal extends StaticObject {
     }
 
 
-    public void onPlayerTouch(Player player, Key key) {
+    public void onPlayerTouch(Player player) {
         if (isActive) {
-            player.setPosition(tiles.entrance.getTileX(), tiles.entrance.getTileY());
-            key.returnToPosition(); // Remove the key from the player
+            // Teleport the player to the entrance position (assuming tiles.entrance is initialized)
+            if (tiles != null && tiles.entrance != null) {
+                player.setPosition(tiles.entrance.getTileX(), tiles.entrance.getTileY());
+                System.out.println("Player teleported to entrance position.");
+            } else {
+                System.out.println("Error: Entrance or Tiles not initialized.");
+            }
         }
     }
 

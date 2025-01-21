@@ -46,6 +46,11 @@ public class Player extends Character {
 
     private static final float SPEED_THRESHOLD = 5; // a number to determine if the player has stopped moving or not. if lower than this number, it is considered that the player has stopped moving.
 
+    private Array<Portal> portals = new Array<>();
+
+
+
+
 
 
 
@@ -265,6 +270,10 @@ public class Player extends Character {
         // Access traps and enemies through GameManager
         Array<Trap> traps = tiles.traps;
 
+
+
+        Key key;
+
         // Check for collision with traps
 
         for (Trap trap : iterate(traps)) {
@@ -286,6 +295,16 @@ public class Player extends Character {
         for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)) {
             if (enemy.isTouching(this) && !isHurt) {
                 bounceBack(enemy);
+            }
+        }
+
+        for (Portal portal : iterate(portals)) {
+            if (portal.isActive() && portal.isTouching(this)) {
+                // Teleport the player to the portal's start position
+                portal.onPlayerTouch(this); // This calls the portal's logic to teleport the player and return the key
+               /*if (key.isCollected()){
+                    key.returnToPosition();
+                }*/
             }
         }
     }

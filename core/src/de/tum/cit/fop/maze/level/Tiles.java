@@ -8,6 +8,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import de.tum.cit.fop.maze.game_objects.ChasingEnemy;
+import de.tum.cit.fop.maze.game_objects.Portal;
 import de.tum.cit.fop.maze.util.Position;
 import de.tum.cit.fop.maze.game_objects.Trap;
 import de.tum.cit.fop.maze.tiles.*;
@@ -19,6 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static de.tum.cit.fop.maze.level.Tiles.TileType.EXTRA;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
 
@@ -291,7 +293,7 @@ public class Tiles {
                 if (index < ENEMY_SECOND)
                     tileEnumOnMap[x][y] = TileType.OTHER;
                 else // if index too large, it is considered to be special like a train
-                    tileEnumOnMap[x][y] = TileType.EXTRA;
+                    tileEnumOnMap[x][y] = EXTRA;
             }
 
             return tile;
