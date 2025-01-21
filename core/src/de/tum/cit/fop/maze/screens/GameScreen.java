@@ -164,7 +164,7 @@ public class GameScreen extends InputAdapter implements Screen {
         spawnCollectibles();
 
         portals = new Array<>();
-        renderPortal();
+        spawnPortal();
 
         // Set up map renderer
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap,  (float) TILE_SCREEN_SIZE / TILE_SIZE); // Scale tiles, so like unitScale is times how many
@@ -883,13 +883,15 @@ public class GameScreen extends InputAdapter implements Screen {
                 collectible.render(game.getSpriteBatch(), game.getStaminaPotionAnimation().getKeyFrame(sinusInput/1.5f, true));
             }
         }
+        //System.out.println("collectable rendered ");
 
     }
     private void renderPortal(){
         for (Portal portal : portals) {
             portal.render(game.getSpriteBatch(), game.getPortalAnimation().getKeyFrame(sinusInput/1.5f, true));
-            System.out.println("portal rendered");
+
         }
+        System.out.println("portal rendered");
 
     }
 
@@ -978,6 +980,7 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     private void spawnPortal() {
+        System.out.println("Spawning portal...");
         Array<Position> emptyTiles = new Array<>();
         for (int x = 0; x < tiles.getTileEnumOnMap().length; x++) {
             for (int y = 0; y < tiles.getTileEnumOnMap()[x].length; y++) {
@@ -987,9 +990,8 @@ public class GameScreen extends InputAdapter implements Screen {
                 }
             }
         }
-
-        // Adjust portal size and number as necessary
-        generatePortals(emptyTiles, 1, 64, 64, 48, 48, 96); // Example values for size and number
+        generatePortals(emptyTiles, 1, 64, 64, 48, 48, 96);
+        System.out.println("Portals generated: " + portals.size);
     }
 
     /**
