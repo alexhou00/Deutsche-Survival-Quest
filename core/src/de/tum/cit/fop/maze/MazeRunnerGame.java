@@ -60,6 +60,7 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> coinAnimation;
     private Animation<TextureRegion> staminaPotionAnimation;
     private Animation<TextureRegion> pretzelAnimation;
+    private TextureRegion gesundheitskarteRegion;
     private Animation<TextureRegion> portalAnimation;
 
     Texture backgroundTexture;
@@ -284,6 +285,7 @@ public class MazeRunnerGame extends Game {
         for (int i=0;i<5;i++)
             portalFrames.add(new TextureRegion(portalSheet, 32 * i, 0, 32, 32));
 
+        gesundheitskarteRegion = new TextureRegion(objectSheet, 224, 96, 32, 32);
 
 
         characterDownAnimation = new Animation<>(0.1f, downFrames);
@@ -381,6 +383,10 @@ public class MazeRunnerGame extends Game {
 
     public Texture getBackgroundTexture() {
         return backgroundTexture;
+    }
+
+    public TextureRegion getGesundheitskarteRegion() {
+        return gesundheitskarteRegion;
     }
 
     public SpriteBatch getSpriteBatch() {
