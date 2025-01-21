@@ -109,8 +109,6 @@ public class Tiles {
         traps = new Array<>();
         chasingEnemies = new Array<>();
         maxTilesOnCell = 0;
-
-
     }
 
     /**
