@@ -281,7 +281,7 @@ public class MazeRunnerGame extends Game {
         for (int i=0;i<6;i++)
             pretzelFrames.add(new TextureRegion(objectSheet, 128+32*i, 128, 32, 32));
 
-        for (int i=0;i<6;i++)
+        for (int i=0;i<5;i++)
             portalFrames.add(new TextureRegion(portalSheet, 32 * i, 0, 32, 32));
 
 
