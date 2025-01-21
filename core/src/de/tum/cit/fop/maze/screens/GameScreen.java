@@ -1076,6 +1076,9 @@ public class GameScreen extends InputAdapter implements Screen {
         shapeRenderer.set(ShapeRenderer.ShapeType.Filled); // filled by default
         shapeRenderer.setColor(color);
         shapeRenderer.arc(x, y, radius, 90 - angle, angle, segments); // Draw arc clockwise
+        if (angle == 360) { // draw one little strip to fill the gap at 0 deg
+            shapeRenderer.arc(x, y, radius, 90 - angle - 4, 8);
+        }
     }
 
 
