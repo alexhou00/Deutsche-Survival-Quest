@@ -219,7 +219,7 @@ public class MazeRunnerGame extends Game {
      */
     private void loadAnimation() {
         Texture walkSheet = new Texture(Gdx.files.internal("characters/character.png")); // TODO: Redesign our character
-        Texture mobGuySheet = new Texture(Gdx.files.internal("characters/mob_guy.png"));
+        Texture mobGuySheet = new Texture(Gdx.files.internal("characters/ticket_guy.png"));
         Texture objectSheet = new Texture(Gdx.files.internal("original/objects.png"));
         Texture portalSheet = new Texture(Gdx.files.internal("portals/portalRings2.png"));
 
