@@ -97,6 +97,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
 
+
     /**
      * Constructor for GameScreen. Sets up the camera and font.
      * This will be our main screen while playing the game. So it manages everything while gaming.
@@ -219,6 +220,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //Gdx.app.log("Size" ,  horizontalTilesCount + "x" + verticalTilesCount);
 
         this.totalCoins = 5;
+
     }
 
     /**
@@ -624,13 +626,15 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
-
-    /**
-     * Renders the game screen, updating and drawing all game elements.
-     * Note that this is the main loop of the game
-     *
-     * @param delta the time in seconds since the last frame was rendered (1/60 seconds if running smoothly)
-     */
+    /*private void checkPortalCollision(Player player, Key key) {
+        for (Portal portal : portals) {
+            if (portal.isActive() && player.getHitbox().overlaps(portal.getHitbox())) {
+                portal.onPlayerTouch(player, key);
+                System.out.println("Player touched portal at: " + portal.getX() + ", " + portal.getY());
+                break; // Optional: stop further portal checks if you only want one interaction
+            }
+        }
+    }*/
     // Screen interface methods with necessary functionality
     @Override
     public void render(float delta) {
@@ -672,10 +676,6 @@ public class GameScreen extends InputAdapter implements Screen {
         for (Portal portal : iterate(portals)) {
             portal.update(delta);
         }
-
-        /*if (player.getHitbox().overlaps(portal.getHitbox())) {
-            portal.onPlayerTouch(player, key);
-        }*/
 
         game.checkExitToNextLevel(player);
 
