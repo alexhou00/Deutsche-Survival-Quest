@@ -249,7 +249,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //totalCoins = emptyTiles.size;
 
         generateCollectibles(emptyTiles, Collectibles.Type.HEART, 3, 16, 11, 11, 2.5f);
-        generateCollectibles(emptyTiles, Collectibles.Type.PRETZEL, 3, 32,28, 28,72/28f);
+        generateCollectibles(emptyTiles, Collectibles.Type.PRETZEL, 3, 32,28, 27,72/28f);
         generateCollectibles(emptyTiles, Collectibles.Type.GESUNDHEITSKARTE, 1, 32,27,18,72/28f);
 
         generateCollectibles(emptyTiles, Collectibles.Type.COIN, 5, 16,11, 11,2.5f);
@@ -1217,7 +1217,7 @@ public class GameScreen extends InputAdapter implements Screen {
             panel.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.1f);
         }
         stage1.getViewport().update(width, height, true); // This keeps the stage's coordinate system consistent.
-        Gdx.input.setInputProcessor(stage1);
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
 
