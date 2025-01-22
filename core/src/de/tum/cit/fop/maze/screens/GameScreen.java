@@ -31,7 +31,6 @@ import de.tum.cit.fop.maze.game_objects.*;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.rendering.ElementRenderer;
 import de.tum.cit.fop.maze.rendering.SpotlightEffect;
-import de.tum.cit.fop.maze.tiles.Exit;
 import de.tum.cit.fop.maze.util.Position;
 
 import java.util.*;
@@ -223,6 +222,18 @@ public class GameScreen extends InputAdapter implements Screen {
     private void spawnCollectibles() {
         // Get the 2D array of tiles
         // to find all "OTHER" tiles
+        Array<Position> emptyTiles = getEmptyTiles(tiles);
+
+        generateCollectibles(emptyTiles, Collectibles.Type.HEART, 3, 16, 11, 11, 2.5f);
+        generateCollectibles(emptyTiles, Collectibles.Type.PRETZEL, 3, 32,28, 27,72/28f);
+        generateCollectibles(emptyTiles, Collectibles.Type.GESUNDHEITSKARTE, 1, 32,27,18,72/28f);
+
+        generateCollectibles(emptyTiles, Collectibles.Type.COIN, 5, 16,11, 11,2.5f);
+
+        generateCollectibles(emptyTiles, Collectibles.Type.STAMINA, 1, 32,16,22, 2.5f);
+    }
+
+    private static Array<Position> getEmptyTiles(Tiles tiles) {
         Array<Position> emptyTiles = new Array<>();
         for (int x = 0; x < tiles.getTileEnumOnMap().length; x++) {
             for (int y = 0; y < tiles.getTileEnumOnMap()[x].length; y++) {
@@ -232,16 +243,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 }
             }
         }
-
-        //totalCoins = emptyTiles.size;
-
-        generateCollectibles(emptyTiles, Collectibles.Type.HEART, 3, 16, 11, 11, 2.5f);
-        generateCollectibles(emptyTiles, Collectibles.Type.PRETZEL, 3, 32,28, 27,72/28f);
-        generateCollectibles(emptyTiles, Collectibles.Type.GESUNDHEITSKARTE, 1, 32,27,18,72/28f);
-
-        generateCollectibles(emptyTiles, Collectibles.Type.COIN, 5, 16,11, 11,2.5f);
-
-        generateCollectibles(emptyTiles, Collectibles.Type.STAMINA, 1, 32,16,22, 2.5f);
+        return emptyTiles;
     }
 
     /**
@@ -976,15 +978,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private void spawnPortal() {
         System.out.println("Spawning portal...");
-        Array<Position> emptyTiles = new Array<>();
-        for (int x = 0; x < tiles.getTileEnumOnMap().length; x++) {
-            for (int y = 0; y < tiles.getTileEnumOnMap()[x].length; y++) {
-                Tiles.TileType tileType = tiles.getTileEnumOnMap()[x][y];
-                if ((tileType == Tiles.TileType.OTHER) || tileType == null) {
-                    emptyTiles.add(new Position(x, y, TILES));
-                }
-            }
-        }
+        Array<Position> emptyTiles = getEmptyTiles(tiles);
         generatePortals(emptyTiles, 1, 64, 64, 48, 48, 96);
         System.out.println("Portals generated: " + portals.size);
     }
