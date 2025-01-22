@@ -179,9 +179,9 @@ public class Player extends Character {
 
 
 
-        if(isBoosting){
+        if(canBoost && boostPressed){
             game.getSoundEffectRunning().play();
-            game.getSoundEffectRunning().loop();
+            //game.getSoundEffectRunning().loop();
         }
         else{
             game.getSoundEffectRunning().pause();
