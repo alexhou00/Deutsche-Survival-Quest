@@ -1,5 +1,6 @@
 package de.tum.cit.fop.maze.game_objects;
 
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.MathUtils;

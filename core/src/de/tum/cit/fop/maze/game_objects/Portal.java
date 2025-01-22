@@ -57,7 +57,6 @@ public class Portal extends StaticObject {
         if (elapsedTime >= cycleDuration) {
             elapsedTime -= cycleDuration; // Reset to start a new cycle
         }
-
         // Portal is active for the first 'activeDuration' seconds, then inactive for the rest
         isActive = elapsedTime < activeDuration;
     }
