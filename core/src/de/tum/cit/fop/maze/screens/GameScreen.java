@@ -143,7 +143,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         TiledMap tiledMap;
         switch (game.getGameLevel()) {
-            case 1,3,4 -> tiledMap = tiles.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+            case 1,3,4,6 -> tiledMap = tiles.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             case 2 -> tiledMap = tiles.loadTiledMap("maps/level-2-map.properties", Gdx.files.internal("tilesets/level2_tileset.png").path(), Gdx.files.internal("tilesets/level2_obstacles.png").path());
             //case 3 -> tiledMap = tiles.loadTiledMap("maps/level-3-map.properties", Gdx.files.internal("tilesets/level3_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             //case 4 -> tiledMap = tiles.loadTiledMap("maps/level-4-map.properties", Gdx.files.internal("tilesets/level4_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
@@ -338,13 +338,18 @@ public class GameScreen extends InputAdapter implements Screen {
 
         introPanel.addLabel("Game Instructions", game.getSkin(), "title", 0.5f, 80);
 
-        String instructionsText = "Welcome TUM student!\n" +
-                "As you arrive in Germany for your studies in Heilbronn, you will have to complete some challenges to settle in and start your studies. " +
-                "You will start at the airport, then figure out how to use the public transportation, which will be the Deutsche Bahn in this case, " +
-                "complete your city registration, chill in a Brauerei, and of course discover the beautiful Altstadt of Heilbronn:)\n\n" +
-                "During your journey, unfortunately, not everything will be as easy... First of all, you will need to collect a key for each level to move on with your journey. " +
-                "Also, you must remain alert, as there will be some traps, enemies, and surprises set for you to keep you from completing your journey.\n\n" +
-                "Good Luck!!\n\n[Press any key to continue with level 1 instructions]";
+        String instructionsText = """
+                Welcome TUM student!
+                As you arrive in Germany for your studies in Heilbronn, you will have to complete some challenges to settle in and start your studies. \
+                You will start at the airport, then figure out how to use the public transportation, which will be the Deutsche Bahn in this case, \
+                complete your city registration, chill in a Brauerei, and of course discover the beautiful Altstadt of Heilbronn:)
+                
+                During your journey, unfortunately, not everything will be as easy... First of all, you will need to collect a key for each level to move on with your journey. \
+                Also, you must remain alert, as there will be some traps, enemies, and surprises set for you to keep you from completing your journey.
+                
+                Good Luck!!
+                
+                [Press any key to continue with level 1 instructions]""";
 
         Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
         introPanel.addLabel(instructionsText, instructionsStyle, 80);
