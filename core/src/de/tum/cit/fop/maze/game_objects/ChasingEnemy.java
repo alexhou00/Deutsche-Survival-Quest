@@ -40,7 +40,7 @@ public class ChasingEnemy extends Character {
 
     private Player player = null;
 
-    private MazeRunnerGame game;
+    private final MazeRunnerGame game;
 
     /**
      * Constructs a new Enemy instance with specified parameters.
@@ -103,9 +103,9 @@ public class ChasingEnemy extends Character {
             // If the player is within the detection radius, chase the player
             if (!isChasing){ // previously, it wasn't chasing
                 alertTime = ALERT_SHOWING_TIME; // reset the time that the exclamation mark [!] need to be shown
+                game.getWarningMusic().play();
             }
             isChasing = true;
-            game.getWarningMusic().play();
             chase(player, delta); // Call the chase method
             //Gdx.app.log("Enemy", "Chasing the player");
         } else {
