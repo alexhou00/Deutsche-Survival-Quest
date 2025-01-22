@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.base.GameObject;
@@ -45,9 +44,6 @@ public class Player extends Character {
     private static final float SMOOTH_FACTOR = 5f; // the lower the value, the smoother it gets (and needs more time to stop)
 
     private static final float SPEED_THRESHOLD = 5; // a number to determine if the player has stopped moving or not. if lower than this number, it is considered that the player has stopped moving.
-
-    private Array<Portal> portals = new Array<>();
-
 
 
 
@@ -110,7 +106,6 @@ public class Player extends Character {
         isMoving = false;
 
 
-        //checkPortalCollisions();
         checkCollisions();  // Recheck collisions after the position change
     }
 
@@ -314,27 +309,19 @@ public class Player extends Character {
                 bounceBack(enemy);
             }
         }
-
-        for (Portal portal : iterate(portals)) {
-            System.out.println("Checking portal at: " + portal.getX() + ", " + portal.getY());
-            if (isTouching(portal)) {
-                    System.out.println("Player touched the portal");
-                    portal.onPlayerTouch(this);
-            }
-        }
     }
 
     public void checkPortalCollisions(Array<Portal> portals) {
-        for (Portal portal : portals) {
+        for (Portal portal : iterate(portals)) {
             if (isTouching(portal)) {
-                System.out.println("Collision detected with portal!");
+                Gdx.app.log("Player", "Collision detected with portal!");
 
                 if (portal.isActive()) { // Ensure portal is active
                     portal.onPlayerTouch(this); // Let the portal handle the teleportation logic
-                    System.out.println("Player teleported to entrance.");
+                    Gdx.app.log("Player", "Player teleported to entrance.");
                     break; // Prevent processing other portals this frame
                 } else {
-                    System.out.println("Portal is inactive. No teleportation.");
+                    Gdx.app.log("Player", "Portal is inactive. No teleportation.");
                 }
             }
         }

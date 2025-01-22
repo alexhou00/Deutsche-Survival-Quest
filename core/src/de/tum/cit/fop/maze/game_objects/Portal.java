@@ -1,5 +1,6 @@
 package de.tum.cit.fop.maze.game_objects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -25,9 +26,6 @@ public class Portal extends StaticObject {
 
     private Player player = null;
 
-    public GameScreen gameScreen;
-
-
     /**
      * Constructs a new Portal instance with specified parameters.
      *
@@ -45,29 +43,6 @@ public class Portal extends StaticObject {
         this.elapsedTime = 0;
         this.isActive = false;
         this.tiles = tiles;
-
-        // Load the tiled map
-        /*String mapFilePath = "path/to/your/map.properties";
-        String tileSheetPath = "path/to/your/tileset.png";
-        String obstacleSheetPath = "path/to/your/obstacle_sheet.png";
-
-        TiledMap tiledMap = tiles.loadTiledMap(mapFilePath, tileSheetPath, obstacleSheetPath);*/
-
-
-
-        // Example of how you might use the tiles in the portal
-        /*Position playerPosition = player.getPosition();
-        TileType tileTypeAtPlayer = tiles.getTileEnumOnMap(playerPosition.getTileX(), playerPosition.getTileY());
-
-        if (tileTypeAtPlayer == TileType.ENTRANCE) {
-            System.out.println("Player is at the entrance.");
-        } else if (tileTypeAtPlayer == TileType.EXIT) {
-            System.out.println("Player is at the exit.");
-        }*/
-
-    }
-    public void init(Player player){
-        this.player = player;
     }
 
     /**
@@ -85,8 +60,6 @@ public class Portal extends StaticObject {
 
         // Portal is active for the first 'activeDuration' seconds, then inactive for the rest
         isActive = elapsedTime < activeDuration;
-
-        //onPlayerTouch(player);
     }
 
     /**
@@ -102,12 +75,11 @@ public class Portal extends StaticObject {
         if (isActive) {
             // Teleport the player to the entrance position (assuming tiles.entrance is initialized)
             if (tiles != null && tiles.getEntrance()!= null) {
-//                player.setPosition(tiles.getEntrance().getTileX(), tiles.getEntrance().getTileY());
                 player.setX(getWorldCoordinateInPixels(tiles.entrance.getTileX()));
                 player.setY(getWorldCoordinateInPixels(tiles.entrance.getTileY()));
-                System.out.println("Player teleported to entrance position.");
+                Gdx.app.log("Portal", "Player teleported to entrance position.");
             } else {
-                System.out.println("Error: Entrance or Tiles not initialized.");
+                Gdx.app.log("Portal", "Error: Entrance or Tiles not initialized.");
             }
         }
     }
