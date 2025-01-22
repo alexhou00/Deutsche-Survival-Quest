@@ -134,7 +134,6 @@ public class MazeRunnerGame extends Game {
         System.exit(-1);
     }
 
-
     /**
      * Switches to the menu screen.
      */
