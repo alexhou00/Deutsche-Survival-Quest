@@ -102,12 +102,19 @@ public class Tiles {
      */
     public Tiles() {
         keyTilePosition = new Position(0, 0, TILES);
-        entrance = null;
+        entrance = getEntrance();
         exits = new Array<>();
 
         traps = new Array<>();
         chasingEnemies = new Array<>();
         maxTilesOnCell = 0;
+    }
+
+    public Entrance getEntrance() {
+       if (entrance == null) {
+           return createTile(ENTRANCE,tileset,true,1,2);
+       }
+       return entrance;
     }
 
     /**
@@ -256,7 +263,6 @@ public class Tiles {
 
             return tile;
         }
-
         else if (CHASING_ENEMIES.contains(index)){
             Tile tile = new Tile(tileRegion);
             tile.getProperties().put("type", "Enemy");
