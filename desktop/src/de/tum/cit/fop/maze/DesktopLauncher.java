@@ -32,6 +32,7 @@ public class DesktopLauncher {
 		);
 		config.useVsync(true); // Enable vertical sync
 		config.setForegroundFPS(60); // Set the foreground frames per second;
+		config.setWindowSizeLimits(800, 600, 9999, 9999); // Limit window resize
 		// Launch the game
 		new Lwjgl3Application(new MazeRunnerGame(new DesktopFileChooser()), config);
 	}
