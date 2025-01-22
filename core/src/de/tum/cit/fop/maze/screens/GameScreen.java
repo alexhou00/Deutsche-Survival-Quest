@@ -1286,10 +1286,16 @@ public class GameScreen extends InputAdapter implements Screen {
     // TODO: Remember to dispose of any textures you create when you're done with them to prevent memory leaks.
     @Override
     public void dispose() {
+        font.dispose();
         //shapeRenderer.dispose();
         // i think we shouldn't even dispose the shapeRenderer, right? (else the program will exit unexpectedly)
-        //mapRenderer.dispose();
-        //hudObjectRenderer.dispose();
+        mapRenderer.dispose();
+        hudObjectRenderer.dispose();
+        // disposing all disposables (such as Stage, Skin, Texture ... etc)
+        stage1.dispose();
+        shader.dispose();
+        // Nullify references to prevent memory leaks
+        Gdx.input.setInputProcessor(null);
     }
 
 
