@@ -1,10 +1,19 @@
 package de.tum.cit.fop.maze.game_objects;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
+import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.base.StaticObject;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.screens.GameScreen;
+import de.tum.cit.fop.maze.tiles.Entrance;
+
+import java.awt.*;
+
+import static de.tum.cit.fop.maze.util.Constants.TILE_SCREEN_SIZE;
 import static de.tum.cit.fop.maze.util.Position.getWorldCoordinateInPixels;
 
 /** The third obstacle, rather than static traps & enemies, it must be something ingenious. Use your imagination and experience in videogames.*/
@@ -16,8 +25,6 @@ public class Portal extends StaticObject {
     private final Tiles tiles;
 
     private Player player = null;
-
-    public GameScreen gameScreen;
 
     /**
      * Constructs a new Portal instance with specified parameters.
@@ -53,8 +60,6 @@ public class Portal extends StaticObject {
 
         // Portal is active for the first 'activeDuration' seconds, then inactive for the rest
         isActive = elapsedTime < activeDuration;
-
-        //onPlayerTouch(player);
     }
 
     /**
@@ -80,12 +85,11 @@ public class Portal extends StaticObject {
         if (isActive) {
             // Teleport the player to the entrance position (assuming tiles.entrance is initialized)
             if (tiles != null && tiles.getEntrance()!= null) {
-//                player.setPosition(tiles.getEntrance().getTileX(), tiles.getEntrance().getTileY());
                 player.setX(getWorldCoordinateInPixels(tiles.entrance.getTileX()));
                 player.setY(getWorldCoordinateInPixels(tiles.entrance.getTileY()));
-                System.out.println("Player teleported to entrance position.");
+                Gdx.app.log("Portal", "Player teleported to entrance position.");
             } else {
-                System.out.println("Error: Entrance or Tiles not initialized.");
+                Gdx.app.log("Portal", "Error: Entrance or Tiles not initialized.");
             }
         }
     }

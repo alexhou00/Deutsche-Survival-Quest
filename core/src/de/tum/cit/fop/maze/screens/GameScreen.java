@@ -177,16 +177,6 @@ public class GameScreen extends InputAdapter implements Screen {
                 16, 32, 12, 18, 64f, 128f, 10f,
                 this, tiles);//"this" is already a game screen
 
-        // Initialize traps and add one trap (you can add more as needed)
-        // traps = new ArrayList<>();
-        //Trap trap1 = new Trap(100f, 150f, 50, 50, 30, 30, 50f, 50f, 1.0f);
-        // traps.add(trap1);
-
-        // Initialize ChasingEnemy with player and collisionLayer
-        //chasingEnemy = new ArrayList<>();
-        //ChasingEnemy chasingEnemy1 = new ChasingEnemy(10, 10, 32, 32, 32, 32, 64, 64, 3, tiles.layer, player, chasingEnemyTexture);
-        //chasingEnemy.add(chasingEnemy1); // Add enemy targeting the player*/
-        //chasingEnemy = new ChasingEnemy(0, 0, 32, 32, 32, 32, 64, 64, 3, this, tiles.layer, player); //new TextureRegion(new Texture(Gdx.files.internal( "mob_guy.png")), 0, 0, 32, 32));
 
         // for whatever that requires touching the player
         for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){
@@ -198,10 +188,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         for (Portal portal : iterate(portals)){
             portal.init(player, true, 20f);
-
         }
-
-        //popUpPanel = new PopUpPanel();
 
         spotlightEffect = new SpotlightEffect();
 
