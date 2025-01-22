@@ -225,9 +225,9 @@ public abstract class Character extends GameObject {
     public static float bounceVelocity(float v1, float v2) {
         // v1 is the velocity of this, v2 is the velocity of the other
         // assuming m1 and m2 are the same mass, and the collision is elastic
-        System.out.println(v1 + " " + v2);
+        //System.out.println(v1 + " " + v2);
         float vc = (v1+v2)/2f;
-        System.out.println("Vc: " + vc);
+        //System.out.println("Vc: " + vc);
         float vf = 2 * vc - v1;
         return (abs(vf) > 50) ? vf : vf*5;
     }

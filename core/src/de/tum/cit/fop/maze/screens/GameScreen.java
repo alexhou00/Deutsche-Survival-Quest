@@ -156,7 +156,7 @@ public class GameScreen extends InputAdapter implements Screen {
         keyRegion = tiles.getTileset()[Tiles.KEY].getTextureRegion();
 
         collectibles = new Array<>();
-        System.out.println(Arrays.deepToString(tiles.getTileEnumOnMap()));
+        //System.out.println(Arrays.deepToString(tiles.getTileEnumOnMap()));
         spawnCollectibles();
 
         portals = new Array<>();
@@ -490,7 +490,7 @@ public class GameScreen extends InputAdapter implements Screen {
         if (isPaused) return true;
         targetZoom += amountY * 0.1f; // Adjust sensitivity as needed
         targetZoom = MathUtils.clamp(targetZoom, MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL); // Clamp zoom level
-        Gdx.app.log("GameScreen", "mouse scrolled to adjust zoom");
+        Gdx.app.debug("GameScreen", "mouse scrolled to adjust zoom");
         return true; // Return true to indicate the event was handled
     }
 
