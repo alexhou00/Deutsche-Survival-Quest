@@ -97,6 +97,7 @@ public class Portal extends StaticObject {
         }
     }
 
+
     /**
      * Initializes the portal with the specified player, initial state, and elapsed time.
      *

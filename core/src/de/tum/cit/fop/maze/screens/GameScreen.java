@@ -641,6 +641,7 @@ public class GameScreen extends InputAdapter implements Screen {
             return;
         }
 
+
         ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
         camera.update(); // Update the camera
 

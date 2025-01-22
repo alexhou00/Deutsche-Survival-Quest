@@ -105,6 +105,7 @@ public class ChasingEnemy extends Character {
                 alertTime = ALERT_SHOWING_TIME; // reset the time that the exclamation mark [!] need to be shown
             }
             isChasing = true;
+            game.getWarningMusic().play();
             chase(player, delta); // Call the chase method
             //Gdx.app.log("Enemy", "Chasing the player");
         } else {
@@ -171,12 +172,13 @@ public class ChasingEnemy extends Character {
      * @return {@code true} if the player is within the detection radius; {@code false} otherwise
      */
     private boolean isPlayerWithinDetectionRadius(Player player) {
-        //game.getSoundEffectWarning().play();
+
         float dx = player.getX() - x;
         float dy = player.getY() - y;
         float distanceSquared = dx * dx + dy * dy;
         return distanceSquared <= detectionRadius * detectionRadius;
     }
+
 
 
     /**
@@ -382,6 +384,7 @@ public class ChasingEnemy extends Character {
     private void setRandomTarget() {
         setRandomTarget(getHitboxWidthOnScreen() / 2, getHitboxHeightOnScreen() / 2, getWorldWidth() - getHitboxWidthOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
     }
+
 
 
     //TODO decide on do we need this
