@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
+import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.base.StaticObject;
 import de.tum.cit.fop.maze.level.Tiles;
@@ -25,6 +26,7 @@ public class Portal extends StaticObject {
     private final Tiles tiles;
 
     private Player player = null;
+    MazeRunnerGame game;
 
     /**
      * Constructs a new Portal instance with specified parameters.
@@ -38,11 +40,12 @@ public class Portal extends StaticObject {
      * @param widthOnScreen The width of the portal as displayed on screen.
      * @param heightOnScreen The height of the portal as displayed on screen.
      */
-    public Portal(Tiles tiles, float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen) {
+    public Portal(Tiles tiles, float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, MazeRunnerGame game) {
         super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
         this.elapsedTime = 0;
         this.isActive = false;
         this.tiles = tiles;
+        this.game = game;
     }
 
     /**
@@ -82,6 +85,7 @@ public class Portal extends StaticObject {
      */
     public void onPlayerTouch(Player player) {
         if (isActive) {
+            game.getSoundEffectTeleport().play();
             // Teleport the player to the entrance position (assuming tiles.entrance is initialized)
             if (tiles != null && tiles.getEntrance()!= null) {
                 player.setX(getWorldCoordinateInPixels(tiles.entrance.getTileX()));

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.base.Character;
 import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.level.Tiles;
@@ -39,6 +40,8 @@ public class ChasingEnemy extends Character {
 
     private Player player = null;
 
+    private MazeRunnerGame game;
+
     /**
      * Constructs a new Enemy instance with specified parameters.
      *
@@ -53,7 +56,7 @@ public class ChasingEnemy extends Character {
      * @param lives          The number of lives the character starts with.
      */
     public ChasingEnemy(TextureRegion textureRegion, int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight,
-                        float widthOnScreen, float heightOnScreen, float lives, Tiles tiles) {
+                        float widthOnScreen, float heightOnScreen, float lives, Tiles tiles, MazeRunnerGame game) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE),
                 width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, tiles);
         this.collisionLayer = tiles.layer;
@@ -71,6 +74,7 @@ public class ChasingEnemy extends Character {
         // Load the enemy's texture
         this.enemyTexture = textureRegion; // Texture("mobs.png"); // Make sure the path matches your assets folder
         this.alertSymbolTexture = new TextureRegion(new Texture(Gdx.files.internal("original/objects.png")), 32, 130, 13, 12);
+        this.game = game;
     }
 
     public void init(Player player) {
@@ -167,6 +171,7 @@ public class ChasingEnemy extends Character {
      * @return {@code true} if the player is within the detection radius; {@code false} otherwise
      */
     private boolean isPlayerWithinDetectionRadius(Player player) {
+        //game.getSoundEffectWarning().play();
         float dx = player.getX() - x;
         float dy = player.getY() - y;
         float distanceSquared = dx * dx + dy * dy;
@@ -180,6 +185,7 @@ public class ChasingEnemy extends Character {
      * @param delta The delta time.
      */
     private void chase(Player player, float delta) {
+
         alertTime -= delta;
         if (damageCooldown <= 0) {
             /*if ((damageTimes < 3)) {*/

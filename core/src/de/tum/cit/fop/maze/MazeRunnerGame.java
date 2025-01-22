@@ -66,7 +66,7 @@ public class MazeRunnerGame extends Game {
     Texture backgroundTexture;
 
     Music backgroundMusic, menuMusic, pauseMusic,  gameOverMusic, victorySoundEffect, victoryMusic;
-    Sound soundEffectKey, soundEffectHurt, soundEffectRunning;
+    Sound soundEffectKey, soundEffectHurt, soundEffectRunning, soundEffectTeleport, soundEffectWarning;
     private boolean isMuted;
 
 
@@ -115,6 +115,8 @@ public class MazeRunnerGame extends Game {
         soundEffectKey = Gdx.audio.newSound(Gdx.files.internal("sounds/Accept.mp3"));
         soundEffectHurt = Gdx.audio.newSound(Gdx.files.internal("sounds/01._damage_grunt_male.wav"));
         soundEffectRunning = Gdx.audio.newSound(Gdx.files.internal("sounds/running.mp3"));
+        soundEffectWarning = Gdx.audio.newSound(Gdx.files.internal("sounds/warning.wav"));
+        soundEffectTeleport = Gdx.audio.newSound(Gdx.files.internal("sounds/teleport.wav"));
 
 
         goToMenu(); // Navigate to the menu screen
@@ -441,6 +443,14 @@ public class MazeRunnerGame extends Game {
 
     public Sound getSoundEffectRunning(){
         return soundEffectRunning;
+    }
+
+    public Sound getSoundEffectWarning(){
+        return soundEffectWarning;
+    }
+
+    public Sound getSoundEffectTeleport(){
+        return soundEffectTeleport;
     }
 
     public void checkExitToNextLevel(Player player) {

@@ -7,6 +7,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
+import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.game_objects.ChasingEnemy;
 import de.tum.cit.fop.maze.game_objects.Portal;
 import de.tum.cit.fop.maze.util.Position;
@@ -97,10 +98,12 @@ public class Tiles {
 
     private TileType[][] tileEnumOnMap;
 
+    private MazeRunnerGame game;
+
     /**
      * Constructor: initializes the Tiles object with default values.
      */
-    public Tiles() {
+    public Tiles(MazeRunnerGame game) {
         keyTilePosition = new Position(0, 0, TILES);
         entrance = null; //getEntrance();
         exits = new Array<>();
@@ -108,6 +111,7 @@ public class Tiles {
         traps = new Array<>();
         chasingEnemies = new Array<>();
         maxTilesOnCell = 0;
+        this.game=game;
     }
 
     public Entrance getEntrance() {
@@ -409,7 +413,7 @@ public class Tiles {
                         Position chasingEnemyPosition = new Position(x, y, TILES);
                         int worldX = chasingEnemyPosition.getTileX();
                         int worldY = chasingEnemyPosition.getTileY();
-                        chasingEnemies.add(new ChasingEnemy(tile.getTextureRegion(), worldX, worldY, 16, 16, 10, 16, 64, 64, 3, this));
+                        chasingEnemies.add(new ChasingEnemy(tile.getTextureRegion(), worldX, worldY, 16, 16, 10, 16, 64, 64, 3, this, game));
                     }
                     else { // if it is neither a trap nor a key, which is the default one
 
