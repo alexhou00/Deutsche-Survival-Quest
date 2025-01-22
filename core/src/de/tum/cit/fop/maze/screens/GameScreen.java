@@ -11,11 +11,10 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -38,7 +37,6 @@ import java.util.*;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
-import static de.tum.cit.fop.maze.util.Position.getWorldCoordinateInPixels;
 import static java.lang.Math.abs;
 
 
@@ -71,9 +69,6 @@ public class GameScreen extends InputAdapter implements Screen {
     private final Array<Portal> portals;
 
     private final SpotlightEffect spotlightEffect;
-
-    //private TiledMapTileLayer collisionLayer;
-    //PopUpPanel popUpPanel;
 
     private final ShaderProgram shader;
     private final Stage stage1;
@@ -325,7 +320,7 @@ public class GameScreen extends InputAdapter implements Screen {
     public Position getSectionIndex(Position position, int collectiblesToGenerate) {
         int mapWidth = horizontalTilesCount;
         int mapHeight = verticalTilesCount;
-        int sectionSideCount = ((collectiblesToGenerate + 5) / 2); // \left(\operatorname{floor}\left(\frac{x+3}{\left(2\right)}\right)\right)^{2} > x
+        int sectionSideCount = ((collectiblesToGenerate + 5) / 2); // floor(((x+3)/2)^2)^{2} > x
         int sectionWidth = mapWidth / sectionSideCount;
         int sectionHeight = mapHeight / sectionSideCount;
         return new Position((float) (position.getTileX() / sectionWidth), (float) (position.getTileY() / sectionHeight), TILES);
@@ -354,15 +349,25 @@ public class GameScreen extends InputAdapter implements Screen {
         Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
         introPanel.addLabel(instructionsText, instructionsStyle, 80);
 
+        Label.LabelStyle continueStyle = new Label.LabelStyle(game.getSkin().get(Label.LabelStyle.class).font, Color.GRAY);
+        introPanel.addLabel("[PRESS SPACE BAR TO CONTINUE]", continueStyle, 80);
+
         introPanel.addButton("Start now", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                introPanel.getTable().remove(); // Remove the panel and start the game
-                game.resume();
-                player.setPosition(getWorldCoordinateInPixels(tiles.entrance.getTileX()),
-                        getWorldCoordinateInPixels(tiles.entrance.getTileY()));
+                introPanel.proceedToNextScreen(game, player, tiles);
             }
         }, 20);
+
+        introPanel.addListener(new InputListener() {
+                    @Override
+                    public boolean keyDown(InputEvent event, int keycode) {
+                        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+                            introPanel.proceedToNextScreen(game, player, tiles);
+                        }
+                        return true;
+                    }
+        });
     }
 
     public void createPausePanel() {
@@ -448,7 +453,7 @@ public class GameScreen extends InputAdapter implements Screen {
      */
     private String calculateScore(){
         // Calculate the score
-        String score = "";
+        String score;
 
         if (player.getCoins() == totalCoins) {
             score = "A";
@@ -553,10 +558,6 @@ public class GameScreen extends InputAdapter implements Screen {
         handlePauseInput();
         // https://stackoverflow.com/questions/46080673/libgdx-game-pause-state-animation-flicker-bug
         // we couldn't stop drawing even if the game is paused
-        /*if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            game.goToMenu();
-            return;
-        }*/
 
         if (player.getLives() <= 0) {
             game.goToGameOverScreen();  // Trigger game over screen
@@ -806,7 +807,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     }
     private void renderPortal(){
-        for (Portal portal : portals) {
+        for (Portal portal : iterate(portals)) {
             portal.render(game.getSpriteBatch(), game.getPortalAnimation().getKeyFrame(sinusInput/1.5f, true));
 
         }
@@ -974,7 +975,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     // Helper method to calculate segments needed automatically
     private static void drawCircularSector(ShapeRenderer shapeRenderer, Color color, float x, float y, float radius, float angle){
-        // the estimation of "the number of segments" needed for a smooth a arc provided by LibGDX just sucks
+        // the estimation of: "the number of segments", needed for a smooth an arc, provided by LibGDX, just sucks
         int segments = Math.max(1, (int)((angle / (360.0f/(18 * radius))))); // arc length = 2πr ∝ r
         shapeRenderer.set(ShapeRenderer.ShapeType.Filled); // filled by default
         shapeRenderer.setColor(color);
@@ -1231,10 +1232,6 @@ public class GameScreen extends InputAdapter implements Screen {
             font.draw(hudBatch, String.format("%s: %.2f", varName, displayedValue), BORDER_OFFSET, BORDER_OFFSET + variablesToShow.size() * Y_OFFSET - Y_OFFSET * currentLine);
             currentLine++;
         }
-    }
-
-    public void getCreateVictoryPanel(){
-        getCreateVictoryPanel(); // TODO: THIS WILL RECURSE INFINITELY, MAKE SURE NOT TO DO SO WHEN YOU WANT TO USE THIS METHOD
     }
 
     public OrthographicCamera getCamera() {

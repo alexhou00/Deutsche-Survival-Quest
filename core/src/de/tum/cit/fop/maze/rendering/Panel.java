@@ -1,6 +1,7 @@
 package de.tum.cit.fop.maze.rendering;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -8,14 +9,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import de.tum.cit.fop.maze.MazeRunnerGame;
+import de.tum.cit.fop.maze.game_objects.Player;
+import de.tum.cit.fop.maze.level.Tiles;
+
+import static de.tum.cit.fop.maze.util.Position.getWorldCoordinateInPixels;
 
 public class Panel {
     private final Table table;
+    private final Stage stage;
 
     public Panel(Stage stage, Drawable background) {
 
         table = new Table();
         table.setBackground(background);
+        this.stage = stage;
         stage.addActor(table);
     }
 
@@ -47,6 +55,17 @@ public class Panel {
         TextButton button = new TextButton(buttonText, skin);
         button.addListener(listener);
         table.add(button).padBottom(padBottom).center().row();
+    }
+
+    public void addListener(InputListener listener) {
+        stage.addListener(listener);
+    }
+
+    public void proceedToNextScreen(MazeRunnerGame game, Player player, Tiles tiles) {
+        this.getTable().remove(); // Remove the panel and start the game
+        game.resume();
+        player.setPosition(getWorldCoordinateInPixels(tiles.entrance.getTileX()),
+                getWorldCoordinateInPixels(tiles.entrance.getTileY()));
     }
 
     public void clear() {
