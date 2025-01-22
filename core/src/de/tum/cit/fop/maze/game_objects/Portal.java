@@ -21,7 +21,7 @@ public class Portal extends StaticObject {
     private boolean isActive; // Indicates if the portal is active
     private final float activeDuration = 5f; // Duration for which the portal is active
     private final float cycleDuration = 20f; // Total duration of a cycle (inactive + active)
-    private Tiles tiles;
+    private final Tiles tiles;
 
     private Player player = null;
 
@@ -40,11 +40,11 @@ public class Portal extends StaticObject {
      * @param widthOnScreen The width of the portal as displayed on screen.
      * @param heightOnScreen The height of the portal as displayed on screen.
      */
-    public Portal(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen) {
+    public Portal(Tiles tiles, float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen) {
         super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
         this.elapsedTime = 0;
         this.isActive = false;
-        this.tiles = new Tiles();
+        this.tiles = tiles;
 
         // Load the tiled map
         /*String mapFilePath = "path/to/your/map.properties";
@@ -86,7 +86,7 @@ public class Portal extends StaticObject {
         // Portal is active for the first 'activeDuration' seconds, then inactive for the rest
         isActive = elapsedTime < activeDuration;
 
-        onPlayerTouch(player);
+        //onPlayerTouch(player);
     }
 
     /**
@@ -112,7 +112,8 @@ public class Portal extends StaticObject {
         }
     }
 
-    public void init(boolean initialState, float initialElapsedTime) {
+    public void init(Player player, boolean initialState, float initialElapsedTime) {
+        this.player = player;
         this.isActive = initialState;
         this.elapsedTime = initialElapsedTime % cycleDuration; // Ensure elapsedTime stays within the cycle
         System.out.println("Portal initialized: isActive=" + isActive + ", elapsedTime=" + elapsedTime);

@@ -197,7 +197,7 @@ public class GameScreen extends InputAdapter implements Screen {
         }
 
         for (Portal portal : iterate(portals)){
-            portal.init(true, 20f);
+            portal.init(player, true, 20f);
 
         }
 
@@ -306,7 +306,8 @@ public class GameScreen extends InputAdapter implements Screen {
             float y = position.getY();
 
             // Generate a portal at the selected position
-            portals.add(new Portal(x, y, width, height, hitboxWidth, hitboxHeight, sizeOnScreen, sizeOnScreen));
+            portals.add(new Portal(tiles, x, y, width, height, hitboxWidth, hitboxHeight, sizeOnScreen, sizeOnScreen));
+            System.out.println("Portal Position: " + x + ", " + y);
         }
     }
 
@@ -1273,6 +1274,7 @@ public class GameScreen extends InputAdapter implements Screen {
         isPaused = false; // Set the game to unpaused
 
         game.getBackgroundMusic().play();
+
         game.getPauseMusic().pause();
 
         player.resume();

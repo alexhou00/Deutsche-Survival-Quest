@@ -102,7 +102,7 @@ public class Tiles {
      */
     public Tiles() {
         keyTilePosition = new Position(0, 0, TILES);
-        entrance = getEntrance();
+        entrance = null; //getEntrance();
         exits = new Array<>();
 
         traps = new Array<>();
@@ -111,9 +111,6 @@ public class Tiles {
     }
 
     public Entrance getEntrance() {
-       if (entrance == null) {
-           return createTile(ENTRANCE,tileset,true,1,2);
-       }
        return entrance;
     }
 
