@@ -1,18 +1,10 @@
 package de.tum.cit.fop.maze.game_objects;
-
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
-import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.base.StaticObject;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.screens.GameScreen;
-import de.tum.cit.fop.maze.tiles.Entrance;
-
-import java.awt.*;
-
-import static de.tum.cit.fop.maze.util.Constants.TILE_SCREEN_SIZE;
 import static de.tum.cit.fop.maze.util.Position.getWorldCoordinateInPixels;
 
 /** The third obstacle, rather than static traps & enemies, it must be something ingenious. Use your imagination and experience in videogames.*/
@@ -26,7 +18,6 @@ public class Portal extends StaticObject {
     private Player player = null;
 
     public GameScreen gameScreen;
-
 
     /**
      * Constructs a new Portal instance with specified parameters.
@@ -45,29 +36,6 @@ public class Portal extends StaticObject {
         this.elapsedTime = 0;
         this.isActive = false;
         this.tiles = tiles;
-
-        // Load the tiled map
-        /*String mapFilePath = "path/to/your/map.properties";
-        String tileSheetPath = "path/to/your/tileset.png";
-        String obstacleSheetPath = "path/to/your/obstacle_sheet.png";
-
-        TiledMap tiledMap = tiles.loadTiledMap(mapFilePath, tileSheetPath, obstacleSheetPath);*/
-
-
-
-        // Example of how you might use the tiles in the portal
-        /*Position playerPosition = player.getPosition();
-        TileType tileTypeAtPlayer = tiles.getTileEnumOnMap(playerPosition.getTileX(), playerPosition.getTileY());
-
-        if (tileTypeAtPlayer == TileType.ENTRANCE) {
-            System.out.println("Player is at the entrance.");
-        } else if (tileTypeAtPlayer == TileType.EXIT) {
-            System.out.println("Player is at the exit.");
-        }*/
-
-    }
-    public void init(Player player){
-        this.player = player;
     }
 
     /**
@@ -98,6 +66,16 @@ public class Portal extends StaticObject {
         return isActive;
     }
 
+    /**
+     * Handles the player's interaction with the portal when touched.
+     *
+     * <p>If the portal is currently active, this method teleports the player to
+     * the entrance position defined in the tiles configuration. If the tiles
+     * or entrance are not properly initialized, an error message is logged.</p>
+     *
+     * @param player The player who touches the portal.
+     *               The player's position will be updated if the portal is active.
+     */
     public void onPlayerTouch(Player player) {
         if (isActive) {
             // Teleport the player to the entrance position (assuming tiles.entrance is initialized)
@@ -112,8 +90,22 @@ public class Portal extends StaticObject {
         }
     }
 
+    /**
+     * Initializes the portal with the specified player, initial state, and elapsed time.
+     *
+     * <p>This method associates the portal with a player, sets its initial active state,
+     * and configures the elapsed time within its activity cycle. It is useful for setting
+     * up the portal when it is created or resetting it during gameplay.</p>
+     *
+     * @param player           The player object that interacts with the portal.
+     * @param initialState     The initial active state of the portal. {@code true} if the portal should be active, {@code false} otherwise.
+     * @param initialElapsedTime The elapsed time to initialize the portal's activity cycle. This value is constrained within the range of the cycle duration.
+     */
     public void init(Player player, boolean initialState, float initialElapsedTime) {
+        //initialize and configure the state of a Portal instance.
         this.player = player;
+        //Links the Portal instance to a Player object
+        //this enables the portal to access the player's properties or perform actions on the player, like teleporting them to an entrance
         this.isActive = initialState;
         this.elapsedTime = initialElapsedTime % cycleDuration; // Ensure elapsedTime stays within the cycle
         System.out.println("Portal initialized: isActive=" + isActive + ", elapsedTime=" + elapsedTime);

@@ -48,12 +48,6 @@ public class Player extends Character {
 
     private Array<Portal> portals = new Array<>();
 
-
-
-
-
-
-
     /**
      * Constructor for Player. This is our main character <br>
      *
