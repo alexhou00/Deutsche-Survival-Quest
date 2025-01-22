@@ -62,7 +62,7 @@ public class GameOverScreen implements Screen {
         final float BUTTON_PADDING = 10f; // Vertical padding
 
         buttons = new LinkedHashMap<>();
-        buttons.put("restartButton", new TextButton("Restart Game", game.getSkin()));
+        buttons.put("restartButton", new TextButton("Restart Level", game.getSkin()));
         buttons.put("exitGameButton", new TextButton("Exit Game", game.getSkin()));
 
         Gdx.app.log("GameOverScreen", "GameOverScreen is created.");
@@ -123,7 +123,8 @@ public class GameOverScreen implements Screen {
         game.getSpriteBatch().end();//YOU NEED TO END EVERYTHİME YOU WANNA FİNİSH PUTTİNG STH ON THE SECREEN
 
         // Update and draw the stage (buttons should be visible)
-        //stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        Gdx.input.setInputProcessor(stage);
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
 
     }
