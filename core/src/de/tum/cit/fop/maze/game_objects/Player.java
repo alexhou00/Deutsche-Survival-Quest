@@ -180,6 +180,7 @@ public class Player extends Character {
 
 
         if(canBoost && boostPressed){
+            game.getSoundEffectRunning().setVolume(0.5f);
             game.getSoundEffectRunning().play();
             //game.getSoundEffectRunning().loop();
         }
