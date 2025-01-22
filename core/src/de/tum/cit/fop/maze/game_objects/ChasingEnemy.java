@@ -105,7 +105,6 @@ public class ChasingEnemy extends Character {
                 alertTime = ALERT_SHOWING_TIME; // reset the time that the exclamation mark [!] need to be shown
             }
             isChasing = true;
-            game.getWarningMusic().play();
             chase(player, delta); // Call the chase method
             //Gdx.app.log("Enemy", "Chasing the player");
         } else {
