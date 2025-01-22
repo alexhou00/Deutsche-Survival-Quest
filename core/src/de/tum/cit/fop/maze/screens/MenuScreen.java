@@ -77,6 +77,8 @@ public class MenuScreen implements Screen {
         Map<String, TextButton> buttons = new LinkedHashMap<>();
         buttons.put("startGameButton", new TextButton("Start Game", game.getSkin()));
         buttons.put("selectLevelButton", new TextButton("Select Level", game.getSkin()));
+        buttons.put("optionsButton", new TextButton("Options", game.getSkin()));
+        buttons.put("tutorialButton", new TextButton("How to Play", game.getSkin()));
         buttons.put("exitGameButton", new TextButton("Exit Game", game.getSkin()));
 
         Gdx.app.log("MenuScreen","MenuScreen is created.");
@@ -102,6 +104,19 @@ public class MenuScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.log("MenuScreen", "Select Level button pressed");
                 selectLevelScreen.goToSelectLevelScreen();
+            }
+        });
+
+        buttons.get("optionsButton").addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.log("MenuScreen", "Options button pressed");
+            }
+        });
+        buttons.get("tutorialButton").addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.log("MenuScreen", "\"How to Play\" button pressed");
             }
         });
 

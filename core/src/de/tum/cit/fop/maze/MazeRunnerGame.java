@@ -66,7 +66,8 @@ public class MazeRunnerGame extends Game {
     Texture backgroundTexture;
 
     Music backgroundMusic, menuMusic, pauseMusic,  gameOverMusic, victorySoundEffect, victoryMusic;
-    Sound soundEffectKey, soundEffectHurt, soundEffectRunning, soundEffectTeleport, soundEffectWarning;
+    Sound soundEffectKey, soundEffectHurt, soundEffectTeleport, soundEffectWarning;
+    Music soundEffectRunning;
     private boolean isMuted;
 
 
@@ -97,6 +98,7 @@ public class MazeRunnerGame extends Game {
         //CHANGE BACKGROUND MUSIC
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("music/Bruno_Belotti_-_Nel_giardino_dello_Zar__Polka_Loop.mp3"));
         backgroundMusic.setLooping(true);
+        backgroundMusic.setVolume(0.5f);
         backgroundMusic.play();
 
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("music/010614songidea(copycat).mp3"));
@@ -114,7 +116,7 @@ public class MazeRunnerGame extends Game {
         victorySoundEffect = Gdx.audio.newMusic(Gdx.files.internal("sounds/Lively Meadow Victory Fanfare.mp3"));
         soundEffectKey = Gdx.audio.newSound(Gdx.files.internal("sounds/Accept.mp3"));
         soundEffectHurt = Gdx.audio.newSound(Gdx.files.internal("sounds/01._damage_grunt_male.wav"));
-        soundEffectRunning = Gdx.audio.newSound(Gdx.files.internal("sounds/running.mp3"));
+        soundEffectRunning = Gdx.audio.newMusic(Gdx.files.internal("sounds/running-14658.mp3"));
         soundEffectWarning = Gdx.audio.newSound(Gdx.files.internal("sounds/warning.wav"));
         soundEffectTeleport = Gdx.audio.newSound(Gdx.files.internal("sounds/teleport.wav"));
 
@@ -441,7 +443,7 @@ public class MazeRunnerGame extends Game {
         return victorySoundEffect;
     }
 
-    public Sound getSoundEffectRunning(){
+    public Music getSoundEffectRunning(){
         return soundEffectRunning;
     }
 
