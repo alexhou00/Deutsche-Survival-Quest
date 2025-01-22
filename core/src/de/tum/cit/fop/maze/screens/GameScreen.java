@@ -30,6 +30,7 @@ import de.tum.cit.fop.maze.*;
 import de.tum.cit.fop.maze.game_objects.*;
 import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.rendering.ElementRenderer;
+import de.tum.cit.fop.maze.rendering.Panel;
 import de.tum.cit.fop.maze.rendering.SpotlightEffect;
 import de.tum.cit.fop.maze.util.Position;
 
@@ -331,19 +332,11 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createIntroPanel(){
-       // game.getPauseMusic().pause();
-        Table table = new Table();
         Drawable background = createSolidColorDrawable(Color.WHITE);
-        stage1.addActor(table);
+        Panel introPanel = new Panel(stage1, background);
+        introPanel.setSize(0.9f, 0.9f);
 
-        // Gdx.input.setInputProcessor(stage1);
-        table.setBackground(background);
-        table.setSize(Gdx.graphics.getWidth() * 0.9f,Gdx.graphics.getHeight() * 0.9f);
-        table.setPosition(Gdx.graphics.getWidth() * 0.05f,Gdx.graphics.getHeight() * 0.05f);
-
-        Label label = new Label("Game Instructions",game.getSkin(),"title");
-        table.add(label).padBottom(80).center().row();
-        label.getStyle().font.getData().setScale(0.5f);
+        introPanel.addLabel("Game Instructions", game.getSkin(), "title", 0.5f, 80);
 
         String instructionsText = "Welcome TUM student!\n" +
                 "As you arrive in Germany for your studies in Heilbronn, you will have to complete some challenges to settle in and start your studies. " +
@@ -353,162 +346,84 @@ public class GameScreen extends InputAdapter implements Screen {
                 "Also, you must remain alert, as there will be some traps, enemies, and surprises set for you to keep you from completing your journey.\n\n" +
                 "Good Luck!!\n\n[Press any key to continue with level 1 instructions]";
 
-        BitmapFont instructionsFont = new BitmapFont();
-        Label.LabelStyle instructionsStyle = new Label.LabelStyle(instructionsFont, Color.DARK_GRAY);
-        //font.getData().setScale(0.4f); // Make the font smaller
-        //font.getData().markupEnabled = true; // Enable markup for styling
-        //font.setColor(Color.DARK_GRAY); // Optional: Change text color
-        Label label2 = new Label(instructionsText, instructionsStyle);
-        table.add(label2).padBottom(80).center().row();
+        Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
+        introPanel.addLabel(instructionsText, instructionsStyle, 80);
 
-        TextButton button = new TextButton("Start now", game.getSkin());
-
-        button.addListener(new ChangeListener() {
+        introPanel.addButton("Start now", game.getSkin(), new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor){
-                Gdx.app.log("start game", "Start game");
-                table.remove(); // Change to the game screen when the button is pressed
+            public void changed(ChangeEvent event, Actor actor) {
+                introPanel.getTable().remove(); // Remove the panel and start the game
                 game.resume();
-                // Reset the player's position to start position just in case there's velocity from the previous level
-                // and that the player would go into the walls because the collision detecting hasn't started yet
-                player.setX(getWorldCoordinateInPixels(tiles.entrance.getTileX()));
-                player.setY(getWorldCoordinateInPixels(tiles.entrance.getTileY()));
-            }});
-        table.add(button).padTop(20).center().row();// TODO: fix button
-        // Use table layout to position button
-        //button.setPosition(200, 200); // Set a clear position on the stage
+                player.setPosition(getWorldCoordinateInPixels(tiles.entrance.getTileX()),
+                        getWorldCoordinateInPixels(tiles.entrance.getTileY()));
+            }
+        }, 20);
     }
 
     public void createPausePanel() {
-        System.out.println("pause panel created");
+        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
+        Panel pausePanel = new Panel(stage1, background);
+        pausePanel.setSize(0.8f, 0.6f);
 
-        Table pausePanelTable = new Table();
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));// Semi-transparent background
-        stage1.addActor(pausePanelTable);
+        pausePanel.addLabel("Game Paused", game.getSkin(), "title", 0.5f, 80);
 
-        final float BUTTON_PADDING = 10f; // Vertical padding
-
-        pausePanelTable.setBackground(background);
-        pausePanelTable.setSize(Gdx.graphics.getWidth() * 0.8f, Gdx.graphics.getHeight() * 0.6f);
-        pausePanelTable.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.2f);
-
-        Label pauseLabel = new Label("Game Paused", game.getSkin(), "title");
-        pausePanelTable.add(pauseLabel).padBottom(80).center().row();
-        pauseLabel.getStyle().font.getData().setScale(0.5f);
-
-        Button resumeButton =  new TextButton("Resume", game.getSkin());
-        resumeButton.addListener(new ChangeListener() {
+        pausePanel.addButton("Resume", game.getSkin(), new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor){
-                Gdx.app.log("start game", "Start game");
-                pauseLabel.remove(); // Change to the game screen when the button is pressed
-                pausePanelTable.remove();
+            public void changed(ChangeEvent event, Actor actor) {
+                pausePanel.clear();
                 game.resume();
                 isPaused = false;
-            }});
-        pausePanelTable.add(resumeButton).padBottom(BUTTON_PADDING).row(); // row() is to add new row, or else elements will stay on the same row
-        // resumeButton.setPosition(200, 200); // Set a clear position on the stage
+            }
+        }, 10);
 
-        Button selectLevelButton =  new TextButton("Select Level", game.getSkin());
-        selectLevelButton.addListener(new ChangeListener() {
+        pausePanel.addButton("Select Level", game.getSkin(), new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor){
+            public void changed(ChangeEvent event, Actor actor) {
                 game.selectLevel();
-            }});
-        pausePanelTable.add(selectLevelButton).padBottom(BUTTON_PADDING).row();
-        //selectLevelButton.setPosition(100, 400); // Set a clear position on the stage
+            }
+        }, 10);
 
-        Button goToMenuButton =  new TextButton("Back to Menu", game.getSkin());
-        goToMenuButton.addListener(new ChangeListener() {
+        pausePanel.addButton("Back to Menu", game.getSkin(), new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor){
+            public void changed(ChangeEvent event, Actor actor) {
                 game.goToMenu();
-            }});
-        pausePanelTable.add(goToMenuButton).padBottom(BUTTON_PADDING).row();
-        //goToMenuButton.setPosition(900, 600); // Set a clear position on the stage
+            }
+        }, 10);
 
-        Button exitGameButton =  new TextButton("Exit Game", game.getSkin());
-        exitGameButton.addListener(new ChangeListener() {
+        pausePanel.addButton("Exit Game", game.getSkin(), new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor){
+            public void changed(ChangeEvent event, Actor actor) {
                 game.exitGame();
-            }});
-        pausePanelTable.add(exitGameButton).padBottom(BUTTON_PADDING).row();
-        //ExitGameButton.setPosition(200, 800); // Set a clear position on the stage
-
-        resumeButton.setPosition(pausePanelTable.getX() + pausePanelTable.getWidth() / 2 - resumeButton.getWidth() / 2,
-                pausePanelTable.getY() + pausePanelTable.getHeight() - 100);
-        selectLevelButton.setPosition(pausePanelTable.getX() + pausePanelTable.getWidth() / 2 - selectLevelButton.getWidth() / 2,
-                resumeButton.getY() - 60);
-        goToMenuButton.setPosition(pausePanelTable.getX() + pausePanelTable.getWidth() / 2 - goToMenuButton.getWidth() / 2,
-                selectLevelButton.getY() - 60);
-        exitGameButton.setPosition(pausePanelTable.getX() + pausePanelTable.getWidth() / 2 - exitGameButton.getWidth() / 2,
-                goToMenuButton.getY() - 60);
+            }
+        }, 10);
     }
 
     public void createVictoryPanel() {
-        System.out.println("Victory panel created");
+        Drawable background = createSolidColorDrawable(Color.GOLD);
+        Panel victoryPanel = new Panel(stage1, background);
+        victoryPanel.setSize(0.8f, 0.6f);
 
-        Table victoryPanelTable = new Table();
-        Drawable background = createSolidColorDrawable(Color.GOLD); // Gold background to signify victory
-        stage1.addActor(victoryPanelTable);
-
-        final float BUTTON_PADDING = 10f; // Vertical padding
-
-        victoryPanelTable.setBackground(background);
-        victoryPanelTable.setSize(Gdx.graphics.getWidth() * 0.8f, Gdx.graphics.getHeight() * 0.6f);
-        victoryPanelTable.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.2f);
-
-        Label victoryLabel = new Label("Victory!", game.getSkin(), "title");
-        victoryPanelTable.add(victoryLabel).padBottom(80).center().row();
-        victoryLabel.getStyle().font.getData().setScale(0.5f);
+        victoryPanel.addLabel("Victory!", game.getSkin(), "title", 0.5f, 80);
 
         String grade = calculateScore();
+        String scoreText = "Score: " + grade + " (" + player.getCoins() + "/" + totalCoins + ")";
+        victoryPanel.addLabel(scoreText, game.getSkin(), 0.6f, 40);
 
-        // Display the score/grade in the victory panel
-        Label scoreLabel = new Label("Score: " + grade + " (" + player.getCoins() + "/" + totalCoins + ")", game.getSkin());
-        scoreLabel.getStyle().font.getData().setScale(0.6f);
-        victoryPanelTable.add(scoreLabel).padBottom(40).center().row();
-
-        font.getData().setScale(1f);
-        Button nextLevelButton =  new TextButton("Next Level", game.getSkin());
-        nextLevelButton.addListener(new ChangeListener() {
+        victoryPanel.addButton("Next Level", game.getSkin(), new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor){
-                Gdx.app.log("next level", "Next Level");
+            public void changed(ChangeEvent event, Actor actor) {
                 game.setGameLevel(game.getGameLevel() + 1);
                 game.getVictorySoundEffect().stop();
                 game.startNextLevel();
-            }});
+            }
+        }, 10);
 
-        victoryPanelTable.add(nextLevelButton).padBottom(BUTTON_PADDING).row();
-
-        /*Button playAgainButton = new TextButton("Play Again", game.getSkin());
-        playAgainButton.addListener(new ChangeListener() {
+        victoryPanel.addButton("Back to Menu", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //game.restartLevel(); // Restart the current level
+                game.goToMenu();
             }
-        });
-        victoryPanelTable.add(playAgainButton).padBottom(BUTTON_PADDING).row();*/
-
-        Button goToMenuButton = new TextButton("Back to Menu", game.getSkin());
-        goToMenuButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                game.goToMenu(); // Navigate back to the main menu
-            }
-        });
-        victoryPanelTable.add(goToMenuButton).padBottom(BUTTON_PADDING).row();
-
-        /*Button exitGameButton = new TextButton("Exit Game", game.getSkin());
-        exitGameButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                game.exitGame(); // Exit the game
-            }
-        });
-        victoryPanelTable.add(exitGameButton).padBottom(BUTTON_PADDING).row();*/
+        }, 10);
     }
 
     /**
