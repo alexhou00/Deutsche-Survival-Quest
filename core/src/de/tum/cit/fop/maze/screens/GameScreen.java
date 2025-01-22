@@ -1204,8 +1204,6 @@ public class GameScreen extends InputAdapter implements Screen {
         // disposing all disposables (such as Stage, Skin, Texture ... etc)
         stage1.dispose();
         shader.dispose();
-        // Nullify references to prevent memory leaks
-        Gdx.input.setInputProcessor(null);
     }
 
 
