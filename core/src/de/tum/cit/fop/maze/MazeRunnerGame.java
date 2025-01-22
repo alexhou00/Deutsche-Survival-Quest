@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.game_objects.Player;
-import de.tum.cit.fop.maze.screens.PauseScreen;
 import de.tum.cit.fop.maze.tiles.Exit;
 import de.tum.cit.fop.maze.screens.GameOverScreen;
 import de.tum.cit.fop.maze.screens.GameScreen;

@@ -1,6 +1,9 @@
 package de.tum.cit.fop.maze.rendering;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -8,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.game_objects.Player;
@@ -54,6 +58,32 @@ public class Panel {
         skin.get(Label.LabelStyle.class).font.getData().setScale(1); // set the scale back
         TextButton button = new TextButton(buttonText, skin);
         button.addListener(listener);
+
+        button.addListener(new ClickListener() {
+            boolean playing = false;
+            long lastPlayTime = 0; // Store the last play time
+            final long cooldown = 350; // Cooldown in milliseconds
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                super.enter(event, x, y, pointer, fromActor);
+                long currentTime = System.currentTimeMillis();
+                if (!playing && (currentTime - lastPlayTime > cooldown)) {
+                    Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/click-button-131479.mp3"));
+                    sound.play(1F);
+                    playing = true;
+                    lastPlayTime = currentTime;
+                }
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                super.exit(event, x, y, pointer, toActor);
+                playing = false; // Reset the playing flag when exiting
+            }
+        });
+
+
         table.add(button).padBottom(padBottom).center().row();
     }
 
