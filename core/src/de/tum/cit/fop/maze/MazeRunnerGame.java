@@ -66,7 +66,7 @@ public class MazeRunnerGame extends Game {
     Texture backgroundTexture;
 
     Music backgroundMusic, menuMusic, pauseMusic,  gameOverMusic, victorySoundEffect, victoryMusic;
-    Sound soundEffectKey, soundEffectHurt;
+    Sound soundEffectKey, soundEffectHurt, soundEffectRunning;
     private boolean isMuted;
 
 
@@ -114,6 +114,7 @@ public class MazeRunnerGame extends Game {
         victorySoundEffect = Gdx.audio.newMusic(Gdx.files.internal("sounds/Lively Meadow Victory Fanfare.mp3"));
         soundEffectKey = Gdx.audio.newSound(Gdx.files.internal("sounds/Accept.mp3"));
         soundEffectHurt = Gdx.audio.newSound(Gdx.files.internal("sounds/01._damage_grunt_male.wav"));
+        soundEffectRunning = Gdx.audio.newSound(Gdx.files.internal("sounds/running.mp3"));
 
 
         goToMenu(); // Navigate to the menu screen
@@ -438,6 +439,10 @@ public class MazeRunnerGame extends Game {
         return victorySoundEffect;
     }
 
+    public Sound getSoundEffectRunning(){
+        return soundEffectRunning;
+    }
+
     public void checkExitToNextLevel(Player player) {
         if (player.isCenterTouchingTile(Exit.class) && gameScreen.getKey().isCollected()){
             Gdx.app.log("MazeRunnerGame", "Player is at the exit and has the key.");
@@ -483,8 +488,4 @@ public class MazeRunnerGame extends Game {
         // Ensure the game is not paused for the new level
         gameScreen.setPaused(false);
     }
-
-
-
-
 }

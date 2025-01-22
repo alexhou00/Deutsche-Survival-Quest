@@ -152,6 +152,7 @@ public class Player extends Character {
         if (boostPressed && speed > SPEED_THRESHOLD && !isHurt) { // if SHIFT is pressed and the player is indeed moving, plus if not being restricted in movement (because of the enemy attack)
             stamina -= staminaDepleteRate * delta; // Deplete stamina
             stamina = Math.max(stamina, 0); // Ensure it doesn't go negative
+
         } else if (!isHurt) { // if the player is being hurt, it doesn't regen either
             if (currentStaminaMultiplier == 1 || stamina < maxStamina) // filter out when stamina multiplied and there's excess stamina (filter out his case)
                 stamina += staminaRegenRate * delta; // Regenerate stamina
@@ -175,6 +176,18 @@ public class Player extends Character {
             targetVelY *= 4;
             lives = 5;
         }
+
+
+
+        if(isBoosting){
+            game.getSoundEffectRunning().play();
+            game.getSoundEffectRunning().loop();
+        }
+        else{
+            game.getSoundEffectRunning().pause();
+
+        }
+
 
 
         // both hor. and ver. are pressed -> move diagonally
