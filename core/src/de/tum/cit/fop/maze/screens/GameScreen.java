@@ -139,7 +139,7 @@ public class GameScreen extends InputAdapter implements Screen {
         shapeRenderer = new ShapeRenderer();
 
         // initialize game world elements
-        tiles = new Tiles();
+        tiles = new Tiles(game);
 
         TiledMap tiledMap;
         switch (game.getGameLevel()) {
@@ -293,7 +293,7 @@ public class GameScreen extends InputAdapter implements Screen {
             float y = position.getY();
 
             // Generate a portal at the selected position
-            portals.add(new Portal(tiles, x, y, width, height, hitboxWidth, hitboxHeight, sizeOnScreen, sizeOnScreen));
+            portals.add(new Portal(tiles, x, y, width, height, hitboxWidth, hitboxHeight, sizeOnScreen, sizeOnScreen, game));
             System.out.println("Portal Position: " + x + ", " + y);
         }
     }
@@ -640,6 +640,7 @@ public class GameScreen extends InputAdapter implements Screen {
             game.goToGameOverScreen();  // Trigger game over screen
             return;
         }
+
 
         ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
         camera.update(); // Update the camera
