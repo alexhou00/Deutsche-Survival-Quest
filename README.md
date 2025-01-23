@@ -62,6 +62,7 @@ src/de/tum/cit/fop/maze/
 maybe show some images of the gameplay here
 
 ## Features
+Draft:
 * Our player's movement is very smooth
 * story
 * Speech bubble
@@ -69,6 +70,7 @@ maybe show some images of the gameplay here
 * clamp zooming
 * custom util class (better for converting the units): Position
 * stamina
+* pixel-perfect collision detection
 
 
 ## Credits
