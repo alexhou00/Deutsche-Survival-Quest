@@ -20,9 +20,11 @@ import de.tum.cit.fop.maze.level.Tiles;
 
 import static de.tum.cit.fop.maze.util.Position.getWorldCoordinateInPixels;
 
-public class Panel {
+public class Panel extends Actor{
     private final Table table;
     private final Stage stage;
+    private float widthRatio;
+    private float heightRatio;
 
     public Panel(Stage stage, Drawable background) {
 
@@ -30,9 +32,13 @@ public class Panel {
         table.setBackground(background);
         this.stage = stage;
         stage.addActor(table);
+        this.widthRatio = 0.8f; // default
+        this.heightRatio = 0.6f; // default
     }
 
     public void setSize(float widthRatio, float heightRatio) { // 0~1
+        this.widthRatio = widthRatio;
+        this.heightRatio = heightRatio;
         // Set in the middle, "ratio" is the ratio of the length to the entire window
         table.setSize(Gdx.graphics.getWidth() * widthRatio, Gdx.graphics.getHeight() * heightRatio);
         table.setPosition(Gdx.graphics.getWidth() * (1-widthRatio)/2, Gdx.graphics.getHeight() * (1-heightRatio)/2); // left-bottom corner
@@ -127,5 +133,13 @@ public class Panel {
 
     public Table getTable() {
         return table;
+    }
+
+    public float getWidthRatio() {
+        return widthRatio;
+    }
+
+    public float getHeightRatio() {
+        return heightRatio;
     }
 }
