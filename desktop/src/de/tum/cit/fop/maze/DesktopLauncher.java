@@ -6,6 +6,8 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import games.spooky.gdx.nativefilechooser.desktop.DesktopFileChooser;
 
+import static de.tum.cit.fop.maze.util.Constants.*;
+
 /**
  * The DesktopLauncher class is the entry point for the desktop version of the Maze Runner game.
  * It sets up the game window and launches the game using LibGDX framework.
@@ -32,7 +34,7 @@ public class DesktopLauncher {
 		);
 		config.useVsync(true); // Enable vertical sync
 		config.setForegroundFPS(60); // Set the foreground frames per second;
-		config.setWindowSizeLimits(800, 600, 9999, 9999); // Limit window resize
+		config.setWindowSizeLimits(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, 9999, 9999); // Limit window resize
 		// Launch the game
 		new Lwjgl3Application(new MazeRunnerGame(new DesktopFileChooser()), config);
 	}

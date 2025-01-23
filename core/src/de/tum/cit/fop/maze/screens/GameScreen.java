@@ -905,12 +905,12 @@ public class GameScreen extends InputAdapter implements Screen {
         for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){ // for (ChasingEnemy enemy : tiles.chasingEnemies)
 
             if (abs(enemy.getVelX()) > abs(enemy.getVelY())){ // x velocity > y velocity -> either left or right
-                if (enemy.getVelX() < 0) mobGuyAnimation = game.getMobGuyAnimations().get("left");
-                else mobGuyAnimation = game.getMobGuyAnimations().get("right");
+                if (enemy.getVelX() < 0) mobGuyAnimation = tiles.enemyAnimations.get("left");
+                else mobGuyAnimation = tiles.enemyAnimations.get("right");
             }
             else { // v_y > v_x
-                if (enemy.getVelY() < 0) mobGuyAnimation = game.getMobGuyAnimations().get("down");
-                else mobGuyAnimation = game.getMobGuyAnimations().get("up");
+                if (enemy.getVelY() < 0) mobGuyAnimation = tiles.enemyAnimations.get("down");
+                else mobGuyAnimation = tiles.enemyAnimations.get("up");
             }
 
             enemy.draw(game.getSpriteBatch(), mobGuyAnimation.getKeyFrame(sinusInput, true));
@@ -1139,8 +1139,9 @@ public class GameScreen extends InputAdapter implements Screen {
      */
     public void clampZoomLevel(){
         // Calculate how many tiles are visible horizontally and vertically based on the current screen dimensions.
-        float numTilesOnScreenWidth = (float) Gdx.graphics.getWidth() / TILE_SCREEN_SIZE;
-        float numTilesOnScreenHeight = (float) Gdx.graphics.getHeight() / TILE_SCREEN_SIZE;
+        // Math.max is to prevent NaN when the window is minimized
+        float numTilesOnScreenWidth = (float) Math.max(Gdx.graphics.getWidth(), MIN_WINDOW_WIDTH) / TILE_SCREEN_SIZE;
+        float numTilesOnScreenHeight = (float) Math.max(Gdx.graphics.getHeight(), MIN_WINDOW_HEIGHT) / TILE_SCREEN_SIZE;
 
         // Adjusted for the screen's aspect ratio (16:9 as a reference). (which means 16:9 is the aspect ratio that can see the most tiles)
         // We take the larger dimension (either width or adjusted height) as the constraint.
@@ -1152,9 +1153,9 @@ public class GameScreen extends InputAdapter implements Screen {
                 numTilesOnScreenWidth,
                 numTilesOnScreenHeight * 16 / 9 // Adjust height for 16:9 aspect ratio.
         );
-
         // Clamp the target zoom level to ensure it remains within the calculated bounds.
         targetZoom = MathUtils.clamp(targetZoom, minZoomLevel, maxZoomLevel);
+        //targetZoom = MathUtils.clamp(targetZoom, 0.8f, 1.3f);
     }
 
 

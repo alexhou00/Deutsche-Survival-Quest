@@ -7,6 +7,9 @@ public class Constants {
     public static final int MIN_ZOOM_TILES_COUNT = 10; // MIN is actually zoom in, this is the minimum tiles count on the window's width of the window to clamp zooming
     public static final int MAX_ZOOM_TILES_COUNT = 18; // MAX is actually zoom out, this is the maximum tiles count on the window's width of the window to clamp zooming
 
+    public static final int MIN_WINDOW_WIDTH = 800;
+    public static final int MIN_WINDOW_HEIGHT = 600;
+
     public static final int TILE_SIZE = 16; // in pixels
 
     public static int horizontalTilesCount = 1; // number of tiles on the width

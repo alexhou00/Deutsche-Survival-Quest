@@ -2,6 +2,7 @@ package de.tum.cit.fop.maze.level;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -36,6 +37,7 @@ public class Tiles {
     public Array<Trap> traps;
 
     public Array<ChasingEnemy> chasingEnemies;
+    public  Map<String, Animation<TextureRegion>> enemyAnimations;
 
     /** entrance tile, coordinates of the tile can be accessed through this */
     public Entrance entrance;
@@ -98,7 +100,7 @@ public class Tiles {
 
     private TileType[][] tileEnumOnMap;
 
-    private MazeRunnerGame game;
+    private final MazeRunnerGame game;
 
     /**
      * Constructor: initializes the Tiles object with default values.
@@ -154,7 +156,7 @@ public class Tiles {
     private Tile[] loadTileSheet(String tileSheetPath, String ObstacleSheetPath) {
         var tileSheet = new Texture(tileSheetPath);//represents the main tile sheet image.
         var obstacleSheet = new Texture(ObstacleSheetPath);//represents the main tile sheet image.
-        var enemySheet = new Texture(Gdx.files.internal("characters/mob_guy.png"));
+        //var enemySheet = new Texture(Gdx.files.internal("characters/mob_guy.png"));
         //Calculates how many tiles (tileCols and tileRows) can fit horizontally and vertically in the tile sheet, assuming each tile has a fixed size (TILE_SIZE).
         int tileCols = tileSheet.getWidth() / TILE_SIZE;
         int tileRows = tileSheet.getHeight() / TILE_SIZE;
@@ -179,7 +181,7 @@ public class Tiles {
                 }
                 else if (CHASING_ENEMIES.contains(index)) {
                     int startX = (index == ENEMY_FIRST) ? 0: 16 * (index - ENEMY_SECOND + 1);
-                    tileRegion = new TextureRegion(enemySheet, startX, 0, 16, 16);
+                    tileRegion = new TextureRegion(obstacleSheet, startX, 32, 16, 16);
                 }
                 else /*(!TRAPS.contains(index) && !CHASING_ENEMIES.contains(index))*/ { // DEFAULT
                     tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
@@ -188,6 +190,30 @@ public class Tiles {
                 tileset[index] = createTile(index, tileRegion, false, 0,0);
             }
         }
+
+
+
+        Map<String, Array<TextureRegion>> mobGuyFrames = new HashMap<>();
+        mobGuyFrames.put("down", new Array<>(TextureRegion.class));
+        mobGuyFrames.put("up", new Array<>(TextureRegion.class));
+        mobGuyFrames.put("left", new Array<>(TextureRegion.class));
+        mobGuyFrames.put("right", new Array<>(TextureRegion.class));
+
+        int animationFrames = 3;
+        int mobFrameSize = 16;
+        for (int col = 0; col < animationFrames; col++){
+            mobGuyFrames.get("down").add(new TextureRegion(obstacleSheet, (col) * mobFrameSize, 32, mobFrameSize, mobFrameSize));
+            mobGuyFrames.get("left").add(new TextureRegion(obstacleSheet, mobFrameSize * animationFrames + (col) * mobFrameSize, 32, mobFrameSize, mobFrameSize));
+            mobGuyFrames.get("right").add(new TextureRegion(obstacleSheet, mobFrameSize * animationFrames * 2 + (col) * mobFrameSize, 32, mobFrameSize, mobFrameSize));
+            mobGuyFrames.get("up").add(new TextureRegion(obstacleSheet, mobFrameSize * animationFrames * 3 + (col) * mobFrameSize, 32, mobFrameSize, mobFrameSize));
+        }
+
+        enemyAnimations = new HashMap<>();
+        enemyAnimations.put("down", new Animation<>(0.1f, mobGuyFrames.get("down")));
+        enemyAnimations.put("left", new Animation<>(0.1f, mobGuyFrames.get("left")));
+        enemyAnimations.put("right", new Animation<>(0.1f, mobGuyFrames.get("right")));
+        enemyAnimations.put("up", new Animation<>(0.1f, mobGuyFrames.get("up")));
+
         return tileset;
     }
 
