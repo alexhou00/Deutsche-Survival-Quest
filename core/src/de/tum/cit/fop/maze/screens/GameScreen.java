@@ -1108,6 +1108,7 @@ public class GameScreen extends InputAdapter implements Screen {
         player.pause();
         camera.setToOrtho(false);
         hudCamera.setToOrtho(false, width, height); // Adjust HUD camera to new screen size
+        moveCamera();
         player.resume();
         for (var panel : iterate(stage1.getActors())){ // TODO: change the number to different values based on how they are originally created
             panel.setSize(Gdx.graphics.getWidth() * 0.8f,Gdx.graphics.getHeight() * 0.8f);
