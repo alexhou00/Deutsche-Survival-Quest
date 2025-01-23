@@ -11,8 +11,6 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -35,6 +33,7 @@ import de.tum.cit.fop.maze.util.Position;
 
 import java.util.*;
 
+import static de.tum.cit.fop.maze.rendering.Panel.ifSpaceKeyPressed;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
 import static java.lang.Math.abs;
@@ -355,19 +354,11 @@ public class GameScreen extends InputAdapter implements Screen {
         introPanel.addButton("Start now", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                introPanel.proceedToNextScreen(game, player, tiles);
+                introPanel.proceedToGame(game, player, tiles);
             }
         }, 20);
 
-        introPanel.addListener(new InputListener() {
-                    @Override
-                    public boolean keyDown(InputEvent event, int keycode) {
-                        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-                            introPanel.proceedToNextScreen(game, player, tiles);
-                        }
-                        return true;
-                    }
-        });
+        introPanel.addListener(ifSpaceKeyPressed(() -> introPanel.proceedToGame(game, player, tiles)));
     }
 
     public void createPausePanel() {
@@ -417,14 +408,12 @@ public class GameScreen extends InputAdapter implements Screen {
 
         String grade = calculateScore();
         String scoreText = "Score: " + grade + " (" + player.getCoins() + "/" + totalCoins + ")";
-        victoryPanel.addLabel(scoreText, game.getSkin(), 0.6f, 40);
+        victoryPanel.addLabel(scoreText, game.getSkin(), 1f, 40);
 
         victoryPanel.addButton("Next Level", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setGameLevel(game.getGameLevel() + 1);
-                game.getVictorySoundEffect().stop();
-                game.startNextLevel();
+                victoryPanel.proceedToNextLevel(game);
             }
         }, 10);
 
@@ -434,6 +423,10 @@ public class GameScreen extends InputAdapter implements Screen {
                 game.goToMenu();
             }
         }, 10);
+
+        victoryPanel.addLabel("[OR PRESS SPACE BAR TO CONTINUE]", game.getSkin(), "default", 1f, 40);
+
+        victoryPanel.addListener(ifSpaceKeyPressed(() -> victoryPanel.proceedToNextLevel(game)));
     }
 
     /**

@@ -1,6 +1,7 @@
 package de.tum.cit.fop.maze.rendering;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -91,11 +92,32 @@ public class Panel {
         stage.addListener(listener);
     }
 
-    public void proceedToNextScreen(MazeRunnerGame game, Player player, Tiles tiles) {
+
+    public static InputListener ifSpaceKeyPressed(Runnable action) {
+        return new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (event.getKeyCode() == Input.Keys.SPACE) {
+                    action.run();
+                    return true;
+                }
+                return false;
+            }
+        };
+    }
+
+
+    public void proceedToGame(MazeRunnerGame game, Player player, Tiles tiles) {
         this.getTable().remove(); // Remove the panel and start the game
         game.resume();
         player.setPosition(getWorldCoordinateInPixels(tiles.entrance.getTileX()),
                 getWorldCoordinateInPixels(tiles.entrance.getTileY()));
+    }
+
+    public void proceedToNextLevel(MazeRunnerGame game){
+        game.setGameLevel(game.getGameLevel() + 1);
+        game.getVictorySoundEffect().stop();
+        game.startNextLevel();
     }
 
     public void clear() {
