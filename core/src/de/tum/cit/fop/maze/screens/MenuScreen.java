@@ -75,7 +75,7 @@ public class MenuScreen implements Screen {
         final float BUTTON_PADDING = 10f; // Vertical padding
 
         Map<String, TextButton> buttons = new LinkedHashMap<>();
-        buttons.put("startGameButton", new TextButton("Start Game", game.getSkin()));
+        buttons.put("startGameButton", new TextButton((game.getGameLevel()<=1?"Start Game":"Continue Game"), game.getSkin()));
         buttons.put("selectLevelButton", new TextButton("Select Level", game.getSkin()));
         buttons.put("optionsButton", new TextButton("Options", game.getSkin()));
         buttons.put("tutorialButton", new TextButton("How to Play", game.getSkin()));
