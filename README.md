@@ -19,6 +19,10 @@ maybe show some images of the gameplay here
 * Our player's movement is very smooth
 * story
 * Speech bubble
+* spotlight effect
+* clamp zooming
+* custom util class (better for converting the units): Position
+* stamina
 
 ## 
 
@@ -28,7 +32,11 @@ maybe show some images of the gameplay here
  Used with permission under the "name your own price" model.
 - Tileset 2: **Train Station Tileset** by Ekat99. <br>
   This tileset was created as part of an art challenge and is publicly available for non-commercial projects. 
-  Available at: [DeviantArt](https://www.deviantart.com/ekat99/art/Train-Station-876100255).
+  Available at: [DeviantArt](https://www.deviantart.com/ekat99/art/Train-Station-876100255). 
+### Sound Effects
+- Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=14658">freesound_community</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=14658">Pixabay</a>
+- Sound Effect by <a href="https://pixabay.com/users/666herohero-25759907/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=131479">666HeroHero</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=131479">Pixabay</a>
+- Sound Effect by <a href="https://pixabay.com/users/hasin2004-46173687/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=247449">Hasin Amanda</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=247449">Pixabay</a>
 
 
 ## Contact
