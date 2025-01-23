@@ -489,7 +489,7 @@ public class GameScreen extends InputAdapter implements Screen {
     public boolean scrolled(float amountX, float amountY) {
         if (isPaused) return true;
         targetZoom += amountY * 0.1f; // Adjust sensitivity as needed
-        targetZoom = MathUtils.clamp(targetZoom, MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL); // Clamp zoom level
+        clampZoomLevel(); // targetZoom = MathUtils.clamp(targetZoom, MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL); // Clamp zoom level
         Gdx.app.debug("GameScreen", "mouse scrolled to adjust zoom");
         return true; // Return true to indicate the event was handled
     }
@@ -529,7 +529,7 @@ public class GameScreen extends InputAdapter implements Screen {
             targetZoom += 0.02f;
         }
 
-        targetZoom = MathUtils.clamp(targetZoom, MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL); // Clamp to avoid extreme zoom level
+        clampZoomLevel(); // Clamp to avoid extreme zoom level
 
         // Handle Mute
         if (Gdx.input.isKeyJustPressed(Input.Keys.M)) { // Press 'M' to mute/unmute
@@ -1122,6 +1122,37 @@ public class GameScreen extends InputAdapter implements Screen {
         }
         stage1.getViewport().update(width, height, true); // This keeps the stage's coordinate system consistent.
         Gdx.input.setInputProcessor(inputMultiplexer);
+    }
+
+    /**
+     * Adjusts (clamps) the zoom level of the game camera to ensure it remains within
+     * defined bounds based on the number of visible tiles on the screen and the desired
+     * aspect ratio. This ensures a consistent and fair gameplay experience regardless of
+     * screen size or resolution.
+     * <br>
+     * The zoom levels are calculated dynamically using:
+     * - The screen width and height in pixels.
+     * - The size of a single tile in pixels (TILE_SCREEN_SIZE).
+     * - The desired number of tiles visible at minimum and maximum zoom levels (MIN_ZOOM_TILES_COUNT and MAX_ZOOM_TILES_COUNT).
+     */
+    public void clampZoomLevel(){
+        // Calculate how many tiles are visible horizontally and vertically based on the current screen dimensions.
+        float numTilesOnScreenWidth = (float) Gdx.graphics.getWidth() / TILE_SCREEN_SIZE;
+        float numTilesOnScreenHeight = (float) Gdx.graphics.getHeight() / TILE_SCREEN_SIZE;
+
+        // Adjusted for the screen's aspect ratio (16:9 as a reference). (which means 16:9 is the aspect ratio that can see the most tiles)
+        // We take the larger dimension (either width or adjusted height) as the constraint.
+        float minZoomLevel = 1.0f * MIN_ZOOM_TILES_COUNT / Math.max(
+                numTilesOnScreenWidth,
+                numTilesOnScreenHeight * 16 / 9 // Adjust height for 16:9 aspect ratio.
+        );
+        float maxZoomLevel = 1.0f * MAX_ZOOM_TILES_COUNT / Math.max(
+                numTilesOnScreenWidth,
+                numTilesOnScreenHeight * 16 / 9 // Adjust height for 16:9 aspect ratio.
+        );
+
+        // Clamp the target zoom level to ensure it remains within the calculated bounds.
+        targetZoom = MathUtils.clamp(targetZoom, minZoomLevel, maxZoomLevel);
     }
 
 

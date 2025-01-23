@@ -4,8 +4,8 @@ import com.badlogic.gdx.utils.Array;
 
 public class Constants {
     public static final float ZOOM_SPEED = 0.1f; // Controls how quickly the camera adjusts to the target zoom
-    public static final float MIN_ZOOM_LEVEL = 0.6f; // MIN is actually zoom in
-    public static final float MAX_ZOOM_LEVEL = 1.3f; // MAX is actually zoom out
+    public static final int MIN_ZOOM_TILES_COUNT = 10; // MIN is actually zoom in, this is the minimum tiles count on the window's width of the window to clamp zooming
+    public static final int MAX_ZOOM_TILES_COUNT = 18; // MAX is actually zoom out, this is the maximum tiles count on the window's width of the window to clamp zooming
 
     public static final int TILE_SIZE = 16; // in pixels
 
