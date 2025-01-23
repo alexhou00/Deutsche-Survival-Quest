@@ -142,7 +142,7 @@ public class Player extends Character {
 
         // speed is doubled (times the `BOOST_MULTIPLIER`) when: (1) SHIFT key is hold OR (2) touching a speed boost tile
         // final speed is speed * FPS (delta), since the speed should be independent of the FPS
-        boolean canBoost = stamina > staminaDepleteRate * delta;
+        boolean canBoost = stamina > staminaDepleteRate * delta; //slightly >0
         boolean isBoosting = (canBoost && boostPressed) || isPointWithinWholeTileOf(x, y, 0, -heightOnScreen/2, SpeedBoost.class); // if the bottom-center is touching a speed boost tile
         if (horizontalInput == 0) targetVelX = 0; // remember that velocities are signed, and the sign indicates the direction
         else targetVelX = isBoosting ? (lastHorizontalDirection * BASE_SPEED * BOOST_MULTIPLIER) : (lastHorizontalDirection * BASE_SPEED); // `lastHorizontalDirection` is the previous direction (could be zero and hence no movement)
@@ -151,6 +151,10 @@ public class Player extends Character {
 
         if (boostPressed && speed > SPEED_THRESHOLD && !isHurt) { // if SHIFT is pressed and the player is indeed moving, plus if not being restricted in movement (because of the enemy attack)
             stamina -= staminaDepleteRate * delta; // Deplete stamina
+            if (stamina <= 0 && !game.getSoundEffectPanting().isPlaying()){
+                Gdx.app.log("player", "panting...");
+                game.getSoundEffectPanting().play();
+            }
             stamina = Math.max(stamina, 0); // Ensure it doesn't go negative
 
         } else if (!isHurt) { // if the player is being hurt, it doesn't regen either
@@ -179,7 +183,7 @@ public class Player extends Character {
 
 
 
-        if(canBoost && boostPressed){
+        if (canBoost && boostPressed && speed > SPEED_THRESHOLD ){
             game.getSoundEffectRunning().setVolume(0.5f);
             game.getSoundEffectRunning().play();
             //game.getSoundEffectRunning().loop();
