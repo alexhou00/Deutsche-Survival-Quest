@@ -3,7 +3,53 @@ Put some intro text right over here
 
 ## Code Structure
 
+### Directory Structure
+```
+src/de/tum/cit/fop/maze/
+├── base/
+│   ├── Character.java
+│   ├── GameObject.java
+│   └── StaticObject.java
+│
+├── game_objects/
+│   ├── ChasingEnemy.java
+│   ├── Collectibles.java
+│   ├── Key.java
+│   ├── Player.java
+│   ├── Portal.java
+│   └── Trap.java
+│
+├── level/
+│   └── Tiles.java
+│
+├── rendering/
+│   ├── ElementRenderer.java
+│   ├── Panel.java
+│   ├── SpeechBubble.java
+│   └── SpotlightEffect.java
+│
+├── screens/
+│   ├── GameOverScreen.java
+│   ├── GameScreen.java
+│   ├── MenuScreen.java
+│   └── SelectLevelScreen.java
+│
+├── tiles/
+│   ├── Entrance.java
+│   ├── Exit.java
+│   ├── SpeedBoost.java
+│   ├── Tile.java
+│   └── Wall.java
+│
+├── util/
+│   ├── Constants.java
+│   └── Position.java
+│
+└── MazeRunnerGame.java
+```
+
 ## UML Diagram
+`<put our UML-Diagramm here>`
 
 ## Instructions
 * How to run the game?
@@ -24,9 +70,9 @@ maybe show some images of the gameplay here
 * custom util class (better for converting the units): Position
 * stamina
 
-## 
 
 ## Credits
+### Tilesets
 - Tileset 1: **Airport Game Sprites** by Konig Games. 
   Available at: https://akonig513.itch.io/free-airport-sprite-pack. 
  Used with permission under the "name your own price" model.
