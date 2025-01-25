@@ -4,30 +4,57 @@
 The main Purpose is to collect the key and finding the exit to the next level. Game is successfully completed when all of the levels
 are completed without loosing all of the lives. 
 
-The story line of the game is 
-
-## Features
-
-Dynamic obstacles - cars/horse/ trolley/ german neighbour/ smoking teenagers/ a bear (in berlin) a golden lion (munich)   etc / train controller reappearing - will take away one ticket. Once all 5 tickets are taken away then restart level  (or maybe the player has to collect his Deutschlandticket first at the levels where there are ticket guys) (maybe there’s a chance of your ticket not working?)
-
-Boostups - pretzel/Apfelschorle/Currywurst/Döner
-
-Collectable lives: health insurance card?
-
-Collectable power-ups : beer/ wurstbrotchen/ protection from ticket guy for 30 seconds/ fake ticket/ Pfand bottles (return them to supermarket and you get bonus points)
-
-Key - documents that can be collected at the Burgeramt to unlock next level/ train ticket/ health insurance/
-
-bank account/ permanent residence
-
-Traps - glass bottles / Baustelle forces you to reroute
-
-Requirements: enemies and boostups
-
-tum : finding etze
+"Deutsche Survival Quest" depicts the story of an international student who has arrived to Germany for his studies. He
+first lands to Stuttgart Airports, claims his luggage to get to his train. Our player needs to find his *Deutschlandticket* in order to get on
+his train and safely arrive in Heilbronn. He needs to be careful, as there are strict ticket control personal in alert and also a lot of objects that are dangerous for his health.
+After a long journey to Heilbronn, our player needs to relax, hence he visits the *Altstadt* to have couple of drinks. When our player finally catches his breath and rest a bit, he needs to go down town to
+register himself in the Rathaus. However, he complety forgot that traffic and order in Germany is quite different from his hometown. Would it bee a smooth journey to navigate through the city?
+When our player successfully navigates through the city and finds the Rathaus, he needs to register himself to seamlessly start his studies!!! 
 
 
 ### Code Structure
+```
+MazeRunnerGame
+├── Base (Abstract Superclasses and General Game Objects)
+│   ├── GameObject (Base class for all objects in the game)
+│   ├── StaticObject (Extends GameObject, represents non-moving objects like keys, collectibles, traps, and portals)
+│   └── Character (Extends GameObject, represents moving entities like Player and chasing enemies)
+│
+├── Game Objects (Specific Game Objects and Collectibles)
+│   ├── Player (Extends Character, represents the player-controlled entity)
+│   ├── ChasingEnemy (Extends Character, AI-driven enemy)
+│   ├── Key (Extends Collectibles, used to unlock exits)
+│   ├── Collectibles (Base class for items that can be collected)
+│   ├── Portal (Teleports the player to the entrance)
+│   └── Trap (Causes the player to lose a life upon collision)
+│
+├── Level (Tile System)
+│   └── Tiles (Manages tile properties and interactions)
+│
+├── Rendering (Graphics and Effects)
+│   ├── ElementRenderer (Responsible for rendering game objects)
+│   ├── Panel (Manages UI components like pause and victory panels)
+│   ├── SpeechBubble (Displays dialogues or reactions)
+│   └── SpotlightEffect (Creates a visual effect for lighting)
+│
+├── Screens (Game Screens for Navigation)
+│   ├── GameOverScreen (Shown after the player loses all their lives)
+│   ├── GameScreen (Main gameplay screen)
+│   ├── MenuScreen (Initial menu interface)
+│   └── SelectLevelScreen (Allows level selection)
+│
+├── Tiles (Special Tile Types in the Maze)
+│   ├── Tile (Base class for all tiles)
+│   ├── Wall (Non-passable tile)
+│   ├── Entrance (Starting point for the player)
+│   ├── Exit (Goal for the player to reach)
+│   └── SpeedBoost (Tile that increases player speed temporarily)
+│
+├── Utility (Helpers and Constants)
+│   ├── Constants (Holds game-wide constants like screen size and tile size)
+│   └── Position (Handles x, y coordinates and movement logic)
+
+```
 
 #### Directory Structure
 ```
@@ -82,7 +109,7 @@ src/de/tum/cit/fop/maze/
 
 * WASD or Arrow Keys to move
 
-* esc to pause (or back to the menu)
+* To Pause the game, *ESCAPE* key must be pressed and to resume, either the *ENTER* key or the *Resume* button on pause window should be pressed.
 
 * enter or "resume" button on the pause screen to resume game
 
@@ -103,6 +130,26 @@ Draft:
 * custom util class (better for converting the units): Position
 * stamina
 * pixel-perfect collision detection
+
+## Features
+
+Dynamic obstacles - cars/horse/ trolley/ german neighbour/ smoking teenagers/ a bear (in berlin) a golden lion (munich)   etc / train controller reappearing - will take away one ticket. Once all 5 tickets are taken away then restart level  (or maybe the player has to collect his Deutschlandticket first at the levels where there are ticket guys) (maybe there’s a chance of your ticket not working?)
+
+Boost-ups - pretzel, power potion
+
+Collectable lives: hearts, health insurance
+
+Collectable power-ups : beer/ wurstbrotchen/ protection from ticket guy for 30 seconds/ fake ticket/ Pfand bottles (return them to supermarket and you get bonus points)
+
+Key - documents that can be collected at the Burgeramt to unlock next level/ train ticket/ health insurance/
+
+bank account/ permanent residence
+
+Traps - glass bottles / Baustelle forces you to reroute
+
+Requirements: enemies and boostups
+
+tum : finding etze
 
 
 ## Credits
