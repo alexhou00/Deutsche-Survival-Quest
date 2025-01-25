@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.game_objects.Player;
+import de.tum.cit.fop.maze.screens.VictoryScreen;
 import de.tum.cit.fop.maze.tiles.Exit;
 import de.tum.cit.fop.maze.screens.GameOverScreen;
 import de.tum.cit.fop.maze.screens.GameScreen;
@@ -30,6 +31,7 @@ public class MazeRunnerGame extends Game {
     private MenuScreen menuScreen;
     private GameScreen gameScreen;
     private GameOverScreen gameOverScreen;
+    private VictoryScreen victoryScreen;
 
     public int getGameLevel() {
         return gameLevel;
@@ -216,6 +218,32 @@ public class MazeRunnerGame extends Game {
             Gdx.app.log("MazeRunner", "Error while switching to GameOverScreen: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public void goToVictoryScreen() {
+        Gdx.app.log("MazeRunner", "Navigating to Victory Screen...");
+
+        if (victoryScreen == null) {
+            victoryScreen = new VictoryScreen(this);
+        }
+        this.setScreen(victoryScreen);
+        if (gameScreen != null) {
+            gameScreen.dispose();
+            gameScreen = null;
+        }
+        if (menuScreen != null) {
+            menuScreen.dispose();
+            menuScreen = null;
+        }
+
+        if (gameOverScreen != null) {
+            gameOverScreen.dispose(); // Dispose the menu screen if it exists
+            gameOverScreen = null;
+        }
+
+        menuMusic.pause();
+        gameOverMusic.pause();
+        backgroundMusic.pause();
     }
 
 
@@ -463,6 +491,11 @@ public class MazeRunnerGame extends Game {
         if (player.isCenterTouchingTile(Exit.class) && gameScreen.getKey().isCollected()){
             Gdx.app.log("MazeRunnerGame", "Player is at the exit and has the key.");
 
+            if (gameLevel == 6) {
+                goToVictoryScreen();
+
+            }
+
             if (!gameScreen.isPaused()) {
                 gameScreen.setPaused(true);
                 gameScreen.createVictoryPanel();
@@ -471,6 +504,7 @@ public class MazeRunnerGame extends Game {
                 this.getPauseMusic().pause();
                 this.getVictorySoundEffect().play();
             }
+
 
             //gameScreen.isPaused();
             //pauseMusic.pause();

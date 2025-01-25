@@ -15,7 +15,7 @@ import de.tum.cit.fop.maze.base.StaticObject;
 public class Key extends StaticObject {
 
     private boolean isCollected;
-    MazeRunnerGame game;
+    private MazeRunnerGame game;
 
     /**
      * Constructs a Key object with specified position, size, hitbox dimensions,
