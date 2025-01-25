@@ -140,13 +140,12 @@ public class MazeRunnerGame extends Game {
         System.exit(-1);
     }
 
-    /*public void setVolume(float volume) {
+    public void setVolume(float volume) {
         if (!muted) {
             this.volume = volume;
-            // Adjust volume for all active sounds/music
-            // Example: soundInstance.setVolume(volume);
+
         }
-    }*/
+    }
 
     public void setMuted(boolean muted) {
         this.muted = muted;
@@ -470,6 +469,9 @@ public class MazeRunnerGame extends Game {
     public void setMuted(boolean muted) {
         isMuted = muted;
     }*/
+    public GameScreen getGameScreen() {
+        return gameScreen;
+    }
 
     public MenuScreen getMenuScreen() {
         return menuScreen;

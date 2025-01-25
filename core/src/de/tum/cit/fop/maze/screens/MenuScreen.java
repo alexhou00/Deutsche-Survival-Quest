@@ -28,6 +28,7 @@ public class MenuScreen implements Screen {
     MazeRunnerGame game;
     Texture backgroundTexture;
     SelectLevelScreen selectLevelScreen;
+    OptionsScreen optionsScreen;
 
     /**
      * Constructor for MenuScreen. Sets up the camera, viewport, stage, and UI elements.
@@ -44,6 +45,7 @@ public class MenuScreen implements Screen {
         this.show();
 
         selectLevelScreen = new SelectLevelScreen(game);
+        optionsScreen = new OptionsScreen(game);
 
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
         stage = new Stage(viewport, game.getSpriteBatch()); // Create a stage for UI elements
@@ -115,7 +117,7 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.log("MenuScreen", "Options button pressed");
-                gameScreen.createOptionsPanel();
+                optionsScreen.goToOptionsScreen();
             }
         });
         buttons.get("tutorialButton").addListener(new ChangeListener() {
