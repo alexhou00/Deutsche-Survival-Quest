@@ -23,6 +23,7 @@ import java.util.*;
  */
 public class MenuScreen implements Screen {
 
+    GameScreen gameScreen;
     private final Stage stage;
     MazeRunnerGame game;
     Texture backgroundTexture;
@@ -57,6 +58,9 @@ public class MenuScreen implements Screen {
         Label title = new Label("Deutsche Survival Quest", game.getSkin(), "title");
         title.getStyle().font.getData().setScale(0.75f);
         table.add(title).padBottom(80).row();
+
+        this.gameScreen = new GameScreen(game);
+
 
         // Create and add a button to go to the game screen
         /*
@@ -111,6 +115,7 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.log("MenuScreen", "Options button pressed");
+                gameScreen.createOptionsPanel();
             }
         });
         buttons.get("tutorialButton").addListener(new ChangeListener() {

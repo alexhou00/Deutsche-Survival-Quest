@@ -12,7 +12,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -428,6 +430,51 @@ public class GameScreen extends InputAdapter implements Screen {
 
         victoryPanel.addListener(ifSpaceKeyPressed(() -> victoryPanel.proceedToNextLevel(game)));
     }
+
+    public void createOptionsPanel() {
+        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/background.png")));
+        Panel optionsPanel = new Panel(stage1, background);
+        optionsPanel.setSize(0.8f, 0.6f);
+
+        optionsPanel.addLabel("Options", game.getSkin(), "title", 0.5f, 50);
+
+        // Add volume slider
+        /*optionsPanel.addSlider(
+                game.getSkin(),
+                new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        Slider slider = (Slider) actor;
+                        float volume = slider.getValue();
+                        game.setVolume(volume); // Adjust game volume
+                    }
+                },
+                0f, 1f, game.getVolume() // Min, Max, current volume value
+        );*/
+
+        // Add mute button
+        optionsPanel.addButton(
+                "Toggle Mute",
+                game.getSkin(),
+                new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        game.setMuted(true); // Toggle mute/unmute
+                    }
+                },
+                10
+        );
+
+        // Add Back button
+        /*optionsPanel.addButton("Back", game.getSkin(), new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                optionsPanel.clear(); // Remove the panel
+                game.resume(); // Resume the game
+            }
+        }, 10);*/
+    }
+
 
     /**
      * Calculates the player's score based on the number of coins collected.

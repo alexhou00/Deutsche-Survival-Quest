@@ -7,10 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -126,6 +123,22 @@ public class Panel extends Actor{
         game.startNextLevel();
     }
 
+    public void addVolumeControl(Skin skin, ChangeListener sliderListener, ChangeListener muteListener) {
+        Label volumeLabel = new Label("Volume", skin);
+        table.add(volumeLabel).padBottom(20).center().row();
+
+        // Slider for volume
+        Slider volumeSlider = new Slider(0, 1, 0.01f, false, skin);
+        volumeSlider.setValue(1); // Default volume
+        volumeSlider.addListener(sliderListener);
+        table.add(volumeSlider).padBottom(20).center().row();
+
+        // Mute checkbox
+        CheckBox muteCheckbox = new CheckBox("Mute", skin);
+        muteCheckbox.addListener(muteListener);
+        table.add(muteCheckbox).padBottom(20).center().row();
+    }
+
     public void clear() {
         table.clear();
         table.remove();
@@ -141,5 +154,12 @@ public class Panel extends Actor{
 
     public float getHeightRatio() {
         return heightRatio;
+    }
+
+    public void addSlider(Skin skin, ChangeListener listener, float minValue, float maxValue, float currentValue) {
+        Slider slider = new Slider(minValue, maxValue, 0.01f, false, skin);
+        slider.setValue(currentValue);
+        slider.addListener(listener);
+        table.add(slider).padBottom(20).center().row();
     }
 }

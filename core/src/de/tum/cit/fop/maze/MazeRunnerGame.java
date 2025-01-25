@@ -71,6 +71,9 @@ public class MazeRunnerGame extends Game {
     Music soundEffectRunning, soundEffectPanting;
     private boolean isMuted;
 
+    private float volume = 1.0f; // Default volume
+    private boolean muted = false;
+
 
     /**
      * Constructor for MazeRunnerGame.
@@ -91,6 +94,7 @@ public class MazeRunnerGame extends Game {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         this.loadAnimation(); // Load character animation
+        
 
         backgroundTexture = new Texture("backgrounds/background.png");
 
@@ -135,6 +139,36 @@ public class MazeRunnerGame extends Game {
         Gdx.app.exit();
         System.exit(-1);
     }
+
+    /*public void setVolume(float volume) {
+        if (!muted) {
+            this.volume = volume;
+            // Adjust volume for all active sounds/music
+            // Example: soundInstance.setVolume(volume);
+        }
+    }*/
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
+        if (muted) {
+            // Stop or pause all sounds/music
+            // Example: music.pause();
+        } else {
+            // Resume all sounds/music with the current volume
+            // Example: music.setVolume(volume);
+        }
+    }
+
+    public float getVolume() {
+        return muted ? 0 : volume;
+    }
+
+    public boolean isMuted() {
+        return muted;
+    }
+
+
+
 
 
     /**
@@ -341,6 +375,8 @@ public class MazeRunnerGame extends Game {
 
     }
 
+
+
     public Music getBackgroundMusic() {
         return backgroundMusic;
     }
@@ -427,13 +463,13 @@ public class MazeRunnerGame extends Game {
     }
 
 
-    public boolean isMuted() {
+    /*public boolean isMuted() {
         return isMuted;
     }
 
     public void setMuted(boolean muted) {
         isMuted = muted;
-    }
+    }*/
 
     public MenuScreen getMenuScreen() {
         return menuScreen;
@@ -538,4 +574,29 @@ public class MazeRunnerGame extends Game {
         // Ensure the game is not paused for the new level
         gameScreen.setPaused(false);
     }
+
+    /*public void toggleMute() {
+        // Toggle mute
+        isMuted = !isMuted;
+        if (isMuted) {
+            setVolume(0f); // Mute the volume
+        } else {
+            setVolume(volume); // Restore previous volume
+        }
+    }
+
+    /public void setVolume(float newVolume) {
+        // Set the volume for the game (you can adjust music, sound, etc.)
+        if (newVolume == 0f) {
+            //volume = newVolume;
+        }
+
+        for (Music music : allMusicObjects) {
+            music.setVolume(newVolume);
+        }
+
+        for (Sound sound : allSoundObjects) {
+            sound.setVolume(newVolume);
+        }
+    }*/
 }
