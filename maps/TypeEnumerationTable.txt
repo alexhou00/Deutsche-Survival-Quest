@@ -9,7 +9,7 @@ Value  | Type
 6~9    | variants of the basic ground tile
 10     | Ground Tile (the most regular one)
 12~14  | More Exits
-18~19  | More Ground Tiles
+16~19  | More Ground Tiles
 20~79  | More Walls (or any collidable obstacles that doesn't harm like luggage conveyor belt)
 80~89  | More Traps
 90~99  | Speed Boost (e.g., moving walkway)
