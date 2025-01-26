@@ -18,11 +18,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static de.tum.cit.fop.maze.MazeRunnerGame.createDirectionalAnimations;
-import static de.tum.cit.fop.maze.level.Tiles.TileType.EXTRA;
+import static de.tum.cit.fop.maze.tiles.TileType.*;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
 
@@ -50,55 +48,10 @@ public class Tiles {
 
     int maxTilesOnCell;
 
-    // Create an immutable Set of integers representing wall
-    // IntStream.concat(IntStream.rangeClosed(10, 29),IntStream.rangeClosed(64, 66)) in case i want to concat two sections in the future
-    private static final Set<Integer> WALLS = IntStream.concat(IntStream.concat(
-                    IntStream.of(0),
-                    IntStream.rangeClosed(20, 79)),
-                    IntStream.rangeClosed(100, 149))
-            .boxed()
-            .collect(Collectors.toSet());
-    private static final int TRAPS_FIRST = 3;
-    private static final int TRAPS_SECOND = 80;
-    private static final int EXTRAS_FIRST = 220;
 
-    private static final int ENEMY_FIRST = 4;
-    private static final int ENEMY_SECOND = 150;
-
-
-    private static final Set<Integer> TRAPS = IntStream.concat(IntStream.of(TRAPS_FIRST),IntStream.rangeClosed(TRAPS_SECOND, 89))
-            .boxed()
-            .collect(Collectors.toSet());
-
-    private static final Set<Integer> CHASING_ENEMIES = IntStream.concat(
-            IntStream.of(ENEMY_FIRST),
-            IntStream.rangeClosed(ENEMY_SECOND, 159))
-            .boxed()//Converts the primitive int values in the stream into their wrapper class, Integer
-            //[1, 2, 3, 10, 11, ...] becomes [Integer(1), Integer(2), ...]
-            .collect(Collectors.toSet());//Collects the Integer values from the stream and stores them in a Set
-
-
-    private static final Set<Integer> SPEED_BOOST = IntStream.rangeClosed(90, 99)
-            .boxed()
-            .collect(Collectors.toSet());
-    public static final int KEY = 5;
-    public static final int ENTRANCE = 1;
-    public static final int BASIC_GROUND = 10;
-    public static final Set<Integer> EXIT = IntStream.concat(IntStream.of(2), IntStream.rangeClosed(12, 14))
-            .boxed()
-            .collect(Collectors.toSet());
-
-    public enum TileType{
-        WALL,
-        ENTRANCE,
-        EXIT,
-        KEY,
-        TRAP,
-        ENEMY,
-        SPEED_BOOST,
-        OTHER, // like the ground
-        EXTRA // like the train, consider to be ground but coins shouldn't be generated there
-    }
+    private static final Set<Integer> CHASING_ENEMIES = ENEMY.getAll();
+    private static final Set<Integer> SPEED_BOOST = TileType.SPEED_BOOST.getAll();
+    public static final Set<Integer> EXIT = TileType.EXIT.getAll();
 
     private TileType[][] tileEnumOnMap;
 
@@ -178,11 +131,11 @@ public class Tiles {
 
                 //TextureRegion tileRegion;
                 // Load the TextureRegions from the sheets:
-                if (TRAPS.contains(index)) {
-                    int startX = (index == TRAPS_FIRST) ? 0: TRAP_SIZE * (index - TRAPS_SECOND + 1);
+                if (TRAP.getAll().contains(index)) {
+                    int startX = (index == TRAP.getId()) ? 0: TRAP_SIZE * (index - TRAP.getSecond() + 1);
                     tileRegion = new TextureRegion(obstacleSheet, startX, 0, TRAP_SIZE, TRAP_SIZE);
                 }
-                else if (CHASING_ENEMIES.contains(index)) {
+                else if (ENEMY.getAll().contains(index)) {
                     int startY = TRAP_SIZE + getEnemyIndex(index) * ENEMY_SIZE; //index == ENEMY_FIRST) ? 0: 16 * (index - ENEMY_SECOND + 1);
                     tileRegion = new TextureRegion(obstacleSheet, 0, startY, ENEMY_SIZE, ENEMY_SIZE);
                     int enemyIndex = getEnemyIndex(index);
@@ -221,7 +174,7 @@ public class Tiles {
      * @return a Tile object, it can either be a Wall, Entrance, Exit or a generic Tile
      */
     private Tile createTile(int index, TextureRegion tileRegion, int x, int y) {
-        if (WALLS.contains(index)){
+        if (WALL.getAll().contains(index)){
             Tile tile = new Wall(tileRegion);
             tile.getProperties().put("type", "Wall");
 
@@ -232,7 +185,7 @@ public class Tiles {
 
             return tile;
         }
-        else if (index == ENTRANCE){
+        else if (index == ENTRANCE.getId()){
             entrance = new Entrance(tileRegion); // we create our Entrance instance here
             entrance.getProperties().put("type", "Entrance");
 
@@ -240,7 +193,7 @@ public class Tiles {
                 entrance.setTilePosition(new Position(x, y, TILES));
                 tileOnMap[x][y] = entrance;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
-                tileEnumOnMap[x][y] = TileType.ENTRANCE;
+                tileEnumOnMap[x][y] = ENTRANCE;
 
 
             return entrance;
@@ -260,7 +213,7 @@ public class Tiles {
 
             return exit;
         }
-        else if (TRAPS.contains(index)){
+        else if (TRAP.getAll().contains(index)){
             Tile tile = new Tile(tileRegion);
             tile.getProperties().put("type", "Trap");
 
@@ -272,7 +225,7 @@ public class Tiles {
 
             return tile;
         }
-        else if (CHASING_ENEMIES.contains(index)){
+        else if (ENEMY.getAll().contains(index)){
             Tile tile = new Tile(tileRegion);
             tile.getProperties().put("type", "Enemy");
 
@@ -302,8 +255,8 @@ public class Tiles {
 
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
-                if (index < EXTRAS_FIRST)
-                    tileEnumOnMap[x][y] = TileType.OTHER;
+                if (index < EXTRA.getId())
+                    tileEnumOnMap[x][y] = GROUND;
                 else // if index too large, it is considered to be special like a train
                     tileEnumOnMap[x][y] = EXTRA;
 
@@ -400,10 +353,10 @@ public class Tiles {
                     int x = position.getTileX();
                     int y = position.getTileY();
 
-                    if (tileValue == KEY){
+                    if (tileValue == KEY.getId()){
                         keyTilePosition = new Position(x, y, TILES);
                     }
-                    else if (TRAPS.contains(tileValue)){ // a trap
+                    else if (TRAP.getAll().contains(tileValue)){ // a trap
                         TextureRegion tileRegion = tileset[tileValue];
 
                         Position trapPosition = new Position(x, y, TILES).convertTo(PIXELS);
@@ -416,7 +369,7 @@ public class Tiles {
                         tileEnumOnMap[x][y] = TileType.TRAP;  // fixing the problem that somehow hearts is spawning on traps, it's actually because createTile() is not called so that tileEnumOnMap isn't updated
                     }
 
-                    else if (CHASING_ENEMIES.contains(tileValue)){//an enemy or a chasing enemy i myself don't know it yet
+                    else if (ENEMY.getAll().contains(tileValue)){//an enemy or a chasing enemy i myself don't know it yet
                         TextureRegion tileRegion = tileset[tileValue];
 
                         Position chasingEnemyPosition = new Position(x, y, TILES);
@@ -430,7 +383,7 @@ public class Tiles {
                     else { // if it is neither a trap nor a key, which is the default one
 
                         // There would be a random chance to change the ground tile
-                        if (tileIndex == BASIC_GROUND) {
+                        if (tileIndex == GROUND.getId()) {
                             double random = Math.random(); // generates random number between 0.0 and 1.0
                             if (random <= 0.005 * 4) { // 0.5% chance each for four of our ground tile variant
                                 tileIndex = 7 + (int) (Math.floor(random * 200)); // 1/0.5 is 200%, tileIndex can therefore be 7~10
@@ -607,6 +560,6 @@ public class Tiles {
 
     public int getEnemyIndex(int tileValue){
         // starts from 0, if it's the default (first type of) enemy, the index is 0, else the index continues from tileset[150]
-        return (tileValue == ENEMY_FIRST) ? 0 : ((tileValue - ENEMY_SECOND) + 1);
+        return (tileValue == ENEMY.getId()) ? 0 : ((tileValue - ENEMY.getSecond()) + 1);
     }
 }

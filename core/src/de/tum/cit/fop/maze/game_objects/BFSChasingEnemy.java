@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.level.Tiles;
+import de.tum.cit.fop.maze.tiles.TileType;
 import de.tum.cit.fop.maze.util.Position;
 
 import java.util.*;
@@ -142,8 +143,8 @@ public class BFSChasingEnemy extends ChasingEnemy {
 
     private boolean isTileWalkable(int x, int y) {
         try {
-            Tiles.TileType tileType = tiles.getTileEnumOnMap(x, y);
-            return tileType != Tiles.TileType.WALL && tileType != Tiles.TileType.TRAP;//tileType == Tiles.TileType.OTHER || tileType == Tiles.TileType.EXIT || tileType == Tiles.TileType.EXTRA;
+            TileType tileType = tiles.getTileEnumOnMap(x, y);
+            return tileType != TileType.WALL && tileType != TileType.TRAP;//tileType == Tiles.TileType.OTHER || tileType == Tiles.TileType.EXIT || tileType == Tiles.TileType.EXTRA;
         }
         catch (ArrayIndexOutOfBoundsException e){
             Gdx.app.error("BFS Enemy", x  + ", " + y + e.getMessage());

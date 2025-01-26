@@ -29,11 +29,13 @@ import de.tum.cit.fop.maze.level.Tiles;
 import de.tum.cit.fop.maze.rendering.ElementRenderer;
 import de.tum.cit.fop.maze.rendering.Panel;
 import de.tum.cit.fop.maze.rendering.SpotlightEffect;
+import de.tum.cit.fop.maze.tiles.TileType;
 import de.tum.cit.fop.maze.util.Position;
 
 import java.util.*;
 
 import static de.tum.cit.fop.maze.rendering.Panel.ifSpaceKeyPressed;
+import static de.tum.cit.fop.maze.tiles.TileType.GROUND;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
 import static java.lang.Math.abs;
@@ -152,7 +154,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // After loading the tiles,
         // get the array of tiles from our tile generator: tiles.getTiles()
         // and then get the texture region where our key is at
-        keyRegion = tiles.getTileset()[Tiles.KEY];
+        keyRegion = tiles.getTileset()[TileType.KEY.getId()];
 
         collectibles = new Array<>();
         //System.out.println(Arrays.deepToString(tiles.getTileEnumOnMap()));
@@ -232,8 +234,8 @@ public class GameScreen extends InputAdapter implements Screen {
         Array<Position> emptyTiles = new Array<>();
         for (int x = 0; x < tiles.getTileEnumOnMap().length; x++) {
             for (int y = 0; y < tiles.getTileEnumOnMap()[x].length; y++) {
-                Tiles.TileType tileType = tiles.getTileEnumOnMap()[x][y];
-                if ((tileType == Tiles.TileType.OTHER) || tileType == null) {
+                TileType tileType = tiles.getTileEnumOnMap()[x][y];
+                if ((tileType == GROUND) || tileType == null) {
                     emptyTiles.add(new Position(x, y, TILES));
                 }
             }
