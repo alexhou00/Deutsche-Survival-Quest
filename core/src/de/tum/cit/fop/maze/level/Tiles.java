@@ -48,8 +48,6 @@ public class Tiles {
 
     int maxTilesOnCell;
 
-
-    private static final Set<Integer> CHASING_ENEMIES = ENEMY.getAll();
     private static final Set<Integer> SPEED_BOOST = TileType.SPEED_BOOST.getAll();
     public static final Set<Integer> EXIT = TileType.EXIT.getAll();
 
@@ -61,7 +59,7 @@ public class Tiles {
      * Constructor: initializes the Tiles object with default values.
      */
     public Tiles(MazeRunnerGame game) {
-        keyTilePosition = new Position(0, 0, TILES);
+        keyTilePosition = new Position(0, 0, TILES); // by default (0,0)
         entrance = null; //getEntrance();
         exits = new Array<>();
 
@@ -362,11 +360,11 @@ public class Tiles {
                         Position trapPosition = new Position(x, y, TILES).convertTo(PIXELS);
                         float worldX = trapPosition.getX();
                         float worldY = trapPosition.getY();
-                        // a new instance of trap is created here
+                        // a new instance of a trap is created here
                         traps.add(new Trap(tileRegion, worldX, worldY,
                                 TILE_SIZE, TILE_SIZE, TILE_SIZE, TILE_SIZE,
                                 TILE_SCREEN_SIZE * 0.8f, TILE_SCREEN_SIZE * 0.8f, 1));
-                        tileEnumOnMap[x][y] = TileType.TRAP;  // fixing the problem that somehow hearts is spawning on traps, it's actually because createTile() is not called so that tileEnumOnMap isn't updated
+                        tileEnumOnMap[x][y] = TileType.TRAP;  // fixing the problem that somehow hearts are spawning on traps, it's actually because createTile() is not called so that tileEnumOnMap isn't updated
                     }
 
                     else if (ENEMY.getAll().contains(tileValue)){//an enemy or a chasing enemy i myself don't know it yet
@@ -428,26 +426,22 @@ public class Tiles {
     private void putTileDataInMapData(String position, String tileType, ObjectMap<String, Array<Integer>> mapData) {
         try {
             int tileValue = Integer.parseInt(tileType);
-            if (true/*tileValue != KEY*/) {
-                // originally it was a Integer instead of a List<Integer>,
-                // but now we can have more than one layer,
-                // so we need a list to store the tiles in this specific cell at this position
-                Array<Integer> list;
-                if (mapData.get(position) == null){ // puts a empty list to the Map if empty
-                    list = new Array<>();
-                    mapData.put(position, list);
-                }
-                list = mapData.get(position);
-                list.add(tileValue);
-                if (list.size > maxTilesOnCell) maxTilesOnCell = list.size; // set maxTilesOnCell to fine the maximum # of tiles that any grid has
-                mapData.put(position, list);
-                //Gdx.app.log("mapData", "Put to mapData: " + position + " " + mapData.get(position));
 
+            // originally it was an Integer instead of a List<Integer>,
+            // but now we can have more than one layer,
+            // so we need a list to store the tiles in this specific cell at this position
+            Array<Integer> list;
+            if (mapData.get(position) == null){ // puts an empty list to the Map if empty
+                list = new Array<>();
+                mapData.put(position, list);
             }
-            else { // get the key position here if the specification type is x,y=KEY
-                //Position position = stringToPosition(parts[0]);
-                //keyTilePosition = new Position(position.getTileX(), position.getTileY(), TILES);
-            }
+            list = mapData.get(position);
+            list.add(tileValue);
+            if (list.size > maxTilesOnCell) maxTilesOnCell = list.size; // set maxTilesOnCell to fine the maximum # of tiles that any grid has
+            mapData.put(position, list);
+            //Gdx.app.log("mapData", "Put to mapData: " + position + " " + mapData.get(position));
+
+
         } catch (NumberFormatException e) {
             Gdx.app.error("TileMapParser", "Invalid tile value: " + tileType + " at position " + position, e);
         }
@@ -527,7 +521,7 @@ public class Tiles {
         Exit nearestExit = null;
         double minDistance = Double.MAX_VALUE;
 
-        for (Exit exit : exits) {
+        for (Exit exit : iterate(exits)) {
             Position exitPosition = exit.getTilePosition().convertTo(PIXELS);
             float exitX = exitPosition.getX();
             float exitY = exitPosition.getY();
@@ -559,7 +553,8 @@ public class Tiles {
     }
 
     public int getEnemyIndex(int tileValue){
-        // starts from 0, if it's the default (first type of) enemy, the index is 0, else the index continues from tileset[150]
+        // starts from 0
+        // if it's the default (first type of) enemy; the index is 0, else the index continues from tileset[150]
         return (tileValue == ENEMY.getId()) ? 0 : ((tileValue - ENEMY.getSecond()) + 1);
     }
 }
