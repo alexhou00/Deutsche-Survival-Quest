@@ -11,6 +11,8 @@ After a long journey to Heilbronn, our player needs to relax, hence he visits th
 register himself in the Rathaus. However, he completely forgot that traffic and order in Germany is quite different from his hometown. Would it bee a smooth journey to navigate through the city?
 When our player successfully navigates through the city and finds the Rathaus, he needs to register himself to seamlessly start his studies!!! 
 
+## Table of Contents 
+
 
 ### Code Structure
 ```
@@ -121,39 +123,74 @@ src/de/tum/cit/fop/maze/
 maybe show some images of the gameplay here
 
 ## Features
-Draft:
-* Our player's movement is very smooth
-* story
-* Speech bubble
-* spotlight effect
+
+**View**:
+* View Point :Deutsche Survival Quest is a 2D game with a third person view.
 * clamp zooming
-* custom util class (better for converting the units): Position
-* stamina
-* pixel-perfect collision detection
 
-## Features
+**HUD**:
+Displays remaining lives, amount of coins collected, and if the ky has been found. 
 
-Dynamic obstacles - cars/horse/ trolley/ german neighbour/ smoking teenagers/ a bear (in berlin) a golden lion (munich)   etc / train controller reappearing - will take away one ticket. Once all 5 tickets are taken away then restart level  (or maybe the player has to collect his Deutschlandticket first at the levels where there are ticket guys) (maybe there’s a chance of your ticket not working?)
+**Point System**:
+In Deutsche Survival Quest, there are total of *5* coins that are randomly generated on each map. The player gets a score form A to F in the end
+of each successfully completed level, based on amount of coins collected. 
 
-Boost-ups - pretzel, power potion
 
-Collectable lives: hearts, health insurance
+**Player's Movement**:
+* Our player's can move smoothly towards four directions and diagonally
 
-Collectable power-ups : beer/ wurstbrotchen/ protection from ticket guy for 30 seconds/ fake ticket/ Pfand bottles (return them to supermarket and you get bonus points)
+* Stamina
 
-Key - documents that can be collected at the Burgeramt to unlock next level/ train ticket/ health insurance/
+**Collision**:
+Deutsche Survival Quest offers pixel perfect collision with objects 
 
-bank account/ permanent residence
 
-Traps - glass bottles / Baustelle forces you to reroute
+**Collectables**:
 
-Requirements: enemies and boostups
+* Lives: hearts and  health insurance card, provides the player additional lives when collected.
 
-tum : finding etze
+* Boost-ups: power potion (adds stamina), pretzel.
+
+**Exit to Next Level with the Key**:
+* Level 1: Player must claim his luggage. 
+
+* Level 2: Player must get his Deutschlandticket to catch his train.
+
+* Level 3: Player must find the key to exit bar.
+
+* Level 4: 
+
+* Level 5: Player must get his documents to regşster in the Rathaus.
+
+* Level 6:
+
+**Obstacles**:
+
+* Traps: 
+
+* Chasing enemies (dynamic object):
+
+* Portal:
+
+**Communication and Information**:
+* Panels:
+  * Introduction Panel: brief explanation of game/levels structure
+  * Pause Panel: 
+* Speech Bubble:
+  *
+
+**Screens**: 
+
+**Spotlight Effect**
+
+**Custom util class: Position**
+Contributes converting the units
 
 
 ## Credits
 ### Tilesets
+The tile sets of Deutsche Survival Quest has been created by modifying the following:
+
 - Tileset 1: **Airport Game Sprites** by Konig Games. 
   Available at: https://akonig513.itch.io/free-airport-sprite-pack. 
  Used with permission under the "name your own price" model.
@@ -209,4 +246,22 @@ tum : finding etze
 ## Some draft.....
 Deutsche Survival Quest (German Assimilation Game) (sorting trash/ fighting german neighbours/ a maze leading to the Rathaus and the documents are the boosters, enemy is the bahnhof enjoyers and the DB delays) - different cities as different levels (1. Munich, 2. Heilbronn 3.Berlin 4. Frankfurt) (random DB cancellation force the player to restart level)
 Finding luggage at the airport while racing against time (before the train leaves) (
+
+Key - documents that can be collected at the Burgeramt to unlock next level/ train ticket/ health insurance/
+
+bank account/ permanent residence
+
+
+Requirements: enemies and boostups
+
+tum : finding etze
+
+## Features
+
+Dynamic obstacles - cars/horse/ trolley/ german neighbour/ smoking teenagers/ a bear (in berlin) a golden lion (munich)   etc / train controller reappearing - will take away one ticket. Once all 5 tickets are taken away then restart level  (or maybe the player has to collect his Deutschlandticket first at the levels where there are ticket guys) (maybe there’s a chance of your ticket not working?)
+
+
+Traps - glass bottles / Baustelle forces you to reroute
+* story
+* 
 
