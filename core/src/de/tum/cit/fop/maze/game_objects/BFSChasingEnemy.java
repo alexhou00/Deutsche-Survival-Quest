@@ -22,27 +22,47 @@ public class BFSChasingEnemy extends ChasingEnemy {
 
 
     protected void chase(Player player, float delta) {
+        alertTime -= delta;
         // Find the path to the player using BFS
-        List<Position> path = findPathToPlayer();
+        List<Position> path = findPathTo(player.getX(), player.getY());
         if (path != null && path.size() > 1) {
             // Set the next target to the next position in the path
             Position nextPosition = path.get(1);
             targetX = nextPosition.convertTo(Position.PositionUnit.PIXELS).getX();
             targetY = nextPosition.convertTo(Position.PositionUnit.PIXELS).getY();
-            //moveTowardsTarget(delta);
+            super.moveTowardsTarget(delta);  // Use the parent class method for movement
+        }
+        else{ // path not found
+            boolean flag = false;
+            for (int i=-1;i<=1;i++){
+                for (int j=-1;j<=1;j++){
+                    if (i==0 && j==0) continue;
+                    path = findPathTo(player.getX(), player.getY());
+                    if (path != null && path.size() > 1){
+                        flag = true;
+                        Position nextPosition = path.get(1);
+                        targetX = nextPosition.convertTo(Position.PositionUnit.PIXELS).getX();
+                        targetY = nextPosition.convertTo(Position.PositionUnit.PIXELS).getY();
+                        super.moveTowardsTarget(delta);
+                    }
+                }
+            }
+
+            if (!flag) // even after searching the 3x3 grid and still not found
+                super.chase(player, delta); // normal chase
         }
 
         // Use the parent class method for movement
-        super.moveTowardsTarget(delta);
+        //super.moveTowardsTarget(delta);
         // todo: there are still problems when the player is in the wall tile, the enemy doesn't chase
     }
 
-    private List<Position> findPathToPlayer() {
+    private List<Position> findPathTo(float playerX, float playerY) {
         if (player == null) return null;
-        Gdx.app.log("BFS Enemy", "Finding path to player...");
+        //Gdx.app.log("BFS Enemy", "Finding path to player...");
 
         Position start = getTilePosition(x, y);
-        Position goal = getTilePosition(player.getX(), player.getY());
+        Position goal = getTilePosition(playerX, playerY);
 
         Queue<Position> queue = new LinkedList<>();
         Map<Position, Position> cameFrom = new HashMap<>();
