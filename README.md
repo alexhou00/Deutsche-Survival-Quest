@@ -164,6 +164,7 @@ tum : finding etze
   '3x3 Minimal' Sprite sheet created by KabisCube under Public Domain license.
   Available at: https://opengameart.org/content/3x3-minimal.
   License Type: CC0 1.0 Universal https://creativecommons.org/publicdomain/zero/1.0/.
+  Key: created by djvstock available at <a href="https://www.vecteezy.com/vector-art/10968271-paper-sheet-pixel">paper sheet pixel Vectors by Vecteezy</a>. 
   
 
 ### Music
