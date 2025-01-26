@@ -178,16 +178,16 @@ public class Tiles {
                 //TextureRegion tileRegion;
                 // Load the TextureRegions from the sheets:
                 if (TRAPS.contains(index)) {
-                    int startX = (index == TRAPS_FIRST) ? 0: 32 * (index - TRAPS_SECOND + 1);
-                    tileRegion = new TextureRegion(obstacleSheet, startX, 0, 32, 32);
+                    int startX = (index == TRAPS_FIRST) ? 0: TRAP_SIZE * (index - TRAPS_SECOND + 1);
+                    tileRegion = new TextureRegion(obstacleSheet, startX, 0, TRAP_SIZE, TRAP_SIZE);
                 }
                 else if (CHASING_ENEMIES.contains(index)) {
-                    int startY = 32 + getEnemyIndex(index) * 16; //index == ENEMY_FIRST) ? 0: 16 * (index - ENEMY_SECOND + 1);
-                    tileRegion = new TextureRegion(obstacleSheet, 0, startY, 16, 16);
+                    int startY = TRAP_SIZE + getEnemyIndex(index) * ENEMY_SIZE; //index == ENEMY_FIRST) ? 0: 16 * (index - ENEMY_SECOND + 1);
+                    tileRegion = new TextureRegion(obstacleSheet, 0, startY, ENEMY_SIZE, ENEMY_SIZE);
                     int enemyIndex = getEnemyIndex(index);
                     enemiesAnimations.put(enemyIndex,
                             createDirectionalAnimations(obstacleSheet, true, 0.1f,
-                            32 + 16 * (enemyIndex), 16, 16, 3));
+                                    TRAP_SIZE + ENEMY_SIZE * (enemyIndex), ENEMY_SIZE, ENEMY_SIZE, 3));
                 }
                 else /*(!TRAPS.contains(index) && !CHASING_ENEMIES.contains(index))*/ { // DEFAULT
                     tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
@@ -196,7 +196,7 @@ public class Tiles {
                 tileset[index] = createTile(index, tileRegion, false, 0,0);
             }
         }
-        System.out.println(enemiesAnimations.toString());
+        System.out.println(enemiesAnimations);
         return tileset;
     }
 
@@ -412,7 +412,7 @@ public class Tiles {
                         float worldX = trapPosition.getX();
                         float worldY = trapPosition.getY();
                         // a new instance of trap is created here
-                        traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,16,16,TILE_SCREEN_SIZE * 0.8f, TILE_SCREEN_SIZE * 0.8f, 1));
+                        traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,TILE_SIZE,TILE_SIZE,TILE_SCREEN_SIZE * 0.8f, TILE_SCREEN_SIZE * 0.8f, 1));
                         tileEnumOnMap[x][y] = TileType.TRAP;  // fixing the problem that somehow hearts is spawning on traps, it's actually because createTile() is not called so that tileEnumOnMap isn't updated
                     }
 
@@ -424,7 +424,7 @@ public class Tiles {
                         int worldY = chasingEnemyPosition.getTileY();
                         int enemyIndex = getEnemyIndex(tileValue);
                         chasingEnemies.add(new ChasingEnemy(tile.getTextureRegion(), worldX, worldY,
-                                16, 16, 10, 16, 64, 64,
+                                TILE_SIZE, TILE_SIZE, 10, 16, 64, 64,
                                 3, this, game, enemyIndex));
                     }
                     else { // if it is neither a trap nor a key, which is the default one

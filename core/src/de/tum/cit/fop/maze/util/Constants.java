@@ -11,6 +11,8 @@ public class Constants {
     public static final int MIN_WINDOW_HEIGHT = 600;
 
     public static final int TILE_SIZE = 16; // in pixels
+    public static final int TRAP_SIZE = 32;
+    public static final int ENEMY_SIZE = 16;
 
     public static int horizontalTilesCount = 1; // number of tiles on the width
     public static int verticalTilesCount = 1; // number of tiles on the height
