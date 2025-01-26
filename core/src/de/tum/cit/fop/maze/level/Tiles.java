@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import de.tum.cit.fop.maze.MazeRunnerGame;
+import de.tum.cit.fop.maze.game_objects.BFSChasingEnemy;
 import de.tum.cit.fop.maze.game_objects.ChasingEnemy;
 import de.tum.cit.fop.maze.util.Position;
 import de.tum.cit.fop.maze.game_objects.Trap;
@@ -421,7 +422,7 @@ public class Tiles {
                         int worldX = chasingEnemyPosition.getTileX();
                         int worldY = chasingEnemyPosition.getTileY();
                         int enemyIndex = getEnemyIndex(tileValue);
-                        chasingEnemies.add(new ChasingEnemy(tileRegion, worldX, worldY,
+                        chasingEnemies.add(new BFSChasingEnemy(tileRegion, worldX, worldY,
                                 TILE_SIZE, TILE_SIZE, 10, 16, 64, 64,
                                 3, this, game, enemyIndex));
                     }

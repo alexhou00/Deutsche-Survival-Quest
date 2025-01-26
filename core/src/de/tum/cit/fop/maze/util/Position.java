@@ -184,6 +184,17 @@ public class Position {
         return x == other.x && y == other.y && unit == other.unit;
     }
 
+    // Ensures that objects that are equal produce the same hash code,
+    // a requirement for collections like HashSet and HashMap.
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + Float.hashCode(x);
+        result = 31 * result + Float.hashCode(y);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
+        return result;
+    }
+
     /**
      * Returns a string representation of the position.
      *
@@ -191,6 +202,13 @@ public class Position {
      */
     @Override
     public String toString() {
-        return String.format("Position(x=%.2f, y=%.2f, unit=%s)", x, y, unit);
+       // return String.format("(x=%d, y=%d) (unit=%s)", (int) x, (int) y, unit);
+        if (unit == PositionUnit.TILES)
+            return String.format("(x=%d, y=%d) (unit=%s)", (int) x, (int) y, unit);
+        else return String.format("(x=%.2f, y=%.2f) (unit=%s)", x, y, unit);
+    }
+
+    public static Position getTilePosition(float worldX, float worldY){
+        return new Position((int) (worldX / TILE_SCREEN_SIZE), (int) (worldY / TILE_SCREEN_SIZE), Position.PositionUnit.TILES);
     }
 }

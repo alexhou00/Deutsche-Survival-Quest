@@ -131,7 +131,7 @@ public abstract class Character extends GameObject {
                 return false;
         }
         catch (ArrayIndexOutOfBoundsException e){
-            Gdx.app.error("Player", e.getMessage());
+            Gdx.app.error("Character", e.getMessage());
             return false;
         }
     }
