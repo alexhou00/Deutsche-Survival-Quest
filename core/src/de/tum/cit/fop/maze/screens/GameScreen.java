@@ -152,7 +152,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // After loading the tiles,
         // get the array of tiles from our tile generator: tiles.getTiles()
         // and then get the texture region where our key is at
-        keyRegion = tiles.getTileset()[Tiles.KEY].getTextureRegion();
+        keyRegion = tiles.getTileset()[Tiles.KEY];
 
         collectibles = new Array<>();
         //System.out.println(Arrays.deepToString(tiles.getTileEnumOnMap()));

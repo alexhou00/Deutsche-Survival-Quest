@@ -10,7 +10,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.game_objects.ChasingEnemy;
-import de.tum.cit.fop.maze.game_objects.Portal;
 import de.tum.cit.fop.maze.util.Position;
 import de.tum.cit.fop.maze.game_objects.Trap;
 import de.tum.cit.fop.maze.tiles.*;
@@ -29,7 +28,7 @@ import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
 /** this is like a TilesManager or ".properties" File Reader,
  * or more specifically, a LevelManager
  * It manages tile (and also other objects for the level) creation for each level
- */
+ */ // TODO: CLEAN UP THE CODE HERE
 public class Tiles {
     public TiledMapTileLayer layer;
 
@@ -45,7 +44,7 @@ public class Tiles {
     /** exit tile, coordinates of the tile can be accessed through this */
     public Array<Exit> exits;
 
-    private Tile[] tileset;
+    private TextureRegion[] tileset;
     private Tile[][] tileOnMap;
 
     int maxTilesOnCell;
@@ -155,7 +154,7 @@ public class Tiles {
     /** Loads tile images and obstacle images from the specified file paths
      * and organizes them into an array of Tile objects.
      */
-    private Tile[] loadTileSheet(String tileSheetPath, String ObstacleSheetPath) {
+    private TextureRegion[] loadTileSheet(String tileSheetPath, String ObstacleSheetPath) {
         var tileSheet = new Texture(tileSheetPath);//represents the main tile sheet image.
         var obstacleSheet = new Texture(ObstacleSheetPath);//represents the main tile sheet image.
         //var enemySheet = new Texture(Gdx.files.internal("characters/mob_guy.png"));
@@ -164,7 +163,7 @@ public class Tiles {
         int tileRows = tileSheet.getHeight() / TILE_SIZE;
 
         // `tileset` is the tileset
-        Tile[] tileset = new Tile[tileCols * tileRows];
+        TextureRegion[] tileset = new TextureRegion[tileCols * tileRows];
 
         // Create the tileset to reference back to the tile type based on the tile sheet
         //This is the core logic of the method. It iterates through each position (grid cell)
@@ -173,7 +172,7 @@ public class Tiles {
             for (int x = 0; x < tileCols; x++) {
                 int index = y * tileCols + x;
 
-                TextureRegion tileRegion = null;
+                TextureRegion tileRegion;
 
                 //TextureRegion tileRegion;
                 // Load the TextureRegions from the sheets:
@@ -193,10 +192,9 @@ public class Tiles {
                     tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 }
 
-                tileset[index] = createTile(index, tileRegion, false, 0,0);
+                tileset[index] = tileRegion; // createTile(index, tileRegion, false, 0,0);
             }
         }
-        System.out.println(enemiesAnimations);
         return tileset;
     }
 
@@ -213,23 +211,22 @@ public class Tiles {
      *
      * @param index the tileIndex or the tileValue on the tileset;
      * @param tileRegion the textureRegion of the tile
-     * @param isPositionKnown true if creating tiles for the tileset, which the positions of the tiles are indeed unknown;
+     * isPositionKnown true if creating tiles for the tileset, which the positions of the tiles are indeed unknown;
      *                        false if creating completely new instances of tiles
      * @param x the tile X position on the map if isPositionKnown
      * @param y the tile Y position on the map if isPositionKnown
      *
      * @return a Tile object, it can either be a Wall, Entrance, Exit or a generic Tile
      */
-    private Tile createTile(int index, TextureRegion tileRegion, boolean isPositionKnown, int x, int y) {
+    private Tile createTile(int index, TextureRegion tileRegion, int x, int y) {
         if (WALLS.contains(index)){
             Tile tile = new Wall(tileRegion);
             tile.getProperties().put("type", "Wall");
 
-            if (isPositionKnown){
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
                 tileEnumOnMap[x][y] = TileType.WALL;
-            }
+
 
             return tile;
         }
@@ -237,12 +234,12 @@ public class Tiles {
             entrance = new Entrance(tileRegion); // we create our Entrance instance here
             entrance.getProperties().put("type", "Entrance");
 
-            if (isPositionKnown) {
+
                 entrance.setTilePosition(new Position(x, y, TILES));
                 tileOnMap[x][y] = entrance;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
                 tileEnumOnMap[x][y] = TileType.ENTRANCE;
-            }
+
 
             return entrance;
         }
@@ -250,13 +247,13 @@ public class Tiles {
             Exit exit = new Exit(tileRegion);
             exit.getProperties().put("type", "Exit");
 
-            if (isPositionKnown){
+
                 exit.setTilePosition(new Position(x, y, TILES));
                 exits.add(exit);
                 tileOnMap[x][y] = exit;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
                 tileEnumOnMap[x][y] = TileType.EXIT;
-            }
+
 
 
             return exit;
@@ -265,22 +262,22 @@ public class Tiles {
             Tile tile = new Tile(tileRegion);
             tile.getProperties().put("type", "Trap");
 
-            if (isPositionKnown){
+
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
                 tileEnumOnMap[x][y] = TileType.TRAP;
-            }
+
 
             return tile;
         }
         else if (CHASING_ENEMIES.contains(index)){
             Tile tile = new Tile(tileRegion);
             tile.getProperties().put("type", "Enemy");
-            if (isPositionKnown){
+
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
                 tileEnumOnMap[x][y] = TileType.ENEMY;
-            }
+
             return tile;
         }
 
@@ -288,11 +285,11 @@ public class Tiles {
             Tile tile = new SpeedBoost(tileRegion);
             tile.getProperties().put("type", "Speed Boost");
 
-            if (isPositionKnown){
+
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
                 tileEnumOnMap[x][y] = TileType.SPEED_BOOST;
-            }
+
 
             return tile;
         }
@@ -300,14 +297,13 @@ public class Tiles {
             Tile tile = new Tile(tileRegion);
             tile.getProperties().put("type", "");
 
-            if (isPositionKnown){
+
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
                 if (index < ENEMY_SECOND)
                     tileEnumOnMap[x][y] = TileType.OTHER;
                 else // if index too large, it is considered to be special like a train
                     tileEnumOnMap[x][y] = EXTRA;
-            }
 
             return tile;
         }
@@ -406,24 +402,26 @@ public class Tiles {
                         keyTilePosition = new Position(x, y, TILES);
                     }
                     else if (TRAPS.contains(tileValue)){ // a trap
-                        Tile tile = tileset[tileValue];
+                        TextureRegion tileRegion = tileset[tileValue];
 
                         Position trapPosition = new Position(x, y, TILES).convertTo(PIXELS);
                         float worldX = trapPosition.getX();
                         float worldY = trapPosition.getY();
                         // a new instance of trap is created here
-                        traps.add(new Trap(tile.getTextureRegion(),worldX,worldY,TILE_SIZE,TILE_SIZE,TILE_SIZE,TILE_SIZE,TILE_SCREEN_SIZE * 0.8f, TILE_SCREEN_SIZE * 0.8f, 1));
+                        traps.add(new Trap(tileRegion, worldX, worldY,
+                                TILE_SIZE, TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                                TILE_SCREEN_SIZE * 0.8f, TILE_SCREEN_SIZE * 0.8f, 1));
                         tileEnumOnMap[x][y] = TileType.TRAP;  // fixing the problem that somehow hearts is spawning on traps, it's actually because createTile() is not called so that tileEnumOnMap isn't updated
                     }
 
                     else if (CHASING_ENEMIES.contains(tileValue)){//an enemy or a chasing enemy i myself don't know it yet
-                        Tile tile = tileset[tileValue];
+                        TextureRegion tileRegion = tileset[tileValue];
 
                         Position chasingEnemyPosition = new Position(x, y, TILES);
                         int worldX = chasingEnemyPosition.getTileX();
                         int worldY = chasingEnemyPosition.getTileY();
                         int enemyIndex = getEnemyIndex(tileValue);
-                        chasingEnemies.add(new ChasingEnemy(tile.getTextureRegion(), worldX, worldY,
+                        chasingEnemies.add(new ChasingEnemy(tileRegion, worldX, worldY,
                                 TILE_SIZE, TILE_SIZE, 10, 16, 64, 64,
                                 3, this, game, enemyIndex));
                     }
@@ -437,18 +435,18 @@ public class Tiles {
                             }
                         }
 
-                        Tile tile = tileset[tileIndex]; // We get the texture through this tile
+                        TextureRegion tileRegion = tileset[tileIndex]; // We get the texture through this tile
+
+                        // create a new tile based on its type so that we won't be accessing the same tile from the array
+                        // also set its position on the map
+                        Tile tile = createTile(tileValue, tileRegion, x, y); // it is still tileValue instead of tileIndex here, so the functionalities will not be aff
 
                         // deal with LibGDX own library
                         TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
                         cell.setTile(tile);
                         layer.setCell(x, y, cell);
 
-                        // create a new tile based on its type so that we won't be accessing the same tile from the array
-                        // also set its position on the map
-                        //createAndPlaceNewTile(x, y, tile);
-                        createTile(tileValue, tile.getTextureRegion(), true, x, y); // it is still tileValue instead of tileIndex here, so the functionalities will not be aff
-                    }
+                        }
 
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
@@ -519,7 +517,7 @@ public class Tiles {
         }
     }
 
-    public Tile[] getTileset() {
+    public TextureRegion[] getTileset() {
         return tileset;
     }
 
