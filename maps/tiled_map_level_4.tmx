@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1">
  <tileset firstgid="1" name="germanbar_tileset" tilewidth="16" tileheight="16" tilecount="100" columns="10">
-  <image source="../assets/germanbar_tileset.png" trans="ff00ff" width="160" height="160"/>
+  <image source="../assets/tilesets/level4_tileset.png" trans="ff00ff" width="160" height="160"/>
  </tileset>
  <layer id="1" name="圖塊層 1" width="40" height="40">
   <data encoding="csv">
