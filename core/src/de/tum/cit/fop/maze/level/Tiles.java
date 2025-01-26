@@ -38,7 +38,7 @@ public class Tiles {
     public Array<Trap> traps;
 
     public Array<ChasingEnemy> chasingEnemies;
-    public Map<String, Animation<TextureRegion>> enemyAnimations;
+    private final Map<Integer, Map<String, Animation<TextureRegion>>> enemiesAnimations; // Map of "enemy Animations", and an "enemy Animations" is a map of "enemy Animation"
 
     /** entrance tile, coordinates of the tile can be accessed through this */
     public Entrance entrance;
@@ -113,6 +113,7 @@ public class Tiles {
 
         traps = new Array<>();
         chasingEnemies = new Array<>();
+        enemiesAnimations = new HashMap<>();
         maxTilesOnCell = 0;
         this.game=game;
     }
@@ -181,8 +182,12 @@ public class Tiles {
                     tileRegion = new TextureRegion(obstacleSheet, startX, 0, 32, 32);
                 }
                 else if (CHASING_ENEMIES.contains(index)) {
-                    int startX = (index == ENEMY_FIRST) ? 0: 16 * (index - ENEMY_SECOND + 1);
-                    tileRegion = new TextureRegion(obstacleSheet, startX, 32, 16, 16);
+                    int startY = 32 + getEnemyIndex(index) * 16; //index == ENEMY_FIRST) ? 0: 16 * (index - ENEMY_SECOND + 1);
+                    tileRegion = new TextureRegion(obstacleSheet, 0, startY, 16, 16);
+                    int enemyIndex = getEnemyIndex(index);
+                    enemiesAnimations.put(enemyIndex,
+                            createDirectionalAnimations(obstacleSheet, true, 0.1f,
+                            32 + 16 * (enemyIndex), 16, 16, 3));
                 }
                 else /*(!TRAPS.contains(index) && !CHASING_ENEMIES.contains(index))*/ { // DEFAULT
                     tileRegion = new TextureRegion(tileSheet, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
@@ -191,10 +196,7 @@ public class Tiles {
                 tileset[index] = createTile(index, tileRegion, false, 0,0);
             }
         }
-
-        enemyAnimations = createDirectionalAnimations(obstacleSheet, true, 0.1f,
-                32, 16, 16, 3);
-
+        System.out.println(enemiesAnimations.toString());
         return tileset;
     }
 
@@ -420,7 +422,10 @@ public class Tiles {
                         Position chasingEnemyPosition = new Position(x, y, TILES);
                         int worldX = chasingEnemyPosition.getTileX();
                         int worldY = chasingEnemyPosition.getTileY();
-                        chasingEnemies.add(new ChasingEnemy(tile.getTextureRegion(), worldX, worldY, 16, 16, 10, 16, 64, 64, 3, this, game));
+                        int enemyIndex = getEnemyIndex(tileValue);
+                        chasingEnemies.add(new ChasingEnemy(tile.getTextureRegion(), worldX, worldY,
+                                16, 16, 10, 16, 64, 64,
+                                3, this, game, enemyIndex));
                     }
                     else { // if it is neither a trap nor a key, which is the default one
 
@@ -594,5 +599,14 @@ public class Tiles {
      */
     public boolean isCameraAngled() {
         return cameraAngled;
+    }
+
+    public Map<String, Animation<TextureRegion>> getEnemyAnimations(Integer index) {
+        return enemiesAnimations.get(index);
+    }
+
+    public int getEnemyIndex(int tileValue){
+        // starts from 0, if it's the default (first type of) enemy, the index is 0, else the index continues from tileset[150]
+        return (tileValue == ENEMY_FIRST) ? 0 : ((tileValue - ENEMY_SECOND) + 1);
     }
 }

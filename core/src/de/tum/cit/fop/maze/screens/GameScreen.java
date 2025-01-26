@@ -12,9 +12,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -80,7 +78,7 @@ public class GameScreen extends InputAdapter implements Screen {
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
 
     Animation<TextureRegion> playerAnimation;
-    Animation<TextureRegion> mobGuyAnimation;
+    Animation<TextureRegion> enemyAnimation;
 
     // Timer to track how long the stamina bar should stay visible after refill
     private static final float STAMINA_DISPLAY_TIME = 1f; // Duration to show stamina bar in seconds
@@ -952,15 +950,15 @@ public class GameScreen extends InputAdapter implements Screen {
         for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){ // for (ChasingEnemy enemy : tiles.chasingEnemies)
 
             if (abs(enemy.getVelX()) > abs(enemy.getVelY())){ // x velocity > y velocity -> either left or right
-                if (enemy.getVelX() < 0) mobGuyAnimation = tiles.enemyAnimations.get("left");
-                else mobGuyAnimation = tiles.enemyAnimations.get("right");
+                if (enemy.getVelX() < 0) enemyAnimation = tiles.getEnemyAnimations(enemy.getEnemyIndex()).get("left");
+                else enemyAnimation = tiles.getEnemyAnimations(enemy.getEnemyIndex()).get("right");
             }
             else { // v_y > v_x
-                if (enemy.getVelY() < 0) mobGuyAnimation = tiles.enemyAnimations.get("down");
-                else mobGuyAnimation = tiles.enemyAnimations.get("up");
+                if (enemy.getVelY() < 0) enemyAnimation = tiles.getEnemyAnimations(enemy.getEnemyIndex()).get("down");
+                else enemyAnimation = tiles.getEnemyAnimations(enemy.getEnemyIndex()).get("up");
             }
 
-            enemy.draw(game.getSpriteBatch(), mobGuyAnimation.getKeyFrame(sinusInput, true));
+            enemy.draw(game.getSpriteBatch(), enemyAnimation.getKeyFrame(sinusInput, true));
         }
     }
 

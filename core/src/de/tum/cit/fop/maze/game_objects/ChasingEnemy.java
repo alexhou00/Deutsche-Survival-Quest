@@ -42,6 +42,8 @@ public class ChasingEnemy extends Character {
 
     private final MazeRunnerGame game;
 
+    private final int enemyIndex;
+
     /**
      * Constructs a new Enemy instance with specified parameters.
      *
@@ -56,7 +58,7 @@ public class ChasingEnemy extends Character {
      * @param lives          The number of lives the character starts with.
      */
     public ChasingEnemy(TextureRegion textureRegion, int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight,
-                        float widthOnScreen, float heightOnScreen, float lives, Tiles tiles, MazeRunnerGame game) {
+                        float widthOnScreen, float heightOnScreen, float lives, Tiles tiles, MazeRunnerGame game, int enemyIndex) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE),
                 width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, tiles);
         this.collisionLayer = tiles.layer;
@@ -69,6 +71,7 @@ public class ChasingEnemy extends Character {
         //this.randomTargetX = x; // Initial random target position
         //this.randomTargetY = y;
         //this.player = player;
+        this.enemyIndex = enemyIndex;
 
 
         // Load the enemy's texture
@@ -385,7 +388,9 @@ public class ChasingEnemy extends Character {
         setRandomTarget(getHitboxWidthOnScreen() / 2, getHitboxHeightOnScreen() / 2, getWorldWidth() - getHitboxWidthOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
     }
 
-
+    public int getEnemyIndex() {
+        return enemyIndex;
+    }
 
     //TODO decide on do we need this
     protected boolean isTouchingTrap() {
