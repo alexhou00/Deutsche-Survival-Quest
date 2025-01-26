@@ -60,6 +60,7 @@ public class Tiles {
             .collect(Collectors.toSet());
     private static final int TRAPS_FIRST = 3;
     private static final int TRAPS_SECOND = 80;
+    private static final int EXTRAS_FIRST = 220;
 
     private static final int ENEMY_FIRST = 4;
     private static final int ENEMY_SECOND = 150;
@@ -301,7 +302,7 @@ public class Tiles {
 
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
-                if (index < ENEMY_SECOND)
+                if (index < EXTRAS_FIRST)
                     tileEnumOnMap[x][y] = TileType.OTHER;
                 else // if index too large, it is considered to be special like a train
                     tileEnumOnMap[x][y] = EXTRA;

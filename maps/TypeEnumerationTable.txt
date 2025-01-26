@@ -15,3 +15,5 @@ Value  | Type
 90~99  | Speed Boost (e.g., moving walkway)
 100~149| Even more Walls
 150~159| More Enemies
+160~210| More Grounds
+220~   | Extras (work like grounds but collectibles won't be generated there)

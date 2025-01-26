@@ -19,30 +19,30 @@ import static java.lang.Math.abs;
  * Represents an enemy as a DYNAMIC obstacle in the maze game */
 public class ChasingEnemy extends Character {
 
-    private final TiledMapTileLayer collisionLayer;
+    protected final TiledMapTileLayer collisionLayer;
     protected float targetX, targetY;
     protected float detectionRadius;
-    private boolean isChasing;
-    private final TextureRegion enemyTexture;
-    private final TextureRegion alertSymbolTexture;
+    protected boolean isChasing;
+    protected final TextureRegion enemyTexture;
+    protected final TextureRegion alertSymbolTexture;
 
-    private static final float ENEMY_BASE_SPEED = 180f;// we can change it when we want to
+    protected static final float ENEMY_BASE_SPEED = 180f;// we can change it when we want to
 
     // Time to wait before the enemy moves randomly again
-    private static final float RANDOM_MOVE_TIME = 6f;
-    private float randomMoveCooldown;
-    private static final float DAMAGE_COOLDOWN_TIME = 2.0f; // 2-second cooldown
-    private float damageCooldown = 0;
-    private static final int MAX_DAMAGE_TIMES = 3;
-    private int damageTimes = 0;
-    private final float ALERT_SHOWING_TIME = 1.5f;
-    private float alertTime = 0;
+    protected static final float RANDOM_MOVE_TIME = 6f;
+    protected float randomMoveCooldown;
+    protected static final float DAMAGE_COOLDOWN_TIME = 2.0f; // 2-second cooldown
+    protected float damageCooldown = 0;
+    protected static final int MAX_DAMAGE_TIMES = 3;
+    protected int damageTimes = 0;
+    protected final float ALERT_SHOWING_TIME = 1.5f;
+    protected float alertTime = 0;
 
     protected Player player = null;
 
-    private final MazeRunnerGame game;
+    protected final MazeRunnerGame game;
 
-    private final int enemyIndex;
+    protected final int enemyIndex;
 
     /**
      * Constructs a new Enemy instance with specified parameters.
