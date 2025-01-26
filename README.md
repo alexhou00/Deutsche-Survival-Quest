@@ -165,7 +165,6 @@ Deutsche Survival Quest offers pixel perfect collision with objects
 * Level 6:
 
 **Obstacles**:
-
 * Traps: 
 
 * Chasing enemies (dynamic object):
