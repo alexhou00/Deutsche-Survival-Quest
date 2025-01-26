@@ -20,41 +20,65 @@ public class BFSChasingEnemy extends ChasingEnemy {
         detectionRadius = 600f;
     }
 
-
+    /**
+     * Chases the player by determining the optimal path to the player's position using BFS (Breadth-First Search).
+     * Override method of {@link ChasingEnemy#chase}
+     * <p>
+     * If the path to the player is unavailable, the method checks the surrounding 3x3 grid
+     * to find an alternative path. If all paths fail, the default chase behavior from the superclass is invoked.
+     * <p>
+     * This method reduces the enemy's alert time and ensures it moves strategically towards the player.
+     *
+     * @param player The {@link Player} instance that the enemy chases.
+     * @param delta  The time in seconds since the last frame.
+     */
     protected void chase(Player player, float delta) {
+        // Remember: decrease the alert timer
         alertTime -= delta;
+
         // Find the path to the player using BFS
         List<Position> path = findPathTo(player.getX(), player.getY());
+        // If a path exists and has more than one step
+        if (processPath(path, delta))
+            return;
+
+        // ELSE path isn't found:
+        // If no direct path is found, search in a surrounding 3x3 grid for an alternative path
+        for (int offsetX = -1; offsetX <= 1; offsetX++){
+            for (int offsetY = -1; offsetY <= 1; offsetY++){
+                if (offsetX == 0 && offsetY == 0) continue; // Skip the current tile
+                // Attempt to find a path to the player from an adjacent tile
+                List<Position> alternativePath = findPathTo(player.getX(), player.getY());
+                if (processPath(alternativePath, delta)){
+                    return;
+                }
+
+            }
+        }
+
+        // If no alternative path is found, fallback to the default chase behavior of the ChasingEnemy
+        // foundAlternative == false:
+        super.chase(player, delta); // normal chase
+
+    }
+
+    /**
+     * Processes the path and moves towards the next position if a valid path exists.
+     *
+     * @param path  The list of positions representing the path to the target.
+     * @param delta The time in seconds since the last frame.
+     * @return {@code true} if the path is valid and the enemy moves; {@code false} otherwise.
+     */
+    private boolean processPath(List<Position> path, float delta) {
         if (path != null && path.size() > 1) {
-            // Set the next target to the next position in the path
+            // Move towards the next position in the path
             Position nextPosition = path.get(1);
             targetX = nextPosition.convertTo(Position.PositionUnit.PIXELS).getX();
             targetY = nextPosition.convertTo(Position.PositionUnit.PIXELS).getY();
-            super.moveTowardsTarget(delta);  // Use the parent class method for movement
+            super.moveTowardsTarget(delta);
+            return true;
         }
-        else{ // path not found
-            boolean flag = false;
-            for (int i=-1;i<=1;i++){
-                for (int j=-1;j<=1;j++){
-                    if (i==0 && j==0) continue;
-                    path = findPathTo(player.getX(), player.getY());
-                    if (path != null && path.size() > 1){
-                        flag = true;
-                        Position nextPosition = path.get(1);
-                        targetX = nextPosition.convertTo(Position.PositionUnit.PIXELS).getX();
-                        targetY = nextPosition.convertTo(Position.PositionUnit.PIXELS).getY();
-                        super.moveTowardsTarget(delta);
-                    }
-                }
-            }
-
-            if (!flag) // even after searching the 3x3 grid and still not found
-                super.chase(player, delta); // normal chase
-        }
-
-        // Use the parent class method for movement
-        //super.moveTowardsTarget(delta);
-        // todo: there are still problems when the player is in the wall tile, the enemy doesn't chase
+        return false; // No valid path
     }
 
     private List<Position> findPathTo(float playerX, float playerY) {
