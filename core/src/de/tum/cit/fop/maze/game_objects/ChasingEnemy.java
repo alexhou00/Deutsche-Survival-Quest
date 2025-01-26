@@ -20,8 +20,8 @@ import static java.lang.Math.abs;
 public class ChasingEnemy extends Character {
 
     private final TiledMapTileLayer collisionLayer;
-    private float targetX, targetY;
-    private final float detectionRadius;
+    protected float targetX, targetY;
+    protected float detectionRadius;
     private boolean isChasing;
     private final TextureRegion enemyTexture;
     private final TextureRegion alertSymbolTexture;
@@ -38,7 +38,7 @@ public class ChasingEnemy extends Character {
     private final float ALERT_SHOWING_TIME = 1.5f;
     private float alertTime = 0;
 
-    private Player player = null;
+    protected Player player = null;
 
     private final MazeRunnerGame game;
 
@@ -102,7 +102,7 @@ public class ChasingEnemy extends Character {
 
         // rectangle.set();
         // Check if the player is within the detection radius
-        if (isPlayerWithinDetectionRadius(player) && damageTimes < MAX_DAMAGE_TIMES) {
+        if (isPlayerWithinDetectionRadius(player, detectionRadius) && damageTimes < MAX_DAMAGE_TIMES) {
             // If the player is within the detection radius, chase the player
             if (!isChasing){ // previously, it wasn't chasing
                 alertTime = ALERT_SHOWING_TIME; // reset the time that the exclamation mark [!] need to be shown
@@ -113,7 +113,7 @@ public class ChasingEnemy extends Character {
             //Gdx.app.log("Enemy", "Chasing the player");
         } else {
             // If the player is outside the detection radius, move randomly
-            if (!isPlayerWithinDetectionRadius(player)) // if player isn't close enough anymore
+            if (!isPlayerWithinDetectionRadius(player, detectionRadius)) // if player isn't close enough anymore
                 damageTimes = 0; // immediately reset back the times it has damaged the player
             if (isChasing){ // previously, it was chasing
                 float dx = player.getX() - x; // dx > 0 means the player is on the right side, < 0 if on the left.
@@ -174,12 +174,13 @@ public class ChasingEnemy extends Character {
      * @param player the {@link Player} whose position is to be checked
      * @return {@code true} if the player is within the detection radius; {@code false} otherwise
      */
-    private boolean isPlayerWithinDetectionRadius(Player player) {
-
+    protected boolean isPlayerWithinDetectionRadius(Player player, float radius) {
+// radius is in pixels
         float dx = player.getX() - x;
         float dy = player.getY() - y;
         float distanceSquared = dx * dx + dy * dy;
-        return distanceSquared <= detectionRadius * detectionRadius;
+        //Gdx.app.log("enemy", "detect radius; distance Squared: " + distanceSquared);
+        return distanceSquared <= radius * radius;
     }
 
 
@@ -189,7 +190,7 @@ public class ChasingEnemy extends Character {
      * @param player The player object.
      * @param delta The delta time.
      */
-    private void chase(Player player, float delta) {
+    protected void chase(Player player, float delta) {
 
         alertTime -= delta;
         if (damageCooldown <= 0) {
@@ -221,7 +222,7 @@ public class ChasingEnemy extends Character {
     /**
      * Move towards the target position (the player).
      */
-    private void moveTowardsTarget(float delta) {
+    protected void moveTowardsTarget(float delta) {
         float dirX = targetX - x;
         float dirY = targetY - y;
 
