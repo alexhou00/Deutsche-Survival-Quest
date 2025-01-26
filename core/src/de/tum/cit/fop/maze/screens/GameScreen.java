@@ -350,9 +350,6 @@ public class GameScreen extends InputAdapter implements Screen {
         Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
         introPanel.addLabel(instructionsText, instructionsStyle, 80);
 
-        Label.LabelStyle continueStyle = new Label.LabelStyle(game.getSkin().get(Label.LabelStyle.class).font, Color.GRAY);
-        introPanel.addLabel("[PRESS SPACE BAR TO CONTINUE]", continueStyle, 80);
-
         introPanel.addButton("Start now", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -361,6 +358,9 @@ public class GameScreen extends InputAdapter implements Screen {
         }, 20);
 
         introPanel.addListener(ifSpaceKeyPressed(() -> introPanel.proceedToGame(game, player, tiles)));
+
+        Label.LabelStyle continueStyle = new Label.LabelStyle(game.getSkin().get(Label.LabelStyle.class).font, Color.GRAY);
+        introPanel.addLabel("[OR PRESS SPACE BAR TO CONTINUE]", continueStyle, 80);
     }
 
     public void createPausePanel() {
