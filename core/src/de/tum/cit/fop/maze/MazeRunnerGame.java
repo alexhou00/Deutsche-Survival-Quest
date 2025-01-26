@@ -1,6 +1,5 @@
 package de.tum.cit.fop.maze;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -49,13 +48,8 @@ public class MazeRunnerGame extends Game {
     private Skin skin;
 
     // Character animation downwards
-    private Animation<TextureRegion> characterDownAnimation;
-    private Animation<TextureRegion> characterUpAnimation;
-    private Animation<TextureRegion> characterLeftAnimation;
-    private Animation<TextureRegion> characterRightAnimation;
+    public Map<String, Animation<TextureRegion>> characterAnimations;
     private Animation<TextureRegion> characterIdleAnimation;
-
-    private Map<String, Animation<TextureRegion>> mobGuyAnimations;
 
     private Animation<TextureRegion> heartAnimation;
     private Animation<TextureRegion> coinAnimation;
@@ -285,7 +279,6 @@ public class MazeRunnerGame extends Game {
      */
     private void loadAnimation() {
         Texture walkSheet = new Texture(Gdx.files.internal("characters/character.png")); // TODO: Redesign our character
-        Texture mobGuySheet = new Texture(Gdx.files.internal("characters/ticket_guy.png"));
         Texture objectSheet = new Texture(Gdx.files.internal("original/objects.png"));
         Texture portalSheet = new Texture(Gdx.files.internal("portals/portalRings2.png"));
 
@@ -295,17 +288,11 @@ public class MazeRunnerGame extends Game {
         int animationFrames = 4; // for player
 
         // libGDX internal Array instead of ArrayList because of performance
-        Array<TextureRegion> downFrames = new Array<>(TextureRegion.class);
+        /*Array<TextureRegion> downFrames = new Array<>(TextureRegion.class);
         Array<TextureRegion> upFrames = new Array<>(TextureRegion.class);
         Array<TextureRegion> leftFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> rightFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> rightFrames = new Array<>(TextureRegion.class);*/
         Array<TextureRegion> idleFrame = new Array<>(TextureRegion.class);
-
-        Map<String, Array<TextureRegion>> mobGuyFrames = new HashMap<>();
-        mobGuyFrames.put("down", new Array<>(TextureRegion.class));
-        mobGuyFrames.put("up", new Array<>(TextureRegion.class));
-        mobGuyFrames.put("left", new Array<>(TextureRegion.class));
-        mobGuyFrames.put("right", new Array<>(TextureRegion.class));
 
         Array<TextureRegion> heartFrames = new Array<>(TextureRegion.class);
         Array<TextureRegion> coinFrames = new Array<>(TextureRegion.class);
@@ -316,23 +303,14 @@ public class MazeRunnerGame extends Game {
 
 
                 // Add all frames to the animation
-        int framesXOffset = 0; // define how many frames of X to shift to start extracting our character on "character.png"
+        /*int framesXOffset = 0; // define how many frames of X to shift to start extracting our character on "character.png"
         for (int col = 0; col < animationFrames; col++) {
             downFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, 0, frameWidth, frameHeight));
             rightFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, frameHeight, frameWidth, frameHeight));
             upFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, frameHeight * 2, frameWidth, frameHeight));
             leftFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, frameHeight * 3, frameWidth, frameHeight));
-        }
+        }*/
         idleFrame.add(new TextureRegion(walkSheet, 0, 0, frameWidth, frameHeight));
-
-        animationFrames = 3;
-        int mobFrameSize = 16;
-        for (int col = 0; col < animationFrames; col++){
-            mobGuyFrames.get("down").add(new TextureRegion(mobGuySheet, (col) * mobFrameSize, 0, mobFrameSize, mobFrameSize));
-            mobGuyFrames.get("left").add(new TextureRegion(mobGuySheet, mobFrameSize * animationFrames + (col) * mobFrameSize, 0, mobFrameSize, mobFrameSize));
-            mobGuyFrames.get("right").add(new TextureRegion(mobGuySheet, mobFrameSize * animationFrames * 2 + (col) * mobFrameSize, 0, mobFrameSize, mobFrameSize));
-            mobGuyFrames.get("up").add(new TextureRegion(mobGuySheet, mobFrameSize * animationFrames * 3 + (col) * mobFrameSize, 0, mobFrameSize, mobFrameSize));
-        }
 
         heartFrames.add(new TextureRegion(objectSheet, 2, 51, 11, 11));
         heartFrames.add(new TextureRegion(objectSheet, 2+16, 51, 11, 11));
@@ -354,17 +332,13 @@ public class MazeRunnerGame extends Game {
         gesundheitskarteRegion = new TextureRegion(objectSheet, 224, 96, 32, 32);
 
 
-        characterDownAnimation = new Animation<>(0.1f, downFrames);
+        /*characterDownAnimation = new Animation<>(0.1f, downFrames);
         characterUpAnimation = new Animation<>(0.1f, upFrames);
         characterLeftAnimation = new Animation<>(0.1f, leftFrames);
-        characterRightAnimation = new Animation<>(0.1f, rightFrames);
+        characterRightAnimation = new Animation<>(0.1f, rightFrames);*/
         characterIdleAnimation = new Animation<>(0.1f, idleFrame);
 
-        mobGuyAnimations = new HashMap<>();
-        mobGuyAnimations.put("down", new Animation<>(0.1f, mobGuyFrames.get("down")));
-        mobGuyAnimations.put("left", new Animation<>(0.1f, mobGuyFrames.get("left")));
-        mobGuyAnimations.put("right", new Animation<>(0.1f, mobGuyFrames.get("right")));
-        mobGuyAnimations.put("up", new Animation<>(0.1f, mobGuyFrames.get("up")));
+        characterAnimations = createDirectionalAnimations(walkSheet, false, 0.1f, 0, 16, 32, 4);
 
         heartAnimation = new Animation<>(0.1f, heartFrames);
         coinAnimation = new Animation<>(0.1f, coinFrames);
@@ -408,27 +382,23 @@ public class MazeRunnerGame extends Game {
     }
 
     public Animation<TextureRegion> getCharacterDownAnimation() {
-        return characterDownAnimation;
+        return characterAnimations.get("down");
     }
 
     public Animation<TextureRegion> getCharacterUpAnimation() {
-        return characterUpAnimation;
+        return characterAnimations.get("up");
     }
 
     public Animation<TextureRegion> getCharacterLeftAnimation() {
-        return characterLeftAnimation;
+        return characterAnimations.get("left");
     }
 
     public Animation<TextureRegion> getCharacterRightAnimation() {
-        return characterRightAnimation;
+        return characterAnimations.get("right");
     }
 
     public Animation<TextureRegion> getCharacterIdleAnimation() {
         return characterIdleAnimation;
-    }
-
-    public Map<String, Animation<TextureRegion>> getMobGuyAnimations() {
-        return mobGuyAnimations;
     }
 
     public Animation<TextureRegion> getHeartAnimation() {
@@ -601,4 +571,48 @@ public class MazeRunnerGame extends Game {
             sound.setVolume(newVolume);
         }
     }*/
+
+    public static Map<String, Animation<TextureRegion>> createDirectionalAnimations(
+            Texture spriteSheet,
+            boolean inOneRow, // are all the frames on the same row? Or is one row for one direction
+            float frameDuration,
+            int startY,         // The Y offset on the sprite sheet where the row begins
+            int frameWidth,
+            int frameHeight,
+            int totalFrames
+    ) {
+        // 1. Create frames map
+        Map<String, Array<TextureRegion>> framesMap = new HashMap<>();
+        framesMap.put("down", new Array<>(TextureRegion.class));
+        framesMap.put("up", new Array<>(TextureRegion.class));
+        framesMap.put("left", new Array<>(TextureRegion.class));
+        framesMap.put("right", new Array<>(TextureRegion.class));
+
+        // 2. Populate with texture slices
+        if (inOneRow) { // like extracting the enemy
+            for (int col = 0; col < totalFrames; col++) {
+                framesMap.get("down").add(new TextureRegion(spriteSheet, (col) * frameWidth, startY, frameWidth, frameHeight));
+                framesMap.get("left").add(new TextureRegion(spriteSheet, frameWidth * totalFrames + (col) * frameWidth, startY, frameWidth, frameHeight));
+                framesMap.get("right").add(new TextureRegion(spriteSheet, frameWidth * totalFrames * 2 + (col) * frameWidth, startY, frameWidth, frameHeight));
+                framesMap.get("up").add(new TextureRegion(spriteSheet, frameWidth * totalFrames * 3 + (col) * frameWidth, startY, frameWidth, frameHeight));
+            }
+        }
+        else{ // like extracting the player
+            for (int col = 0; col < totalFrames; col++) {
+                framesMap.get("down").add(new TextureRegion(spriteSheet, (col) * frameWidth, startY, frameWidth, frameHeight));
+                framesMap.get("right").add(new TextureRegion(spriteSheet, (col) * frameWidth, startY + frameHeight, frameWidth, frameHeight));
+                framesMap.get("up").add(new TextureRegion(spriteSheet, (col) * frameWidth, startY + frameHeight * 2, frameWidth, frameHeight));
+                framesMap.get("left").add(new TextureRegion(spriteSheet, (col) * frameWidth, startY + frameHeight * 3, frameWidth, frameHeight));
+            }
+        }
+
+        // 3. Build animations
+        Map<String, Animation<TextureRegion>> animations = new HashMap<>();
+        animations.put("down", new Animation<>(frameDuration, framesMap.get("down")));
+        animations.put("left", new Animation<>(frameDuration, framesMap.get("left")));
+        animations.put("right", new Animation<>(frameDuration, framesMap.get("right")));
+        animations.put("up", new Animation<>(frameDuration, framesMap.get("up")));
+
+        return animations;
+    }
 }

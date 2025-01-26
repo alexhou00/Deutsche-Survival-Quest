@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static de.tum.cit.fop.maze.MazeRunnerGame.createDirectionalAnimations;
 import static de.tum.cit.fop.maze.level.Tiles.TileType.EXTRA;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
@@ -37,7 +38,7 @@ public class Tiles {
     public Array<Trap> traps;
 
     public Array<ChasingEnemy> chasingEnemies;
-    public  Map<String, Animation<TextureRegion>> enemyAnimations;
+    public Map<String, Animation<TextureRegion>> enemyAnimations;
 
     /** entrance tile, coordinates of the tile can be accessed through this */
     public Entrance entrance;
@@ -191,28 +192,8 @@ public class Tiles {
             }
         }
 
-
-
-        Map<String, Array<TextureRegion>> mobGuyFrames = new HashMap<>();
-        mobGuyFrames.put("down", new Array<>(TextureRegion.class));
-        mobGuyFrames.put("up", new Array<>(TextureRegion.class));
-        mobGuyFrames.put("left", new Array<>(TextureRegion.class));
-        mobGuyFrames.put("right", new Array<>(TextureRegion.class));
-
-        int animationFrames = 3;
-        int mobFrameSize = 16;
-        for (int col = 0; col < animationFrames; col++){
-            mobGuyFrames.get("down").add(new TextureRegion(obstacleSheet, (col) * mobFrameSize, 32, mobFrameSize, mobFrameSize));
-            mobGuyFrames.get("left").add(new TextureRegion(obstacleSheet, mobFrameSize * animationFrames + (col) * mobFrameSize, 32, mobFrameSize, mobFrameSize));
-            mobGuyFrames.get("right").add(new TextureRegion(obstacleSheet, mobFrameSize * animationFrames * 2 + (col) * mobFrameSize, 32, mobFrameSize, mobFrameSize));
-            mobGuyFrames.get("up").add(new TextureRegion(obstacleSheet, mobFrameSize * animationFrames * 3 + (col) * mobFrameSize, 32, mobFrameSize, mobFrameSize));
-        }
-
-        enemyAnimations = new HashMap<>();
-        enemyAnimations.put("down", new Animation<>(0.1f, mobGuyFrames.get("down")));
-        enemyAnimations.put("left", new Animation<>(0.1f, mobGuyFrames.get("left")));
-        enemyAnimations.put("right", new Animation<>(0.1f, mobGuyFrames.get("right")));
-        enemyAnimations.put("up", new Animation<>(0.1f, mobGuyFrames.get("up")));
+        enemyAnimations = createDirectionalAnimations(obstacleSheet, true, 0.1f,
+                32, 16, 16, 3);
 
         return tileset;
     }
