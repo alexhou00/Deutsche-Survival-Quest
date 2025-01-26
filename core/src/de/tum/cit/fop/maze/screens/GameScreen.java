@@ -798,7 +798,7 @@ public class GameScreen extends InputAdapter implements Screen {
             ); // width and height are size on the screen
         } else { // Character Idle Animation
             game.getSpriteBatch().draw(
-                    game.getCharacterIdleAnimation().getKeyFrame(sinusInput, true),
+                    game.getCharacterIdleRegion(),
                     player.getOriginX(),
                     player.getOriginY(),
                     player.getWidthOnScreen(),

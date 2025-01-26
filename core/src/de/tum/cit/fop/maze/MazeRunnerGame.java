@@ -49,7 +49,7 @@ public class MazeRunnerGame extends Game {
 
     // Character animation downwards
     public Map<String, Animation<TextureRegion>> characterAnimations;
-    private Animation<TextureRegion> characterIdleAnimation;
+    private TextureRegion characterIdleRegion;
 
     private Animation<TextureRegion> heartAnimation;
     private Animation<TextureRegion> coinAnimation;
@@ -282,70 +282,20 @@ public class MazeRunnerGame extends Game {
         Texture objectSheet = new Texture(Gdx.files.internal("original/objects.png"));
         Texture portalSheet = new Texture(Gdx.files.internal("portals/portalRings2.png"));
 
+        int playerFrameWidth = 16;
+        int playerFrameHeight = 32;
 
-        int frameWidth = 16;
-        int frameHeight = 32;
-        int animationFrames = 4; // for player
+        characterIdleRegion = new TextureRegion(walkSheet, 0, 0, playerFrameWidth, playerFrameHeight);
+        //createAnimation(walkSheet, 0.1f, 0, 0, playerFrameWidth, playerFrameHeight, 1, playerFrameWidth);
 
-        // libGDX internal Array instead of ArrayList because of performance
-        /*Array<TextureRegion> downFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> upFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> leftFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> rightFrames = new Array<>(TextureRegion.class);*/
-        Array<TextureRegion> idleFrame = new Array<>(TextureRegion.class);
+        characterAnimations = createDirectionalAnimations(walkSheet, false, 0.1f, 0, playerFrameWidth, playerFrameHeight, 4);
 
-        Array<TextureRegion> heartFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> coinFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> staminaPotionFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> pretzelFrames = new Array<>(TextureRegion.class);
-
-        Array<TextureRegion> portalFrames = new Array<>(TextureRegion.class);
-
-
-                // Add all frames to the animation
-        /*int framesXOffset = 0; // define how many frames of X to shift to start extracting our character on "character.png"
-        for (int col = 0; col < animationFrames; col++) {
-            downFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, 0, frameWidth, frameHeight));
-            rightFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, frameHeight, frameWidth, frameHeight));
-            upFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, frameHeight * 2, frameWidth, frameHeight));
-            leftFrames.add(new TextureRegion(walkSheet, (col + framesXOffset) * frameWidth, frameHeight * 3, frameWidth, frameHeight));
-        }*/
-        idleFrame.add(new TextureRegion(walkSheet, 0, 0, frameWidth, frameHeight));
-
-        heartFrames.add(new TextureRegion(objectSheet, 2, 51, 11, 11));
-        heartFrames.add(new TextureRegion(objectSheet, 2+16, 51, 11, 11));
-        heartFrames.add(new TextureRegion(objectSheet, 2+16*2, 51, 11, 11));
-        heartFrames.add(new TextureRegion(objectSheet, 2+16*3, 51, 11, 11));
-
-        for (int i=0;i<4;i++)
-            coinFrames.add(new TextureRegion(objectSheet, 2+16*i, 66, 11, 11));
-
-        for (int i=0;i<3;i++)
-            staminaPotionFrames.add(new TextureRegion(objectSheet, 288+32*i, 64, 32, 32));
-
-        for (int i=0;i<6;i++)
-            pretzelFrames.add(new TextureRegion(objectSheet, 128+32*i, 128, 32, 32));
-
-        for (int i=0;i<5;i++)
-            portalFrames.add(new TextureRegion(portalSheet, 32 * i, 0, 32, 32));
-
+        heartAnimation = createAnimation(objectSheet, 0.1f, 2, 51, 11, 11, 4, 16);
+        coinAnimation = createAnimation(objectSheet, 0.1f, 2, 66, 11, 11, 4, 16);
+        staminaPotionAnimation = createAnimation(objectSheet, 0.1f, 288, 64, 32, 32, 3, 32);
+        pretzelAnimation = createAnimation(objectSheet, 0.1f, 128, 128, 32, 32, 6, 32);
+        portalAnimation = createAnimation(portalSheet, 0.1f, 0, 0, 32, 32, 5, 32);
         gesundheitskarteRegion = new TextureRegion(objectSheet, 224, 96, 32, 32);
-
-
-        /*characterDownAnimation = new Animation<>(0.1f, downFrames);
-        characterUpAnimation = new Animation<>(0.1f, upFrames);
-        characterLeftAnimation = new Animation<>(0.1f, leftFrames);
-        characterRightAnimation = new Animation<>(0.1f, rightFrames);*/
-        characterIdleAnimation = new Animation<>(0.1f, idleFrame);
-
-        characterAnimations = createDirectionalAnimations(walkSheet, false, 0.1f, 0, 16, 32, 4);
-
-        heartAnimation = new Animation<>(0.1f, heartFrames);
-        coinAnimation = new Animation<>(0.1f, coinFrames);
-        staminaPotionAnimation = new Animation<>(0.1f, staminaPotionFrames);
-        pretzelAnimation = new Animation<>(0.1f, pretzelFrames);
-        portalAnimation = new Animation<>(0.1f, portalFrames);
-
     }
 
 
@@ -397,8 +347,8 @@ public class MazeRunnerGame extends Game {
         return characterAnimations.get("right");
     }
 
-    public Animation<TextureRegion> getCharacterIdleAnimation() {
-        return characterIdleAnimation;
+    public TextureRegion getCharacterIdleRegion() {
+        return characterIdleRegion;
     }
 
     public Animation<TextureRegion> getHeartAnimation() {
@@ -614,5 +564,26 @@ public class MazeRunnerGame extends Game {
         animations.put("up", new Animation<>(frameDuration, framesMap.get("up")));
 
         return animations;
+    }
+
+    public static Animation<TextureRegion> createAnimation(
+            Texture sheet,
+            float frameDuration,
+            int startX,
+            int startY,
+            int frameWidth,
+            int frameHeight,
+            int frameCount,
+            int xIncrement
+    ) {
+        Array<TextureRegion> frames = new Array<>(TextureRegion.class);
+        for (int i = 0; i < frameCount; i++) {
+            frames.add(new TextureRegion(sheet,
+                    startX + i * xIncrement,
+                    startY,
+                    frameWidth,
+                    frameHeight));
+        }
+        return new Animation<>(frameDuration, frames);
     }
 }
