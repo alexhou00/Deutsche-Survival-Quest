@@ -28,7 +28,7 @@ import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
  * or more specifically, a LevelManager
  * It manages tile (and also other objects for the level) creation for each level
  */ // TODO: CLEAN UP THE CODE HERE
-public class Tiles {
+public class LevelManager {
     public TiledMapTileLayer layer;
 
     private Position keyTilePosition;
@@ -56,9 +56,9 @@ public class Tiles {
     private final MazeRunnerGame game;
 
     /**
-     * Constructor: initializes the Tiles object with default values.
+     * Constructor: initializes the LevelManager object with default values.
      */
-    public Tiles(MazeRunnerGame game) {
+    public LevelManager(MazeRunnerGame game) {
         keyTilePosition = new Position(0, 0, TILES); // by default (0,0)
         entrance = null; //getEntrance();
         exits = new Array<>();
@@ -403,15 +403,15 @@ public class Tiles {
 
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
-                Gdx.app.error("Tiles", "Error loading tiles: ", e);
+                Gdx.app.error("LevelManager", "Error loading tiles: ", e);
             }
 
             map.getLayers().add(layer);
 
         }
 
-        Gdx.app.log("Tiles", "Tiled Map loaded");
-        //Gdx.app.log("Tiles", "entrance position: " + entrance.getTilePosition());
+        Gdx.app.log("LevelManager", "Tiled Map loaded");
+        //Gdx.app.log("LevelManager", "entrance position: " + entrance.getTilePosition());
         return map;
     }
 
@@ -493,7 +493,7 @@ public class Tiles {
 
     /**
      * Retrieves the {@link TileType} at the specified coordinates on the map.
-     * Equivalent to {@link Tiles#getTileEnumOnMap() getTileEnumOnMap()[x][y]}
+     * Equivalent to {@link LevelManager#getTileEnumOnMap() getTileEnumOnMap()[x][y]}
      *
      * @param x the x-coordinate of the tile.
      * @param y the y-coordinate of the tile.

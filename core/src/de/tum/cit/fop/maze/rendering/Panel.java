@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.game_objects.Player;
-import de.tum.cit.fop.maze.level.Tiles;
+import de.tum.cit.fop.maze.level.LevelManager;
 
 import static de.tum.cit.fop.maze.util.Position.getWorldCoordinateInPixels;
 
@@ -110,11 +110,11 @@ public class Panel extends Actor{
     }
 
 
-    public void proceedToGame(MazeRunnerGame game, Player player, Tiles tiles) {
+    public void proceedToGame(MazeRunnerGame game, Player player, LevelManager levels) {
         this.getTable().remove(); // Remove the panel and start the game
         game.resume();
-        player.setPosition(getWorldCoordinateInPixels(tiles.entrance.getTileX()),
-                getWorldCoordinateInPixels(tiles.entrance.getTileY()));
+        player.setPosition(getWorldCoordinateInPixels(levels.entrance.getTileX()),
+                getWorldCoordinateInPixels(levels.entrance.getTileY()));
     }
 
     public void proceedToNextLevel(MazeRunnerGame game){

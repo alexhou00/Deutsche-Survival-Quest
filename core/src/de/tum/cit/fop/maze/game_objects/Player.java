@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.base.GameObject;
-import de.tum.cit.fop.maze.level.Tiles;
+import de.tum.cit.fop.maze.level.LevelManager;
 import de.tum.cit.fop.maze.base.Character;
 import de.tum.cit.fop.maze.tiles.SpeedBoost;
 import de.tum.cit.fop.maze.screens.GameScreen;
@@ -52,8 +52,8 @@ public class Player extends Character {
      * <li> A hitbox is a imaginary, rectangular bounding box that is exactly on our sprite
      *  They are used to determine if two or more game objects are colliding with each other
      *  </li>
-     * @param tileX             world x position in tiles where the player is initially spawn
-     * @param tileY             world y position in tiles where the player is initially spawn
+     * @param tileX             world x position in levels where the player is initially spawn
+     * @param tileY             world y position in levels where the player is initially spawn
      * @param width             the width of the sprite's frame in pixels in the original image file
      * @param height            the height of the sprite's frame in pixels in the original image file
      * @param hitboxWidth       the width of the sprite's hitbox in pixels in the original image file
@@ -62,17 +62,17 @@ public class Player extends Character {
      * @param heightOnScreen    the actual size of the sprite on the screen
      * @param lives             Number of lives the player starts with.
      */
-    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, GameScreen gameScreen, Tiles tiles) {
-        super(getWorldCoordinateInPixels(tileX), getWorldCoordinateInPixels(tileY), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, tiles);
+    public Player(int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, GameScreen gameScreen, LevelManager levels) {
+        super(getWorldCoordinateInPixels(tileX), getWorldCoordinateInPixels(tileY), width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, levels);
 
         this.isMoving = false;
         // this.speed = BASE_SPEED; // normal speed when moving either vertically or horizontally
-        //this.collisionLayer = tiles.layer;
-        // this.tiles = tiles;
+        //this.collisionLayer = levels.layer;
+        // this.levels = levels;
         this.gameScreen = gameScreen;
         this.game = gameScreen.game;
         this.stamina = maxStamina; // Initialize stamina to max
-        if (tiles.isCameraAngled()){
+        if (levels.isCameraAngled()){
             this.hitboxHeight /= 2;
         }
 
@@ -253,7 +253,7 @@ public class Player extends Character {
      */
     @Override
     protected boolean canMoveTo(float x, float y){
-        if (tiles.isCameraAngled()) // not completely top-down 90° view; instead, it's with a slightly angled view
+        if (levels.isCameraAngled()) // not completely top-down 90° view; instead, it's with a slightly angled view
             y -= getHitboxHeightOnScreen()/2; // hitboxHeight is updated, this is the center of the lower-half of the current hitbox
         return super.canMoveTo(x,y);
     }
@@ -285,7 +285,7 @@ public class Player extends Character {
     private boolean isPointWithinWholeTileOf(float x, float y, float offsetX, float offsetY, Class<?> objectClass) {
         int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
         int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
-        return isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).isPointInTile(x + offsetX, y + offsetY);
+        return isTileInstanceOf(tileX, tileY, objectClass) && levels.getTileOnMap(tileX, tileY).isPointInTile(x + offsetX, y + offsetY);
     }
 
     /**
@@ -297,7 +297,7 @@ public class Player extends Character {
     //for traps and enemies
     private void checkCollisions() {
         // Access traps and enemies through GameManager
-        Array<Trap> traps = tiles.traps;
+        Array<Trap> traps = levels.traps;
 
         // Check for collision with traps
 
@@ -317,7 +317,7 @@ public class Player extends Character {
         }
 
         // Check for collision with enemies
-        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)) {
+        for (ChasingEnemy enemy : iterate(levels.chasingEnemies)) {
             if (enemy.isTouching(this) && !isHurt) {
                 bounceBack(enemy);
             }
@@ -385,7 +385,7 @@ public class Player extends Character {
      * Resets the player's position to the start position.
      */
     public void resetToStartPosition() {
-        hitbox.setPosition(tiles.entrance.getTileX(), tiles.entrance.getTileY());
+        hitbox.setPosition(levels.entrance.getTileX(), levels.entrance.getTileY());
     }
 
     @Override

@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.base.Character;
 import de.tum.cit.fop.maze.base.GameObject;
-import de.tum.cit.fop.maze.level.Tiles;
+import de.tum.cit.fop.maze.level.LevelManager;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static java.lang.Math.abs;
@@ -47,8 +47,8 @@ public class ChasingEnemy extends Character {
     /**
      * Constructs a new Enemy instance with specified parameters.
      *
-     * @param tileX          The initial x-coordinate (in tiles) of the character.
-     * @param tileY          The initial y-coordinate (in tiles) of the character.
+     * @param tileX          The initial x-coordinate (in levels) of the character.
+     * @param tileY          The initial y-coordinate (in levels) of the character.
      * @param width          The width of the character.
      * @param height         The height of the character.
      * @param hitboxWidth    The width of the character's hitbox.
@@ -58,10 +58,10 @@ public class ChasingEnemy extends Character {
      * @param lives          The number of lives the character starts with.
      */
     public ChasingEnemy(TextureRegion textureRegion, int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight,
-                        float widthOnScreen, float heightOnScreen, float lives, Tiles tiles, MazeRunnerGame game, int enemyIndex) {
+                        float widthOnScreen, float heightOnScreen, float lives, LevelManager levels, MazeRunnerGame game, int enemyIndex) {
         super((int) ((tileX + 0.5f) * TILE_SCREEN_SIZE), (int) ((tileY + 0.5f) * TILE_SCREEN_SIZE),
-                width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, tiles);
-        this.collisionLayer = tiles.layer;
+                width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, levels);
+        this.collisionLayer = levels.layer;
         this.targetX = 0; // Start at the enemy's initial position
         this.targetY = 0;
         setRandomTarget();
@@ -288,8 +288,7 @@ public class ChasingEnemy extends Character {
     //for traps and enemies
     private void checkCollisions(float delta) {
         // Access traps and enemies through GameManager
-        Array<Trap> traps = tiles.traps;
-        // ChasingEnemy chasingEnemies = gameScreen.tiles.chasingEnemies.get(0); //TODO: change the .get(0)
+        Array<Trap> traps = levels.traps;
 
         // Check for collision with traps
 
@@ -303,7 +302,7 @@ public class ChasingEnemy extends Character {
 
 
         // Check for collision with enemies
-        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)) {
+        for (ChasingEnemy enemy : iterate(levels.chasingEnemies)) {
             if (!enemy.equals(this) && enemy.isTouching(this)) {
                 stepBackABit(delta, enemy);
             }
@@ -341,7 +340,7 @@ public class ChasingEnemy extends Character {
      * @return {@code true} if this object is touching at least one trap; {@code false} otherwise
      */
     private boolean isTouchingTraps() {
-        for (Trap trap : iterate(tiles.traps)) {
+        for (Trap trap : iterate(levels.traps)) {
             if (trap.isTouching(this)) {
                 return true;
             }
@@ -350,7 +349,7 @@ public class ChasingEnemy extends Character {
     }
 
     protected boolean isTouchingOtherEnemies(){
-        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)) {
+        for (ChasingEnemy enemy : iterate(levels.chasingEnemies)) {
             if (!enemy.equals(this) && enemy.isTouching(this)) {
                 return true;
             }
@@ -407,7 +406,7 @@ public class ChasingEnemy extends Character {
 
     //TODO decide on do we need this
     protected boolean isTouchingTrap() {
-        for (Trap trap : iterate(tiles.traps)) {
+        for (Trap trap : iterate(levels.traps)) {
             if (trap.isTouching(this)) {
                 return true;
             }

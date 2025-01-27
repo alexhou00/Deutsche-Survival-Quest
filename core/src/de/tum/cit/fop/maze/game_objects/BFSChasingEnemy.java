@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.tum.cit.fop.maze.MazeRunnerGame;
-import de.tum.cit.fop.maze.level.Tiles;
+import de.tum.cit.fop.maze.level.LevelManager;
 import de.tum.cit.fop.maze.tiles.TileType;
 import de.tum.cit.fop.maze.util.Position;
 
@@ -19,8 +19,8 @@ public class BFSChasingEnemy extends ChasingEnemy {
     private final List<int[]> shuffledDirections;
 
     public BFSChasingEnemy(TextureRegion textureRegion, int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight,
-                           float widthOnScreen, float heightOnScreen, float lives, Tiles tiles, MazeRunnerGame game, int enemyIndex) {
-        super(textureRegion, tileX, tileY, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, tiles, game, enemyIndex);
+                           float widthOnScreen, float heightOnScreen, float lives, LevelManager levels, MazeRunnerGame game, int enemyIndex) {
+        super(textureRegion, tileX, tileY, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, levels, game, enemyIndex);
         detectionRadius = 600f;
         random = new Random(this.hashCode() + tileX * 31L + 31L * 31 * tileY); // Seed the random generator with the unique hashcode
         int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
@@ -160,8 +160,8 @@ public class BFSChasingEnemy extends ChasingEnemy {
 
     private boolean isTileWalkable(int x, int y) {
         try {
-            TileType tileType = tiles.getTileEnumOnMap(x, y);
-            return tileType != TileType.WALL && tileType != TileType.TRAP;//tileType == Tiles.TileType.OTHER || tileType == Tiles.TileType.EXIT || tileType == Tiles.TileType.EXTRA;
+            TileType tileType = levels.getTileEnumOnMap(x, y);
+            return tileType != TileType.WALL && tileType != TileType.TRAP;//tileType == LevelManager.TileType.OTHER || tileType == LevelManager.TileType.EXIT || tileType == LevelManager.TileType.EXTRA;
         }
         catch (ArrayIndexOutOfBoundsException e){
             Gdx.app.error("BFS Enemy", x  + ", " + y + e.getMessage());
@@ -223,7 +223,7 @@ public class BFSChasingEnemy extends ChasingEnemy {
         // or surrounded by walls
         //Gdx.app.log("BFS Enemy", "detect cc");
         Position playerPosition = getTilePosition(player.getX(), player.getY());
-        if (tiles.getTileEnumOnMap(playerPosition.getTileX(), playerPosition.getTileY()).equals(TileType.WALL)) {
+        if (levels.getTileEnumOnMap(playerPosition.getTileX(), playerPosition.getTileY()).equals(TileType.WALL)) {
             return super.isPlayerWithinDetectionRadius(player, radius); //then, we do normal detection
         }
         else{

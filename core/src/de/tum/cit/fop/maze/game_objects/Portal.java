@@ -3,18 +3,11 @@ package de.tum.cit.fop.maze.game_objects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import de.tum.cit.fop.maze.MazeRunnerGame;
-import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.base.StaticObject;
-import de.tum.cit.fop.maze.level.Tiles;
-import de.tum.cit.fop.maze.screens.GameScreen;
-import de.tum.cit.fop.maze.tiles.Entrance;
+import de.tum.cit.fop.maze.level.LevelManager;
 
-import java.awt.*;
-
-import static de.tum.cit.fop.maze.util.Constants.TILE_SCREEN_SIZE;
 import static de.tum.cit.fop.maze.util.Position.getWorldCoordinateInPixels;
 
 /** The third obstacle, rather than static traps & enemies, it must be something ingenious. Use your imagination and experience in videogames.*/
@@ -23,7 +16,7 @@ public class Portal extends StaticObject {
     private boolean isActive; // Indicates if the portal is active
     private final float activeDuration = 5f; // Duration for which the portal is active
     private final float cycleDuration = 20f; // Total duration of a cycle (inactive + active)
-    private final Tiles tiles;
+    private final LevelManager levels;
 
     private Player player = null;
     MazeRunnerGame game;
@@ -40,11 +33,11 @@ public class Portal extends StaticObject {
      * @param widthOnScreen The width of the portal as displayed on screen.
      * @param heightOnScreen The height of the portal as displayed on screen.
      */
-    public Portal(Tiles tiles, float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, MazeRunnerGame game) {
+    public Portal(LevelManager levels, float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, MazeRunnerGame game) {
         super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
         this.elapsedTime = 0;
         this.isActive = false;
-        this.tiles = tiles;
+        this.levels = levels;
         this.game = game;
     }
 
@@ -77,7 +70,7 @@ public class Portal extends StaticObject {
      * Handles the player's interaction with the portal when touched.
      *
      * <p>If the portal is currently active, this method teleports the player to
-     * the entrance position defined in the tiles configuration. If the tiles
+     * the entrance position defined in the levels configuration. If the levels
      * or entrance are not properly initialized, an error message is logged.</p>
      *
      * @param player The player who touches the portal.
@@ -86,13 +79,13 @@ public class Portal extends StaticObject {
     public void onPlayerTouch(Player player) {
         if (isActive) {
             game.getSoundEffectTeleport().play();
-            // Teleport the player to the entrance position (assuming tiles.entrance is initialized)
-            if (tiles != null && tiles.getEntrance()!= null) {
-                player.setX(getWorldCoordinateInPixels(tiles.entrance.getTileX()));
-                player.setY(getWorldCoordinateInPixels(tiles.entrance.getTileY()));
+            // Teleport the player to the entrance position (assuming levels.entrance is initialized)
+            if (levels != null && levels.getEntrance()!= null) {
+                player.setX(getWorldCoordinateInPixels(levels.entrance.getTileX()));
+                player.setY(getWorldCoordinateInPixels(levels.entrance.getTileY()));
                 Gdx.app.log("Portal", "Player teleported to entrance position.");
             } else {
-                Gdx.app.log("Portal", "Error: Entrance or Tiles not initialized.");
+                Gdx.app.log("Portal", "Error: Entrance or LevelManager not initialized.");
             }
         }
     }

@@ -2,12 +2,8 @@ package de.tum.cit.fop.maze.base;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.Array;
-import de.tum.cit.fop.maze.game_objects.ChasingEnemy;
-import de.tum.cit.fop.maze.game_objects.Trap;
-import de.tum.cit.fop.maze.level.Tiles;
+import de.tum.cit.fop.maze.level.LevelManager;
 import de.tum.cit.fop.maze.rendering.SpeechBubble;
-import de.tum.cit.fop.maze.screens.GameScreen;
 import de.tum.cit.fop.maze.tiles.Tile;
 import de.tum.cit.fop.maze.tiles.Wall;
 
@@ -34,7 +30,7 @@ public abstract class Character extends GameObject {
 
     protected boolean paused;
 
-    protected final Tiles tiles;
+    protected final LevelManager levels;
 
     protected float SPEECH_COOLDOWN_TIME = 5;
     protected float speechCooldown = SPEECH_COOLDOWN_TIME;
@@ -53,14 +49,14 @@ public abstract class Character extends GameObject {
      * @param heightOnScreen The height of the character as displayed on screen.
      * @param lives The number of lives the character starts with.
      */
-    public Character(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, Tiles tiles) {
+    public Character(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, float lives, LevelManager levels) {
         super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
         this.lives = lives;
         this.velX = 0;
         this.velY = 0;
         this.speed = 0;
         this.speechBubble = new SpeechBubble();
-        this.tiles = tiles;
+        this.levels = levels;
     }
 
     /**
@@ -111,7 +107,7 @@ public abstract class Character extends GameObject {
                     "Player's " +
                             ((offsetX > 0) ? "right" : "left") + "-" + ((offsetY > 0) ? "upper" : "lower") +
                             " corner collided with tile at position " + tileX + ", " + tileY);*/
-        return isTileInstanceOf(tileX, tileY, objectClass) && tiles.getTileOnMap(tileX, tileY).isCollidingPoint(x + offsetX, y + offsetY);
+        return isTileInstanceOf(tileX, tileY, objectClass) && levels.getTileOnMap(tileX, tileY).isCollidingPoint(x + offsetX, y + offsetY);
     }
 
     /**
@@ -124,7 +120,7 @@ public abstract class Character extends GameObject {
     protected boolean isTileInstanceOf(int tileX, int tileY, Class<?> objectClass) {
         try {
             if (tileX < horizontalTilesCount && tileY < verticalTilesCount){
-                Tile tile = tiles.getTileOnMap(tileX, tileY);
+                Tile tile = levels.getTileOnMap(tileX, tileY);
                 return objectClass.isInstance(tile);
             }
             else

@@ -25,7 +25,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.fop.maze.*;
 import de.tum.cit.fop.maze.game_objects.*;
-import de.tum.cit.fop.maze.level.Tiles;
+import de.tum.cit.fop.maze.level.LevelManager;
 import de.tum.cit.fop.maze.rendering.ElementRenderer;
 import de.tum.cit.fop.maze.rendering.Panel;
 import de.tum.cit.fop.maze.rendering.SpotlightEffect;
@@ -63,7 +63,7 @@ public class GameScreen extends InputAdapter implements Screen {
     private float sinusInput = 0f;  // work as a timer to create a smooth animation with trig functions
 
     private final Player player;
-    public Tiles tiles; // Tile system for the map
+    public LevelManager levels; // Tile system for the map
     private final Key key;
     TextureRegion keyRegion;
     private final Array<Collectibles> collectibles;
@@ -135,29 +135,29 @@ public class GameScreen extends InputAdapter implements Screen {
         shapeRenderer = new ShapeRenderer();
 
         // initialize game world elements
-        tiles = new Tiles(game);
+        levels = new LevelManager(game);
 
         TiledMap tiledMap;
         switch (game.getGameLevel()) {
-            case 1,2,3,4 -> tiledMap = tiles.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_obstacles.png").path());
-            case 6 -> tiledMap = tiles.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
-            //case 3 -> tiledMap = tiles.loadTiledMap("maps/level-3-map.properties", Gdx.files.internal("tilesets/level3_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
-            //case 4 -> tiledMap = tiles.loadTiledMap("maps/level-4-map.properties", Gdx.files.internal("tilesets/level4_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
-            default -> tiledMap = tiles.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+            case 1,2,3,4 -> tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_obstacles.png").path());
+            case 6 -> tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+            //case 3 -> tiledMap = levels.loadTiledMap("maps/level-3-map.properties", Gdx.files.internal("tilesets/level3_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+            //case 4 -> tiledMap = levels.loadTiledMap("maps/level-4-map.properties", Gdx.files.internal("tilesets/level4_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+            default -> tiledMap = levels.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
         }
 
         // Initialize the key. Only after we lod the tiled map, we can access the key's position
-        Position keyPosition = tiles.getKeyTilePosition().convertTo(PIXELS);
+        Position keyPosition = levels.getKeyTilePosition().convertTo(PIXELS);
         float keyX = keyPosition.getX();
         float keyY = keyPosition.getY();
         key = new Key(keyX, keyY, TILE_SIZE,TILE_SIZE,10,9,TILE_SCREEN_SIZE, TILE_SCREEN_SIZE, game);
         // After loading the tiles,
-        // get the array of tiles from our tile generator: tiles.getTiles()
+        // get the array of tiles from our tile generator: levels.getTileset()
         // and then get the texture region where our key is at
-        keyRegion = tiles.getTileset()[TileType.KEY.getId()];
+        keyRegion = levels.getTileset()[TileType.KEY.getId()];
 
         collectibles = new Array<>();
-        //System.out.println(Arrays.deepToString(tiles.getTileEnumOnMap()));
+        //System.out.println(Arrays.deepToString(levels.getTileEnumOnMap()));
         spawnCollectibles();
 
         portals = new Array<>();
@@ -168,14 +168,14 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // initialize player at entrance position
         player = new Player(
-                tiles.entrance.getTileX(),
-                tiles.entrance.getTileY(),
+                levels.entrance.getTileX(),
+                levels.entrance.getTileY(),
                 16, 32, 12, 18, 64f, 128f, 10f,
-                this, tiles);//"this" is already a game screen
+                this, levels);//"this" is already a game screen
 
 
         // for whatever that requires touching the player
-        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){
+        for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
             enemy.init(player);
         }
         for (Collectibles collectible : iterate(collectibles)){
@@ -219,7 +219,7 @@ public class GameScreen extends InputAdapter implements Screen {
     private void spawnCollectibles() {
         // Get the 2D array of tiles
         // to find all "OTHER" tiles
-        Array<Position> emptyTiles = getEmptyTiles(tiles);
+        Array<Position> emptyTiles = getEmptyTiles(levels);
 
         generateCollectibles(emptyTiles, Collectibles.Type.HEART, 3, 16, 11, 11, 2.5f);
         generateCollectibles(emptyTiles, Collectibles.Type.PRETZEL, 3, 32,28, 27,72/28f);
@@ -230,11 +230,11 @@ public class GameScreen extends InputAdapter implements Screen {
         generateCollectibles(emptyTiles, Collectibles.Type.STAMINA, 1, 32,16,22, 2.5f);
     }
 
-    private static Array<Position> getEmptyTiles(Tiles tiles) {
+    private static Array<Position> getEmptyTiles(LevelManager levels) {
         Array<Position> emptyTiles = new Array<>();
-        for (int x = 0; x < tiles.getTileEnumOnMap().length; x++) {
-            for (int y = 0; y < tiles.getTileEnumOnMap()[x].length; y++) {
-                TileType tileType = tiles.getTileEnumOnMap()[x][y];
+        for (int x = 0; x < levels.getTileEnumOnMap().length; x++) {
+            for (int y = 0; y < levels.getTileEnumOnMap()[x].length; y++) {
+                TileType tileType = levels.getTileEnumOnMap()[x][y];
                 if ((tileType == GROUND) || tileType == null) {
                     emptyTiles.add(new Position(x, y, TILES));
                 }
@@ -292,7 +292,7 @@ public class GameScreen extends InputAdapter implements Screen {
             float y = position.getY();
 
             // Generate a portal at the selected position
-            portals.add(new Portal(tiles, x, y, width, height, hitboxWidth, hitboxHeight, sizeOnScreen, sizeOnScreen, game));
+            portals.add(new Portal(levels, x, y, width, height, hitboxWidth, hitboxHeight, sizeOnScreen, sizeOnScreen, game));
             System.out.println("Portal Position: " + x + ", " + y);
         }
     }
@@ -353,11 +353,11 @@ public class GameScreen extends InputAdapter implements Screen {
         introPanel.addButton("Start now", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                introPanel.proceedToGame(game, player, tiles);
+                introPanel.proceedToGame(game, player, levels);
             }
         }, 20);
 
-        introPanel.addListener(ifSpaceKeyPressed(() -> introPanel.proceedToGame(game, player, tiles)));
+        introPanel.addListener(ifSpaceKeyPressed(() -> introPanel.proceedToGame(game, player, levels)));
 
         Label.LabelStyle continueStyle = new Label.LabelStyle(game.getSkin().get(Label.LabelStyle.class).font, Color.GRAY);
         introPanel.addLabel("[OR PRESS SPACE BAR TO CONTINUE]", continueStyle, 80);
@@ -615,7 +615,7 @@ public class GameScreen extends InputAdapter implements Screen {
         handleInput(); // handle input of the keys
 
         player.update(delta); // ALL the player functionalities are here
-        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)) {
+        for (ChasingEnemy enemy : iterate(levels.chasingEnemies)) {
             enemy.update(delta);
         }
         for (int i = collectibles.size - 1; i >= 0; i--) {
@@ -685,7 +685,7 @@ public class GameScreen extends InputAdapter implements Screen {
             player.update(delta);
 
             // Update enemies
-            for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)) {
+            for (ChasingEnemy enemy : iterate(levels.chasingEnemies)) {
                 enemy.update(delta);
             }
 
@@ -814,8 +814,8 @@ public class GameScreen extends InputAdapter implements Screen {
     private void renderArrow(){
         // Draw arrow that points at the exit
         Position exitPosition = null;
-        if (!tiles.exits.isEmpty())
-            exitPosition = tiles.getNearestExit(player.getX(), player.getY()).getTilePosition();
+        if (!levels.exits.isEmpty())
+            exitPosition = levels.getNearestExit(player.getX(), player.getY()).getTilePosition();
 
         float angle = getAngle(exitPosition);
 
@@ -907,7 +907,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         /* uncomment this when the key's position should be regularly updated. i.e., the key is dynamic
         //get our key position and render the key there
-        Position keyPosition = tiles.getKeyTilePosition();
+        Position keyPosition = levels.getKeyTilePosition();
         // convert key's tile position to pixel coordinates for rendering
         keyPosition = keyPosition.convertTo(PIXELS);
         key.setX(keyPosition.getX());
@@ -932,14 +932,14 @@ public class GameScreen extends InputAdapter implements Screen {
      * Renders all traps on the map.
      */
     private void renderTrap(){
-        for (Trap trap : iterate(tiles.traps)){ // for (trap : tiles.traps){
+        for (Trap trap : iterate(levels.traps)){ // for (trap : levels.traps){
             trap.draw(game.getSpriteBatch());
         }
     }
 
     private void spawnPortal() {
         System.out.println("Spawning portal...");
-        Array<Position> emptyTiles = getEmptyTiles(tiles);
+        Array<Position> emptyTiles = getEmptyTiles(levels);
         generatePortals(emptyTiles, 1, 64, 64, 48, 48, 96);
         System.out.println("Portals generated: " + portals.size);
     }
@@ -949,15 +949,15 @@ public class GameScreen extends InputAdapter implements Screen {
      */
     private void renderChasingEnemy(){
         //chasingEnemy.draw(game.getSpriteBatch());
-        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){ // for (ChasingEnemy enemy : tiles.chasingEnemies)
+        for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){ // for (ChasingEnemy enemy : levels.chasingEnemies)
 
             if (abs(enemy.getVelX()) > abs(enemy.getVelY())){ // x velocity > y velocity -> either left or right
-                if (enemy.getVelX() < 0) enemyAnimation = tiles.getEnemyAnimations(enemy.getEnemyIndex()).get("left");
-                else enemyAnimation = tiles.getEnemyAnimations(enemy.getEnemyIndex()).get("right");
+                if (enemy.getVelX() < 0) enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("left");
+                else enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("right");
             }
             else { // v_y > v_x
-                if (enemy.getVelY() < 0) enemyAnimation = tiles.getEnemyAnimations(enemy.getEnemyIndex()).get("down");
-                else enemyAnimation = tiles.getEnemyAnimations(enemy.getEnemyIndex()).get("up");
+                if (enemy.getVelY() < 0) enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("down");
+                else enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("up");
             }
 
             enemy.draw(game.getSpriteBatch(), enemyAnimation.getKeyFrame(sinusInput, true));
@@ -1225,7 +1225,7 @@ public class GameScreen extends InputAdapter implements Screen {
         game.getPauseMusic().play();
 
         player.pause();
-        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){
+        for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
             enemy.pause();
         }
 
@@ -1262,7 +1262,7 @@ public class GameScreen extends InputAdapter implements Screen {
         game.getPauseMusic().pause();
 
         player.resume();
-        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)){
+        for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
             enemy.resume();
         }
 
