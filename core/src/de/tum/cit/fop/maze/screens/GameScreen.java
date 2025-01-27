@@ -468,7 +468,7 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createVictoryPanel() {
-        Drawable background = createSolidColorDrawable(Color.GOLD);
+        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/victory.png.9.9.png")));
         Panel victoryPanel = new Panel(stage1, background, game);
         victoryPanel.setSize(0.8f, 0.6f);
 
