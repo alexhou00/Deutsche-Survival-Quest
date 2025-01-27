@@ -425,7 +425,7 @@ public class GameScreen extends InputAdapter implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 boolean isMuted = !game.isMuted();
-                game.setMuted(isMuted);
+                game.muteAll(isMuted);
                 Gdx.app.log("OptionsScreen", "Mute toggled");;
         }; }, 4);
 
