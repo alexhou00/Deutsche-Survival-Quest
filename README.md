@@ -239,9 +239,9 @@ The tile sets of Deutsche Survival Quest has been created by modifying the follo
 
 
 ## Contact
-- berin.bueyuekboduk@tum.de
-- jenchien.hou@tum.de
-- go36yev@mytum.de
+- [berin.bueyuekboduk@tum.de](mailto:berin.bueyuekboduk@tum.de)
+- [jenchien.hou@tum.de](mailto:jenchien.hou@tum.de)
+- [go36yev@mytum.de](mailto:go36yev@mytum.de)
 
 
 
