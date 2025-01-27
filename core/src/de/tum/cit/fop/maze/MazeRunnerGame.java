@@ -31,6 +31,8 @@ public class MazeRunnerGame extends Game {
     private GameScreen gameScreen;
     private GameOverScreen gameOverScreen;
     private VictoryScreen victoryScreen;
+    private Array<Music> musicList;
+    private Array<Sound> soundList;
 
     public int getGameLevel() {
         return gameLevel;
@@ -92,6 +94,9 @@ public class MazeRunnerGame extends Game {
 
         backgroundTexture = new Texture("backgrounds/background.png");
 
+        musicList = new Array<>();
+        soundList = new Array<>();
+
         // Play some background music
         // Background sound
         //CHANGE BACKGROUND MUSIC
@@ -99,26 +104,37 @@ public class MazeRunnerGame extends Game {
         backgroundMusic.setLooping(true);
         backgroundMusic.setVolume(0.5f);
         backgroundMusic.play();
+        musicList.add(backgroundMusic);
 
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("music/010614songidea(copycat).mp3"));
         menuMusic.setLooping(true);
+        musicList.add(menuMusic);
 
         pauseMusic = Gdx.audio.newMusic(Gdx.files.internal("music/A cup of tea.mp3"));
         pauseMusic.setLooping(true);
+        musicList.add(pauseMusic);
 
         gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("music/No Hope.wav"));
         gameOverMusic.setLooping(true);
+        musicList.add(gameOverMusic);
 
         //victoryMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
         //victoryMusic.setLooping(true);
 
         victorySoundEffect = Gdx.audio.newMusic(Gdx.files.internal("sounds/Lively Meadow Victory Fanfare.mp3"));
+        musicList.add(victorySoundEffect);
         soundEffectKey = Gdx.audio.newSound(Gdx.files.internal("sounds/Accept.mp3"));
+        soundList.add(soundEffectKey);
         soundEffectHurt = Gdx.audio.newSound(Gdx.files.internal("sounds/01._damage_grunt_male.wav"));
+        soundList.add(soundEffectHurt);
         soundEffectRunning = Gdx.audio.newMusic(Gdx.files.internal("sounds/running-14658.mp3"));
+        musicList.add(soundEffectRunning);
         warningMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/warning.wav"));
+        musicList.add(warningMusic);
         soundEffectTeleport = Gdx.audio.newSound(Gdx.files.internal("sounds/teleport.wav"));
+        soundList.add(soundEffectTeleport);
         soundEffectPanting = Gdx.audio.newMusic(Gdx.files.internal("sounds/breathing-fast-247451.mp3"));
+        musicList.add(soundEffectPanting);
 
 
         goToMenu(); // Navigate to the menu screen
@@ -135,20 +151,25 @@ public class MazeRunnerGame extends Game {
     }
 
     public void setVolume(float volume) {
-        if (!muted) {
-            this.volume = volume;
+        this.volume = volume;
 
+        for (Music music : musicList) {
+            music.setVolume(volume);
         }
     }
 
-    public void setMuted(boolean muted) {
-        this.muted = muted;
-        if (muted) {
-            // Stop or pause all sounds/music
-            // Example: music.pause();
-        } else {
-            // Resume all sounds/music with the current volume
-            // Example: music.setVolume(volume);
+    public void playSound(Sound sound) {
+        if (!muted) {
+            sound.play(volume); // Use the existing volume field
+        }
+    }
+
+    public void muteAll(boolean mute) {
+        this.muted = mute;
+
+        float targetVolume = mute ? 0.0f : volume;
+        for (Music music : musicList) {
+            music.setVolume(targetVolume);
         }
     }
 
@@ -317,6 +338,15 @@ public class MazeRunnerGame extends Game {
         getScreen().dispose(); // Dispose the current screen
         spriteBatch.dispose(); // Dispose the spriteBatch
         skin.dispose(); // Dispose the skin
+
+        for (Music music : musicList) {
+            music.dispose();
+        }
+
+        // Dispose of all sound effects
+        for (Sound sound : soundList) {
+            sound.dispose();
+        }
     }
 
     public void muteBGM(){

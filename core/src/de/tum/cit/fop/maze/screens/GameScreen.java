@@ -132,7 +132,7 @@ public class GameScreen extends InputAdapter implements Screen {
         font = game.getSkin().getFont("font");
         createIntroPanel();
 
-        game.setMuted(false);
+        //game.setMuted(false);
         shapeRenderer = new ShapeRenderer();
 
         // initialize game world elements
@@ -494,7 +494,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 new ChangeListener() {
                     @Override
                     public void changed(ChangeEvent event, Actor actor) {
-                        game.setMuted(true); // Toggle mute/unmute
+                        //game.setMuted(true); // Toggle mute/unmute
                     }
                 },
                 10
@@ -608,7 +608,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Handle Mute
         if (Gdx.input.isKeyJustPressed(Input.Keys.M)) { // Press 'M' to mute/unmute
-            game.setMuted(!game.isMuted());
+            //game.setMuted(!game.isMuted());
             if (game.isMuted()) {
                 game.muteBGM();
             } else {
