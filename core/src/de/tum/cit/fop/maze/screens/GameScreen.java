@@ -132,7 +132,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
-        createIntroPanel();
 
         //game.setMuted(false);
         shapeRenderer = new ShapeRenderer();
@@ -154,6 +153,8 @@ public class GameScreen extends InputAdapter implements Screen {
             //case 4 -> tiledMap = levels.loadTiledMap("maps/level-4-map.properties", Gdx.files.internal("tilesets/level4_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             default -> tiledMap = levels.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
         }
+
+        createIntroPanel();
 
         // Initialize the key. Only after we lod the tiled map, we can access the key's position
         Position keyPosition = levels.getKeyTilePosition().convertTo(PIXELS);
@@ -341,7 +342,8 @@ public class GameScreen extends InputAdapter implements Screen {
         Panel introPanel = new Panel(stage1, background, game);
         introPanel.setSize(0.9f, 0.9f);
 
-        introPanel.addLabel("Game Instructions", game.getSkin(), "title", 0.5f, 80);
+        String levelName = levels.getProperties("levelName");
+        introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "title", 0.5f, 80);
 
         String instructionsText = """
                 Welcome TUM student!
