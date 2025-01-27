@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -414,13 +415,27 @@ public class GameScreen extends InputAdapter implements Screen {
         OptionPanel.setSize(0.8f, 0.6f);
 
         OptionPanel.addLabel("Options", game.getSkin(), "title", 0.5f, 80);
-        OptionPanel.addButton("Volume", game.getSkin(), new ChangeListener() {
+
+        // Add Music Volume Slider
+        OptionPanel.addSlider("Music Volume", 0, 2, game.getVolume(), 0.01f, game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setVolume(0.5f);
-                Gdx.app.log("OptionsScreen", "Volume changed");
+                float value = ((Slider) actor).getValue();
+                game.setVolume(value);
+                Gdx.app.log("OptionsScreen", "Music volume changed to: " + value);
             }
-        }, 4 );
+        });
+
+        // Add Sound Effects Volume Slider
+        OptionPanel.addSlider("Sound Effects Volume", 0, 2, game.getVolume(), 0.01f, game.getSkin(), new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                float value = ((Slider) actor).getValue();
+                game.setSoundEffectVolume(value);
+                Gdx.app.log("OptionsScreen", "Sound effects volume changed to: " + value);
+            }
+        });
+
         OptionPanel.addButton("Mute / Unmute" , game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -432,6 +447,7 @@ public class GameScreen extends InputAdapter implements Screen {
         OptionPanel.addButton("Back", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                OptionPanel.clear();
                 createPausePanel();
         } } , 4);
     }

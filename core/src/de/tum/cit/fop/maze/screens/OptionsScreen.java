@@ -32,6 +32,10 @@ public class OptionsScreen implements Screen {
     private GameOverScreen gameOverScreen;
     private OptionsScreen optionsScreen;
 
+    // Sliders for music and sound
+    private Slider musicSlider;
+    private Slider soundSlider;
+
     public OptionsScreen(MazeRunnerGame game) {
         this.game = game;
         var camera = new OrthographicCamera();
@@ -51,20 +55,42 @@ public class OptionsScreen implements Screen {
         buttons.put("Mute", new TextButton("Mute / Unmute", skin));
         buttons.put("Back", new TextButton("Back", skin));
 
-        // Add buttons to the table
+        // Add header label
         table.add(new Label("Options", skin, "title")).padBottom(80).row();
 
-        for (Map.Entry<String, TextButton> entry : buttons.entrySet()) {
-            table.add(entry.getValue()).width(300).padBottom(20).row();
-        }
+        // Volume Slider for Music
+        musicSlider = new Slider(0f, 2f, 0.1f, false, skin);
+        musicSlider.setValue(game.getVolume());
+        table.add(new Label("Music Volume", skin)).padBottom(10).row();
+        table.add(musicSlider).width(300).padBottom(20).row();
 
-        // Volume Button Listener
-        buttons.get("Volume").addListener(new ChangeListener() {
+        // Volume Slider for Sound Effects
+        soundSlider = new Slider(0f, 2f, 0.1f, false, skin);
+        soundSlider.setValue(game.getVolume());
+        table.add(new Label("Sound Effects Volume", skin)).padBottom(10).row();
+        table.add(soundSlider).width(300).padBottom(20).row();
+
+        // Add buttons (Mute, Back) under the sliders
+        table.add(buttons.get("Mute")).width(300).padBottom(20).row();
+        table.add(buttons.get("Back")).width(300).padBottom(20).row();
+
+        // Add listener to musicSlider
+        musicSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Open Volume control slider or modify game volume
-                game.setVolume(0.5f);  // Example: Set volume to 50%
-                Gdx.app.log("OptionsScreen", "Volume changed");
+                float volume = musicSlider.getValue();
+                game.setVolume(volume);
+                Gdx.app.log("OptionsScreen", "Music Volume changed: " + volume);
+            }
+        });
+
+        // Add listener to soundSlider
+        soundSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                float volume = soundSlider.getValue();
+                //game.setSoundEffectsVolume(volume);
+                Gdx.app.log("OptionsScreen", "Sound Effects Volume changed: " + volume);
             }
         });
 
@@ -82,27 +108,30 @@ public class OptionsScreen implements Screen {
         buttons.get("Back").addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Return to the previous screen (e.g., Main Menu)
-                game.setScreen(new MenuScreen(game)); // Example: Going back to MenuScreen
+                game.goToMenu(); // Call your method to navigate back to the appropriate screen
             }
         });
     }
 
     public void goToOptionsScreen() {
         if (optionsScreen == null) {
-            // TODO: this will be changed in the future once we can select our own levels
-            game.setScreen(this);
+            game.setScreen(this); // Set current screen to OptionsScreen
         }
-        // Set the current screen to MenuScreen
 
+        // Handle screen disposal
         if (menuScreen != null) {
-            menuScreen.dispose(); // Dispose the menu screen if it exists
+            menuScreen.dispose();
             menuScreen = null;
         }
 
         if (gameOverScreen != null) {
-            gameOverScreen.dispose(); // Dispose the menu screen if it exists
+            gameOverScreen.dispose();
             gameOverScreen = null;
+        }
+
+        if (gameScreen != null) {
+            gameScreen.dispose();
+            gameScreen = null;
         }
     }
 
@@ -145,7 +174,6 @@ public class OptionsScreen implements Screen {
 
     @Override
     public void dispose() {
-        // Dispose resources (textures, etc.)
         stage.dispose();
         backgroundTexture.dispose();
     }
