@@ -147,7 +147,7 @@ public class GameScreen extends InputAdapter implements Screen {
             case 6 -> tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             case 0 -> {
                 isTutorial = true;
-                tiledMap = levels.loadTiledMap("maps/level-2-map.properties", Gdx.files.internal("tilesets/level2_tileset.png").path(), Gdx.files.internal("tilesets/level2_obstacles.png").path());
+                tiledMap = levels.loadTiledMap("maps/level-0-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             }
             //case 3 -> tiledMap = levels.loadTiledMap("maps/level-3-map.properties", Gdx.files.internal("tilesets/level3_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             //case 4 -> tiledMap = levels.loadTiledMap("maps/level-4-map.properties", Gdx.files.internal("tilesets/level4_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
@@ -775,7 +775,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
-        game.getSpriteBatch().draw(game.getBackgroundTexture(), 0, 0);
+        //game.getSpriteBatch().draw(game.getBackgroundTexture(), 0, 0);
         game.getSpriteBatch().end();
 
         // mapRenderer use another rendering batch, so we have to end the ones first, render the map, and then begin our spriteBatch again outside of this function
