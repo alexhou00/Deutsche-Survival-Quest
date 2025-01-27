@@ -94,7 +94,8 @@ public class BFSChasingEnemy extends ChasingEnemy {
             targetX = nextPosition.convertTo(Position.PositionUnit.PIXELS).getX();
             targetY = nextPosition.convertTo(Position.PositionUnit.PIXELS).getY();
             super.moveTowardsTarget(delta);
-            return true;
+            return !isTouchingOtherEnemies();
+            //
         }
         return false; // No valid path
     }

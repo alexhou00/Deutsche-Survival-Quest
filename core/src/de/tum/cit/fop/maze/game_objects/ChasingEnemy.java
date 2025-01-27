@@ -273,6 +273,9 @@ public class ChasingEnemy extends Character {
             return false;
         }*/
         if (isTouchingTraps()) return false;
+
+        if (isTouchingOtherEnemies()) return false;
+
         return super.canMoveTo(x,y);
     }
 
@@ -340,6 +343,15 @@ public class ChasingEnemy extends Character {
     private boolean isTouchingTraps() {
         for (Trap trap : iterate(tiles.traps)) {
             if (trap.isTouching(this)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean isTouchingOtherEnemies(){
+        for (ChasingEnemy enemy : iterate(tiles.chasingEnemies)) {
+            if (!enemy.equals(this) && enemy.isTouching(this)) {
                 return true;
             }
         }
