@@ -195,7 +195,10 @@ The tile sets of Deutsche Survival Quest has been created by modifying the follo
  Used with permission under the "name your own price" model.
 - Tileset 2: **Train Station Tileset** by Ekat99. <br>
   This tileset was created as part of an art challenge and is publicly available for non-commercial projects. 
-  Available at: [DeviantArt](https://www.deviantart.com/ekat99/art/Train-Station-876100255). 
+  Available at: [DeviantArt](https://www.deviantart.com/ekat99/art/Train-Station-876100255).
+- Tileset 4: **Bar Tileset** by aveontrainer <br>
+  This tileset is publicly available, with ongoing updates provided by the author.
+  Available at: [DeviantArt](https://www.deviantart.com/aveontrainer/art/Bar-Tileset-829643285)
 - Tileset 5 : **City Tileset** by KabisCube. <br>
   '3x3 Minimal' Sprite sheet created by KabisCube under Public Domain license.
   Available at: https://opengameart.org/content/3x3-minimal.
