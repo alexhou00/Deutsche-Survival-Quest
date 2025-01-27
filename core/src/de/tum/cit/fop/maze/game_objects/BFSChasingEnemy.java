@@ -13,6 +13,7 @@ import java.util.*;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.getTilePosition;
+import static java.lang.Math.abs;
 
 public class BFSChasingEnemy extends ChasingEnemy {
 
@@ -46,16 +47,7 @@ public class BFSChasingEnemy extends ChasingEnemy {
         // Remember: decrease the alert timer
         alertTime -= delta;
 
-        if (damageCooldown > DAMAGE_COOLDOWN_TIME * (1 - 1/3f) ) {
-            // leave for a while (1/3 of the cooldown time)
-            targetX = x + (x - player.getX()) * 5000;
-            targetY = y + (y - player.getY()) * 5000;
-            System.out.println("Going away....");
-            moveTowardsTarget(delta);
-            System.out.println("Towards Target Moved");
-            return;
-        }
-        else if (damageCooldown > 0) return;
+        if (handleCooldown(player, delta)) return;
 
         // Find the path to the player using BFS
         List<Position> path = findPathTo(player.getX(), player.getY());
@@ -106,7 +98,18 @@ public class BFSChasingEnemy extends ChasingEnemy {
             targetX = nextPosition.convertTo(Position.PositionUnit.PIXELS).getX();
             targetY = nextPosition.convertTo(Position.PositionUnit.PIXELS).getY();
             super.moveTowardsTarget(delta);
-            return !isTouchingOtherEnemies();
+
+            for (ChasingEnemy enemy : iterate(levels.chasingEnemies)) {
+                if (!enemy.equals(this) && enemy.isTouching(this)) {
+                    targetX = x + (x - enemy.getX()) * 5000;
+                    targetY = y + (y - enemy.getY()) * 5000;
+                    moveTowardsTarget(delta);
+                    System.out.println("Towards Target Moved Away from Other enemies because of touching...");
+                }
+            }
+
+            //return !isTouchingOtherEnemies();
+            return true;
             //
         }
         return false; // No valid path
@@ -236,13 +239,50 @@ public class BFSChasingEnemy extends ChasingEnemy {
         //Gdx.app.log("BFS Enemy", "detect cc");
         Position playerPosition = getTilePosition(player.getX(), player.getY());
         if (levels.getTileEnumOnMap(playerPosition.getTileX(), playerPosition.getTileY()).equals(TileType.WALL)) {
-            return super.isPlayerWithinDetectionRadius(player, radius); //then, we do normal detection
+            //return super.isPlayerWithinDetectionRadius(player, radius);
+            // then, we do normal detection
+            // actually, manhattan distance
+            float dx = player.getX() - x;
+            float dy = player.getY() - y;
+            return dx + dy <= radius;
         }
         else{
             // surrounded by walls, let's just give up
             return false;
         }
 
+    }
+
+    final float DIRECTION_CHANGE_COOLDOWN = 0.05f; // Adjust as needed
+    static float directionChangeTimer = 0; // Tracks time since last direction change
+
+    @Override
+    public void setDirection(){
+        directionChangeTimer += Gdx.graphics.getDeltaTime();
+
+        /*if (!isChasing && directionChangeTimer < DIRECTION_CHANGE_COOLDOWN){
+            System.out.println(this + " returned");
+            return;
+        }*/
+
+        if (abs(velX) > abs(velY)){
+                //abs(velX) > ENEMY_BASE_SPEED / 5 &&
+                //abs(((velX * velX) + (velY * velY)) - (previousVelX * previousVelX) + (previousVelY * previousVelY)) > 1000)
+
+            previousDirection = (velX > 0) ? Direction.right : Direction.left;
+
+        }
+        if (abs(velY) > abs(velX) &&
+                //abs(velY) > ENEMY_BASE_SPEED / 5 &&
+                abs(((velX * velX) + (velY * velY)) - (previousVelX * previousVelX) + (previousVelY * previousVelY)) > 1000){
+            previousDirection = (velY > 0) ? Direction.up : Direction.down;
+
+        }
+
+        directionChangeTimer = 0;
+
+        previousVelX = velX;
+        previousVelY = velY;
     }
 
     @Override

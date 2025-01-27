@@ -38,6 +38,9 @@ public class ChasingEnemy extends Character {
     protected final float ALERT_SHOWING_TIME = 1.5f;
     protected float alertTime = 0;
 
+    protected Direction previousDirection = Direction.down;
+    protected float previousVelX = 0, previousVelY = 0;
+
     protected Player player = null;
 
     protected final MazeRunnerGame game;
@@ -99,6 +102,8 @@ public class ChasingEnemy extends Character {
         if (damageCooldown > 0) {
             damageCooldown -= delta;
         }
+
+        setDirection();
 
         // rectangle.set();
         // Check if the player is within the detection radius
@@ -199,33 +204,32 @@ public class ChasingEnemy extends Character {
     protected void chase(Player player, float delta) {
 
         alertTime -= delta;
-        if (damageCooldown <= 0) {
-            /*if ((damageTimes < 3)) {*/
-                targetX = player.getX();
-                targetY = player.getY();
-                moveTowardsTarget(delta);/*
-            }
-            else { // the other direction
-                isChasing = false;
-                randomMoveCooldown -= delta;
-                targetX = x - (player.getX() - x);
-                targetY = y - (player.getY() - y);
-                if (randomMoveCooldown <= 0) {
-                    float dx = player.getX() - x; // dx > 0 means player is on the right side
-                    float dy = player.getY() - y;
-                    setRandomTarget(((dx > 0) ? 0 : x),
-                                    ((dy > 0) ? 0 : y),
-                                    ((dx > 0) ? x : getWorldWidth()),
-                                    ((dy > 0) ? y : getWorldHeight()));
-                    damageTimes = 0;
-                    randomMoveCooldown = RANDOM_MOVE_TIME; // Reset the cooldown
-                }
-                moveTowardsTarget(delta); // Gradually move towards the random target
-            }*/
-        }
-        else{
 
+        if (handleCooldown(player, delta)) return;
+
+        targetX = player.getX();
+        targetY = player.getY();
+        moveTowardsTarget(delta);
+
+
+    }
+
+    protected boolean handleCooldown(Player player, float delta) {
+        if (damageCooldown > DAMAGE_COOLDOWN_TIME * (1 - 1 / 2f)) { // leave for a while (1/2 of the cooldown time)
+            // Move away temporarily
+            targetX = x + (x - player.getX()) * 5000;
+            targetY = y + (y - player.getY()) * 5000;
+            System.out.println("Going away...");
+            moveTowardsTarget(delta);
+            System.out.println("Moved away from the target.");
+            return true; // Stop further processing
         }
+        else if (damageCooldown > 0) {
+            faceThePlayer();
+            return true; // Stop further processing
+        }
+
+        return false; // Continue chasing
     }
 
     /**
@@ -248,6 +252,7 @@ public class ChasingEnemy extends Character {
         // Set the velocity towards the target
         velX = (float) (Math.tanh(dirX)) * ENEMY_BASE_SPEED; // tanh is between 1~-1 and preserves the sign. it looks like something like this: ___/‾‾‾
         velY = (float) (Math.tanh(dirY)) * ENEMY_BASE_SPEED;
+
         //Gdx.app.log("Enemy Move", "velocity: " + velocityX + ", " + velocityY);
         // Predict new position
         float newX = x + velX * delta * 2;
@@ -269,6 +274,20 @@ public class ChasingEnemy extends Character {
         // Constrain enemy position within the game world boundaries
         x = MathUtils.clamp(x, getHitboxWidthOnScreen() / 2, getWorldWidth() - getHitboxWidthOnScreen() / 2);
         y = MathUtils.clamp(y, getHitboxHeightOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
+
+        setDirection();
+    }
+
+    public void setDirection(){
+        if (abs(velX) > abs(velY)){
+            previousDirection = (velX > 0) ? Direction.right : Direction.left;
+        }
+        if (abs(velY) > abs(velX)){
+            previousDirection = (velY > 0) ? Direction.up : Direction.down;
+        }
+
+        previousVelX = velX;
+        previousVelY = velY;
     }
 
     /**
@@ -360,6 +379,7 @@ public class ChasingEnemy extends Character {
     protected boolean isTouchingOtherEnemies(){
         for (ChasingEnemy enemy : iterate(levels.chasingEnemies)) {
             if (!enemy.equals(this) && enemy.isTouching(this)) {
+                Gdx.app.log("Enemy", "Touching other enemies...");
                 return true;
             }
         }
@@ -413,6 +433,10 @@ public class ChasingEnemy extends Character {
         return enemyIndex;
     }
 
+    public Direction getPreviousDirection() {
+        return previousDirection;
+    }
+
     //TODO decide on do we need this
     protected boolean isTouchingTrap() {
         for (Trap trap : iterate(levels.traps)) {
@@ -444,6 +468,27 @@ public class ChasingEnemy extends Character {
     public void bounceBack(GameObject source){
         velX = bounceVelocity(velX);
         velY = bounceVelocity(velY);
+    }
+
+    protected void faceThePlayer(){
+        if (player == null) {
+            return; // No player to face
+        }
+
+        System.out.println("facing the player");
+
+        // Calculate direction vector from enemy to player
+        float dx = player.getX() - x;
+        float dy = player.getY() - y;
+
+        // Determine the dominant direction
+        if (Math.abs(dx) > Math.abs(dy)) {
+            // Dominant direction is horizontal
+            previousDirection = (dx > 0) ? Direction.right : Direction.left;
+        } else {
+            // Dominant direction is vertical
+            previousDirection = (dy > 0) ? Direction.up : Direction.down;
+        }
     }
 
     @Override

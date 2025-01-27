@@ -441,8 +441,9 @@ public class GameScreen extends InputAdapter implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 boolean isMuted = !game.isMuted();
                 game.muteAll(isMuted);
-                Gdx.app.log("OptionsScreen", "Mute toggled");;
-        }; }, 4);
+                Gdx.app.log("OptionsScreen", "Mute toggled");
+            }
+        }, 4);
 
         OptionPanel.addButton("Back", game.getSkin(), new ChangeListener() {
             @Override
@@ -957,13 +958,19 @@ public class GameScreen extends InputAdapter implements Screen {
         //chasingEnemy.draw(game.getSpriteBatch());
         for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){ // for (ChasingEnemy enemy : levels.chasingEnemies)
 
-            if (abs(enemy.getVelX()) > abs(enemy.getVelY())){ // x velocity > y velocity -> either left or right
+            /*if (abs(enemy.getVelX()) > abs(enemy.getVelY())){ // x velocity > y velocity -> either left or right
                 if (enemy.getVelX() < 0) enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("left");
                 else enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("right");
             }
             else { // v_y > v_x
                 if (enemy.getVelY() < 0) enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("down");
                 else enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("up");
+            }*/
+            switch (enemy.getPreviousDirection()){
+                case up -> enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("up");
+                case down -> enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("down");
+                case left -> enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("left");
+                case right -> enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("right");
             }
 
             enemy.draw(game.getSpriteBatch(), enemyAnimation.getKeyFrame(sinusInput, true));
