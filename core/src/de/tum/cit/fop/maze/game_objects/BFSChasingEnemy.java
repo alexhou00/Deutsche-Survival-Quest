@@ -47,20 +47,7 @@ public class BFSChasingEnemy extends ChasingEnemy {
         // Remember: decrease the alert timer
         alertTime -= delta;
 
-        if (damageCooldown > DAMAGE_COOLDOWN_TIME * (1 - 1/2f) ) {
-            // leave for a while (1/3 of the cooldown time)
-            targetX = x + (x - player.getX()) * 5000;
-            targetY = y + (y - player.getY()) * 5000;
-            System.out.println("Going away....");
-            moveTowardsTarget(delta);
-            System.out.println("Towards Target Moved");
-
-            return;
-        }
-        else if (damageCooldown > 0) {
-            faceThePlayer();
-            return;
-        }
+        if (handleCooldown(player, delta)) return;
 
         // Find the path to the player using BFS
         List<Position> path = findPathTo(player.getX(), player.getY());

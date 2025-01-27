@@ -205,26 +205,31 @@ public class ChasingEnemy extends Character {
 
         alertTime -= delta;
 
-        if (damageCooldown > DAMAGE_COOLDOWN_TIME * (1 - 1/2f) ) {
-            // leave for a while (1/3 of the cooldown time)
-            targetX = x + (x - player.getX()) * 5000;
-            targetY = y + (y - player.getY()) * 5000;
-            System.out.println("Going away....");
-            moveTowardsTarget(delta);
-            System.out.println("Towards Target Moved");
-
-            return;
-        }
-        else if (damageCooldown > 0) {
-            faceThePlayer();
-            return;
-        }
+        if (handleCooldown(player, delta)) return;
 
         targetX = player.getX();
         targetY = player.getY();
         moveTowardsTarget(delta);
 
 
+    }
+
+    protected boolean handleCooldown(Player player, float delta) {
+        if (damageCooldown > DAMAGE_COOLDOWN_TIME * (1 - 1 / 2f)) { // leave for a while (1/2 of the cooldown time)
+            // Move away temporarily
+            targetX = x + (x - player.getX()) * 5000;
+            targetY = y + (y - player.getY()) * 5000;
+            System.out.println("Going away...");
+            moveTowardsTarget(delta);
+            System.out.println("Moved away from the target.");
+            return true; // Stop further processing
+        }
+        else if (damageCooldown > 0) {
+            faceThePlayer();
+            return true; // Stop further processing
+        }
+
+        return false; // Continue chasing
     }
 
     /**
