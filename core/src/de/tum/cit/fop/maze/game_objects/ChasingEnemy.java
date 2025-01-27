@@ -154,10 +154,10 @@ public class ChasingEnemy extends Character {
     private void attackPlayer(Player player) {
         if (damageCooldown <=0 && this.isTouching(player)) {
             player.loseLives(1, this);
-            bounceBack(player);
+            //bounceBack(player);
             damageCooldown = DAMAGE_COOLDOWN_TIME; // Reset the cooldown
             damageTimes++;
-            System.out.println("The enemy touched the player! Player loses 1 life.");
+            System.out.println("Attack! The enemy touched the player! Player loses 1 life.");
             //System.out.println("this.hitbox: " + this.getHitbox());
             //System.out.println("player.hitbox: " + player.getHitbox());
             //stepBack(player);
@@ -216,6 +216,9 @@ public class ChasingEnemy extends Character {
                 }
                 moveTowardsTarget(delta); // Gradually move towards the random target
             }*/
+        }
+        else{
+
         }
     }
 
@@ -429,6 +432,12 @@ public class ChasingEnemy extends Character {
     public void draw(SpriteBatch batch, TextureRegion textureRegion) {
         batch.draw(textureRegion, x - widthOnScreen / 2, y - heightOnScreen / 2, widthOnScreen, heightOnScreen);
         if (alertTime>0 && isChasing) batch.draw(alertSymbolTexture, x - 13 * 2, y + heightOnScreen / 1.5f, 13 * 4, 12 * 4);
+    }
+
+    @Override
+    public void bounceBack(GameObject source){
+        velX = bounceVelocity(velX);
+        velY = bounceVelocity(velY);
     }
 
     @Override
