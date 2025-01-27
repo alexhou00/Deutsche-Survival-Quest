@@ -251,7 +251,12 @@ public class BFSChasingEnemy extends ChasingEnemy {
         //Gdx.app.log("BFS Enemy", "detect cc");
         Position playerPosition = getTilePosition(player.getX(), player.getY());
         if (levels.getTileEnumOnMap(playerPosition.getTileX(), playerPosition.getTileY()).equals(TileType.WALL)) {
-            return super.isPlayerWithinDetectionRadius(player, radius); //then, we do normal detection
+            //return super.isPlayerWithinDetectionRadius(player, radius);
+            // then, we do normal detection
+            // actually, manhattan distance
+            float dx = player.getX() - x;
+            float dy = player.getY() - y;
+            return dx + dy <= radius;
         }
         else{
             // surrounded by walls, let's just give up
