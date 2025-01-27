@@ -15,10 +15,18 @@ import static de.tum.cit.fop.maze.util.Position.getTilePosition;
 
 public class BFSChasingEnemy extends ChasingEnemy {
 
+    private final Random random;
+    private final List<int[]> shuffledDirections;
+
     public BFSChasingEnemy(TextureRegion textureRegion, int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight,
                            float widthOnScreen, float heightOnScreen, float lives, Tiles tiles, MazeRunnerGame game, int enemyIndex) {
         super(textureRegion, tileX, tileY, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, tiles, game, enemyIndex);
         detectionRadius = 600f;
+        random = new Random(this.hashCode() + tileX * 31L + 31L * 31 * tileY); // Seed the random generator with the unique hashcode
+        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        // Shuffle the direction array to introduce randomness in exploration
+        shuffledDirections = Arrays.asList(directions);
+        Collections.shuffle(shuffledDirections, random);
     }
 
     /**
@@ -45,12 +53,21 @@ public class BFSChasingEnemy extends ChasingEnemy {
 
         // ELSE path isn't found:
         // If no direct path is found, search in a surrounding 3x3 grid for an alternative path
+        boolean reachedAlternative = false;
         for (int offsetX = -1; offsetX <= 1; offsetX++){
             for (int offsetY = -1; offsetY <= 1; offsetY++){
                 if (offsetX == 0 && offsetY == 0) continue; // Skip the current tile
                 // Attempt to find a path to the player from an adjacent tile
-                List<Position> alternativePath = findPathTo(player.getX(), player.getY());
-                if (processPath(alternativePath, delta)){
+                float altX = player.getX() + offsetX * TILE_SCREEN_SIZE;
+                float altY = player.getY() + offsetY * TILE_SCREEN_SIZE;
+                if ((altX - x) * (altX - x) + (altY - y) * (altY - y) < TILE_SCREEN_SIZE * TILE_SCREEN_SIZE * 2){
+                    reachedAlternative = true;
+                    break;
+                }
+
+                List<Position> alternativePath = findPathTo(altX, altY);
+                if (!reachedAlternative && processPath(alternativePath, delta)){
+                    Gdx.app.log("BFS alt", "Alternative path found, chasing...");
                     return;
                 }
 
@@ -126,8 +143,7 @@ public class BFSChasingEnemy extends ChasingEnemy {
     private List<Position> getNeighbors(Position position) {
         List<Position> neighbors = new ArrayList<>();
 
-        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-        for (int[] dir : directions) {
+        for (int[] dir : shuffledDirections) {
             int newX = position.getTileX() + dir[0];
             int newY = position.getTileY() + dir[1];
 
@@ -185,9 +201,9 @@ public class BFSChasingEnemy extends ChasingEnemy {
         while (!queue.isEmpty()) {
             Position current = queue.poll();
             int currentDistance = distances.get(current);
-            if (currentDistance > detectionDistance) {
+            /*if (currentDistance > detectionDistance) {
                 return super.isPlayerWithinDetectionRadius(player, radius);
-            }
+            }*/
 
             if (current.equals(goal)) {
                 return currentDistance <= detectionDistance; // Check if the player is within 10 tiles
@@ -203,8 +219,17 @@ public class BFSChasingEnemy extends ChasingEnemy {
         }
 
         // The Player is out of range (somewhere in the wall, or on the tile that has parts of walls on it
+        // or surrounded by walls
         //Gdx.app.log("BFS Enemy", "detect cc");
-        return super.isPlayerWithinDetectionRadius(player, radius); //then, we do normal detection
+        Position playerPosition = getTilePosition(player.getX(), player.getY());
+        if (tiles.getTileEnumOnMap(playerPosition.getTileX(), playerPosition.getTileY()).equals(TileType.WALL)) {
+            return super.isPlayerWithinDetectionRadius(player, radius); //then, we do normal detection
+        }
+        else{
+            // surrounded by walls, let's just give up
+            return false;
+        }
+
     }
 
     @Override
