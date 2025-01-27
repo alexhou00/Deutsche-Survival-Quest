@@ -59,6 +59,13 @@ public abstract class Character extends GameObject {
         this.levels = levels;
     }
 
+    public enum Direction{
+        left,
+        right,
+        up,
+        down
+    }
+
     /**
      * Checks if the player can move to a given position because of the wall blocks.
      * <p>

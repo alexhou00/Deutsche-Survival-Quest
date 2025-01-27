@@ -38,6 +38,9 @@ public class ChasingEnemy extends Character {
     protected final float ALERT_SHOWING_TIME = 1.5f;
     protected float alertTime = 0;
 
+    protected Direction previousDirection = Direction.down;
+    protected float previousVelX = 0, previousVelY = 0;
+
     protected Player player = null;
 
     protected final MazeRunnerGame game;
@@ -242,6 +245,7 @@ public class ChasingEnemy extends Character {
         // Set the velocity towards the target
         velX = (float) (Math.tanh(dirX)) * ENEMY_BASE_SPEED; // tanh is between 1~-1 and preserves the sign. it looks like something like this: ___/‾‾‾
         velY = (float) (Math.tanh(dirY)) * ENEMY_BASE_SPEED;
+
         //Gdx.app.log("Enemy Move", "velocity: " + velocityX + ", " + velocityY);
         // Predict new position
         float newX = x + velX * delta * 2;
@@ -250,12 +254,20 @@ public class ChasingEnemy extends Character {
         // Check if the enemy can move to the new position (collision detection)
         if (canMoveTo(newX, y)) {
             x = x + velX * delta; // Move horizontally if no collision
+            if (abs(velX) > abs(velY) &&
+                    abs(velX - previousVelX) > 2){
+                previousDirection = (velX > 0) ? Direction.right : Direction.left;
+            }
         }
         else
             setRandomTarget();
 
         if (canMoveTo(x, newY)) {
             y = y + velY * delta; // Move vertically if no collision
+            if (abs(velY) > abs(velX) &&
+                    abs(velY - previousVelY) > 2){
+                previousDirection = (velY > 0) ? Direction.up : Direction.down;
+            }
         }
         else
             setRandomTarget();
@@ -263,6 +275,8 @@ public class ChasingEnemy extends Character {
         // Constrain enemy position within the game world boundaries
         x = MathUtils.clamp(x, getHitboxWidthOnScreen() / 2, getWorldWidth() - getHitboxWidthOnScreen() / 2);
         y = MathUtils.clamp(y, getHitboxHeightOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
+        previousVelX = velX;
+        previousVelY = velY;
     }
 
     /**
@@ -354,6 +368,7 @@ public class ChasingEnemy extends Character {
     protected boolean isTouchingOtherEnemies(){
         for (ChasingEnemy enemy : iterate(levels.chasingEnemies)) {
             if (!enemy.equals(this) && enemy.isTouching(this)) {
+                Gdx.app.log("Enemy", "Touching other enemies...");
                 return true;
             }
         }
@@ -405,6 +420,10 @@ public class ChasingEnemy extends Character {
 
     public int getEnemyIndex() {
         return enemyIndex;
+    }
+
+    public Direction getPreviousDirection() {
+        return previousDirection;
     }
 
     //TODO decide on do we need this

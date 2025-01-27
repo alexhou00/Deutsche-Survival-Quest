@@ -53,6 +53,7 @@ public class BFSChasingEnemy extends ChasingEnemy {
             System.out.println("Going away....");
             moveTowardsTarget(delta);
             System.out.println("Towards Target Moved");
+
             return;
         }
         else if (damageCooldown > 0) return;
@@ -106,7 +107,18 @@ public class BFSChasingEnemy extends ChasingEnemy {
             targetX = nextPosition.convertTo(Position.PositionUnit.PIXELS).getX();
             targetY = nextPosition.convertTo(Position.PositionUnit.PIXELS).getY();
             super.moveTowardsTarget(delta);
-            return !isTouchingOtherEnemies();
+
+            for (ChasingEnemy enemy : iterate(levels.chasingEnemies)) {
+                if (!enemy.equals(this) && enemy.isTouching(this)) {
+                    targetX = x + (x - enemy.getX()) * 5000;
+                    targetY = y + (y - enemy.getY()) * 5000;
+                    moveTowardsTarget(delta);
+                    System.out.println("Towards Target Moved Away from Other enemies because of touching...");
+                }
+            }
+
+            //return !isTouchingOtherEnemies();
+            return true;
             //
         }
         return false; // No valid path
