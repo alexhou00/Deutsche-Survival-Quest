@@ -71,6 +71,12 @@ public class MazeRunnerGame extends Game {
     private float volume = 1.0f; // Default volume
     private boolean muted = false;
 
+    long keyCollectSoundId, hurtSoundId, runningSoundId, teleportSoundId;
+
+    private Map<String, Sound> sounds = new HashMap<>();
+    private Map<String, Long> soundIds = new HashMap<>();
+
+
 
     /**
      * Constructor for MazeRunnerGame.
@@ -137,8 +143,42 @@ public class MazeRunnerGame extends Game {
         soundEffectPanting = Gdx.audio.newMusic(Gdx.files.internal("sounds/breathing-fast-247451.mp3"));
         musicList.add(soundEffectPanting);
 
+        // Play all sounds and store their IDs
+        for (Map.Entry<String, Sound> entry : sounds.entrySet()) {
+            long soundId = entry.getValue().play(); // Play the sound
+            soundIds.put(entry.getKey(), soundId);  // Store the sound ID
+        }
+
+        // Set the initial volume (e.g., 50%)
+        float initialVolume = 0.5f;
+        for (Map.Entry<String, Long> entry : soundIds.entrySet()) {
+            sounds.get(entry.getKey()).setVolume(entry.getValue(), initialVolume); // Set volume for each sound
+        }
+
 
         goToMenu(); // Navigate to the menu screen
+        setVolume(volume);
+    }
+
+    public void setVolume(float volume) {
+        this.volume = volume;
+
+        // Set volume for all music
+        for (Music music : musicList) {
+            music.setVolume(volume);
+        }
+
+        // Set volume for all sound effects
+        for (Map.Entry<String, Long> entry : soundIds.entrySet()) {
+            sounds.get(entry.getKey()).setVolume(entry.getValue(), volume);
+        }
+    }
+
+    // Method to set volume for sound effects
+    public void setSoundEffectVolume(float volume) {
+        for (Map.Entry<String, Long> entry : soundIds.entrySet()) {
+            sounds.get(entry.getKey()).setVolume(entry.getValue(), volume);  // Adjust sound effect volume
+        }
     }
 
 
@@ -151,13 +191,13 @@ public class MazeRunnerGame extends Game {
         System.exit(-1);
     }
 
-    public void setVolume(float volume) {
+    /*public void setVolume(float volume) {
         this.volume = volume;
 
         for (Music music : musicList) {
             music.setVolume(volume);
         }
-    }
+    }*/
 
     public long playSound(Sound sound) {
         long soundId = sound.play(); // Set volume based on mute state
@@ -211,6 +251,35 @@ public class MazeRunnerGame extends Game {
         if (gameOverScreen != null) {
             gameOverScreen.dispose(); // Dispose the menu screen if it exists
             gameOverScreen = null;
+        }
+    }
+
+    // Increase the volume by 0.1 for all music and sounds
+    public void increaseVolume() {
+        if (!muted) {
+            volume = Math.min(1.0f, volume + 0.1f); // Increase volume, clamp to max 1.0
+            updateVolumes(); // Apply the new volume to all music and sound effects
+        }
+    }
+
+    // Decrease the volume by 0.1 for all music and sounds
+    public void decreaseVolume() {
+        if (!muted) {
+            volume = Math.max(0.0f, volume - 0.1f); // Decrease volume, clamp to min 0.0
+            updateVolumes(); // Apply the new volume to all music and sound effects
+        }
+    }
+
+    // Update the volume of all music and sound effects
+    private void updateVolumes() {
+        // Apply volume to all music tracks
+        for (Music music : musicList) {
+            music.setVolume(volume); // Set volume for each music
+        }
+
+        // Apply volume to all sound effects
+        for (Sound sound : soundList) {
+           //muteall sound.setVolume(soundEffectHurt, 0.1f); // Set volume for each sound effect
         }
     }
 

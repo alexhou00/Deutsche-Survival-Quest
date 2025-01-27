@@ -130,7 +130,7 @@ public class Panel extends Actor{
         table.add(volumeLabel).padBottom(20).center().row();
 
         // Slider for volume
-        Slider volumeSlider = new Slider(0, 1, 0.01f, false, skin);
+        Slider volumeSlider = new Slider(0, 2, 0.01f, false, skin);
         volumeSlider.setValue(1); // Default volume
         volumeSlider.addListener(sliderListener);
         table.add(volumeSlider).padBottom(20).center().row();
@@ -139,6 +139,21 @@ public class Panel extends Actor{
         CheckBox muteCheckbox = new CheckBox("Mute-Unmute", skin);
         muteCheckbox.addListener(muteListener);
         table.add(muteCheckbox).padBottom(20).center().row();
+    }
+
+    public void addSlider(String labelText, float minValue, float maxValue, float currentValue, float stepSize, Skin skin, ChangeListener listener) {
+        Label label = new Label(labelText, skin);
+        table.add(label).padBottom(20).center().row();
+
+        Slider slider = new Slider(minValue, maxValue, stepSize, false, skin);
+        slider.setValue(currentValue); // Set the current value of the slider
+        slider.addListener(listener);
+
+        // Adjust slider size (thinner height, longer width)
+        slider.setHeight(5); // Adjust the height of the slider to make it thinner
+        slider.setWidth(Gdx.graphics.getWidth() * 0.6f); // Adjust the width of the slider to make it longer
+
+        table.add(slider).padBottom(20).center().row();
     }
 
     public void clear() {
@@ -163,5 +178,8 @@ public class Panel extends Actor{
         slider.setValue(currentValue);
         slider.addListener(listener);
         table.add(slider).padBottom(20).center().row();
+    }
+
+    public void addSlider(String soundEffectsVolume, int i, int i1, float v, float volume, ChangeListener optionsScreen, int i2) {
     }
 }
