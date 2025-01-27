@@ -103,6 +103,8 @@ public class ChasingEnemy extends Character {
             damageCooldown -= delta;
         }
 
+        setDirection();
+
         // rectangle.set();
         // Check if the player is within the detection radius
         if (isPlayerWithinDetectionRadius(player, detectionRadius) && damageTimes < MAX_DAMAGE_TIMES) {
@@ -254,20 +256,12 @@ public class ChasingEnemy extends Character {
         // Check if the enemy can move to the new position (collision detection)
         if (canMoveTo(newX, y)) {
             x = x + velX * delta; // Move horizontally if no collision
-            if (abs(velX) > abs(velY) &&
-                    abs(velX - previousVelX) > 2){
-                previousDirection = (velX > 0) ? Direction.right : Direction.left;
-            }
         }
         else
             setRandomTarget();
 
         if (canMoveTo(x, newY)) {
             y = y + velY * delta; // Move vertically if no collision
-            if (abs(velY) > abs(velX) &&
-                    abs(velY - previousVelY) > 2){
-                previousDirection = (velY > 0) ? Direction.up : Direction.down;
-            }
         }
         else
             setRandomTarget();
@@ -275,6 +269,18 @@ public class ChasingEnemy extends Character {
         // Constrain enemy position within the game world boundaries
         x = MathUtils.clamp(x, getHitboxWidthOnScreen() / 2, getWorldWidth() - getHitboxWidthOnScreen() / 2);
         y = MathUtils.clamp(y, getHitboxHeightOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
+
+        setDirection();
+    }
+
+    public void setDirection(){
+        if (abs(velX) > abs(velY)){
+            previousDirection = (velX > 0) ? Direction.right : Direction.left;
+        }
+        if (abs(velY) > abs(velX)){
+            previousDirection = (velY > 0) ? Direction.up : Direction.down;
+        }
+
         previousVelX = velX;
         previousVelY = velY;
     }
@@ -463,6 +469,8 @@ public class ChasingEnemy extends Character {
         if (player == null) {
             return; // No player to face
         }
+
+        System.out.println("facing the player");
 
         // Calculate direction vector from enemy to player
         float dx = player.getX() - x;

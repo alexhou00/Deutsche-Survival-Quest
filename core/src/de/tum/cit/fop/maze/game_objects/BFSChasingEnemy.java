@@ -13,6 +13,7 @@ import java.util.*;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.getTilePosition;
+import static java.lang.Math.abs;
 
 public class BFSChasingEnemy extends ChasingEnemy {
 
@@ -263,6 +264,38 @@ public class BFSChasingEnemy extends ChasingEnemy {
             return false;
         }
 
+    }
+
+    final float DIRECTION_CHANGE_COOLDOWN = 0.05f; // Adjust as needed
+    static float directionChangeTimer = 0; // Tracks time since last direction change
+
+    @Override
+    public void setDirection(){
+        directionChangeTimer += Gdx.graphics.getDeltaTime();
+
+        /*if (!isChasing && directionChangeTimer < DIRECTION_CHANGE_COOLDOWN){
+            System.out.println(this + " returned");
+            return;
+        }*/
+
+        if (abs(velX) > abs(velY)){
+                //abs(velX) > ENEMY_BASE_SPEED / 5 &&
+                //abs(((velX * velX) + (velY * velY)) - (previousVelX * previousVelX) + (previousVelY * previousVelY)) > 1000)
+
+            previousDirection = (velX > 0) ? Direction.right : Direction.left;
+
+        }
+        if (abs(velY) > abs(velX) &&
+                //abs(velY) > ENEMY_BASE_SPEED / 5 &&
+                abs(((velX * velX) + (velY * velY)) - (previousVelX * previousVelX) + (previousVelY * previousVelY)) > 1000){
+            previousDirection = (velY > 0) ? Direction.up : Direction.down;
+
+        }
+
+        directionChangeTimer = 0;
+
+        previousVelX = velX;
+        previousVelY = velY;
     }
 
     @Override
