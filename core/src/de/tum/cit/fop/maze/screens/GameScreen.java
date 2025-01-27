@@ -278,7 +278,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
             // Generate a collectible at the selected position
             collectibles.add(new Collectibles(worldX, worldY, frameSize, frameSize, hitboxWidth, hitboxHeight,
-                    frameSize * scale, frameSize * scale, type));
+                    frameSize * scale, frameSize * scale, type, game));
         }
     }
 
@@ -330,7 +330,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     public void createIntroPanel(){
         Drawable background = createSolidColorDrawable(Color.WHITE);
-        Panel introPanel = new Panel(stage1, background);
+        Panel introPanel = new Panel(stage1, background, game);
         introPanel.setSize(0.9f, 0.9f);
 
         introPanel.addLabel("Game Instructions", game.getSkin(), "title", 0.5f, 80);
@@ -366,7 +366,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     public void createPausePanel() {
         Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
-        Panel pausePanel = new Panel(stage1, background);
+        Panel pausePanel = new Panel(stage1, background, game);
         pausePanel.setSize(0.8f, 0.6f);
 
         pausePanel.addLabel("Game Paused", game.getSkin(), "title", 0.5f, 80);
@@ -377,6 +377,12 @@ public class GameScreen extends InputAdapter implements Screen {
                 pausePanel.clear();
                 game.resume();
                 isPaused = false;
+            }
+        }, 4);
+
+        pausePanel.addButton("Options", game.getSkin(), new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                createOptionPanel();
             }
         }, 4);
 
@@ -400,17 +406,11 @@ public class GameScreen extends InputAdapter implements Screen {
                 game.exitGame();
             }
         }, 4);
-
-        pausePanel.addButton("Options", game.getSkin(), new ChangeListener() {
-            public void changed(ChangeEvent event, Actor actor) {
-                createOptionPanel();
-            }
-        }, 4);
     }
 
     public void createOptionPanel() {
         Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
-        Panel OptionPanel = new Panel(stage1, background);
+        Panel OptionPanel = new Panel(stage1, background, game);
         OptionPanel.setSize(0.8f, 0.6f);
 
         OptionPanel.addLabel("Options", game.getSkin(), "title", 0.5f, 80);
@@ -421,7 +421,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 Gdx.app.log("OptionsScreen", "Volume changed");
             }
         }, 4 );
-        OptionPanel.addButton("Muted" , game.getSkin(), new ChangeListener() {
+        OptionPanel.addButton("Mute / Unmute" , game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 boolean isMuted = !game.isMuted();
@@ -439,7 +439,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     public void createVictoryPanel() {
         Drawable background = createSolidColorDrawable(Color.GOLD);
-        Panel victoryPanel = new Panel(stage1, background);
+        Panel victoryPanel = new Panel(stage1, background, game);
         victoryPanel.setSize(0.8f, 0.6f);
 
         victoryPanel.addLabel("Victory!", game.getSkin(), "title", 0.5f, 80);
@@ -466,51 +466,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
         victoryPanel.addListener(ifSpaceKeyPressed(() -> victoryPanel.proceedToNextLevel(game)));
     }
-
-    public void createOptionsPanel() {
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/background.png")));
-        Panel optionsPanel = new Panel(stage1, background);
-        optionsPanel.setSize(0.8f, 0.6f);
-
-        optionsPanel.addLabel("Options", game.getSkin(), "title", 0.5f, 50);
-
-        // Add volume slider
-        /*optionsPanel.addSlider(
-                game.getSkin(),
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeEvent event, Actor actor) {
-                        Slider slider = (Slider) actor;
-                        float volume = slider.getValue();
-                        game.setVolume(volume); // Adjust game volume
-                    }
-                },
-                0f, 1f, game.getVolume() // Min, Max, current volume value
-        );*/
-
-        // Add mute button
-        optionsPanel.addButton(
-                "Toggle Mute",
-                game.getSkin(),
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeEvent event, Actor actor) {
-                        //game.setMuted(true); // Toggle mute/unmute
-                    }
-                },
-                10
-        );
-
-        // Add Back button
-        /*optionsPanel.addButton("Back", game.getSkin(), new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                optionsPanel.clear(); // Remove the panel
-                game.resume(); // Resume the game
-            }
-        }, 10);*/
-    }
-
 
     /**
      * Calculates the player's score based on the number of coins collected.

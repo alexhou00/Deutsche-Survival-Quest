@@ -5,6 +5,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.base.GameObject;
 
 public class Collectibles extends GameObject {
@@ -26,6 +27,7 @@ public class Collectibles extends GameObject {
     private Player player = null;
 
     Sound soundEffectCollect;
+    protected final MazeRunnerGame game;
 
     /**
      * Constructs a new GameObject instance with specified parameters.
@@ -39,11 +41,12 @@ public class Collectibles extends GameObject {
      * @param widthOnScreen  The width of the object as displayed on screen.
      * @param heightOnScreen The height of the object as displayed on screen.
      */
-    public Collectibles(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, Type type) {
+    public Collectibles(float x, float y, int width, int height, int hitboxWidth, int hitboxHeight, float widthOnScreen, float heightOnScreen, Type type, MazeRunnerGame game) {
         super(x, y, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen);
         this.type = type;
         this.textureRegion = null; //textureRegion;
         this.collected = false;
+        this.game = game;
     }
 
     public void init(Player player, Sound soundEffect) {
@@ -94,7 +97,13 @@ public class Collectibles extends GameObject {
         // Placeholder for looping logic
         if (!isCollected() && isTouching(player)){
             collected = true;
-            soundEffectCollect.play();
+            if (game.isMuted()){
+                soundEffectCollect.pause();
+            }
+            else if (!game.isMuted()){
+                soundEffectCollect.play();
+            }
+
             switch (this.getType()) {
                 case HEART:
                     player.setLives(player.getLives() + 1);

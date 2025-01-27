@@ -183,7 +183,7 @@ public class Player extends Character {
 
 
 
-        if (canBoost && boostPressed && speed > SPEED_THRESHOLD ){
+        if (canBoost && boostPressed && speed > SPEED_THRESHOLD && !game.isMuted()){
             game.getSoundEffectRunning().setVolume(0.5f);
             game.getSoundEffectRunning().play();
             //game.getSoundEffectRunning().loop();
@@ -341,8 +341,13 @@ public class Player extends Character {
     }
 
     public void loseLives(float amount, GameObject source){//or damage idk
-       game.getSoundEffectHurt().play(1.0f, 1.0594631f, 0f); // x2.0f is one octave higher (think of the freq.)
         lives -= amount;
+        if (!game.isMuted()){
+            game.getSoundEffectHurt().play(1.0f, 1.0594631f, 0f); // x2.0f is one octave higher (think of the freq.)
+        }
+        else if (game.isMuted()){
+            game.getSoundEffectHurt().pause();
+        }
 
         if (lives <= 0){
             System.out.println("GAME OVER!! You used all of your lives:'(");

@@ -78,7 +78,13 @@ public class Portal extends StaticObject {
      */
     public void onPlayerTouch(Player player) {
         if (isActive) {
-            game.getSoundEffectTeleport().play();
+            if (game.isMuted()){
+                game.getSoundEffectTeleport().pause();
+            }
+            else if (!game.isMuted()){
+                game.getSoundEffectTeleport().play();
+            }
+
             // Teleport the player to the entrance position (assuming levels.entrance is initialized)
             if (levels != null && levels.getEntrance()!= null) {
                 player.setX(getWorldCoordinateInPixels(levels.entrance.getTileX()));

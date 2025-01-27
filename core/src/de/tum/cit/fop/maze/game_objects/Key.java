@@ -47,7 +47,12 @@ public class Key extends StaticObject {
     public void collect() {
         if (this.isCollected) return; // prevent recollecting
         isCollected = true;
-        game.getSoundEffectKey().play();
+        if (game.isMuted()){
+            game.getSoundEffectKey().pause();
+        }
+        if (!game.isMuted()){
+            game.getSoundEffectKey().play();
+        }
         System.out.println("Key collected!"); // Debug message
     }
 
