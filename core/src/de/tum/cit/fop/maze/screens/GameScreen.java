@@ -32,6 +32,7 @@ import de.tum.cit.fop.maze.rendering.SpotlightEffect;
 import de.tum.cit.fop.maze.tiles.TileType;
 import de.tum.cit.fop.maze.util.Position;
 
+import javax.swing.event.ChangeEvent;
 import java.util.*;
 
 import static de.tum.cit.fop.maze.rendering.Panel.ifSpaceKeyPressed;
@@ -131,7 +132,7 @@ public class GameScreen extends InputAdapter implements Screen {
         font = game.getSkin().getFont("font");
         createIntroPanel();
 
-        game.setMuted(false);
+        //game.setMuted(false);
         shapeRenderer = new ShapeRenderer();
 
         // initialize game world elements
@@ -377,28 +378,62 @@ public class GameScreen extends InputAdapter implements Screen {
                 game.resume();
                 isPaused = false;
             }
-        }, 10);
+        }, 4);
 
         pausePanel.addButton("Select Level", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.selectLevel();
             }
-        }, 10);
+        }, 4);
 
         pausePanel.addButton("Back to Menu", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.goToMenu();
             }
-        }, 10);
+        }, 4);
 
         pausePanel.addButton("Exit Game", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.exitGame();
             }
-        }, 10);
+        }, 4);
+
+        pausePanel.addButton("Options", game.getSkin(), new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                createOptionPanel();
+            }
+        }, 4);
+    }
+
+    public void createOptionPanel() {
+        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
+        Panel OptionPanel = new Panel(stage1, background);
+        OptionPanel.setSize(0.8f, 0.6f);
+
+        OptionPanel.addLabel("Options", game.getSkin(), "title", 0.5f, 80);
+        OptionPanel.addButton("Volume", game.getSkin(), new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setVolume(0.5f);
+                Gdx.app.log("OptionsScreen", "Volume changed");
+            }
+        }, 4 );
+        OptionPanel.addButton("Muted" , game.getSkin(), new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                boolean isMuted = !game.isMuted();
+                game.muteAll(isMuted);
+                Gdx.app.log("OptionsScreen", "Mute toggled");;
+        }; }, 4);
+
+        OptionPanel.addButton("Back", game.getSkin(), new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                createPausePanel();
+        } } , 4);
     }
 
     public void createVictoryPanel() {
@@ -459,7 +494,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 new ChangeListener() {
                     @Override
                     public void changed(ChangeEvent event, Actor actor) {
-                        game.setMuted(true); // Toggle mute/unmute
+                        //game.setMuted(true); // Toggle mute/unmute
                     }
                 },
                 10
@@ -573,7 +608,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Handle Mute
         if (Gdx.input.isKeyJustPressed(Input.Keys.M)) { // Press 'M' to mute/unmute
-            game.setMuted(!game.isMuted());
+            //game.setMuted(!game.isMuted());
             if (game.isMuted()) {
                 game.muteBGM();
             } else {

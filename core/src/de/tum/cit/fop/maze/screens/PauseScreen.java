@@ -53,6 +53,7 @@ public class PauseScreen implements Screen {
         buttons.put("resumeGameButton", new TextButton("Resume Game", game.getSkin()));
         buttons.put("selectLevelButton", new TextButton("Select Level", game.getSkin()));
         buttons.put("exitGameButton", new TextButton("Exit Game", game.getSkin()));
+        buttons.put("OptionsButton", new TextButton("Options Menu", game.getSkin()));
 
         // Add buttons to the table
         for (Map.Entry<String, TextButton> entry : buttons.entrySet()) {
@@ -85,7 +86,11 @@ public class PauseScreen implements Screen {
             }
         });
 
+
+
+
         Gdx.app.log("PauseScreen", "Pause screen created.");
+
     }
 
     @Override
