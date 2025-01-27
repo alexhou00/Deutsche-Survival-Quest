@@ -679,8 +679,6 @@ public class GameScreen extends InputAdapter implements Screen {
         shapeRenderer.end();
 
         game.getSpriteBatch().begin();
-        if (isTutorial) renderTooltip();
-
         renderTrap();
         // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
         renderCollectibles();
@@ -690,6 +688,7 @@ public class GameScreen extends InputAdapter implements Screen {
         renderArrow();
         renderKey();
 
+        if (isTutorial) renderTooltip();
 
         renderSpeechBubble();
 
@@ -705,7 +704,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
         stage1.act(delta);
         stage1.draw(); // stage1 is for the panels, like the intro panel and the pause panel
-        // renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
+        //if (isTutorial && !isPaused) renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
+
+        if (!isPaused) {
+            checkForSpotlightEvents();
+        }
 
         renderHUD();
     }
@@ -861,12 +864,14 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     private void renderTooltip(){
-        if (currentTooltip != null && !isPaused) {
-            // Convert player's world position to screen coordinates
-            Position screenCoordinates = getScreenCoordinates(player.getX(), player.getY());
-            float tooltipX = screenCoordinates.getX() + 20; // Offset for the tooltip
-            float tooltipY = screenCoordinates.getY() + 50;
-            currentTooltip.setPosition(tooltipX, tooltipY);
+        if (currentTooltipMessage != null) {
+            float tooltipX = player.getX() + 20;//camera.position.x - 100; // Adjust to center near camera
+            float tooltipY = player.getY() + 50;//camera.position.y + camera.viewportHeight / 2 - 20; // Top of the viewport
+
+            float clampedX = MathUtils.clamp(tooltipX, 0, getWorldWidth() - font.getRegion().getRegionWidth());
+            float clampedY = MathUtils.clamp(tooltipY, 0, getWorldHeight() - font.getCapHeight());
+
+            font.draw(game.getSpriteBatch(), currentTooltipMessage, clampedX, clampedY);
         }
     }
 
@@ -939,8 +944,9 @@ public class GameScreen extends InputAdapter implements Screen {
         }
 
         // If the Enter key is pressed and the game is paused, resume the game
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isPaused) {
+        if ((Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) && isPaused) {
             resume();
+            currentTooltipMessage = null; // Clear the tooltip
         }
     }
 
@@ -1274,7 +1280,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private void checkTutorialTasks() {
         if (!player.hasMoved) {
-            showTooltip("Move using W, A, S, D keys.");
+            showTooltip("Move using WASD or the arrow keys.");
         } else if (!key.isCollected()) {
             showTooltip("Find and collect the key.");
         } else if (!player.hasReachedExit) {
@@ -1282,32 +1288,44 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
-    private Label currentTooltip;
+    // TODO: To add: mouse scroll or +/- key to zoom in/out; esc to pause; arrow points to the exit
+
+    private String currentTooltipMessage;
 
     private void showTooltip(String message) {
         // Remove any existing tooltip
-        if (currentTooltip != null) {
-            currentTooltip.remove();
+        currentTooltipMessage = message;
+    }
+
+    private void checkForSpotlightEvents() {
+        // TODO: also for collectibles
+        // Example: Detect proximity to a trap
+        for (Trap trap : iterate(levels.traps)) {
+            if (player.getHitbox().overlaps(trap.getHitbox())) { // TODO: isCloseTo(): search surrounding 3x3 grid
+                triggerSpotlight(trap.getX(), trap.getY(), 100, "Watch out for traps!");
+                return;
+            }
         }
 
-        // Create a new tooltip
-        currentTooltip = new Label(message, game.getSkin());
-        currentTooltip.setFontScale(1.2f);
-        currentTooltip.setColor(Color.WHITE);
-
-        // Add the tooltip to the stage
-        stage1.addActor(currentTooltip);
-
-        // Schedule removal after 3 seconds
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (currentTooltip != null) {
-                    currentTooltip.remove();
-                    currentTooltip = null;
-                }
+        // Example: Detect proximity to an enemy
+        for (ChasingEnemy enemy : iterate(levels.chasingEnemies)) {
+            if (player.getHitbox().overlaps(enemy.getHitbox())) {
+                triggerSpotlight(enemy.getX(), enemy.getY(), 100, "An enemy is near!");
+                return;
             }
-        }, 3);
+        }
+
+        // Example: Highlight arrow pointing to exit
+        Position exitPosition = levels.getNearestExit(player.getX(), player.getY()).getTilePosition();
+        if (exitPosition != null && player.getX() > 399) {
+            triggerSpotlight(player.getX(), player.getY(), 150, "Head to the exit!");
+        }
+    }
+
+    private void triggerSpotlight(float x, float y, float radius, String message) {
+        //setPaused(true); // Pause the game
+        renderSpotlightEffect(x, y, radius);
+        showTooltip(message); // Display a message
     }
 
 
