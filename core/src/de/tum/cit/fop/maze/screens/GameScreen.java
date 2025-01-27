@@ -94,6 +94,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final int totalCoins; // total maximal number of coins that the player should get
 
+    private SelectLevelScreen selectLevelScreen;
+
 
 
 
@@ -214,6 +216,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //Gdx.app.log("Size" ,  horizontalTilesCount + "x" + verticalTilesCount);
 
         this.totalCoins = 5;
+        this.selectLevelScreen = new SelectLevelScreen(game);
 
     }
 
@@ -404,7 +407,7 @@ public class GameScreen extends InputAdapter implements Screen {
         pausePanel.addButton("Select Level", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.selectLevel();
+                selectLevelScreen.goToSelectLevelScreen();
             }
         }, 4);
 
