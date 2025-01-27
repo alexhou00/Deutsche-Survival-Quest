@@ -34,7 +34,7 @@ public abstract class Character extends GameObject {
 
     protected float SPEECH_COOLDOWN_TIME = 5;
     protected float speechCooldown = SPEECH_COOLDOWN_TIME;
-    public boolean canSpeak = true;
+    public boolean canSpeak = false;
 
     /**
      * Constructs a new Character instance with specified parameters.

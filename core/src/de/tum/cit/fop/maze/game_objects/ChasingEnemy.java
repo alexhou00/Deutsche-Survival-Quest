@@ -12,6 +12,9 @@ import de.tum.cit.fop.maze.base.Character;
 import de.tum.cit.fop.maze.base.GameObject;
 import de.tum.cit.fop.maze.level.LevelManager;
 
+import java.util.Arrays;
+import java.util.Random;
+
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static java.lang.Math.abs;
 
@@ -47,6 +50,12 @@ public class ChasingEnemy extends Character {
 
     protected final int enemyIndex;
 
+    protected float speakingElapsedTime; // Tracks time for the speech bubble's state
+    //private boolean isSpeakingActive; // Indicates if the speaking is active
+    protected int speechTextIndex;
+    public final float SPEAKING_ACTIVE_DURATION = MathUtils.random(3f, 5f); // Duration for which the portal is active
+    protected final float SPEAKING_CYCLE_DURATION = MathUtils.random(10f, 30f); // Total duration of a cycle (inactive + active)
+
     /**
      * Constructs a new Enemy instance with specified parameters.
      *
@@ -76,6 +85,7 @@ public class ChasingEnemy extends Character {
         //this.player = player;
         this.enemyIndex = enemyIndex;
 
+        this.speakingElapsedTime = 0;
 
         // Load the enemy's texture
         this.enemyTexture = textureRegion; // Texture("mobs.png"); // Make sure the path matches your assets folder
@@ -102,6 +112,7 @@ public class ChasingEnemy extends Character {
         if (damageCooldown > 0) {
             damageCooldown -= delta;
         }
+        updateSpeakingTime(delta);
 
         setDirection();
 
@@ -429,6 +440,7 @@ public class ChasingEnemy extends Character {
         setRandomTarget(getHitboxWidthOnScreen() / 2, getHitboxHeightOnScreen() / 2, getWorldWidth() - getHitboxWidthOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
     }
 
+    // start from 0, and then 1, 2, 3...
     public int getEnemyIndex() {
         return enemyIndex;
     }
@@ -489,6 +501,25 @@ public class ChasingEnemy extends Character {
             // Dominant direction is vertical
             previousDirection = (dy > 0) ? Direction.up : Direction.down;
         }
+    }
+
+    protected void updateSpeakingTime(float delta){
+        speakingElapsedTime += delta;
+
+        if (speakingElapsedTime >= SPEAKING_CYCLE_DURATION) {
+            speakingElapsedTime -= SPEAKING_CYCLE_DURATION; // Reset to start a new cycle
+            String[] textToSelect = levels.getProperties("speechEnemy" + (getEnemyIndex() + 1)).split("\\|");
+            System.out.println(Arrays.toString(textToSelect));
+            speechTextIndex = new Random(System.nanoTime()).nextInt(textToSelect.length);
+        }
+        canSpeak = speakingElapsedTime < SPEAKING_ACTIVE_DURATION;
+    }
+
+    public String getSpeechText(){ // {levels.getProperties("speechEnemy" + getEnemyIndex() + 1), };
+        String[] textToSelect = levels.getProperties("speechEnemy" + (getEnemyIndex() + 1)).split("\\|");
+        //int rnd = new Random().nextInt(textToSelect.length);
+        //System.out.println(rnd + " " + Arrays.toString(textToSelect));
+        return textToSelect[speechTextIndex];
     }
 
     @Override

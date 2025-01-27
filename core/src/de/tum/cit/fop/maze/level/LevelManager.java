@@ -32,7 +32,7 @@ public class LevelManager {
     public TiledMapTileLayer layer;
 
     private Position keyTilePosition;
-    private boolean cameraAngled = false;
+    private final boolean cameraAngled = false;
     public Array<Trap> traps;
 
     public Array<ChasingEnemy> chasingEnemies;
@@ -45,6 +45,7 @@ public class LevelManager {
 
     private TextureRegion[] tileset;
     private Tile[][] tileOnMap;
+    ObjectMap<String, String> mapProperties;
 
     int maxTilesOnCell;
 
@@ -59,7 +60,7 @@ public class LevelManager {
      * Constructor: initializes the LevelManager object with default values.
      */
     public LevelManager(MazeRunnerGame game) {
-        keyTilePosition = new Position(0, 0, TILES); // by default (0,0)
+        keyTilePosition = null;
         entrance = null; //getEntrance();
         exits = new Array<>();
 
@@ -67,7 +68,8 @@ public class LevelManager {
         chasingEnemies = new Array<>();
         enemiesAnimations = new HashMap<>();
         maxTilesOnCell = 0;
-        this.game=game;
+        this.game = game;
+        mapProperties = new ObjectMap<>();
     }
 
     public Entrance getEntrance() {
@@ -281,17 +283,19 @@ public class LevelManager {
                 String[] parts = line.split("="); // split into key-value, parts[0] is position (String) and parts[1] is the tileType or tileValue
                 if (parts.length != 2) continue; // ignore malformed lines
 
-                if (parts[0].matches("\\d+, *\\d+")){ // the key is matching the pattern of the coordinate format
-                    String positionStr = parts[0];
-                    String[] tileTypes = parts[1].split(","); // Handle multiple tile types (could contain the key)
+                String key = parts[0].trim();
+                String value = parts[1].trim();
+
+                if (key.matches("\\d+, *\\d+")){ // the key is matching the pattern of the coordinate format
+                    String[] tileTypes = value.split(","); // Handle multiple tile types (could contain the key)
 
                     for (String tileType : tileTypes) {
                         //Gdx.app.log("Parse", "Tile Parsed: " + position);
-                        putTileDataInMapData(positionStr, tileType, mapData);
+                        putTileDataInMapData(key, tileType, mapData); // key is the positionStr
                     }
 
                     // Update the Map Size as we read the positions and find the largest value
-                    Position position = stringToPosition(positionStr, TILES);
+                    Position position = stringToPosition(key, TILES);
                     if (horizontalTilesCount < position.getTileX() + 1) {
                         horizontalTilesCount = position.getTileX()+1;
                         //Gdx.app.debug("MapParser", "horizontal tiles count updated to " + horizontalTilesCount);
@@ -299,13 +303,14 @@ public class LevelManager {
                     if (verticalTilesCount < position.getTileY() + 1) verticalTilesCount = position.getTileY() + 1;
                 }
                 else{ // the key in the key-value is some other key like, "keyPosition". which allows us to place the key on float positions
-                    switch(parts[0]){
-                        case "keyPosition" -> keyTilePosition = stringToPosition(parts[1], TILES).convertTo(PIXELS);
+                    /*switch(key){
+                        case "keyPosition" -> keyTilePosition = stringToPosition(value, TILES).convertTo(PIXELS);
                         case "angled" -> {
-                            if (Objects.equals(parts[1], "true")) // null-safe equal
+                            if (Objects.equals(value, "true")) // null-safe equal
                                 cameraAngled = true;
                         }
-                    }
+                    }*/
+                    mapProperties.put(key, value);
                 }
 
 
@@ -471,6 +476,15 @@ public class LevelManager {
     }
 
     public Position getKeyTilePosition() {
+        if (keyTilePosition == null) {
+            if (mapProperties.get("keyPosition") != null){
+                String pos =  mapProperties.get("keyPosition");
+                return stringToPosition(pos, TILES).convertTo(PIXELS);
+            }
+            else{
+                return new Position(0, 0, TILES); // by default (0,0)
+            }
+        }
         return keyTilePosition;
     }
 
@@ -545,7 +559,7 @@ public class LevelManager {
      * @return {@code true} if the camera is angled, {@code false} otherwise.
      */
     public boolean isCameraAngled() {
-        return cameraAngled;
+        return isProperties("angled");
     }
 
     public Map<String, Animation<TextureRegion>> getEnemyAnimations(Integer index) {
@@ -556,5 +570,19 @@ public class LevelManager {
         // starts from 0
         // if it's the default (first type of) enemy; the index is 0, else the index continues from tileset[150]
         return (tileValue == ENEMY.getId()) ? 0 : ((tileValue - ENEMY.getSecond()) + 1);
+    }
+
+    public String getProperties(String key){
+        if (mapProperties.get(key) != null){
+            return mapProperties.get(key);
+        }
+        else return "";
+    }
+
+    public boolean isProperties(String key){
+        if (mapProperties.get(key) != null){
+            return Objects.equals(mapProperties.get(key), "true");
+        }
+        else return false;
     }
 }

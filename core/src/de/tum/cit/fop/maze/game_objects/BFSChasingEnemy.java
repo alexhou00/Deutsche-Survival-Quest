@@ -3,7 +3,6 @@ package de.tum.cit.fop.maze.game_objects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.level.LevelManager;
 import de.tum.cit.fop.maze.tiles.TileType;

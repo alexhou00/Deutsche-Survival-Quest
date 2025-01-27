@@ -859,6 +859,17 @@ public class GameScreen extends InputAdapter implements Screen {
                         Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.
                         """, game.getSpriteBatch(),
                 true, player.getSpeechBubble().getElapsedTime(), 0.03f);
+
+        for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
+            if (enemy.canSpeak) {
+                enemy.getSpeechBubble().show(enemy.SPEAKING_ACTIVE_DURATION);
+                enemy.canSpeak = false;
+                continue;
+            }
+
+            enemy.say(enemy.getSpeechText(), game.getSpriteBatch(),
+                    true, enemy.getSpeechBubble().getElapsedTime(), 0.03f);
+        }
     }
 
     /**
