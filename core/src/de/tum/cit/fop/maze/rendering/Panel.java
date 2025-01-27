@@ -22,7 +22,7 @@ public class Panel extends Actor{
     private final Stage stage;
     private float widthRatio;
     private float heightRatio;
-    private MazeRunnerGame game;
+    private final MazeRunnerGame game;
 
     public Panel(Stage stage, Drawable background, MazeRunnerGame game) {
 
