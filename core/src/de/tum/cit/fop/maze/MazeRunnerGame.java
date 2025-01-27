@@ -160,17 +160,11 @@ public class MazeRunnerGame extends Game {
     }
 
     public long playSound(Sound sound) {
-        long soundId = sound.play(muted ? 0.0f : volume); // Set volume based on mute state
+        long soundId = sound.play(); // Set volume based on mute state
         playingSoundIds.add(soundId); // Add soundId to the tracking list
         return soundId; // Return the sound ID for tracking
     }
 
-    /*public void stopSound(long soundId) {
-        for (Sound sound : soundList) {
-            sound.stop(); // Stop sound
-        }
-        playingSoundIds.removeValue(soundId, false); // Remove the sound ID from the list
-    }*/
 
     public void muteAll(boolean mute) {
         this.muted = mute;
@@ -180,15 +174,6 @@ public class MazeRunnerGame extends Game {
         float targetVolume = mute ? 0.0f : volume;
         for (Music music : musicList) {
             music.setVolume(targetVolume);
-        }
-
-        // Set volume for Sound - adjust the volume when playing
-        for (Sound sound : soundList) {
-            // For existing sounds, we need to adjust their volume by playing them again with correct volume.
-            // This means we must handle volume during playback as `Sound` does not have a setVolume method.
-            for (long soundId : playingSoundIds) {
-                sound.setVolume(soundId, mute ? 0.0f : volume); // Adjust volume for each sound instance
-            }
         }
     }
 
@@ -216,6 +201,8 @@ public class MazeRunnerGame extends Game {
         gameOverMusic.pause();
         pauseMusic.pause();
         menuMusic.play();
+        victorySoundEffect.pause();
+        gameOverMusic.pause();
 
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists

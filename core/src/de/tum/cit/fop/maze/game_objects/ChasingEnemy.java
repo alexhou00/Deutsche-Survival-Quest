@@ -106,7 +106,13 @@ public class ChasingEnemy extends Character {
             // If the player is within the detection radius, chase the player
             if (!isChasing){ // previously, it wasn't chasing
                 alertTime = ALERT_SHOWING_TIME; // reset the time that the exclamation mark [!] need to be shown
-                game.getWarningMusic().play();
+                if (game.isMuted()){
+                    game.getWarningMusic().pause();
+                }
+                else if (!game.isMuted()){
+                    game.getWarningMusic().play();
+                }
+
             }
             isChasing = true;
             chase(player, delta); // Call the chase method

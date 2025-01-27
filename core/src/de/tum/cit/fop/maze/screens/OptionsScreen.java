@@ -48,7 +48,7 @@ public class OptionsScreen implements Screen {
 
         buttons = new HashMap<>();
         buttons.put("Volume", new TextButton("Volume", skin));
-        buttons.put("Mute", new TextButton("Mute", skin));
+        buttons.put("Mute", new TextButton("Mute / Unmute", skin));
         buttons.put("Back", new TextButton("Back", skin));
 
         // Add buttons to the table

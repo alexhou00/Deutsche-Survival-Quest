@@ -22,8 +22,9 @@ public class Panel extends Actor{
     private final Stage stage;
     private float widthRatio;
     private float heightRatio;
+    private MazeRunnerGame game;
 
-    public Panel(Stage stage, Drawable background) {
+    public Panel(Stage stage, Drawable background, MazeRunnerGame game) {
 
         table = new Table();
         table.setBackground(background);
@@ -31,6 +32,7 @@ public class Panel extends Actor{
         stage.addActor(table);
         this.widthRatio = 0.8f; // default
         this.heightRatio = 0.6f; // default
+        this.game = game;
     }
 
     public void setSize(float widthRatio, float heightRatio) { // 0~1
@@ -72,7 +74,7 @@ public class Panel extends Actor{
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 super.enter(event, x, y, pointer, fromActor);
                 long currentTime = System.currentTimeMillis();
-                if (!playing && (currentTime - lastPlayTime > cooldown)) {
+                if (!playing && (currentTime - lastPlayTime > cooldown) && !game.isMuted()) {
                     Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/click-button-131479.mp3"));
                     sound.play(1F);
                     playing = true;
@@ -134,7 +136,7 @@ public class Panel extends Actor{
         table.add(volumeSlider).padBottom(20).center().row();
 
         // Mute checkbox
-        CheckBox muteCheckbox = new CheckBox("Mute", skin);
+        CheckBox muteCheckbox = new CheckBox("Mute-Unmute", skin);
         muteCheckbox.addListener(muteListener);
         table.add(muteCheckbox).padBottom(20).center().row();
     }
