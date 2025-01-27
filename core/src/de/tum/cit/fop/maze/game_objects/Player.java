@@ -22,6 +22,8 @@ import static java.lang.Math.abs;
 public class Player extends Character {
 
     private boolean isMoving;
+    public boolean hasMoved = false;
+    public boolean hasReachedExit = false;
     private boolean isHurt = false;
     private float hurtTimer = 0f; // Timer for the red tint
 
@@ -139,6 +141,7 @@ public class Player extends Character {
 
         // to have the player stop the animation if none of the keys are pressed or continues with the animation otherwise
         isMoving = (abs(velX) > SPEED_THRESHOLD || abs(velY) > SPEED_THRESHOLD);  // horizontalInput != 0 || verticalInput != 0;
+        if (isMoving && !hasMoved) hasMoved = true;
 
         // speed is doubled (times the `BOOST_MULTIPLIER`) when: (1) SHIFT key is hold OR (2) touching a speed boost tile
         // final speed is speed * FPS (delta), since the speed should be independent of the FPS

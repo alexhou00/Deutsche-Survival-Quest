@@ -40,7 +40,7 @@ import static de.tum.cit.fop.maze.rendering.Panel.ifSpaceKeyPressed;
 import static de.tum.cit.fop.maze.tiles.TileType.GROUND;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
-import static java.lang.Math.abs;
+import static java.lang.Math.*;
 
 
 /**
@@ -90,6 +90,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private boolean isPaused;
     private boolean isTutorial;
+    Timer timer = new Timer();
 
     private final int totalCoins; // total maximal number of coins that the player should get
 
@@ -275,7 +276,7 @@ public class GameScreen extends InputAdapter implements Screen {
      * @param scale            scaling for the size of the collectible's frame as it appears on the screen
      */
     private void generateCollectibles(Array<Position> emptyTiles, Collectibles.Type type, int numberToGenerate, int frameSize, int hitboxWidth, int hitboxHeight, float scale) {
-        int collectiblesToGenerate = Math.min(numberToGenerate, emptyTiles.size);
+        int collectiblesToGenerate = (!isTutorial) ? (min(numberToGenerate, emptyTiles.size)) : 1;
 
         List<Position> occupiedSectionIndexes = new ArrayList<>();
 
@@ -292,7 +293,7 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     private void generatePortals(Array<Position> emptyTiles, int numberToGenerate, int width, int height, int hitboxWidth, int hitboxHeight, float sizeOnScreen) {
-        int portalsToGenerate = Math.min(numberToGenerate, emptyTiles.size);
+        int portalsToGenerate = min(numberToGenerate, emptyTiles.size);
 
         for (int i = 0; i < portalsToGenerate; i++) {
             // Randomly select a tile index
@@ -360,6 +361,10 @@ public class GameScreen extends InputAdapter implements Screen {
 
         Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
         introPanel.addLabel(instructionsText, instructionsStyle, 80);
+
+        introPanel.addLabel("Move using W, A, S, D keys.", game.getSkin(), 1f, 50);
+        introPanel.addLabel("Collect keys to unlock exits.", game.getSkin(), 1f, 50);
+        introPanel.addLabel("Avoid enemies and traps!", game.getSkin(), 1f, 50);
 
         introPanel.addButton("Start now", game.getSkin(), new ChangeListener() {
             @Override
@@ -493,6 +498,8 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         }, 10);
 
+        if (isTutorial) return;
+
         victoryPanel.addLabel("[OR PRESS SPACE BAR TO CONTINUE]", game.getSkin(), "default", 1f, 40);
 
         victoryPanel.addListener(ifSpaceKeyPressed(() -> victoryPanel.proceedToNextLevel(game)));
@@ -622,9 +629,15 @@ public class GameScreen extends InputAdapter implements Screen {
         // we couldn't stop drawing even if the game is paused
 
         if (player.getLives() <= 0) {
+            if (isTutorial) {
+                player.setLives(10);
+                return;
+            }
             game.goToGameOverScreen();  // Trigger game over screen
             return;
         }
+
+        if (isTutorial) checkTutorialTasks();
 
 
         ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
@@ -666,6 +679,8 @@ public class GameScreen extends InputAdapter implements Screen {
         shapeRenderer.end();
 
         game.getSpriteBatch().begin();
+        if (isTutorial) renderTooltip();
+
         renderTrap();
         // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
         renderCollectibles();
@@ -845,6 +860,16 @@ public class GameScreen extends InputAdapter implements Screen {
 
     }
 
+    private void renderTooltip(){
+        if (currentTooltip != null && !isPaused) {
+            // Convert player's world position to screen coordinates
+            Position screenCoordinates = getScreenCoordinates(player.getX(), player.getY());
+            float tooltipX = screenCoordinates.getX() + 20; // Offset for the tooltip
+            float tooltipY = screenCoordinates.getY() + 50;
+            currentTooltip.setPosition(tooltipX, tooltipY);
+        }
+    }
+
     /**
      * Renders collectible items with appropriate animations based on their type.
      */
@@ -892,7 +917,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 true, player.getSpeechBubble().getElapsedTime(), 0.03f);
 
         for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
-            if (enemy.canSpeak) {
+            if (enemy.canSpeak && !enemy.getSpeechText().isEmpty()) {
                 enemy.getSpeechBubble().show(enemy.SPEAKING_ACTIVE_DURATION);
                 enemy.canSpeak = false;
                 continue;
@@ -1224,6 +1249,9 @@ public class GameScreen extends InputAdapter implements Screen {
      * - The desired number of tiles visible at minimum and maximum zoom levels (MIN_ZOOM_TILES_COUNT and MAX_ZOOM_TILES_COUNT).
      */
     public void clampZoomLevel(){
+        int maxZoomTilesCount = MAX_ZOOM_TILES_COUNT;
+        if (isTutorial)
+            maxZoomTilesCount = (int) max(MIN_ZOOM_TILES_COUNT,  horizontalTilesCount * 1.2);
         // Calculate how many tiles are visible horizontally and vertically based on the current screen dimensions.
         // Math.max is to prevent NaN when the window is minimized
         float numTilesOnScreenWidth = (float) Math.max(Gdx.graphics.getWidth(), MIN_WINDOW_WIDTH) / TILE_SCREEN_SIZE;
@@ -1235,13 +1263,51 @@ public class GameScreen extends InputAdapter implements Screen {
                 numTilesOnScreenWidth,
                 numTilesOnScreenHeight * 16 / 9 // Adjust height for 16:9 aspect ratio.
         );
-        float maxZoomLevel = 1.0f * MAX_ZOOM_TILES_COUNT / Math.max(
+        float maxZoomLevel = 1.0f * maxZoomTilesCount / Math.max(
                 numTilesOnScreenWidth,
                 numTilesOnScreenHeight * 16 / 9 // Adjust height for 16:9 aspect ratio.
         );
         // Clamp the target zoom level to ensure it remains within the calculated bounds.
         targetZoom = MathUtils.clamp(targetZoom, minZoomLevel, maxZoomLevel);
         //targetZoom = MathUtils.clamp(targetZoom, 0.8f, 1.3f);
+    }
+
+    private void checkTutorialTasks() {
+        if (!player.hasMoved) {
+            showTooltip("Move using W, A, S, D keys.");
+        } else if (!key.isCollected()) {
+            showTooltip("Find and collect the key.");
+        } else if (!player.hasReachedExit) {
+            showTooltip("Go to the exit to complete the level.");
+        }
+    }
+
+    private Label currentTooltip;
+
+    private void showTooltip(String message) {
+        // Remove any existing tooltip
+        if (currentTooltip != null) {
+            currentTooltip.remove();
+        }
+
+        // Create a new tooltip
+        currentTooltip = new Label(message, game.getSkin());
+        currentTooltip.setFontScale(1.2f);
+        currentTooltip.setColor(Color.WHITE);
+
+        // Add the tooltip to the stage
+        stage1.addActor(currentTooltip);
+
+        // Schedule removal after 3 seconds
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (currentTooltip != null) {
+                    currentTooltip.remove();
+                    currentTooltip = null;
+                }
+            }
+        }, 3);
     }
 
 

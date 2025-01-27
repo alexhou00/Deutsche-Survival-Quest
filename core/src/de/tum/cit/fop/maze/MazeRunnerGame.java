@@ -561,6 +561,7 @@ public class MazeRunnerGame extends Game {
     public void checkExitToNextLevel(Player player) {
         if (player.isCenterTouchingTile(Exit.class) && gameScreen.getKey().isCollected()){
             //Gdx.app.log("MazeRunnerGame", "Player is at the exit and has the key.");
+            player.hasReachedExit = true;
 
             if (gameLevel == 6) {
                 goToVictoryScreen();
