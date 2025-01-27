@@ -33,7 +33,7 @@ public class MazeRunnerGame extends Game {
     private VictoryScreen victoryScreen;
     private Array<Music> musicList;
     private Array<Sound> soundList;
-    private Array<Long> playingSoundIds = new Array<>();  // Track sound instances by their IDs
+    private final Array<Long> playingSoundIds = new Array<>();  // Track sound instances by their IDs
 
     public int getGameLevel() {
         return gameLevel;
@@ -73,8 +73,8 @@ public class MazeRunnerGame extends Game {
 
     long keyCollectSoundId, hurtSoundId, runningSoundId, teleportSoundId;
 
-    private Map<String, Sound> sounds = new HashMap<>();
-    private Map<String, Long> soundIds = new HashMap<>();
+    private final Map<String, Sound> sounds = new HashMap<>();
+    private final Map<String, Long> soundIds = new HashMap<>();
 
 
 
@@ -286,10 +286,14 @@ public class MazeRunnerGame extends Game {
     /**
      * Switches to the game screen.
      */
-    public void goToGame() {
+    public void goToGame(boolean tutorial) {
         // this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
         if (gameScreen == null) {
-            gameLevel = getGameLevel();
+            if (!tutorial)
+                gameLevel = (getGameLevel() == 0) ? 1 : getGameLevel();
+            else
+                gameLevel = 0;
+
             Gdx.app.log("MazeRunnerGame", "Go to Game, LEVEL: " + gameLevel);
             gameScreen = new GameScreen(this);
             gameOverMusic.pause();
@@ -308,6 +312,10 @@ public class MazeRunnerGame extends Game {
             gameOverScreen.dispose(); // Dispose the menu screen if it exists
             gameOverScreen = null;
         }
+    }
+
+    public void goToGame(){
+        goToGame(false);
     }
 
     public void goToGameOverScreen() {
@@ -552,7 +560,7 @@ public class MazeRunnerGame extends Game {
 
     public void checkExitToNextLevel(Player player) {
         if (player.isCenterTouchingTile(Exit.class) && gameScreen.getKey().isCollected()){
-            Gdx.app.log("MazeRunnerGame", "Player is at the exit and has the key.");
+            //Gdx.app.log("MazeRunnerGame", "Player is at the exit and has the key.");
 
             if (gameLevel == 6) {
                 goToVictoryScreen();

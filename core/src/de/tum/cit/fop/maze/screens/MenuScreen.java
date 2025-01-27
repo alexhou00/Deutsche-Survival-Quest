@@ -124,6 +124,9 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.log("MenuScreen", "\"How to Play\" button pressed");
+                game.goToGame(true); // Change to the game screen when button is pressed
+                game.getPauseMusic().pause();
+
             }
         });
 

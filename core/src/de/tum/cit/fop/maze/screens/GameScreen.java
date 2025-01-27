@@ -142,12 +142,13 @@ public class GameScreen extends InputAdapter implements Screen {
 
         isTutorial = false;
         TiledMap tiledMap;
+        System.out.println("Game Level upon creation of GameScreen: " + game.getGameLevel());
         switch (game.getGameLevel()) {
             case 1,2,3,4,5 -> tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_obstacles.png").path());
             case 6 -> tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             case 0 -> {
                 isTutorial = true;
-                tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_obstacles.png").path());
+                tiledMap = levels.loadTiledMap("maps/level-2-map.properties", Gdx.files.internal("tilesets/level2_tileset.png").path(), Gdx.files.internal("tilesets/level2_obstacles.png").path());
             }
             //case 3 -> tiledMap = levels.loadTiledMap("maps/level-3-map.properties", Gdx.files.internal("tilesets/level3_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             //case 4 -> tiledMap = levels.loadTiledMap("maps/level-4-map.properties", Gdx.files.internal("tilesets/level4_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
@@ -470,12 +471,18 @@ public class GameScreen extends InputAdapter implements Screen {
         String scoreText = "Score: " + grade + " (" + player.getCoins() + "/" + totalCoins + ")";
         victoryPanel.addLabel(scoreText, game.getSkin(), 1f, 40);
 
-        victoryPanel.addButton("Next Level", game.getSkin(), new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                victoryPanel.proceedToNextLevel(game);
-            }
-        }, 10);
+        System.out.println("Game Level: " + game.getGameLevel());
+        if (game.getGameLevel() != 0) { // if is not tutorial
+            victoryPanel.addButton("Next Level", game.getSkin(), new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    victoryPanel.proceedToNextLevel(game);
+                }
+            }, 10);
+        }
+        else{ // is tutorial
+
+        }
 
         victoryPanel.addButton("Back to Menu", game.getSkin(), new ChangeListener() {
             @Override
