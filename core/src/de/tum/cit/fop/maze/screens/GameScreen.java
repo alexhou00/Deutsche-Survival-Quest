@@ -704,7 +704,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
         stage1.act(delta);
         stage1.draw(); // stage1 is for the panels, like the intro panel and the pause panel
-        if (isTutorial && !isPaused) renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
+        //if (isTutorial && !isPaused) renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
+
+        if (!isPaused) {
+            //checkForSpotlightEvents();
+        }
 
         renderHUD();
     }
@@ -940,8 +944,9 @@ public class GameScreen extends InputAdapter implements Screen {
         }
 
         // If the Enter key is pressed and the game is paused, resume the game
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && isPaused) {
+        if ((Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) && isPaused) {
             resume();
+            currentTooltipMessage = null; // Clear the tooltip
         }
     }
 
@@ -1288,6 +1293,36 @@ public class GameScreen extends InputAdapter implements Screen {
     private void showTooltip(String message) {
         // Remove any existing tooltip
         currentTooltipMessage = message;
+    }
+
+    private void checkForSpotlightEvents() {
+        // Example: Detect proximity to a trap
+        for (Trap trap : iterate(levels.traps)) {
+            if (player.getHitbox().overlaps(trap.getHitbox())) {
+                triggerSpotlight(trap.getX(), trap.getY(), 100, "Watch out for traps!");
+                return;
+            }
+        }
+
+        // Example: Detect proximity to an enemy
+        for (ChasingEnemy enemy : iterate(levels.chasingEnemies)) {
+            if (player.getHitbox().overlaps(enemy.getHitbox())) {
+                triggerSpotlight(enemy.getX(), enemy.getY(), 100, "An enemy is near!");
+                return;
+            }
+        }
+
+        // Example: Highlight arrow pointing to exit
+        Position exitPosition = levels.getNearestExit(player.getX(), player.getY()).getTilePosition();
+        if (exitPosition != null && player.getX() > 399) {
+            triggerSpotlight(exitPosition.getX(), exitPosition.getY(), 150, "Head to the exit!");
+        }
+    }
+
+    private void triggerSpotlight(float x, float y, float radius, String message) {
+        setPaused(true); // Pause the game
+        renderSpotlightEffect(x, y, radius);
+        showTooltip(message); // Display a message
     }
 
 
