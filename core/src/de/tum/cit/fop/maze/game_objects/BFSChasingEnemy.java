@@ -45,6 +45,8 @@ public class BFSChasingEnemy extends ChasingEnemy {
         // Remember: decrease the alert timer
         alertTime -= delta;
 
+        if (damageCooldown > 0) return;
+
         // Find the path to the player using BFS
         List<Position> path = findPathTo(player.getX(), player.getY());
         // If a path exists and has more than one step
