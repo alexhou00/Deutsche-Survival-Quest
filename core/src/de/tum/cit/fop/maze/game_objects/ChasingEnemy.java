@@ -202,33 +202,27 @@ public class ChasingEnemy extends Character {
     protected void chase(Player player, float delta) {
 
         alertTime -= delta;
-        if (damageCooldown <= 0) {
-            /*if ((damageTimes < 3)) {*/
-                targetX = player.getX();
-                targetY = player.getY();
-                moveTowardsTarget(delta);/*
-            }
-            else { // the other direction
-                isChasing = false;
-                randomMoveCooldown -= delta;
-                targetX = x - (player.getX() - x);
-                targetY = y - (player.getY() - y);
-                if (randomMoveCooldown <= 0) {
-                    float dx = player.getX() - x; // dx > 0 means player is on the right side
-                    float dy = player.getY() - y;
-                    setRandomTarget(((dx > 0) ? 0 : x),
-                                    ((dy > 0) ? 0 : y),
-                                    ((dx > 0) ? x : getWorldWidth()),
-                                    ((dy > 0) ? y : getWorldHeight()));
-                    damageTimes = 0;
-                    randomMoveCooldown = RANDOM_MOVE_TIME; // Reset the cooldown
-                }
-                moveTowardsTarget(delta); // Gradually move towards the random target
-            }*/
-        }
-        else{
 
+        if (damageCooldown > DAMAGE_COOLDOWN_TIME * (1 - 1/2f) ) {
+            // leave for a while (1/3 of the cooldown time)
+            targetX = x + (x - player.getX()) * 5000;
+            targetY = y + (y - player.getY()) * 5000;
+            System.out.println("Going away....");
+            moveTowardsTarget(delta);
+            System.out.println("Towards Target Moved");
+
+            return;
         }
+        else if (damageCooldown > 0) {
+            faceThePlayer();
+            return;
+        }
+
+        targetX = player.getX();
+        targetY = player.getY();
+        moveTowardsTarget(delta);
+
+
     }
 
     /**
@@ -463,6 +457,25 @@ public class ChasingEnemy extends Character {
     public void bounceBack(GameObject source){
         velX = bounceVelocity(velX);
         velY = bounceVelocity(velY);
+    }
+
+    protected void faceThePlayer(){
+        if (player == null) {
+            return; // No player to face
+        }
+
+        // Calculate direction vector from enemy to player
+        float dx = player.getX() - x;
+        float dy = player.getY() - y;
+
+        // Determine the dominant direction
+        if (Math.abs(dx) > Math.abs(dy)) {
+            // Dominant direction is horizontal
+            previousDirection = (dx > 0) ? Direction.right : Direction.left;
+        } else {
+            // Dominant direction is vertical
+            previousDirection = (dy > 0) ? Direction.up : Direction.down;
+        }
     }
 
     @Override

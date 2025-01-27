@@ -374,7 +374,7 @@ public class LevelManager {
                         int worldX = chasingEnemyPosition.getTileX();
                         int worldY = chasingEnemyPosition.getTileY();
                         int enemyIndex = getEnemyIndex(tileValue);
-                        chasingEnemies.add(new BFSChasingEnemy(tileRegion, worldX, worldY,
+                        chasingEnemies.add(new ChasingEnemy(tileRegion, worldX, worldY,
                                 TILE_SIZE, TILE_SIZE, 10, 16, 64, 64,
                                 3, this, game, enemyIndex));
                     }
