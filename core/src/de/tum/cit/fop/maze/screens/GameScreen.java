@@ -707,7 +707,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //if (isTutorial && !isPaused) renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
 
         if (!isPaused) {
-            //checkForSpotlightEvents();
+            checkForSpotlightEvents();
         }
 
         renderHUD();
@@ -1288,6 +1288,8 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+    // TODO: To add: mouse scroll or +/- key to zoom in/out; esc to pause; arrow points to the exit
+
     private String currentTooltipMessage;
 
     private void showTooltip(String message) {
@@ -1296,9 +1298,10 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     private void checkForSpotlightEvents() {
+        // TODO: also for collectibles
         // Example: Detect proximity to a trap
         for (Trap trap : iterate(levels.traps)) {
-            if (player.getHitbox().overlaps(trap.getHitbox())) {
+            if (player.getHitbox().overlaps(trap.getHitbox())) { // TODO: isCloseTo(): search surrounding 3x3 grid
                 triggerSpotlight(trap.getX(), trap.getY(), 100, "Watch out for traps!");
                 return;
             }
@@ -1315,12 +1318,12 @@ public class GameScreen extends InputAdapter implements Screen {
         // Example: Highlight arrow pointing to exit
         Position exitPosition = levels.getNearestExit(player.getX(), player.getY()).getTilePosition();
         if (exitPosition != null && player.getX() > 399) {
-            triggerSpotlight(exitPosition.getX(), exitPosition.getY(), 150, "Head to the exit!");
+            triggerSpotlight(player.getX(), player.getY(), 150, "Head to the exit!");
         }
     }
 
     private void triggerSpotlight(float x, float y, float radius, String message) {
-        setPaused(true); // Pause the game
+        //setPaused(true); // Pause the game
         renderSpotlightEffect(x, y, radius);
         showTooltip(message); // Display a message
     }
