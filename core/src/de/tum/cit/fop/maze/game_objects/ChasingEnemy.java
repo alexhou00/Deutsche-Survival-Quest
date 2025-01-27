@@ -505,14 +505,18 @@ public class ChasingEnemy extends Character {
 
     protected void updateSpeakingTime(float delta){
         speakingElapsedTime += delta;
+        boolean emptyString = true;
 
         if (speakingElapsedTime >= SPEAKING_CYCLE_DURATION) {
             speakingElapsedTime -= SPEAKING_CYCLE_DURATION; // Reset to start a new cycle
             String[] textToSelect = levels.getProperties("speechEnemy" + (getEnemyIndex() + 1)).split("\\|");
             System.out.println(Arrays.toString(textToSelect));
+            if (textToSelect.length != 0) emptyString = false;
             speechTextIndex = new Random(System.nanoTime()).nextInt(textToSelect.length);
         }
         canSpeak = speakingElapsedTime < SPEAKING_ACTIVE_DURATION;
+        if (emptyString)
+            canSpeak = false;
     }
 
     public String getSpeechText(){ // {levels.getProperties("speechEnemy" + getEnemyIndex() + 1), };
