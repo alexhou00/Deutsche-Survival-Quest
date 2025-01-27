@@ -141,7 +141,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         TiledMap tiledMap;
         switch (game.getGameLevel()) {
-            case 1,2,3,4 -> tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_obstacles.png").path());
+            case 1,2,3,4,5 -> tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_obstacles.png").path());
             case 6 -> tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             //case 3 -> tiledMap = levels.loadTiledMap("maps/level-3-map.properties", Gdx.files.internal("tilesets/level3_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             //case 4 -> tiledMap = levels.loadTiledMap("maps/level-4-map.properties", Gdx.files.internal("tilesets/level4_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
