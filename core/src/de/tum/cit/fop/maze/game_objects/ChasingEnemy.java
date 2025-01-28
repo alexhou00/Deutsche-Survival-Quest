@@ -116,7 +116,7 @@ public class ChasingEnemy extends Character {
 
         setDirection();
 
-        if (game.getGameScreen().isTutorial())
+        if (game.getGameScreen() != null && game.getGameScreen().isTutorial())
             ENEMY_BASE_SPEED = 100;
 
         // rectangle.set();
