@@ -1318,12 +1318,14 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // if player.isCloseToKey(150)
         if (player.isCloseTo(key, 150) && !key.isCollected()){
+            tooltipManager.timer = 0f;
             triggerSpotlight(key.getX(), key.getY(), 70, "Collect the Key!\nThe key can look differently \ndepend on different levels.");
             return;
         }
 
         Portal portal = player.isCloseToPortals(200);
         if (portal != null){
+            tooltipManager.timer = 0f;
             triggerSpotlight(portal.getX(), portal.getY(), 100, "A Portal could send you back \nto the entry point.");
             return;
         }
@@ -1351,10 +1353,9 @@ public class GameScreen extends InputAdapter implements Screen {
             triggerSpotlight(collectibles.getX(), collectibles.getY(), 68,
                     "Collect the " + capitalize(collectibles.getType().toString()) + "!\n" +
                             collectibles.getFunction());
-            return;
         }
 
-        tooltipManager.timer = 0f; // If none of the cases. Reset the timer
+        //tooltipManager.timer = 0f; // If none of the cases. Reset the timer
     }
 
     private void triggerSpotlight(float x, float y, float radius, String message) {
@@ -1448,7 +1449,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         public void show(String message) {
             this.message = message;
-            //this.timer = 0f;
+            if (!message.contains("enemy")) this.timer = 0f;
         }
 
         public void update(float delta) {
