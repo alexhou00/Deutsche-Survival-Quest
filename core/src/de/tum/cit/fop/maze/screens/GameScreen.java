@@ -713,63 +713,10 @@ public class GameScreen extends InputAdapter implements Screen {
 
         moveCamera();
 
-
-
         if (isTutorial) {
-            if (isIntroEnded && isExitSpotlightActive) {
-                // Render spotlight on the exit
-                renderSpotlightEffect(hudObjectRenderer.getArrowRotatedX(), hudObjectRenderer.getArrowRotatedY(), 20, 1, 1);
-
-                // Show instructions to press Enter
-                showTooltip("This arrow indicate where the exit is. \nPress Enter to continue");
-                this.pause(false);
-
-                // Check for Enter key to proceed to the next phase of the tutorial
-                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-                    isExitSpotlightActive = false; // Deactivate spotlight
-                    this.resume();
-                    //showTooltip("Use WASD or arrow keys to move.");
-                }
-                //return; // Skip the rest of the rendering during this spotlight phase
-            }
-            else if (isIntroEnded && isZoomingSpotlightActive){
-                renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
-                showTooltip("Use the scroll wheel or '+'/'-' keys to zoom in and out.");
-                for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
-                    enemy.pause();
-                }
-                //this.pause(false);
-
-                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-                    isZoomingSpotlightActive = false; // Deactivate
-                    this.resume();
-                }
-            }
-            else if (isIntroEnded && isEscKeySpotlightActive){
-                renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
-                showTooltip("Press 'Esc' to pause the game.\nGot it? Press Enter to continue");
-                this.pause(false);
-
-                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-                    isEscKeySpotlightActive = false; // Deactivate
-                    this.resume();
-                }
-            }
-            else {
-                checkTutorialTasks();
-                if (!isPaused) {
-                    if (tooltipTimer >= TOOLTIP_MAX_DURATION) {
-                        currentTooltipMessage = null;
-                        checkTutorialTasks();
-                    } else {
-                        tooltipTimer += delta; // Increment timer
-                    }
-                    checkForSpotlightEvents();
-                }
-            }
+            updateTutorial(delta);
+            renderTooltip();
         }
-
-        if (isTutorial) renderTooltip();
 
         stage1.act(delta);
         stage1.draw(); // stage1 is for the panels, like the intro panel and the pause panel
@@ -1420,6 +1367,59 @@ public class GameScreen extends InputAdapter implements Screen {
         showTooltip(message); // Display a message
     }
 
+    public void updateTutorial(float delta){
+        if (isIntroEnded && isExitSpotlightActive) {
+            // Render spotlight on the exit
+            renderSpotlightEffect(hudObjectRenderer.getArrowRotatedX(), hudObjectRenderer.getArrowRotatedY(), 20, 1, 1);
+
+            // Show instructions to press Enter
+            showTooltip("This arrow indicate where the exit is. \nPress Enter to continue");
+            this.pause(false);
+
+            // Check for Enter key to proceed to the next phase of the tutorial
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                isExitSpotlightActive = false; // Deactivate spotlight
+                this.resume();
+                //showTooltip("Use WASD or arrow keys to move.");
+            }
+            //return; // Skip the rest of the rendering during this spotlight phase
+        }
+        else if (isIntroEnded && isZoomingSpotlightActive){
+            renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
+            showTooltip("Use the scroll wheel or '+'/'-' keys to zoom in and out.");
+            for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
+                enemy.pause();
+            }
+            //this.pause(false);
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                isZoomingSpotlightActive = false; // Deactivate
+                this.resume();
+            }
+        }
+        else if (isIntroEnded && isEscKeySpotlightActive){
+            renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
+            showTooltip("Press 'Esc' to pause the game.\nGot it? Press Enter to continue");
+            this.pause(false);
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                isEscKeySpotlightActive = false; // Deactivate
+                this.resume();
+            }
+        }
+        else {
+            checkTutorialTasks();
+            if (!isPaused) {
+                if (tooltipTimer >= TOOLTIP_MAX_DURATION) {
+                    currentTooltipMessage = null;
+                    checkTutorialTasks();
+                } else {
+                    tooltipTimer += delta; // Increment timer
+                }
+                checkForSpotlightEvents();
+            }
+        }
+    }
 
     /**
      * Pauses the game, optionally creating a pause panel.
