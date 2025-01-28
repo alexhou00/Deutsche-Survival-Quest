@@ -29,6 +29,8 @@ public class Collectibles extends GameObject {
     Sound soundEffectCollect;
     protected final MazeRunnerGame game;
 
+    private String function = null;
+
     /**
      * Constructs a new GameObject instance with specified parameters.
      *
@@ -100,26 +102,31 @@ public class Collectibles extends GameObject {
             if (game.isMuted()){
                 soundEffectCollect.pause();
             }
-            else if (!game.isMuted()){
+            else{
                 soundEffectCollect.play();
             }
 
             switch (this.getType()) {
                 case HEART:
                     player.setLives(player.getLives() + 1);
+                    function = "It can restore 1 life!";
                     break;
                 case PRETZEL:
                     player.setLives(player.getLives() + 1.25f);
+                    function = "It can restore 1.25 lives!";
                     break;
                 case GESUNDHEITSKARTE:
-                    player.setLives(player.getLives() + 2f);
+                    player.setLives(player.getLives() + 1.5f);
+                    function = "It can restore 1.5 lives!";
                     break;
                 case COIN:
                     player.setCoins(player.getCoins() + 1);
+                    function = "You need coins to get high scores!";
                     break;
                 case STAMINA:
                     player.setCurrentStaminaMultiplier(2);
                     player.setStamina(Player.maxStamina * player.getCurrentStaminaMultiplier()); // 100 * 2
+                    function = "It will give you an extra Stamina wheel!";
                     break;
 
             }
