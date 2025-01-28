@@ -93,6 +93,7 @@ public class GameScreen extends InputAdapter implements Screen {
     private final int totalCoins; // total maximal number of coins that the player should get
 
     private final SelectLevelScreen selectLevelScreen;
+    private final TooltipManager tooltipManager;
 
 
 
@@ -136,6 +137,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
         //game.setMuted(false);
         shapeRenderer = new ShapeRenderer();
+
+        tooltipManager = new TooltipManager();
 
         // initialize game world elements
         levels = new LevelManager(game);
@@ -565,7 +568,7 @@ public class GameScreen extends InputAdapter implements Screen {
             return true;
         targetZoom += amountY * 0.1f; // Adjust sensitivity as needed
         clampZoomLevel(); // targetZoom = MathUtils.clamp(targetZoom, MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL); // Clamp zoom level
-        currentTutorialStage = TutorialStage.ESC_PAUSE;
+        if (currentTutorialStage == TutorialStage.ZOOM) currentTutorialStage = TutorialStage.ESC_PAUSE;
         Gdx.app.debug("GameScreen", "mouse scrolled to adjust zoom");
         return true; // Return true to indicate the event was handled
     }
@@ -600,11 +603,11 @@ public class GameScreen extends InputAdapter implements Screen {
         // Handle keys input for zooming
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) { // "+" key
             targetZoom -= 0.02f;
-            currentTutorialStage = TutorialStage.ESC_PAUSE;
+            if (currentTutorialStage == TutorialStage.ZOOM) currentTutorialStage = TutorialStage.ESC_PAUSE;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) { // "-" key
             targetZoom += 0.02f;
-            currentTutorialStage = TutorialStage.ESC_PAUSE;
+            if (currentTutorialStage == TutorialStage.ZOOM) currentTutorialStage = TutorialStage.ESC_PAUSE;
         }
 
         clampZoomLevel(); // Clamp to avoid extreme zoom level
@@ -1405,7 +1408,7 @@ public class GameScreen extends InputAdapter implements Screen {
                     this.resume();
                 }
             }
-            case COMPLETE,INTRO -> {
+            case COMPLETE -> {
                 checkTutorialTasks();
                 if (!isPaused) {
                     if (tooltipTimer >= TOOLTIP_MAX_DURATION) {
@@ -1418,21 +1421,6 @@ public class GameScreen extends InputAdapter implements Screen {
                 }
             }
         }
-/*
-        if (isIntroEnded && isExitSpotlightActive) {
-            // Render spotlight on the exit
-
-            //return; // Skip the rest of the rendering during this spotlight phase
-        }
-        else if (isIntroEnded && isZoomingSpotlightActive){
-
-        }
-        else if (isIntroEnded && isEscKeySpotlightActive){
-
-        }
-        else {
-
-        }*/
     }
 
     public enum TutorialStage {
@@ -1440,7 +1428,11 @@ public class GameScreen extends InputAdapter implements Screen {
         EXIT_ARROW,
         ZOOM,
         ESC_PAUSE,
-        COMPLETE
+        COMPLETE,
+        // v gameplay starts from here v
+        MOVE,
+        KEY,
+        EXIT
     }
 
     private TutorialStage currentTutorialStage = TutorialStage.INTRO;
@@ -1480,7 +1472,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //Gdx.input.setInputProcessor(null); // Disable input handling during pause
         isPaused = true; // Set the game to "paused"
 
-        if (!isTutorial || !player.hasMoved) {
+        if (!isTutorial || player.hasMoved) { // change to pause music
             game.getBackgroundMusic().pause();
             game.getPauseMusic().play();
         }
