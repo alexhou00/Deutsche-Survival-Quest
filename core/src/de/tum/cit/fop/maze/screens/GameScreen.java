@@ -87,15 +87,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private boolean isPaused;
     private boolean isTutorial;
-    //private boolean isIntroEnded;
-    Timer timer = new Timer();
 
     private final int totalCoins; // total maximal number of coins that the player should get
 
     private final SelectLevelScreen selectLevelScreen;
     private final TooltipManager tooltipManager;
-
-
 
 
 
@@ -875,23 +871,20 @@ public class GameScreen extends InputAdapter implements Screen {
         if (angle > 0) hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
 
     }
-
-    private final SpriteBatch tooltipBatch = new SpriteBatch();
-
     private void renderTooltip(){
 
 
-        if (currentTooltipMessage != null) {
+        if (tooltipManager.message != null) {
             float tooltipX = player.getX() + 50;//camera.position.x - 100; // Adjust to center near camera
             float tooltipY = player.getY() + 50;//camera.position.y + camera.viewportHeight / 2 - 20; // Top of the viewport
 
-            float clampedX = MathUtils.clamp(tooltipX, 0, getWorldWidth() - font.getRegion().getRegionWidth() * min(2, currentTooltipMessage.length() / 10));
+            float clampedX = MathUtils.clamp(tooltipX, 0, getWorldWidth() - font.getRegion().getRegionWidth() * min(2, tooltipManager.message.length() / 10));
             float clampedY = MathUtils.clamp(tooltipY, 0, getWorldHeight() - font.getCapHeight());
 
-            tooltipBatch.setProjectionMatrix(camera.combined);
-            tooltipBatch.begin();
-            font.draw(tooltipBatch, currentTooltipMessage, clampedX, clampedY);
-            tooltipBatch.end();
+            tooltipManager.batch.setProjectionMatrix(camera.combined);
+            tooltipManager.batch.begin();
+            font.draw(tooltipManager.batch, tooltipManager.message, clampedX, clampedY);
+            tooltipManager.batch.end();
         }
     }
 
@@ -966,7 +959,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // If the Enter key is pressed and the game is paused, resume the game
         if ((Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) && isPaused && !isTutorial) {
             resume();
-            currentTooltipMessage = null; // Clear the tooltip
+            tooltipManager.message = null; // Clear the tooltip
         }
     }
 
@@ -1300,23 +1293,26 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private void checkTutorialTasks() {
         if (!player.hasMoved) {
+            currentTutorialStage = TutorialStage.MOVE;
             renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
             showTooltip("Move using WASD or the arrow keys.\nTip: Hold SHIFT to sprint and leave\nthe enemies behind--but watch your stamina wheel!");
         } else if (!key.isCollected()) {
+            currentTutorialStage = TutorialStage.KEY;
             showTooltip("Find and collect the key.");
         } else if (!player.hasReachedExit) {
+            currentTutorialStage = TutorialStage.EXIT;
             showTooltip("Go to the exit \nto complete the level.");
         }
     }
 
-    private String currentTooltipMessage;
-    private float tooltipTimer = 0f;
-    private static final float TOOLTIP_MAX_DURATION = 3f; // Maximum duration in seconds
+    //private String currentTooltipMessage;
+    //private float tooltipTimer = 0f;
+    //private static final float TOOLTIP_MAX_DURATION = 3f; // Maximum duration in seconds
 
     private void showTooltip(String message) {
         // Remove any existing tooltip
         Gdx.app.log("Tooltip", "text changed to: " + message);
-        currentTooltipMessage = message;
+        tooltipManager.message = message;
     }
 
     private void checkForSpotlightEvents() {
@@ -1358,12 +1354,12 @@ public class GameScreen extends InputAdapter implements Screen {
             return;
         }
 
-        tooltipTimer = 0f; // If none of the cases. Reset the timer
+        tooltipManager.timer = 0f; // If none of the cases. Reset the timer
     }
 
     private void triggerSpotlight(float x, float y, float radius, String message) {
         //setPaused(true); // Pause the game
-        if (tooltipTimer >= TOOLTIP_MAX_DURATION) return;
+        if (tooltipManager.timer >= TooltipManager.TOOLTIP_DURATION) return;
         renderSpotlightEffect(x, y, radius, 0.8f, 1);
         showTooltip(message); // Display a message
     }
@@ -1408,39 +1404,51 @@ public class GameScreen extends InputAdapter implements Screen {
                     this.resume();
                 }
             }
-            case COMPLETE -> {
+            case MOVE, KEY, EXIT, COMPLETE -> {
                 checkTutorialTasks();
-                if (!isPaused) {
-                    if (tooltipTimer >= TOOLTIP_MAX_DURATION) {
-                        currentTooltipMessage = null;
-                        checkTutorialTasks();
-                    } else {
-                        tooltipTimer += delta; // Increment timer
-                    }
-                    checkForSpotlightEvents();
-                }
             }
+        }
+        if (!isPaused) {
+            if (tooltipManager.timer >= TooltipManager.TOOLTIP_DURATION) {
+                tooltipManager.message = null;
+                checkTutorialTasks();
+            } else {
+                tooltipManager.timer += delta; // Increment timer
+            }
+            checkForSpotlightEvents();
         }
     }
 
     public enum TutorialStage {
-        INTRO,
-        EXIT_ARROW,
-        ZOOM,
-        ESC_PAUSE,
-        COMPLETE,
+        INTRO       (0),
+        EXIT_ARROW  (1),
+        ZOOM        (2),
+        ESC_PAUSE   (3),
+        COMPLETE    (7),
         // v gameplay starts from here v
-        MOVE,
-        KEY,
-        EXIT
+        MOVE        (4),
+        KEY         (5),
+        EXIT        (6);
+
+        private final int stageOrder;
+
+        TutorialStage(int stageOrder){
+            this.stageOrder = stageOrder;
+        }
+
+        public int getStageOrder() {
+            return stageOrder;
+        }
     }
 
     private TutorialStage currentTutorialStage = TutorialStage.INTRO;
 
-    private class TooltipManager {
+    private static class TooltipManager {
         private String message;
         private float timer;
         private static final float TOOLTIP_DURATION = 3f;
+
+        private final SpriteBatch batch = new SpriteBatch();
 
         public void show(String message) {
             this.message = message;
@@ -1450,10 +1458,6 @@ public class GameScreen extends InputAdapter implements Screen {
         public void update(float delta) {
             if (message != null) timer += delta;
             if (timer > TOOLTIP_DURATION) message = null;
-        }
-
-        public void render(SpriteBatch batch, BitmapFont font, float x, float y) {
-            if (message != null) font.draw(batch, message, x, y);
         }
     }
 
