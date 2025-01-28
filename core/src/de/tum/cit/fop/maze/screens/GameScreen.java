@@ -87,7 +87,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private boolean isPaused;
     private boolean isTutorial;
-    private boolean isIntroEnded;
+    //private boolean isIntroEnded;
     Timer timer = new Timer();
 
     private final int totalCoins; // total maximal number of coins that the player should get
@@ -345,8 +345,6 @@ public class GameScreen extends InputAdapter implements Screen {
         Panel introPanel = new Panel(stage1, background, game);
         introPanel.setSize(0.9f, 0.9f);
 
-        isIntroEnded = false;
-
         String levelName = levels.getProperties("levelName");
         introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "title", 0.5f, 80);
 
@@ -374,13 +372,13 @@ public class GameScreen extends InputAdapter implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 introPanel.proceedToGame(game, player, levels);
-                isIntroEnded = true;
+                currentTutorialStage = TutorialStage.EXIT_ARROW;
             }
         }, 20);
 
         introPanel.addListener(ifSpaceKeyPressed(() -> {
             introPanel.proceedToGame(game, player, levels);
-            isIntroEnded = true;
+            currentTutorialStage = TutorialStage.EXIT_ARROW;
         }));
 
         Label.LabelStyle continueStyle = new Label.LabelStyle(game.getSkin().get(Label.LabelStyle.class).font, Color.GRAY);
@@ -567,7 +565,7 @@ public class GameScreen extends InputAdapter implements Screen {
             return true;
         targetZoom += amountY * 0.1f; // Adjust sensitivity as needed
         clampZoomLevel(); // targetZoom = MathUtils.clamp(targetZoom, MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL); // Clamp zoom level
-        isZoomingSpotlightActive = false;
+        currentTutorialStage = TutorialStage.ESC_PAUSE;
         Gdx.app.debug("GameScreen", "mouse scrolled to adjust zoom");
         return true; // Return true to indicate the event was handled
     }
@@ -602,11 +600,11 @@ public class GameScreen extends InputAdapter implements Screen {
         // Handle keys input for zooming
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) { // "+" key
             targetZoom -= 0.02f;
-            isZoomingSpotlightActive = false;
+            currentTutorialStage = TutorialStage.ESC_PAUSE;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) { // "-" key
             targetZoom += 0.02f;
-            isZoomingSpotlightActive = false;
+            currentTutorialStage = TutorialStage.ESC_PAUSE;
         }
 
         clampZoomLevel(); // Clamp to avoid extreme zoom level
@@ -623,9 +621,9 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
-    boolean isExitSpotlightActive = true;
-    boolean isZoomingSpotlightActive = true;
-    boolean isEscKeySpotlightActive = true;
+    //boolean isExitSpotlightActive = true;
+    //boolean isZoomingSpotlightActive = true;
+    //boolean isEscKeySpotlightActive = true;
     /*private void checkPortalCollision(Player player, Key key) {
         for (Portal portal : portals) {
             if (portal.isActive() && player.getHitbox().overlaps(portal.getHitbox())) {
@@ -1367,59 +1365,85 @@ public class GameScreen extends InputAdapter implements Screen {
         showTooltip(message); // Display a message
     }
 
-    public void updateTutorial(float delta){
+    private void updateTutorial(float delta){
+
+        switch (currentTutorialStage) {
+            case EXIT_ARROW -> {
+                renderSpotlightEffect(hudObjectRenderer.getArrowRotatedX(), hudObjectRenderer.getArrowRotatedY(), 20, 1, 1);
+
+                // Show instructions to press Enter
+                showTooltip("This arrow indicate where the exit is. \nPress Enter to continue");
+                this.pause(false);
+
+                // Check for Enter key to proceed to the next phase of the tutorial
+                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                    currentTutorialStage = TutorialStage.ZOOM;
+                    this.resume();
+                    //showTooltip("Use WASD or arrow keys to move.");
+                }
+            }
+            case ZOOM -> {
+                renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
+                showTooltip("Use the scroll wheel or '+'/'-' keys to zoom in and out.");
+                for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
+                    enemy.pause();
+                }
+                //this.pause(false);
+
+                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                    currentTutorialStage = TutorialStage.ESC_PAUSE;
+                    this.resume();
+                }
+            }
+            case ESC_PAUSE -> {
+                renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
+                showTooltip("Press 'Esc' to pause the game.\nGot it? Press Enter to continue");
+                this.pause(false);
+
+                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                    currentTutorialStage = TutorialStage.COMPLETE;
+                    this.resume();
+                }
+            }
+            case COMPLETE,INTRO -> {
+                checkTutorialTasks();
+                if (!isPaused) {
+                    if (tooltipTimer >= TOOLTIP_MAX_DURATION) {
+                        currentTooltipMessage = null;
+                        checkTutorialTasks();
+                    } else {
+                        tooltipTimer += delta; // Increment timer
+                    }
+                    checkForSpotlightEvents();
+                }
+            }
+        }
+/*
         if (isIntroEnded && isExitSpotlightActive) {
             // Render spotlight on the exit
-            renderSpotlightEffect(hudObjectRenderer.getArrowRotatedX(), hudObjectRenderer.getArrowRotatedY(), 20, 1, 1);
 
-            // Show instructions to press Enter
-            showTooltip("This arrow indicate where the exit is. \nPress Enter to continue");
-            this.pause(false);
-
-            // Check for Enter key to proceed to the next phase of the tutorial
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-                isExitSpotlightActive = false; // Deactivate spotlight
-                this.resume();
-                //showTooltip("Use WASD or arrow keys to move.");
-            }
             //return; // Skip the rest of the rendering during this spotlight phase
         }
         else if (isIntroEnded && isZoomingSpotlightActive){
-            renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
-            showTooltip("Use the scroll wheel or '+'/'-' keys to zoom in and out.");
-            for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
-                enemy.pause();
-            }
-            //this.pause(false);
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-                isZoomingSpotlightActive = false; // Deactivate
-                this.resume();
-            }
         }
         else if (isIntroEnded && isEscKeySpotlightActive){
-            renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
-            showTooltip("Press 'Esc' to pause the game.\nGot it? Press Enter to continue");
-            this.pause(false);
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-                isEscKeySpotlightActive = false; // Deactivate
-                this.resume();
-            }
         }
         else {
-            checkTutorialTasks();
-            if (!isPaused) {
-                if (tooltipTimer >= TOOLTIP_MAX_DURATION) {
-                    currentTooltipMessage = null;
-                    checkTutorialTasks();
-                } else {
-                    tooltipTimer += delta; // Increment timer
-                }
-                checkForSpotlightEvents();
-            }
-        }
+
+        }*/
     }
+
+    public enum TutorialStage {
+        INTRO,
+        EXIT_ARROW,
+        ZOOM,
+        ESC_PAUSE,
+        COMPLETE
+    }
+
+    private TutorialStage currentTutorialStage = TutorialStage.INTRO;
 
     private class TooltipManager {
         private String message;
@@ -1579,7 +1603,7 @@ public class GameScreen extends InputAdapter implements Screen {
         return isTutorial;
     }
 
-    public boolean isZoomingSpotlightActive() {
-        return isZoomingSpotlightActive;
+    public TutorialStage getCurrentTutorialStage() {
+        return currentTutorialStage;
     }
 }

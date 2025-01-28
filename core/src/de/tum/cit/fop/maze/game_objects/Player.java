@@ -378,7 +378,7 @@ public class Player extends Character {
     @Override
     public void update(float delta) {
         if (gameScreen.isPaused()) return;
-        if (gameScreen.isTutorial() && gameScreen.isZoomingSpotlightActive()) return;
+        if (gameScreen.isTutorial() && gameScreen.getCurrentTutorialStage() == GameScreen.TutorialStage.ZOOM) return;
         handleMovement();
         checkCollisions();
 
