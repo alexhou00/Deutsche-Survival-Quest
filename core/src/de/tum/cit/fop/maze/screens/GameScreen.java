@@ -341,7 +341,7 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createIntroPanel(){
-        Drawable background = createSolidColorDrawable(Color.WHITE);
+        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
         Panel introPanel = new Panel(stage1, background, game);
         introPanel.setSize(0.9f, 0.9f);
 
@@ -385,7 +385,7 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createPausePanel() {
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.9.png")));
+        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
         Panel pausePanel = new Panel(stage1, background, game);
         pausePanel.setSize(1f, 1f);
 
@@ -402,6 +402,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         pausePanel.addButton("Options", game.getSkin(), new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
+                pausePanel.clear();
                 createOptionPanel();
             }
         }, 4);
@@ -430,10 +431,11 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createOptionPanel() {
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
+        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
         Panel OptionPanel = new Panel(stage1, background, game);
         OptionPanel.setSize(0.8f, 0.6f);
 
+;
         OptionPanel.addLabel("Options", game.getSkin(), "title", 0.5f, 80);
 
         // Add Music Volume Slider
@@ -474,7 +476,7 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createVictoryPanel() {
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/victory.png.9.9.png")));
+        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/victory.png")));
         Panel victoryPanel = new Panel(stage1, background, game);
         victoryPanel.setSize(0.8f, 0.6f);
 
