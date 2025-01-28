@@ -216,6 +216,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //Gdx.app.log("Size" ,  horizontalTilesCount + "x" + verticalTilesCount);
 
         this.totalCoins = 5;
+
         this.selectLevelScreen = new SelectLevelScreen(game);
 
     }
@@ -407,8 +408,8 @@ public class GameScreen extends InputAdapter implements Screen {
         pausePanel.addButton("Select Level", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-//                selectLevelScreen.goToSelectLevelScreen();
-                CreateSelectLevelScreen();
+                selectLevelScreen.goToSelectLevelScreen();
+
             }
         }, 4);
 
@@ -427,7 +428,7 @@ public class GameScreen extends InputAdapter implements Screen {
         }, 4);
     }
 
-    public void CreateSelectLevelScreen() {
+    /*public void CreateSelectLevelScreen() {
         Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
         Panel pausePanel = new Panel(stage1, background, game);
         pausePanel.setSize(0.8f, 0.6f);
@@ -442,7 +443,7 @@ public class GameScreen extends InputAdapter implements Screen {
                game.goToGame();
             }
         }, 4);
-    }
+    }*/
 
     public void createOptionPanel() {
         Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));

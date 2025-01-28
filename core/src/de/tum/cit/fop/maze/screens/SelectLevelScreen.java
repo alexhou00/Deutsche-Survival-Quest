@@ -36,9 +36,12 @@ public class SelectLevelScreen implements Screen  {
         this.show();
 
 
+
         Viewport viewport = new ScreenViewport(camera);
         stage = new Stage (viewport, game.getSpriteBatch());
+
         backgroundTexture = new Texture("backgrounds/background.png");
+
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
@@ -46,39 +49,7 @@ public class SelectLevelScreen implements Screen  {
         // used to detect mouse scrolls
 
         table.add(new Label("Deutsche Survival Quest", game.getSkin())).padBottom(80).row();
-//        TextButton Level1 = new TextButton("Level 1", game.getSkin());
-//        table.add(Level1).width(300).row();
-//        TextButton Level2 = new TextButton("Level 2", game.getSkin());
-//        table.add(Level2).width(300).row();
-//        TextButton Level3 = new TextButton("Level 3", game.getSkin());
-//        table.add(Level3).width(300).row();
-//        TextButton Level4 = new TextButton("Level 4", game.getSkin());
-//        table.add(Level4).width(300).row();
-//        TextButton Level5 = new TextButton("Level 5", game.getSkin());
-//        table.add(Level5).width(300).row();
-//        TextButton Level6 = new TextButton("Level 6", game.getSkin());
-//        table.add(Level6).width(300).row();
-//        Level1.addListener(new ChangeListener() {
-//            public void changed(ChangeEvent event, Actor actor) {
-//                System.out.println("button is pressed");
-//                game.setGameLevel(1);
-//                game.setScreen(new GameScreen(game));
-//            }
-//        });
-//        Level2.addListener(new ChangeListener() {
-//            public void changed(ChangeEvent event, Actor actor) {
-//                System.out.println("button is pressed");
-//                game.setGameLevel(2);
-//                game.setScreen(new GameScreen(game));
-//            }
-//        });
-//        Level3.addListener(new ChangeListener() {
-//            public void changed(ChangeEvent event, Actor actor) {
-//                System.out.println("button is pressed");
-//                game.setGameLevel(3);
-//                game.setScreen(new GameScreen(game));
-//            }
-//        });
+
 buttons = new HashMap<String, TextButton>();
 buttons.put("Level 1", new TextButton("Level 1", game.getSkin()));
 buttons.put("Level 2", new TextButton("Level 2", game.getSkin()));
@@ -96,46 +67,56 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
  buttons.get("Level 1").addListener(new ChangeListener() {
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
-
+         Gdx.app.log("SelectLevelScreen", "Level 1 selected");
          game.setGameLevel(1);
-         game.goToGame();
+         //game.goToGame();
+         game.setScreen(new GameScreen(game));
      }
  });
  buttons.get("Level 2").addListener(new ChangeListener() {
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
-
+         Gdx.app.log("SelectLevelScreen", "Level 2 selected");
          game.setGameLevel(2);
-         game.goToGame();
+         //game.goToGame();
+         game.setScreen(new GameScreen(game));
 
      }
  });
  buttons.get("Level 3").addListener(new ChangeListener() {
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
+         Gdx.app.log("SelectLevelScreen", "Level 3 selected");
          game.setGameLevel(3);
-         game.goToGame();
+         //game.goToGame();
+         game.setScreen(new GameScreen(game));
      }
  });
  buttons.get("Level 4").addListener(new ChangeListener() {
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
+         Gdx.app.log("SelectLevelScreen", "Level 4 selected");
          game.setGameLevel(4);
-         game.goToGame();
+         //game.goToGame();
+         game.setScreen(new GameScreen(game));
      }
  });
  buttons.get("Level 5").addListener(new ChangeListener() {
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
+         Gdx.app.log("SelectLevelScreen", "Level 5 selected");
          game.setGameLevel(5);
-         game.goToGame();
+         //game.goToGame();
+         game.setScreen(new GameScreen(game));
      }
  });
  buttons.get("Level 6").addListener(new ChangeListener() {
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
+         Gdx.app.log("SelectLevelScreen", "Level 6 selected");
          game.setGameLevel(6);
-         game.goToGame();
+         //game.goToGame();
+         game.setScreen(new GameScreen(game));
      }
  });
  table.add(buttons.get("Level 1")).padTop(5).row();
