@@ -499,7 +499,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         String grade = calculateScore();
         String scoreText = "Score: " + grade + " (" + player.getCoins() + "/" + totalCoins + ")";
-        victoryPanel.addLabel(scoreText, game.getSkin(), 1f, 40);
+        if (!isTutorial) victoryPanel.addLabel(scoreText, game.getSkin(), 1f, 40);
 
         System.out.println("Game Level: " + game.getGameLevel());
         if (game.getGameLevel() != 0) { // if is not tutorial
@@ -579,9 +579,11 @@ public class GameScreen extends InputAdapter implements Screen {
      */
     @Override
     public boolean scrolled(float amountX, float amountY) {
-        if (isPaused) return true;
+        if ((isPaused) && (!isTutorial))
+            return true;
         targetZoom += amountY * 0.1f; // Adjust sensitivity as needed
         clampZoomLevel(); // targetZoom = MathUtils.clamp(targetZoom, MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL); // Clamp zoom level
+        isZoomingSpotlightActive = false;
         Gdx.app.debug("GameScreen", "mouse scrolled to adjust zoom");
         return true; // Return true to indicate the event was handled
     }
@@ -616,9 +618,11 @@ public class GameScreen extends InputAdapter implements Screen {
         // Handle keys input for zooming
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) { // "+" key
             targetZoom -= 0.02f;
+            isZoomingSpotlightActive = false;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) { // "-" key
             targetZoom += 0.02f;
+            isZoomingSpotlightActive = false;
         }
 
         clampZoomLevel(); // Clamp to avoid extreme zoom level
@@ -636,6 +640,8 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     boolean isExitSpotlightActive = true;
+    boolean isZoomingSpotlightActive = true;
+    boolean isEscKeySpotlightActive = true;
     /*private void checkPortalCollision(Player player, Key key) {
         for (Portal portal : portals) {
             if (portal.isActive() && player.getHitbox().overlaps(portal.getHitbox())) {
@@ -728,7 +734,7 @@ public class GameScreen extends InputAdapter implements Screen {
         if (isTutorial) {
             if (isIntroEnded && isExitSpotlightActive) {
                 // Render spotlight on the exit
-                renderSpotlightEffect(hudObjectRenderer.getArrowRotatedX(), hudObjectRenderer.getArrowRotatedY(), 20);
+                renderSpotlightEffect(hudObjectRenderer.getArrowRotatedX(), hudObjectRenderer.getArrowRotatedY(), 20, 1, 1);
 
                 // Show instructions to press Enter
                 showTooltip("This arrow indicate where the exit is. \nPress Enter to continue");
@@ -741,7 +747,28 @@ public class GameScreen extends InputAdapter implements Screen {
                     //showTooltip("Use WASD or arrow keys to move.");
                 }
                 //return; // Skip the rest of the rendering during this spotlight phase
-            } else {
+            }
+            else if (isIntroEnded && isZoomingSpotlightActive){
+                renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
+                showTooltip("Use the scroll wheel or '+'/'-' keys to zoom in and out.");
+                //this.pause(false);
+
+                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                    isZoomingSpotlightActive = false; // Deactivate
+                    this.resume();
+                }
+            }
+            else if (isIntroEnded && isEscKeySpotlightActive){
+                renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
+                showTooltip("Press 'Esc' to pause the game.\nGot it? Press Enter to continue");
+                this.pause(false);
+
+                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                    isEscKeySpotlightActive = false; // Deactivate
+                    this.resume();
+                }
+            }
+            else {
                 checkTutorialTasks();
             }
         }
@@ -1215,12 +1242,12 @@ public class GameScreen extends InputAdapter implements Screen {
      * @param y the y-coordinate of the spotlight center
      * @param spotlightRadius the radius of the spotlight circle
      */
-    private void renderSpotlightEffect(float x, float y, float spotlightRadius) {
+    private void renderSpotlightEffect(float x, float y, float spotlightRadius, float secondSpotlightScale, float opacity) {
         Position screenCoordinates = getScreenCoordinates(x, y);
         float xOnScreen = screenCoordinates.getX();
         float yOnScreen = screenCoordinates.getY();
         //Gdx.app.log("GameScreen", "screen x: " + xOnScreen + "; screen y: " + yOnScreen);
-        spotlightEffect.render(camera, x, y, spotlightRadius, 0.8f);
+        spotlightEffect.render(camera, x, y, spotlightRadius, secondSpotlightScale, opacity);
     }
 
     /**
@@ -1339,7 +1366,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private void checkTutorialTasks() {
         if (!player.hasMoved) {
-            showTooltip("Move using WASD or the arrow keys.");
+            renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
+            showTooltip("Move using WASD or the arrow keys.\nTip: Hold SHIFT to sprint and leave\nthe enemies behind--but watch your stamina wheel!");
         } else if (!key.isCollected()) {
             showTooltip("Find and collect the key.");
         } else if (!player.hasReachedExit) {
@@ -1347,7 +1375,7 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
-    // TODO: To add: mouse scroll or +/- key to zoom in/out; esc to pause; arrow points to the exit
+    // TODO: To add: mouse scroll or +/- key to zoom in/out; esc to pause
 
     private String currentTooltipMessage;
     private float tooltipTimer = 0f;
@@ -1360,7 +1388,13 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     private void checkForSpotlightEvents() {
-        // TODO: also for collectibles
+
+        Portal portal = player.isCloseToPortals(200);
+        if (portal != null){
+            triggerSpotlight(portal.getX(), portal.getY(), 100, "A Portal could send you back to the entry point!");
+            return;
+        }
+
         // Example: Detect proximity to a trap
         Trap trap = player.isCloseToTraps(200);
         if (trap != null) {
@@ -1379,25 +1413,19 @@ public class GameScreen extends InputAdapter implements Screen {
         // Example: Detect proximity to an enemy
         Collectibles collectibles = player.isCloseToCollectibles(90);
         if (collectibles != null){
-            triggerSpotlight(collectibles.getX(), collectibles.getY(), 68, "Collect the " + capitalize(collectibles.getType().toString()) + "!\n" + collectibles.getFunction());
-
+            triggerSpotlight(collectibles.getX(), collectibles.getY(), 68,
+                    "Collect the " + capitalize(collectibles.getType().toString()) + "!\n" +
+                            collectibles.getFunction());
             return;
         }
 
         tooltipTimer = 0f; // If none of the cases. Reset the timer
-
-/*
-        // Example: Highlight arrow pointing to exit
-        Position exitPosition = levels.getNearestExit(player.getX(), player.getY()).getTilePosition();
-        if (exitPosition != null && player.getX() > 399) {
-            triggerSpotlight(player.getX(), player.getY(), 150, "Head to the exit!");
-        }*/
     }
 
     private void triggerSpotlight(float x, float y, float radius, String message) {
         //setPaused(true); // Pause the game
         if (tooltipTimer >= TOOLTIP_MAX_DURATION) return;
-        renderSpotlightEffect(x, y, radius);
+        renderSpotlightEffect(x, y, radius, 0.8f, 1);
         showTooltip(message); // Display a message
     }
 
@@ -1452,6 +1480,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
         Gdx.input.setInputProcessor(inputMultiplexer);
         isPaused = false; // Set the game to unpaused
+
+        //isEscKeySpotlightActive = false; // for the tutorial
 
         game.getBackgroundMusic().play();
 
@@ -1523,7 +1553,19 @@ public class GameScreen extends InputAdapter implements Screen {
         return collectibles;
     }
 
+    public Array<Portal> getPortals() {
+        return portals;
+    }
+
     public boolean isPaused() {
         return isPaused;
+    }
+
+    public boolean isTutorial() {
+        return isTutorial;
+    }
+
+    public boolean isZoomingSpotlightActive() {
+        return isZoomingSpotlightActive;
     }
 }

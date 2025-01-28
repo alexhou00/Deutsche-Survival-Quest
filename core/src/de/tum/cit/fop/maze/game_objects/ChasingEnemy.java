@@ -29,7 +29,7 @@ public class ChasingEnemy extends Character {
     protected final TextureRegion enemyTexture;
     protected final TextureRegion alertSymbolTexture;
 
-    protected static final float ENEMY_BASE_SPEED = 180f;// we can change it when we want to
+    protected static float ENEMY_BASE_SPEED = 180f;// we can change it when we want to
 
     // Time to wait before the enemy moves randomly again
     protected static final float RANDOM_MOVE_TIME = 6f;
@@ -116,6 +116,9 @@ public class ChasingEnemy extends Character {
 
         setDirection();
 
+        if (game.getGameScreen().isTutorial())
+            ENEMY_BASE_SPEED = 100;
+
         // rectangle.set();
         // Check if the player is within the detection radius
         if (isPlayerWithinDetectionRadius(player, detectionRadius) && damageTimes < MAX_DAMAGE_TIMES) {
@@ -125,7 +128,7 @@ public class ChasingEnemy extends Character {
                 if (game.isMuted()){
                     game.getWarningMusic().pause();
                 }
-                else if (!game.isMuted()){
+                else{
                     game.getWarningMusic().play();
                 }
 
