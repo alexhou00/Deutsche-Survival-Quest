@@ -92,6 +92,17 @@ public class Collectibles extends GameObject {
         return type;
     }
 
+    public String getFunction() {
+        switch (this.getType()) {
+            case HEART -> function = "It can restore 1 life!";
+            case PRETZEL -> function = "It can restore 1.25 lives!";
+            case GESUNDHEITSKARTE -> function = "It can restore 1.5 lives!";
+            case COIN -> function = "You need coins to get high scores!";
+            case STAMINA -> function = "You'll have extra Stamina wheel!";
+        }
+        return (function!=null) ? function : "";
+    }
+
     /**
      * implement the functionalities of each type of collectibles
      */
@@ -109,7 +120,6 @@ public class Collectibles extends GameObject {
             switch (this.getType()) {
                 case HEART:
                     player.setLives(player.getLives() + 1);
-                    function = "It can restore 1 life!";
                     break;
                 case PRETZEL:
                     player.setLives(player.getLives() + 1.25f);

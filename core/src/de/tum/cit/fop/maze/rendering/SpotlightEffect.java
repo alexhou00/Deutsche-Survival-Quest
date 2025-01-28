@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 
@@ -46,20 +47,22 @@ public class SpotlightEffect extends ApplicationAdapter {
      *                             used for the second time
      *                             to create a brighter inner spotlight area to create a cartoon-like effect.
      */
-    public void render(OrthographicCamera camera, float spotlightX, float spotlightY, float spotlightRadius, float secondSpotlightScale) {
+    public void render(OrthographicCamera camera, float spotlightX, float spotlightY, float spotlightRadius, float secondSpotlightScale, float opacity) {
         batch.setProjectionMatrix(camera.combined); // IMPORTANT: it has to follow the camera so that things don't get distorted or displaced
 
         // begin the batch to draw the black overlay
         batch.begin();
 
         // Draw the semi-transparent black overlay
-        batch.setColor(0, 0, 0, 1f); // // Fully opaque black (opacity already defined in `blackTexture`)
+        opacity = MathUtils.clamp(opacity, 0, 1);
+        batch.setColor(0, 0, 0, opacity); // // Fully opaque black (opacity already defined in `blackTexture`)
         // enlarge it by 100x of the world size and place it in the center of the world
         batch.draw(blackTexture, getWorldWidth() * -50, getWorldHeight() * -50, getWorldWidth() * 100, getWorldHeight() * 100);
 
         // End SpriteBatch before using ShapeRenderer
         batch.end();
 
+        if (spotlightRadius == 0) return;
 
         // Enable blending for erasing the spotlight area
         Gdx.gl.glEnable(GL20.GL_BLEND);

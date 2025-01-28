@@ -42,7 +42,7 @@ public class Player extends Character {
     float targetVelX, targetVelY;
     int lastHorizontalDirection = 0, lastVerticalDirection = 0;
 
-    private static final float BASE_SPEED = 240f; // normal speed when moving either vertically or horizontally
+    private static float BASE_SPEED = 240f; // normal speed when moving either vertically or horizontally
     private static final float BOOST_MULTIPLIER = 2f; // the speed will be multiplied by this number when the SHIFT key is pressed
     private static final float SMOOTH_FACTOR = 5f; // the lower the value, the smoother it gets (and needs more time to stop)
 
@@ -77,6 +77,9 @@ public class Player extends Character {
         if (levels.isCameraAngled()){
             this.hitboxHeight /= 2;
         }
+
+        if (gameScreen.isTutorial())
+            BASE_SPEED = 210f;
 
     }
 
@@ -374,7 +377,9 @@ public class Player extends Character {
      */
     @Override
     public void update(float delta) {
+        if (gameScreen == null) return;
         if (gameScreen.isPaused()) return;
+        if (gameScreen.isTutorial() && gameScreen.getCurrentTutorialStage() == GameScreen.TutorialStage.ZOOM) return;
         handleMovement();
         checkCollisions();
 
@@ -394,6 +399,12 @@ public class Player extends Character {
      */
     public void resetToStartPosition() {
         hitbox.setPosition(levels.entrance.getTileX(), levels.entrance.getTileY());
+    }
+
+    public boolean isCloseTo(GameObject object, float radius){
+        float dx = (object.getX() - x);
+        float dy = (object.getY() - y);
+        return dx * dx + dy * dy <= radius * radius;
     }
 
     public Trap isCloseToTraps(float radius){
@@ -424,6 +435,17 @@ public class Player extends Character {
             float dy = (collectible.getY() - y);
             if (dx * dx + dy * dy <= radius * radius){
                 return collectible;
+            }
+        }
+        return null;
+    }
+
+    public Portal isCloseToPortals(float radius){
+        for (Portal portal : iterate(gameScreen.getPortals())){
+            float dx = (portal.getX() - x);
+            float dy = (portal.getY() - y);
+            if (portal.isActive() && dx * dx + dy * dy <= radius * radius){
+                return portal;
             }
         }
         return null;
