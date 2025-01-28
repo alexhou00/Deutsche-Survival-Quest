@@ -92,7 +92,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final int totalCoins; // total maximal number of coins that the player should get
 
-    private SelectLevelScreen selectLevelScreen;
+    private final SelectLevelScreen selectLevelScreen;
 
 
 
@@ -1379,7 +1379,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // Example: Detect proximity to an enemy
         Collectibles collectibles = player.isCloseToCollectibles(90);
         if (collectibles != null){
-            triggerSpotlight(collectibles.getX(), collectibles.getY(), 68, "Collect the " + collectibles.getType().toString().toLowerCase() + "!");
+            triggerSpotlight(collectibles.getX(), collectibles.getY(), 68, "Collect the " + capitalize(collectibles.getType().toString()) + "!\n" + collectibles.getFunction());
 
             return;
         }
