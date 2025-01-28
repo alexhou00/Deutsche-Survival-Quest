@@ -385,9 +385,9 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createPausePanel() {
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
+        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.9.png")));
         Panel pausePanel = new Panel(stage1, background, game);
-        pausePanel.setSize(0.8f, 0.6f);
+        pausePanel.setSize(1f, 1f);
 
         pausePanel.addLabel("Game Paused", game.getSkin(), "title", 0.5f, 80);
 
