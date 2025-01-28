@@ -872,8 +872,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
     }
     private void renderTooltip(){
-
-
         if (tooltipManager.message != null) {
             float tooltipX = player.getX() + 50;//camera.position.x - 100; // Adjust to center near camera
             float tooltipY = player.getY() + 50;//camera.position.y + camera.viewportHeight / 2 - 20; // Top of the viewport
@@ -1295,13 +1293,13 @@ public class GameScreen extends InputAdapter implements Screen {
         if (!player.hasMoved) {
             currentTutorialStage = TutorialStage.MOVE;
             renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
-            showTooltip("Move using WASD or the arrow keys.\nTip: Hold SHIFT to sprint and leave\nthe enemies behind--but watch your stamina wheel!");
+            tooltipManager.show("Move using WASD or the arrow keys.\nTip: Hold SHIFT to sprint and leave\nthe enemies behind--but watch your stamina wheel!");
         } else if (!key.isCollected()) {
             currentTutorialStage = TutorialStage.KEY;
-            showTooltip("Find and collect the key.");
+            tooltipManager.show("Find and collect the key.");
         } else if (!player.hasReachedExit) {
             currentTutorialStage = TutorialStage.EXIT;
-            showTooltip("Go to the exit \nto complete the level.");
+            tooltipManager.show("Go to the exit \nto complete the level.");
         }
     }
 
@@ -1333,6 +1331,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // Example: Detect proximity to a trap
         Trap trap = player.isCloseToTraps(170);
         if (trap != null) {
+            tooltipManager.timer = 0f; // If none of the cases. Reset the timer
             triggerSpotlight(trap.getX(), trap.getY(), 89, "Watch out for traps!");
             return;
         }
@@ -1348,6 +1347,7 @@ public class GameScreen extends InputAdapter implements Screen {
         // Example: Detect proximity to an enemy
         Collectibles collectibles = player.isCloseToCollectibles(110);
         if (collectibles != null){
+            tooltipManager.timer = 0f; // If none of the cases. Reset the timer
             triggerSpotlight(collectibles.getX(), collectibles.getY(), 68,
                     "Collect the " + capitalize(collectibles.getType().toString()) + "!\n" +
                             collectibles.getFunction());
@@ -1361,7 +1361,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //setPaused(true); // Pause the game
         if (tooltipManager.timer >= TooltipManager.TOOLTIP_DURATION) return;
         renderSpotlightEffect(x, y, radius, 0.8f, 1);
-        showTooltip(message); // Display a message
+        tooltipManager.show(message); // Display a message
     }
 
     private void updateTutorial(float delta){
@@ -1371,7 +1371,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 renderSpotlightEffect(hudObjectRenderer.getArrowRotatedX(), hudObjectRenderer.getArrowRotatedY(), 20, 1, 1);
 
                 // Show instructions to press Enter
-                showTooltip("This arrow indicate where the exit is. \nPress Enter to continue");
+                tooltipManager.show("This arrow indicate where the exit is. \nPress Enter to continue");
                 this.pause(false);
 
                 // Check for Enter key to proceed to the next phase of the tutorial
@@ -1383,7 +1383,7 @@ public class GameScreen extends InputAdapter implements Screen {
             }
             case ZOOM -> {
                 renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
-                showTooltip("Use the scroll wheel or '+'/'-' keys to zoom in and out.");
+                tooltipManager.show("Use the scroll wheel or '+'/'-' keys to zoom in and out.");
                 for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
                     enemy.pause();
                 }
@@ -1396,7 +1396,7 @@ public class GameScreen extends InputAdapter implements Screen {
             }
             case ESC_PAUSE -> {
                 renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
-                showTooltip("Press 'Esc' to pause the game.\nGot it? Press Enter to continue");
+                tooltipManager.show("Press 'Esc' to pause the game.\nGot it? Press Enter to continue");
                 this.pause(false);
 
                 if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
@@ -1406,17 +1406,13 @@ public class GameScreen extends InputAdapter implements Screen {
             }
             case MOVE, KEY, EXIT, COMPLETE -> {
                 checkTutorialTasks();
+                if (!isPaused) {
+                    checkForSpotlightEvents();
+                }
             }
         }
-        if (!isPaused) {
-            if (tooltipManager.timer >= TooltipManager.TOOLTIP_DURATION) {
-                tooltipManager.message = null;
-                checkTutorialTasks();
-            } else {
-                tooltipManager.timer += delta; // Increment timer
-            }
-            checkForSpotlightEvents();
-        }
+
+        tooltipManager.update(delta);
     }
 
     public enum TutorialStage {
@@ -1443,7 +1439,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private TutorialStage currentTutorialStage = TutorialStage.INTRO;
 
-    private static class TooltipManager {
+    private class TooltipManager {
         private String message;
         private float timer;
         private static final float TOOLTIP_DURATION = 3f;
@@ -1452,12 +1448,13 @@ public class GameScreen extends InputAdapter implements Screen {
 
         public void show(String message) {
             this.message = message;
-            this.timer = 0f;
+            //this.timer = 0f;
         }
 
         public void update(float delta) {
             if (message != null) timer += delta;
-            if (timer > TOOLTIP_DURATION) message = null;
+            if (currentTutorialStage.getStageOrder() > TutorialStage.MOVE.getStageOrder()
+                    && timer > TOOLTIP_DURATION) message = null;
         }
     }
 
@@ -1476,7 +1473,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //Gdx.input.setInputProcessor(null); // Disable input handling during pause
         isPaused = true; // Set the game to "paused"
 
-        if (!isTutorial || player.hasMoved) { // change to pause music
+        if (!isTutorial || currentTutorialStage.getStageOrder() >= TutorialStage.MOVE.getStageOrder()) { // change to pause music
             game.getBackgroundMusic().pause();
             game.getPauseMusic().play();
         }

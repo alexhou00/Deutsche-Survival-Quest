@@ -98,7 +98,7 @@ public class Collectibles extends GameObject {
             case PRETZEL -> function = "It can restore 1.25 lives!";
             case GESUNDHEITSKARTE -> function = "It can restore 1.5 lives!";
             case COIN -> function = "You need coins to get high scores!";
-            case STAMINA -> function = "It will give you an extra Stamina wheel!";
+            case STAMINA -> function = "You'll have extra Stamina wheel!";
         }
         return (function!=null) ? function : "";
     }
