@@ -773,7 +773,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
         stage1.act(delta);
         stage1.draw(); // stage1 is for the panels, like the intro panel and the pause panel
-        //if (isTutorial && !isPaused) renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
 
 
         renderHUD();
@@ -1362,8 +1361,6 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
-    // TODO: To add: mouse scroll or +/- key to zoom in/out; esc to pause
-
     private String currentTooltipMessage;
     private float tooltipTimer = 0f;
     private static final float TOOLTIP_MAX_DURATION = 3f; // Maximum duration in seconds
@@ -1451,7 +1448,9 @@ public class GameScreen extends InputAdapter implements Screen {
         if (createPausePanel) createPausePanel(); // Show the pause panel
 
         //inputMultiplexer.addProcessor(stage1);
-        Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
+        if (!isTutorial)
+            Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
+        else Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     /**
