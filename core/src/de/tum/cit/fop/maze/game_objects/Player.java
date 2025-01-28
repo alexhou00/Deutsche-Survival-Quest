@@ -396,6 +396,39 @@ public class Player extends Character {
         hitbox.setPosition(levels.entrance.getTileX(), levels.entrance.getTileY());
     }
 
+    public Trap isCloseToTraps(float radius){
+        for (Trap trap : iterate(levels.traps)){
+            float dx = (trap.getX() - x);
+            float dy = (trap.getY() - y);
+            if( dx * dx + dy * dy <= radius * radius){
+                return trap;
+            }
+        }
+        return null;
+    }
+
+    public ChasingEnemy isCloseToEnemies(float radius){
+        for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
+            float dx = (enemy.getX() - x);
+            float dy = (enemy.getY() - y);
+            if (dx * dx + dy * dy <= radius * radius){
+                return enemy;
+            }
+        }
+        return null;
+    }
+
+    public Collectibles isCloseToCollectibles(float radius){
+        for (Collectibles collectible : iterate(gameScreen.getCollectibles())){
+            float dx = (collectible.getX() - x);
+            float dy = (collectible.getY() - y);
+            if (dx * dx + dy * dy <= radius * radius){
+                return collectible;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void hide() {
 

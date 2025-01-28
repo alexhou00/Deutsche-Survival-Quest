@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 
 import static de.tum.cit.fop.maze.util.Constants.MAX_PLAYER_LIVES;
 
@@ -18,6 +19,7 @@ public class ElementRenderer {
     private final TextureRegion fullHeartRegion, threeQuartersHeartRegion, halfHeartRegion, oneQuarterHeartRegion, emptyHeartRegion, coinRegion;
 
     private final Sprite arrow;
+    private float arrowRotatedX = 0, arrowRotatedY = 0;
 
     public ElementRenderer(String texturePath) {
         // Load the texture and create a region for the heart
@@ -113,11 +115,15 @@ public class ElementRenderer {
         // drawing a sprite is different from drawing a texture region
         // for drawing a sprite, we use sprite.draw(spriteBatch) instead of spriteBatch.draw(textureRegion)
         float scale = 1.5f; // enlarging the arrow on the screen, but the offset from the origin of the player needs to be adjusted
-        arrow.setOrigin(arrow.getWidth() / 2, -45 / scale);
-        arrow.setPosition(x - arrow.getWidth() / 2, y + 45 / scale);
+        arrow.setOrigin(arrow.getWidth() / 2, -45 / scale); // 10,-45/1.5 = 10,-30
+        arrow.setPosition(x - arrow.getWidth() / 2, y + 45 / scale); // 10,
         arrow.setRotation(degrees); // we need to rotate the arrow, so it's more convenient to make it a sprite
         arrow.setScale(scale);
         arrow.draw(batch);
+        float radiusFromOriginToArrowCenter = arrow.getHeight() / 2 + 45;
+        arrowRotatedX = x + radiusFromOriginToArrowCenter * MathUtils.cosDeg((degrees - 270)%360);
+        arrowRotatedY = y + radiusFromOriginToArrowCenter * MathUtils.sinDeg((degrees - 270)%360);
+
     }
 
     /**
@@ -130,5 +136,13 @@ public class ElementRenderer {
 
     public Sprite getArrow() {
         return arrow;
+    }
+
+    public float getArrowRotatedX() {
+        return arrowRotatedX;
+    }
+
+    public float getArrowRotatedY() {
+        return arrowRotatedY;
     }
 }

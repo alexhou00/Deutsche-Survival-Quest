@@ -3,10 +3,7 @@ package de.tum.cit.fop.maze.screens;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -90,6 +87,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private boolean isPaused;
     private boolean isTutorial;
+    private boolean isIntroEnded;
     Timer timer = new Timer();
 
     private final int totalCoins; // total maximal number of coins that the player should get
@@ -343,6 +341,8 @@ public class GameScreen extends InputAdapter implements Screen {
         Panel introPanel = new Panel(stage1, background, game);
         introPanel.setSize(0.9f, 0.9f);
 
+        isIntroEnded = false;
+
         String levelName = levels.getProperties("levelName");
         introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "title", 0.5f, 80);
 
@@ -370,6 +370,7 @@ public class GameScreen extends InputAdapter implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 introPanel.proceedToGame(game, player, levels);
+                isIntroEnded = true;
             }
         }, 20);
 
@@ -612,6 +613,7 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+    boolean isExitSpotlightActive = true;
     /*private void checkPortalCollision(Player player, Key key) {
         for (Portal portal : portals) {
             if (portal.isActive() && player.getHitbox().overlaps(portal.getHitbox())) {
@@ -636,8 +638,6 @@ public class GameScreen extends InputAdapter implements Screen {
             game.goToGameOverScreen();  // Trigger game over screen
             return;
         }
-
-        if (isTutorial) checkTutorialTasks();
 
 
         ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
@@ -688,7 +688,6 @@ public class GameScreen extends InputAdapter implements Screen {
         renderArrow();
         renderKey();
 
-        if (isTutorial) renderTooltip();
 
         renderSpeechBubble();
 
@@ -702,13 +701,44 @@ public class GameScreen extends InputAdapter implements Screen {
 
         moveCamera();
 
+
+
+        if (isTutorial) {
+            if (isIntroEnded && isExitSpotlightActive) {
+                // Render spotlight on the exit
+                renderSpotlightEffect(hudObjectRenderer.getArrowRotatedX(), hudObjectRenderer.getArrowRotatedY(), 20);
+
+                // Show instructions to press Enter
+                showTooltip("This arrow indicate where the exit is. \nPress Enter to continue");
+                this.pause(false);
+
+                // Check for Enter key to proceed to the next phase of the tutorial
+                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                    isExitSpotlightActive = false; // Deactivate spotlight
+                    this.resume();
+                    //showTooltip("Use WASD or arrow keys to move.");
+                }
+                //return; // Skip the rest of the rendering during this spotlight phase
+            } else {
+                checkTutorialTasks();
+            }
+        }
+
+        if (isTutorial && !isPaused) {
+            if (tooltipTimer >= TOOLTIP_MAX_DURATION) {
+                currentTooltipMessage = null;
+            } else {
+                tooltipTimer += delta; // Increment timer
+            }
+            checkForSpotlightEvents();
+        }
+
+        if (isTutorial) renderTooltip();
+
         stage1.act(delta);
         stage1.draw(); // stage1 is for the panels, like the intro panel and the pause panel
         //if (isTutorial && !isPaused) renderSpotlightEffect(player.getX(), player.getY(), 100); // TODO: reserved for future use (use the spotlight to introduce new feature of the game)
 
-        if (!isPaused) {
-            checkForSpotlightEvents();
-        }
 
         renderHUD();
     }
@@ -863,15 +893,22 @@ public class GameScreen extends InputAdapter implements Screen {
 
     }
 
+    private final SpriteBatch tooltipBatch = new SpriteBatch();
+
     private void renderTooltip(){
+
+
         if (currentTooltipMessage != null) {
-            float tooltipX = player.getX() + 20;//camera.position.x - 100; // Adjust to center near camera
+            float tooltipX = player.getX() + 50;//camera.position.x - 100; // Adjust to center near camera
             float tooltipY = player.getY() + 50;//camera.position.y + camera.viewportHeight / 2 - 20; // Top of the viewport
 
-            float clampedX = MathUtils.clamp(tooltipX, 0, getWorldWidth() - font.getRegion().getRegionWidth());
+            float clampedX = MathUtils.clamp(tooltipX, 0, getWorldWidth() - font.getRegion().getRegionWidth() * min(2, currentTooltipMessage.length() / 10));
             float clampedY = MathUtils.clamp(tooltipY, 0, getWorldHeight() - font.getCapHeight());
 
-            font.draw(game.getSpriteBatch(), currentTooltipMessage, clampedX, clampedY);
+            tooltipBatch.setProjectionMatrix(camera.combined);
+            tooltipBatch.begin();
+            font.draw(tooltipBatch, currentTooltipMessage, clampedX, clampedY);
+            tooltipBatch.end();
         }
     }
 
@@ -1109,7 +1146,7 @@ public class GameScreen extends InputAdapter implements Screen {
         variablesToShow.put("player.speed", player.getSpeed());
         variablesToShow.put("camera zoom", camera.zoom);
         variablesToShow.put("player.stamina", player.getStamina());
-        drawVariables(variablesToShow);
+        //drawVariables(variablesToShow);
 
         game.getSpriteBatch().end();
 
@@ -1291,39 +1328,53 @@ public class GameScreen extends InputAdapter implements Screen {
     // TODO: To add: mouse scroll or +/- key to zoom in/out; esc to pause; arrow points to the exit
 
     private String currentTooltipMessage;
+    private float tooltipTimer = 0f;
+    private static final float TOOLTIP_MAX_DURATION = 3f; // Maximum duration in seconds
 
     private void showTooltip(String message) {
         // Remove any existing tooltip
+        Gdx.app.log("Tooltip", "text changed to: " + message);
         currentTooltipMessage = message;
     }
 
     private void checkForSpotlightEvents() {
         // TODO: also for collectibles
         // Example: Detect proximity to a trap
-        for (Trap trap : iterate(levels.traps)) {
-            if (player.getHitbox().overlaps(trap.getHitbox())) { // TODO: isCloseTo(): search surrounding 3x3 grid
-                triggerSpotlight(trap.getX(), trap.getY(), 100, "Watch out for traps!");
-                return;
-            }
+        Trap trap = player.isCloseToTraps(200);
+        if (trap != null) {
+            triggerSpotlight(trap.getX(), trap.getY(), 89, "Watch out for traps!");
+            return;
+        }
+
+
+        // Example: Detect proximity to an enemy
+        ChasingEnemy enemy = player.isCloseToEnemies(250);
+        if (enemy != null){
+            triggerSpotlight(enemy.getX(), enemy.getY(), 100, "An enemy is near!");
+            return;
         }
 
         // Example: Detect proximity to an enemy
-        for (ChasingEnemy enemy : iterate(levels.chasingEnemies)) {
-            if (player.getHitbox().overlaps(enemy.getHitbox())) {
-                triggerSpotlight(enemy.getX(), enemy.getY(), 100, "An enemy is near!");
-                return;
-            }
+        Collectibles collectibles = player.isCloseToCollectibles(90);
+        if (collectibles != null){
+            triggerSpotlight(collectibles.getX(), collectibles.getY(), 68, "Collect the " + collectibles.getType().toString().toLowerCase() + "!");
+
+            return;
         }
 
+        tooltipTimer = 0f; // If none of the cases. Reset the timer
+
+/*
         // Example: Highlight arrow pointing to exit
         Position exitPosition = levels.getNearestExit(player.getX(), player.getY()).getTilePosition();
         if (exitPosition != null && player.getX() > 399) {
             triggerSpotlight(player.getX(), player.getY(), 150, "Head to the exit!");
-        }
+        }*/
     }
 
     private void triggerSpotlight(float x, float y, float radius, String message) {
         //setPaused(true); // Pause the game
+        if (tooltipTimer >= TOOLTIP_MAX_DURATION) return;
         renderSpotlightEffect(x, y, radius);
         showTooltip(message); // Display a message
     }
@@ -1444,6 +1495,10 @@ public class GameScreen extends InputAdapter implements Screen {
 
     public Key getKey() {
         return key;
+    }
+
+    public Array<Collectibles> getCollectibles() {
+        return collectibles;
     }
 
     public boolean isPaused() {
