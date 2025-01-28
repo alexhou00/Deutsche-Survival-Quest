@@ -96,6 +96,7 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
  buttons.get("Level 1").addListener(new ChangeListener() {
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
+
          game.setGameLevel(1);
          game.goToGame();
      }
@@ -103,9 +104,9 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
  buttons.get("Level 2").addListener(new ChangeListener() {
      public void changed(ChangeEvent event, Actor actor) {
          Gdx.app.log("SelectLevelScreen", "changed ");
-        game.setGameLevel(2);
-         game.goToGame();
 
+         game.setGameLevel(2);
+         game.goToGame();
 
      }
  });
@@ -166,6 +167,10 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
         if (gameOverScreen != null) {
             gameOverScreen.dispose(); // Dispose the menu screen if it exists
             gameOverScreen = null;
+        }
+        if (gameScreen!= null){
+            gameScreen.dispose();
+           game.setScreen(this);
         }
     }
 

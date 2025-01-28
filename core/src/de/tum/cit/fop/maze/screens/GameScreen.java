@@ -407,7 +407,8 @@ public class GameScreen extends InputAdapter implements Screen {
         pausePanel.addButton("Select Level", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                selectLevelScreen.goToSelectLevelScreen();
+//                selectLevelScreen.goToSelectLevelScreen();
+                CreateSelectLevelScreen();
             }
         }, 4);
 
@@ -422,6 +423,23 @@ public class GameScreen extends InputAdapter implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.exitGame();
+            }
+        }, 4);
+    }
+
+    public void CreateSelectLevelScreen() {
+        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
+        Panel pausePanel = new Panel(stage1, background, game);
+        pausePanel.setSize(0.8f, 0.6f);
+
+        pausePanel.addLabel("select levels", game.getSkin(), "title", 0.5f, 80);
+
+        pausePanel.addButton("level 1", game.getSkin(), new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+               game.dispose();
+               game.setGameLevel(2);
+               game.goToGame();
             }
         }, 4);
     }
