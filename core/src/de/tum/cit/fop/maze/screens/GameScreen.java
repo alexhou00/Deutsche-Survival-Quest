@@ -1421,6 +1421,26 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+    private class TooltipManager {
+        private String message;
+        private float timer;
+        private static final float TOOLTIP_DURATION = 3f;
+
+        public void show(String message) {
+            this.message = message;
+            this.timer = 0f;
+        }
+
+        public void update(float delta) {
+            if (message != null) timer += delta;
+            if (timer > TOOLTIP_DURATION) message = null;
+        }
+
+        public void render(SpriteBatch batch, BitmapFont font, float x, float y) {
+            if (message != null) font.draw(batch, message, x, y);
+        }
+    }
+
     /**
      * Pauses the game, optionally creating a pause panel.
      * This method is automatically called upon the window to lose the focus
