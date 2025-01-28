@@ -107,7 +107,7 @@ public class ChasingEnemy extends Character {
      */
     @Override
     public void update(float delta) {
-        if (paused) return;
+        if (paused || (game.getGameScreen() != null && game.getGameScreen().isPaused())) return;
 
         if (damageCooldown > 0) {
             damageCooldown -= delta;

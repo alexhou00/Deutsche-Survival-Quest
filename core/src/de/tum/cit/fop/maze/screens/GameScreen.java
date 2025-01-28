@@ -378,7 +378,10 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         }, 20);
 
-        introPanel.addListener(ifSpaceKeyPressed(() -> introPanel.proceedToGame(game, player, levels)));
+        introPanel.addListener(ifSpaceKeyPressed(() -> {
+            introPanel.proceedToGame(game, player, levels);
+            isIntroEnded = true;
+        }));
 
         Label.LabelStyle continueStyle = new Label.LabelStyle(game.getSkin().get(Label.LabelStyle.class).font, Color.GRAY);
         introPanel.addLabel("[OR PRESS SPACE BAR TO CONTINUE]", continueStyle, 80);
@@ -477,6 +480,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/victory.png.9.9.png")));
         Panel victoryPanel = new Panel(stage1, background, game);
         victoryPanel.setSize(0.8f, 0.6f);
+        isPaused = true;
 
         victoryPanel.addLabel("Victory!", game.getSkin(), "title", 0.5f, 80);
 
@@ -492,9 +496,6 @@ public class GameScreen extends InputAdapter implements Screen {
                     victoryPanel.proceedToNextLevel(game);
                 }
             }, 10);
-        }
-        else{ // is tutorial
-
         }
 
         victoryPanel.addButton("Back to Menu", game.getSkin(), new ChangeListener() {
@@ -734,6 +735,9 @@ public class GameScreen extends InputAdapter implements Screen {
             else if (isIntroEnded && isZoomingSpotlightActive){
                 renderSpotlightEffect(0,0,0, 0.8f, 0.5f);
                 showTooltip("Use the scroll wheel or '+'/'-' keys to zoom in and out.");
+                for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
+                    enemy.pause();
+                }
                 //this.pause(false);
 
                 if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
@@ -753,16 +757,16 @@ public class GameScreen extends InputAdapter implements Screen {
             }
             else {
                 checkTutorialTasks();
+                if (!isPaused) {
+                    if (tooltipTimer >= TOOLTIP_MAX_DURATION) {
+                        currentTooltipMessage = null;
+                        checkTutorialTasks();
+                    } else {
+                        tooltipTimer += delta; // Increment timer
+                    }
+                    checkForSpotlightEvents();
+                }
             }
-        }
-
-        if (isTutorial && !isPaused) {
-            if (tooltipTimer >= TOOLTIP_MAX_DURATION) {
-                currentTooltipMessage = null;
-            } else {
-                tooltipTimer += delta; // Increment timer
-            }
-            checkForSpotlightEvents();
         }
 
         if (isTutorial) renderTooltip();
@@ -1013,7 +1017,7 @@ public class GameScreen extends InputAdapter implements Screen {
         }
 
         // If the Enter key is pressed and the game is paused, resume the game
-        if ((Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) && isPaused) {
+        if ((Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) && isPaused && !isTutorial) {
             resume();
             currentTooltipMessage = null; // Clear the tooltip
         }
@@ -1428,9 +1432,10 @@ public class GameScreen extends InputAdapter implements Screen {
         //Gdx.input.setInputProcessor(null); // Disable input handling during pause
         isPaused = true; // Set the game to "paused"
 
-        game.getBackgroundMusic().pause();
-        game.getPauseMusic().play();
-
+        if (!isTutorial || !isEscKeySpotlightActive) {
+            game.getBackgroundMusic().pause();
+            game.getPauseMusic().play();
+        }
         player.pause();
         for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
             enemy.pause();

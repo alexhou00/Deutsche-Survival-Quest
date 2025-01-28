@@ -79,7 +79,7 @@ public class Player extends Character {
         }
 
         if (gameScreen.isTutorial())
-            BASE_SPEED /= 1.3f;
+            BASE_SPEED = 210f;
 
     }
 
