@@ -11,11 +11,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.game_objects.Player;
-import de.tum.cit.fop.maze.screens.VictoryScreen;
+import de.tum.cit.fop.maze.screens.*;
 import de.tum.cit.fop.maze.tiles.Exit;
-import de.tum.cit.fop.maze.screens.GameOverScreen;
-import de.tum.cit.fop.maze.screens.GameScreen;
-import de.tum.cit.fop.maze.screens.MenuScreen;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 
 import java.util.HashMap;
@@ -556,6 +553,10 @@ public class MazeRunnerGame extends Game {
 
     public Music getSoundEffectPanting() {
         return soundEffectPanting;
+    }
+
+    public SelectLevelScreen getSelectLevelScreen() {
+        return new SelectLevelScreen(this);
     }
 
     public void checkExitToNextLevel(Player player) {
