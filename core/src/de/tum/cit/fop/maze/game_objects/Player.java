@@ -400,6 +400,12 @@ public class Player extends Character {
         hitbox.setPosition(levels.entrance.getTileX(), levels.entrance.getTileY());
     }
 
+    public boolean isCloseTo(GameObject object, float radius){
+        float dx = (object.getX() - x);
+        float dy = (object.getY() - y);
+        return dx * dx + dy * dy <= radius * radius;
+    }
+
     public Trap isCloseToTraps(float radius){
         for (Trap trap : iterate(levels.traps)){
             float dx = (trap.getX() - x);

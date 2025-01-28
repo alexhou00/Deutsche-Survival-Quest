@@ -1358,7 +1358,7 @@ public class GameScreen extends InputAdapter implements Screen {
         } else if (!key.isCollected()) {
             showTooltip("Find and collect the key.");
         } else if (!player.hasReachedExit) {
-            showTooltip("Go to the exit to complete the level.");
+            showTooltip("Go to the exit \nto complete the level.");
         }
     }
 
@@ -1375,15 +1375,22 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     private void checkForSpotlightEvents() {
+        if (!player.hasMoved) return;
+
+        // if player.isCloseToKey(150)
+        if (player.isCloseTo(key, 150) && !key.isCollected()){
+            triggerSpotlight(key.getX(), key.getY(), 70, "Collect the Key!\nThe key can look differently \ndepend on different levels.");
+            return;
+        }
 
         Portal portal = player.isCloseToPortals(200);
         if (portal != null){
-            triggerSpotlight(portal.getX(), portal.getY(), 100, "A Portal could send you back to the entry point!");
+            triggerSpotlight(portal.getX(), portal.getY(), 100, "A Portal could send you back \nto the entry point.");
             return;
         }
 
         // Example: Detect proximity to a trap
-        Trap trap = player.isCloseToTraps(200);
+        Trap trap = player.isCloseToTraps(170);
         if (trap != null) {
             triggerSpotlight(trap.getX(), trap.getY(), 89, "Watch out for traps!");
             return;
@@ -1391,14 +1398,14 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
         // Example: Detect proximity to an enemy
-        ChasingEnemy enemy = player.isCloseToEnemies(250);
+        ChasingEnemy enemy = player.isCloseToEnemies(230);
         if (enemy != null){
             triggerSpotlight(enemy.getX(), enemy.getY(), 100, "An enemy is near!");
             return;
         }
 
         // Example: Detect proximity to an enemy
-        Collectibles collectibles = player.isCloseToCollectibles(90);
+        Collectibles collectibles = player.isCloseToCollectibles(110);
         if (collectibles != null){
             triggerSpotlight(collectibles.getX(), collectibles.getY(), 68,
                     "Collect the " + capitalize(collectibles.getType().toString()) + "!\n" +
@@ -1432,7 +1439,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //Gdx.input.setInputProcessor(null); // Disable input handling during pause
         isPaused = true; // Set the game to "paused"
 
-        if (!isTutorial || !isEscKeySpotlightActive) {
+        if (!isTutorial || !player.hasMoved) {
             game.getBackgroundMusic().pause();
             game.getPauseMusic().play();
         }
