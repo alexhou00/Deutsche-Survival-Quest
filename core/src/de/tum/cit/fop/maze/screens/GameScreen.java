@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -154,7 +155,8 @@ public class GameScreen extends InputAdapter implements Screen {
             default -> tiledMap = levels.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
         }
 
-        createIntroPanel();
+//        createIntroPanel();
+        createInstructionPanel();
 
         // Initialize the key. Only after we lod the tiled map, we can access the key's position
         Position keyPosition = levels.getKeyTilePosition().convertTo(PIXELS);
@@ -339,6 +341,91 @@ public class GameScreen extends InputAdapter implements Screen {
         return new Position((float) (position.getTileX() / sectionWidth), (float) (position.getTileY() / sectionHeight), TILES);
     }
 
+    public void createInstructionPanel(){
+      if (game.getGameLevel() ==1 )  {Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
+        Panel InstructionPanel = new Panel(stage1, background, game);
+        InstructionPanel.setSize(0.9f, 0.9f);
+
+        String levelName = levels.getProperties("levelName");
+        InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.9f, 80);
+
+        String instructionsText = """
+                Welcome TUM student!
+                As you arrive in Germany for your studies in Heilbronn,
+                you will have to complete some challenges to settle in and start your studies.
+                You will start at the airport, then figure out how to use the public transportation,
+                which will be the Deutsche Bahn in this case,
+                complete your city registration, chill in a Brauerei,
+                and of course discover the beautiful Altstadt of Heilbronn:)
+                
+               """;
+
+        Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
+//                InstructionPanel.addLabel(instructionsText, instructionsStyle, 80);
+        Label label = new Label(instructionsText, instructionsStyle);
+//        label.setWrap(true);
+//        label.setAlignment(Align.center);
+//        label.setWidth(InstructionPanel.getWidth());
+        InstructionPanel.addLabel(label,0.8f,InstructionPanel);
+
+        InstructionPanel.addButton("Continue", game.getSkin(), new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                createInstructionPanel1();
+            }
+        }, 20);
+
+       InstructionPanel.addListener(ifSpaceKeyPressed(() -> {
+          createInstructionPanel1();
+        }));
+
+
+    } }
+
+
+    public void createInstructionPanel1(){
+        if (game.getGameLevel() ==1 )  {Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
+            Panel InstructionPanel = new Panel(stage1, background, game);
+            InstructionPanel.setSize(0.9f, 0.9f);
+
+            String levelName = levels.getProperties("levelName");
+            InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.9f, 80);
+
+            String instructionsText = """
+                
+                During your journey, unfortunately,
+                not everything will be as easy...
+                 First of all, you will need to collect a key
+                  for each level to move on with your journey.
+                Also, you must remain alert, as there will be some traps,
+                enemies, and surprises set for you to keep you from completing your journey.
+                
+                Good Luck!!
+                
+                [Press any key to continue with level 1 instructions]""";
+
+            Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
+//            InstructionPanel.addLabel(instructionsText, instructionsStyle, 80);
+            Label label = new Label(instructionsText, instructionsStyle);
+            InstructionPanel.addLabel(label, 0.8f,InstructionPanel);
+
+
+
+
+            InstructionPanel.addButton("Continue", game.getSkin(), new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    createIntroPanel();
+                }
+            }, 20);
+
+            InstructionPanel.addListener(ifSpaceKeyPressed(() -> {
+                createIntroPanel();
+            }));
+
+
+        } }
+
     public void createIntroPanel(){
         Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
         Panel introPanel = new Panel(stage1, background, game);
@@ -347,21 +434,21 @@ public class GameScreen extends InputAdapter implements Screen {
         String levelName = levels.getProperties("levelName");
         introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "title", 0.5f, 80);
 
-        String instructionsText = """
-                Welcome TUM student!
-                As you arrive in Germany for your studies in Heilbronn, you will have to complete some challenges to settle in and start your studies. \
-                You will start at the airport, then figure out how to use the public transportation, which will be the Deutsche Bahn in this case, \
-                complete your city registration, chill in a Brauerei, and of course discover the beautiful Altstadt of Heilbronn:)
-                
-                During your journey, unfortunately, not everything will be as easy... First of all, you will need to collect a key for each level to move on with your journey. \
-                Also, you must remain alert, as there will be some traps, enemies, and surprises set for you to keep you from completing your journey.
-                
-                Good Luck!!
-                
-                [Press any key to continue with level 1 instructions]""";
-
-        Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
-        introPanel.addLabel(instructionsText, instructionsStyle, 80);
+//        String instructionsText = """
+//                Welcome TUM student!
+//                As you arrive in Germany for your studies in Heilbronn, you will have to complete some challenges to settle in and start your studies. \
+//                You will start at the airport, then figure out how to use the public transportation, which will be the Deutsche Bahn in this case, \
+//                complete your city registration, chill in a Brauerei, and of course discover the beautiful Altstadt of Heilbronn:)
+//
+//                During your journey, unfortunately, not everything will be as easy... First of all, you will need to collect a key for each level to move on with your journey. \
+//                Also, you must remain alert, as there will be some traps, enemies, and surprises set for you to keep you from completing your journey.
+//
+//                Good Luck!!
+//
+//                [Press any key to continue with level 1 instructions]""";
+//
+//        Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
+//        introPanel.addLabel(instructionsText, instructionsStyle, 80);
 
         introPanel.addLabel("Move using W, A, S, D keys.", game.getSkin(), 1f, 50);
         introPanel.addLabel("Collect keys to unlock exits.", game.getSkin(), 1f, 50);
