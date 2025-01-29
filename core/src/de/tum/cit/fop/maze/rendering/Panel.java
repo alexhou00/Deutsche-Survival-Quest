@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.utils.Align;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.game_objects.Player;
 import de.tum.cit.fop.maze.level.LevelManager;
@@ -63,7 +64,15 @@ public class Panel extends Actor{
         Label label = new Label(text, skin, styleName);
         label.getStyle().font.getData().setScale(scale);
         table.add(label).padBottom(padBottom).center().row();
+       label.setAlignment(Align.top);
     }
+
+    public void addLabel (Label label, Float padBottom, Panel panel){
+        table.add(label).padBottom(padBottom).center().row();
+        label.setAlignment(Align.center);
+
+    }
+
 
     public void addButton(String buttonText, Skin skin, ChangeListener listener, float padBottom) {
         skin.get(Label.LabelStyle.class).font.getData().setScale(1); // set the scale back
