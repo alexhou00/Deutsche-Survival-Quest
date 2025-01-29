@@ -20,11 +20,11 @@ import java.util.*;
 public class VictoryScreen implements Screen {
     private final Stage stage;
     private final MazeRunnerGame game;
-    //Texture backgroundTexture;
+    Texture backgroundTexture;
 
     public VictoryScreen(MazeRunnerGame game) {
         this.game = game;
-
+        backgroundTexture = new Texture("backgrounds/victorybackground.png");
 
         var camera = new OrthographicCamera();
         camera.update();
@@ -37,7 +37,7 @@ public class VictoryScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
-        Label title = new Label("YOU WON!", game.getSkin());
+        Label title = new Label("YOU WON!", game.getSkin(), "fraktur");
         table.add(title).padBottom(80).row();
 
         Map<String, TextButton> buttons = new LinkedHashMap<>();
@@ -71,6 +71,7 @@ public class VictoryScreen implements Screen {
         });
 
 
+
     }
 
 
@@ -83,7 +84,10 @@ public class VictoryScreen implements Screen {
     @Override
     public void render(float v) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//        game.getSpriteBatch().begin();
+//        game.getSpriteBatch().end();
         game.getSpriteBatch().begin();
+        game.getSpriteBatch().draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.getSpriteBatch().end();
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();

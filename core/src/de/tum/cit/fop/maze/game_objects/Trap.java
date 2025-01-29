@@ -46,24 +46,18 @@ public class Trap extends GameObject {
      */
     public void draw(SpriteBatch batch) {
         batch.draw(trapTexture, x - widthOnScreen / 2, y - heightOnScreen / 2, widthOnScreen, heightOnScreen);
-        // printHitPixmap();
     }
-/*
-    // Dispose the texture to avoid memory leaks
-    public void dispose() {
-        if (trapTexture != null) {
-
-        }
-    }*/
 
     public float getDamage() {
         return damage;
     }
 
-    private void printHitPixmap(){
-        Tile.printHitPixmap(hitPixmap);
-    }
-
+    /**
+     * Sets the hit detection pixmap for the trap.
+     * This method retrieves the texture region of the trap,
+     * creates a pixmap from it, and then processes the pixmap
+     * to generate a hit detection mask.
+     */
     private void setHitPixmap() {
         Pixmap pixmap = getTilePixmap(this.getTextureRegion());
         hitPixmap = createHitPixmap(this.getTextureRegion(), pixmap);
@@ -133,7 +127,5 @@ public class Trap extends GameObject {
     public TextureRegion getTextureRegion () {
         return trapTexture;
     }
-
-
 
 }
