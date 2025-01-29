@@ -3,6 +3,8 @@ package de.tum.cit.fop.maze.util;
 import com.badlogic.gdx.utils.Array;
 
 public class Constants {
+    public static final int TOTAL_LEVELS = 6;
+
     public static final float ZOOM_SPEED = 0.1f; // Controls how quickly the camera adjusts to the target zoom
     public static final int MIN_ZOOM_TILES_COUNT = 10; // MIN is actually zoom in, this is the minimum tiles count on the window's width of the window to clamp zooming
     public static final int MAX_ZOOM_TILES_COUNT = 18; // MAX is actually zoom out, this is the maximum tiles count on the window's width of the window to clamp zooming

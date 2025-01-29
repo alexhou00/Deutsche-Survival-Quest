@@ -1,7 +1,6 @@
 package de.tum.cit.fop.maze.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -17,7 +16,10 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static de.tum.cit.fop.maze.util.Constants.TOTAL_LEVELS;
 
 public class SelectLevelScreen implements Screen  {
 
@@ -35,8 +37,6 @@ public class SelectLevelScreen implements Screen  {
         camera.update();
         this.show();
 
-
-
         Viewport viewport = new ScreenViewport(camera);
         stage = new Stage (viewport, game.getSpriteBatch());
 
@@ -46,102 +46,27 @@ public class SelectLevelScreen implements Screen  {
         table.setFillParent(true);
         stage.addActor(table);
 
-        // used to detect mouse scrolls
 
-        table.add(new Label("Deutsche Survival Quest", game.getSkin())).padBottom(80).row();
+        table.add(new Label("Select Your Level", game.getSkin(), "title")).padBottom(80).row();
 
-buttons = new HashMap<String, TextButton>();
-buttons.put("Level 1", new TextButton("Level 1", game.getSkin()));
-buttons.put("Level 2", new TextButton("Level 2", game.getSkin()));
-buttons.put("Level 3", new TextButton("Level 3", game.getSkin()));
-buttons.put("Level 4", new TextButton("Level 4", game.getSkin()));
-buttons.put("Level 5", new TextButton("Level 5", game.getSkin()));
-buttons.put("Level 6", new TextButton("Level 6", game.getSkin()));
+        buttons = new LinkedHashMap<>();
 
-Gdx.app.log("SelectLevelScreen", "screen created ");
- for (Map.Entry<String, TextButton> entry : buttons.entrySet()) {
-     TextButton button = entry.getValue();
-     table.add(entry.getValue()).padBottom(80).row();
- }
+        Gdx.app.log("SelectLevelScreen", "screen created ");
+        for (int i = 1; i <= TOTAL_LEVELS; i++) {
+            buttons.put("Level " + i, new TextButton("Level "+ i, game.getSkin()));
+            int level = i;
+            buttons.get("Level " + i).addListener(new ChangeListener() {
+                public void changed(ChangeEvent event, Actor actor) {
+                    Gdx.app.log("SelectLevelScreen", "changed ");
+                    Gdx.app.log("SelectLevelScreen", "Level " + level + " selected");
+                    game.setGameLevel(level);
+                    game.goToGame();
+                    game.getPauseMusic().pause();
 
- buttons.get("Level 1").addListener(new ChangeListener() {
-     public void changed(ChangeEvent event, Actor actor) {
-         Gdx.app.log("SelectLevelScreen", "changed ");
-         Gdx.app.log("SelectLevelScreen", "Level 1 selected");
-         game.setGameLevel(1);
-         //game.goToGame();
-         game.goToGame();
-         game.getPauseMusic().pause();
-         //game.setScreen(new GameScreen(game));
-     }
- });
- buttons.get("Level 2").addListener(new ChangeListener() {
-     public void changed(ChangeEvent event, Actor actor) {
-         Gdx.app.log("SelectLevelScreen", "changed ");
-         Gdx.app.log("SelectLevelScreen", "Level 2 selected");
-         game.setGameLevel(2);
-         //game.goToGame();
-         game.goToGame();
-         game.getPauseMusic().pause();
-         //game.setScreen(new GameScreen(game));
-
-     }
- });
- buttons.get("Level 3").addListener(new ChangeListener() {
-     public void changed(ChangeEvent event, Actor actor) {
-         Gdx.app.log("SelectLevelScreen", "changed ");
-         Gdx.app.log("SelectLevelScreen", "Level 3 selected");
-         game.setGameLevel(3);
-         //game.goToGame();
-         game.goToGame();
-         game.getPauseMusic().pause();
-         //game.setScreen(new GameScreen(game));
-     }
- });
- buttons.get("Level 4").addListener(new ChangeListener() {
-     public void changed(ChangeEvent event, Actor actor) {
-         Gdx.app.log("SelectLevelScreen", "changed ");
-         Gdx.app.log("SelectLevelScreen", "Level 4 selected");
-         game.setGameLevel(4);
-         //game.goToGame();
-         game.goToGame();
-         game.getPauseMusic().pause();
-         //game.setScreen(new GameScreen(game));
-     }
- });
- buttons.get("Level 5").addListener(new ChangeListener() {
-     public void changed(ChangeEvent event, Actor actor) {
-         Gdx.app.log("SelectLevelScreen", "changed ");
-         Gdx.app.log("SelectLevelScreen", "Level 5 selected");
-         game.setGameLevel(5);
-         //game.goToGame();
-         game.goToGame();
-         game.getPauseMusic().pause();
-         //game.setScreen(new GameScreen(game));
-     }
- });
- buttons.get("Level 6").addListener(new ChangeListener() {
-     public void changed(ChangeEvent event, Actor actor) {
-         Gdx.app.log("SelectLevelScreen", "changed ");
-         Gdx.app.log("SelectLevelScreen", "Level 6 selected");
-         game.setGameLevel(6);
-         //game.goToGame();
-         game.goToGame();
-         game.getPauseMusic().pause();
-         //game.setScreen(new GameScreen(game));
-     }
- });
- table.add(buttons.get("Level 1")).padTop(5).row();
- table.add(buttons.get("Level 2")).padTop(5).row();
- table.add(buttons.get("Level 3")).padTop(5).row();
- table.add(buttons.get("Level 4")).padTop(5).row();
- table.add(buttons.get("Level 5")).padTop(5).row();
- table.add(buttons.get("Level 6")).padTop(5).row();
- table.padTop(-800);
-
-
-
-
+                }
+            });
+            table.add(buttons.get("Level " + i)).padTop(5).row();
+        }
     }
 
     public void goToSelectLevelScreen() {
@@ -161,16 +86,17 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
             gameOverScreen.dispose(); // Dispose the menu screen if it exists
             gameOverScreen = null;
         }
-        if (gameScreen!= null){
+
+        if (gameScreen != null){
             gameScreen.dispose();
-           game.setScreen(this);
+            game.setScreen(this);
         }
     }
 
 
     @Override
     public void show() {
- Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
@@ -185,7 +111,6 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true); // Update the stage viewport on resize
-
     }
 
     @Override
@@ -207,6 +132,5 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
     public void dispose() {
         // Dispose of the stage when screen is disposed
         stage.dispose();
-
     }
 }
