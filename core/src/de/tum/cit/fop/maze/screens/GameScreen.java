@@ -93,6 +93,9 @@ public class GameScreen extends InputAdapter implements Screen {
     private final SelectLevelScreen selectLevelScreen;
     private final TooltipManager tooltipManager;
 
+    private SoundManager soundManager;
+    private Slider volumeSlider;
+
 
 
     /**
@@ -215,6 +218,8 @@ public class GameScreen extends InputAdapter implements Screen {
         this.totalCoins = 5;
 
         this.selectLevelScreen = new SelectLevelScreen(game);
+
+        soundManager = new SoundManager();
 
     }
 
@@ -448,15 +453,17 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         });
 
-        // Add Sound Effects Volume Slider
-        OptionPanel.addSlider("Sound Effects Volume", 0, 2, game.getVolume(), 0.01f, game.getSkin(), new ChangeListener() {
+
+        OptionPanel.addSlider("Sound Effects Volume", 0, 2, soundManager.getVolume(), 0.01f, game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                float value = ((Slider) actor).getValue();
-                game.setSoundEffectVolume(value);
-                Gdx.app.log("OptionsScreen", "Sound effects volume changed to: " + value);
+                float value2 = ((Slider) actor).getValue();
+                soundManager.setVolume(value2);
+                Gdx.app.log("OptionsScreen", "Sound effects volume changed to: " + value2);
             }
+
         });
+
 
         OptionPanel.addButton("Mute / Unmute" , game.getSkin(), new ChangeListener() {
             @Override

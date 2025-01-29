@@ -75,6 +75,8 @@ public class MazeRunnerGame extends Game {
     private final Map<String, Sound> sounds = new HashMap<>();
     private final Map<String, Long> soundIds = new HashMap<>();
 
+    private SoundManager soundManager;
+
 
 
     /**
@@ -103,6 +105,8 @@ public class MazeRunnerGame extends Game {
         musicList = new Array<>();
         soundList = new Array<>();
 
+        soundManager = new SoundManager();
+
         // Play some background music
         // Background sound
         //CHANGE BACKGROUND MUSIC
@@ -129,18 +133,25 @@ public class MazeRunnerGame extends Game {
 
         victorySoundEffect = Gdx.audio.newMusic(Gdx.files.internal("sounds/Lively Meadow Victory Fanfare.mp3"));
         musicList.add(victorySoundEffect);
+
         soundEffectKey = Gdx.audio.newSound(Gdx.files.internal("sounds/Accept.mp3"));
         soundList.add(soundEffectKey);
         soundEffectHurt = Gdx.audio.newSound(Gdx.files.internal("sounds/01._damage_grunt_male.wav"));
         soundList.add(soundEffectHurt);
+        soundEffectTeleport = Gdx.audio.newSound(Gdx.files.internal("sounds/teleport.wav"));
+        soundList.add(soundEffectTeleport);
+
         soundEffectRunning = Gdx.audio.newMusic(Gdx.files.internal("sounds/running-14658.mp3"));
         musicList.add(soundEffectRunning);
         warningMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/warning.wav"));
         musicList.add(warningMusic);
-        soundEffectTeleport = Gdx.audio.newSound(Gdx.files.internal("sounds/teleport.wav"));
-        soundList.add(soundEffectTeleport);
+
         soundEffectPanting = Gdx.audio.newMusic(Gdx.files.internal("sounds/breathing-fast-247451.mp3"));
         musicList.add(soundEffectPanting);
+
+        soundManager.addSoundEffect("key", Gdx.audio.newSound(Gdx.files.internal("sounds/Accept.mp3")));
+        soundManager.addSoundEffect("hurt", Gdx.audio.newSound(Gdx.files.internal("sounds/01._damage_grunt_male.wav")));
+        soundManager.addSoundEffect("teleport", Gdx.audio.newSound(Gdx.files.internal("sounds/teleport.wav")));
 
         // Play all sounds and store their IDs
         for (Map.Entry<String, Sound> entry : sounds.entrySet()) {
@@ -157,6 +168,19 @@ public class MazeRunnerGame extends Game {
 
         goToMenu(); // Navigate to the menu screen
         setVolume(volume);
+    }
+
+    public void adjustVolume(float newVolume) {
+        soundManager.setVolume(newVolume);
+    }
+
+    // Mute/unmute sound effects
+    public void toggleMute() {
+        soundManager.muteAll(!soundManager.isMuted()); // Toggle mute state
+    }
+
+    public SoundManager getSoundManager(){
+        return soundManager;
     }
 
     public void setVolume(float volume) {
