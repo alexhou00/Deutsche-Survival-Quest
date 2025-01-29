@@ -220,7 +220,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         this.totalCoins = 5;
 
-        this.selectLevelScreen = new SelectLevelScreen(game);
+        this.selectLevelScreen = new SelectLevelScreen(game, "previous screen", game.getGameScreen());
     }
 
     /**
@@ -530,7 +530,7 @@ public class GameScreen extends InputAdapter implements Screen {
         pausePanel.addButton("Select Level", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                selectLevelScreen.goToSelectLevelScreen();
+                game.setScreen(new SelectLevelScreen(game, "Pause", game.getGameScreen()));
 
             }
         }, 4);

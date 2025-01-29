@@ -50,7 +50,7 @@ public class MenuScreen implements Screen {
 
         this.show();
 
-        selectLevelScreen = new SelectLevelScreen(game);
+        selectLevelScreen = new SelectLevelScreen(game, "previous screen", gameScreen);
         optionsScreen = new OptionsScreen(game);
 
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
@@ -99,7 +99,7 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.log("MenuScreen", "Select Level button pressed");
-                selectLevelScreen.goToSelectLevelScreen();
+                game.setScreen(new SelectLevelScreen(game, "Menu", gameScreen));
             }
         });
 

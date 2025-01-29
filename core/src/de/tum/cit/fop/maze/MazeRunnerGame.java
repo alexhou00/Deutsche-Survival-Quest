@@ -603,7 +603,7 @@ public class MazeRunnerGame extends Game {
     }
 
     public SelectLevelScreen getSelectLevelScreen() {
-        return new SelectLevelScreen(this);
+        return new SelectLevelScreen(this, "Previous Screen", gameScreen);
     }
 
     public void checkExitToNextLevel(Player player) {
