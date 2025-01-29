@@ -3,6 +3,10 @@ package de.tum.cit.fop.maze.rendering;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -11,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Align;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.game_objects.Player;
@@ -120,6 +125,31 @@ public class Panel extends Actor{
         };
     }
 
+    public static InputListener ifSpaceKeyPressedAndReleased(Runnable action) {
+        return new InputListener() {
+            private boolean isPressed = false;
+
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.SPACE) {
+                    isPressed = true; // Mark as pressed
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean keyUp(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.SPACE && isPressed) {
+                    isPressed = false; // Reset the flag
+                    action.run(); // Run the action only after release
+                    return true;
+                }
+                return false;
+            }
+        };
+    }
+
 
     public void proceedToGame(MazeRunnerGame game, Player player, LevelManager levels) {
         this.getTable().remove(); // Remove the panel and start the game
@@ -190,5 +220,10 @@ public class Panel extends Actor{
     }
 
     public void addSlider(String soundEffectsVolume, int i, int i1, float v, float volume, ChangeListener optionsScreen, int i2) {
+    }
+
+    public static NinePatchDrawable getNinePatchDrawableFromPath(FileHandle imageInternalPath, int left, int right, int top, int bottom){
+        NinePatch ninePatch = new NinePatch(new TextureRegion(new Texture(imageInternalPath)), left, right, top, bottom);
+        return new NinePatchDrawable(ninePatch);
     }
 }

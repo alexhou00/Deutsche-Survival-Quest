@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -31,11 +32,11 @@ import de.tum.cit.fop.maze.rendering.SpotlightEffect;
 import de.tum.cit.fop.maze.tiles.TileType;
 import de.tum.cit.fop.maze.util.Position;
 
-import javax.swing.event.ChangeEvent;
 import java.util.*;
 
 import static com.badlogic.gdx.scenes.scene2d.ui.Table.Debug.actor;
 import static de.tum.cit.fop.maze.rendering.Panel.ifSpaceKeyPressed;
+import static de.tum.cit.fop.maze.rendering.Panel.*;
 import static de.tum.cit.fop.maze.tiles.TileType.GROUND;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
@@ -343,7 +344,8 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createInstructionPanel(){
-      if (game.getGameLevel() ==1 )  {Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
+      if (game.getGameLevel() ==1 )  {
+          Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
         Panel InstructionPanel = new Panel(stage1, background, game);
         InstructionPanel.setSize(0.9f, 0.9f);
 
@@ -470,8 +472,10 @@ public class GameScreen extends InputAdapter implements Screen {
 //        } }
 
     public void createIntroPanel(){
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
-        Panel introPanel = new Panel(stage1, background, game);
+        // TODO: KEEP THIS METHOD AND DELETE THE OTHER TWO
+        NinePatchDrawable backgroundDrawable = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
+                86, 86, 98, 98);
+        Panel introPanel = new Panel(stage1, backgroundDrawable, game);
         introPanel.setSize(0.9f, 0.9f);
 
         String levelName = levels.getProperties("levelName");
@@ -515,9 +519,11 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createPausePanel() {
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
+        //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
+        NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/pause.png"),
+                45+17, 45+17, 45+37, 45+37);
         Panel pausePanel = new Panel(stage1, background, game);
-        pausePanel.setSize(1f, 1f);
+        pausePanel.setSize(0.9f, 0.9f);
 
         pausePanel.addLabel("Game Paused", game.getSkin(), "title", 0.5f, 80);
 
@@ -561,11 +567,12 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createOptionPanel() {
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
+        //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
+        NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
+                86, 86, 98, 98);
         Panel OptionPanel = new Panel(stage1, background, game);
         OptionPanel.setSize(0.8f, 0.6f);
 
-;
         OptionPanel.addLabel("Options", game.getSkin(), "title", 0.5f, 80);
 
         // Add Music Volume Slider
@@ -606,7 +613,9 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createVictoryPanel() {
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/victory.png")));
+        //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/victory.png")));
+        NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/victory.png"),
+                50, 50, 50, 50);
         Panel victoryPanel = new Panel(stage1, background, game);
         victoryPanel.setSize(0.8f, 0.6f);
         isPaused = true;
