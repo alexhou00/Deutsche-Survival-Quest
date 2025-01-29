@@ -117,7 +117,7 @@ src/de/tum/cit/fop/maze/
 
 * m to mute
 
-* add other controls here
+* Press *Shift* to speed up
 
 ## Game UI
 maybe show some images of the gameplay here
@@ -129,20 +129,26 @@ maybe show some images of the gameplay here
 * clamp zooming
 
 **HUD**:
-Displays remaining lives, amount of coins collected, and if the ky has been found. 
+- Number of hearts displays remaining lives,
+- On the top right, it indicates amount of coins collected and whether key has been collected
+- speech bubbles from our dynamic enemies 
 
 **Point System**:
-In Deutsche Survival Quest, there are total of *5* coins that are randomly generated on each map. The player gets a score form A to F in the end
-of each successfully completed level, based on amount of coins collected. 
+In Deutsche Survival Quest, there are total of *5* coins that are randomly generated on each map.
+The player gets a score form A to F in the end of each successfully completed level, based on amount of coins collected. 
+Whether they progress on to the next level, however, is independent on the points they earn but rather dependent on the
+ the collection of keys and finding the exit.
 
 
 **Player's Movement**:
 * Our player's can move smoothly towards four directions and diagonally
+* It can also speed up but only for a limited amount of time when the shift 
+button is pressed
 
 * Stamina
 
 **Collision**:
-Deutsche Survival Quest offers pixel perfect collision with objects 
+Deutsche Survival Quest offers pixel perfect collision with objects
 
 
 **Collectables**:
@@ -152,7 +158,7 @@ Deutsche Survival Quest offers pixel perfect collision with objects
 * Boost-ups: power potion (adds stamina), pretzel.
 
 **Exit to Next Level with the Key**:
-* Level 1: Player must claim his luggage. 
+* Level 1: Player must claim his luggage and can earn bonus points on the way.
 
 * Level 2: Player must get his Deutschlandticket to catch his train.
 
@@ -269,23 +275,12 @@ quickly learn how to play the game. The spotlight effect we employed makes the t
 user to the specific variable. 
 
 The user also have control over the other interfaces in the game such as sounds and music, with the choice to adjust the volume based on their liking 
-the slider, and an option to completely mute them. 
+the slider, and an option to completely mute them. They are also able to choose which level they would want to skip to using the "Select Level" function 
+in the menu and pause screen.
 
-the options to switch between levels 
-talk about the traps 
-the portal 
-
-
+For our surprise element, we have a portal that teleports the user back to the starting point. In order for the user
+to finish the game quick, he must avoid the portal. There are also traps every level such as glass bottles that would lower the health of the user. 
 
 
 
-
-
-
-Dynamic obstacles - cars/horse/ trolley/ german neighbour/ smoking teenagers/ a bear (in berlin) a golden lion (munich)   etc / train controller reappearing - will take away one ticket. Once all 5 tickets are taken away then restart level  (or maybe the player has to collect his Deutschlandticket first at the levels where there are ticket guys) (maybe there’s a chance of your ticket not working?)
-
-
-Traps - glass bottles / Baustelle forces you to reroute
-* story
-* 
 
