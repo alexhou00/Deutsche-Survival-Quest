@@ -379,7 +379,7 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         }, 20);
 
-       InstructionPanel.addListener(ifSpaceKeyPressedAndReleased(this::createInstructionPanel1));
+       InstructionPanel.addListener(ifSpaceKeyPressed(this::createInstructionPanel1));
 
 
     } }
@@ -422,7 +422,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 }
             }, 20);
 
-            InstructionPanel.addListener(ifSpaceKeyPressedAndReleased(() -> {
+            InstructionPanel.addListener(ifSpaceKeyPressed(() -> {
                 createIntroPanel();
             }));
 
@@ -467,7 +467,7 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         }, 20);
 
-        introPanel.addListener(ifSpaceKeyPressedAndReleased(() -> {
+        introPanel.addListener(ifSpaceKeyPressed(() -> {
             introPanel.proceedToGame(game, player, levels);
             currentTutorialStage = TutorialStage.EXIT_ARROW;
         }));
@@ -605,7 +605,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         victoryPanel.addLabel("[OR PRESS SPACE BAR TO CONTINUE]", game.getSkin(), "default", 1f, 40);
 
-        victoryPanel.addListener(ifSpaceKeyPressedAndReleased(() -> victoryPanel.proceedToNextLevel(game)));
+        victoryPanel.addListener(ifSpaceKeyPressed(() -> victoryPanel.proceedToNextLevel(game)));
     }
 
     /**
