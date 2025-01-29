@@ -616,7 +616,7 @@ public class MazeRunnerGame extends Game {
                 goToVictoryScreen();
             }
 
-            if (!gameScreen.isPaused()) {
+            else if (!gameScreen.isPaused()) {
                 gameScreen.setPaused(true);
                 gameScreen.createVictoryPanel();
                 //this.pause();
@@ -625,18 +625,6 @@ public class MazeRunnerGame extends Game {
                 this.getVictorySoundEffect().play();
             }
 
-
-            //gameScreen.isPaused();
-            //pauseMusic.pause();
-            //victorySoundEffect.play();
-
-            /*gameLevel += 1;
-            gameScreen.dispose();
-            gameScreen = new GameScreen(this);
-            gameScreen.getKey().setCollected(false);
-            this.setScreen(gameScreen);
-
-            Gdx.app.log("MazeRunnerGame", "Set Screen to Game Screen");*/
         }
     }
 
