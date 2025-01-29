@@ -96,7 +96,6 @@ public class GameScreen extends InputAdapter implements Screen {
     private final SelectLevelScreen selectLevelScreen;
     private final TooltipManager tooltipManager;
 
-    private SoundManager soundManager;
     private Slider volumeSlider;
 
 
@@ -222,9 +221,6 @@ public class GameScreen extends InputAdapter implements Screen {
         this.totalCoins = 5;
 
         this.selectLevelScreen = new SelectLevelScreen(game);
-
-        soundManager = new SoundManager();
-
     }
 
     /**
@@ -589,11 +585,11 @@ public class GameScreen extends InputAdapter implements Screen {
         });
 
 
-        OptionPanel.addSlider("Sound Effects Volume", 0, 2, soundManager.getVolume(), 0.01f, game.getSkin(), new ChangeListener() {
+        OptionPanel.addSlider("Sound Effects Volume", 0, 2, game.getSoundManager().getVolume(), 0.01f, game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 float value2 = ((Slider) actor).getValue();
-                soundManager.setVolume(value2);
+                game.getSoundManager().setVolume(value2);
                 Gdx.app.log("OptionsScreen", "Sound effects volume changed to: " + value2);
             }
 
@@ -766,18 +762,6 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
-    //boolean isExitSpotlightActive = true;
-    //boolean isZoomingSpotlightActive = true;
-    //boolean isEscKeySpotlightActive = true;
-    /*private void checkPortalCollision(Player player, Key key) {
-        for (Portal portal : portals) {
-            if (portal.isActive() && player.getHitbox().overlaps(portal.getHitbox())) {
-                portal.onPlayerTouch(player, key);
-                System.out.println("Player touched portal at: " + portal.getX() + ", " + portal.getY());
-                break; // Optional: stop further portal checks if you only want one interaction
-            }
-        }
-    }*/
     // Screen interface methods with necessary functionality
     @Override
     public void render(float delta) {

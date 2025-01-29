@@ -349,9 +349,9 @@ public class Player extends Character {
     public void loseLives(float amount, GameObject source){//or damage idk
         lives -= amount;
         if (!game.isMuted()){
-            game.getSoundManager().playSound("hurt");
+            game.getSoundEffectHurt().play(game.getSoundManager().getVolume());
         }
-        else if (game.isMuted()){
+        else{
             game.getSoundEffectHurt().pause();
         }
 

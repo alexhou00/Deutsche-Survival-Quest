@@ -15,7 +15,7 @@ import de.tum.cit.fop.maze.base.StaticObject;
 public class Key extends StaticObject {
 
     private boolean isCollected;
-    private MazeRunnerGame game;
+    private final MazeRunnerGame game;
 
     /**
      * Constructs a Key object with specified position, size, hitbox dimensions,
@@ -51,7 +51,7 @@ public class Key extends StaticObject {
             game.getSoundEffectKey().pause();
         }
         if (!game.isMuted()){
-            game.getSoundEffectKey().play();
+            game.getSoundEffectKey().play(game.getSoundManager().getVolume());
         }
         System.out.println("Key collected!"); // Debug message
     }

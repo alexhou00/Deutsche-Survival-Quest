@@ -29,22 +29,6 @@ public class SoundManager {
     }
 
     /**
-     * Plays a one-time sound effect and stores the sound ID.
-     *
-     * @param key The identifier for the sound effect.
-     * @return The sound ID of the played sound.
-     */
-    public long playSound(String key) {
-        Sound sound = soundEffects.get(key);
-        if (sound != null) {
-            long soundId = sound.play(getCurrentVolume()); // Play sound at the current volume
-            soundIds.put(key, soundId); // Store the sound ID
-            return soundId;
-        }
-        return -1; // Return an invalid ID if sound is not found
-    }
-
-    /**
      * Sets the volume for all sound effects.
      *
      * @param value The new volume level (0.0f to 1.0f).
@@ -63,16 +47,6 @@ public class SoundManager {
                 sound.setVolume(entry.getValue(), soundCurrentVolume); // Set the volume for the active sound
             }
         }
-    }
-
-
-    /**
-     * Adjusts the volume of the sound effects based on the mute state.
-     *
-     * @return The volume to apply, either the current volume or 0 if muted.
-     */
-    private float getCurrentVolume() {
-        return muted ? 0.0f : soundCurrentVolume;
     }
 
     /**

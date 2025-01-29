@@ -114,7 +114,7 @@ public class Collectibles extends GameObject {
                 soundEffectCollect.pause();
             }
             else{
-                soundEffectCollect.play();
+                soundEffectCollect.play(game.getSoundManager().getVolume());
             }
 
             switch (this.getType()) {
