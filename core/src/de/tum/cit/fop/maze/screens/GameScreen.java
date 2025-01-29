@@ -352,7 +352,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         String levelName = levels.getProperties("levelName"); // test
 
-        instructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.5f, 80);
+        instructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "fraktur", 1, 80);
         String instructionsText1 = getInstructionsText1();
 
         Label.LabelStyle instructionsStyle2 = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
@@ -465,23 +465,7 @@ public class GameScreen extends InputAdapter implements Screen {
         introPanel.setSize(0.9f, 0.9f);
 
         String levelName = levels.getProperties("levelName");
-        introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "title", 0.5f, 20);
-
-//        String instructionsText = """
-//                Welcome TUM student!
-//                As you arrive in Germany for your studies in Heilbronn, you will have to complete some challenges to settle in and start your studies. \
-//                You will start at the airport, then figure out how to use the public transportation, which will be the Deutsche Bahn in this case, \
-//                complete your city registration, chill in a Brauerei, and of course discover the beautiful Altstadt of Heilbronn:)
-//
-//                During your journey, unfortunately, not everything will be as easy... First of all, you will need to collect a key for each level to move on with your journey. \
-//                Also, you must remain alert, as there will be some traps, enemies, and surprises set for you to keep you from completing your journey.
-//
-//                Good Luck!!
-//
-//                [Press any key to continue with level 1 instructions]""";
-//
-//        Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
-//        introPanel.addLabel(instructionsText, instructionsStyle, 80);
+        introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "fraktur", 1, 20);
 
         introPanel.addLabel("Move using W, A, S, D keys.", game.getSkin(), "black", 1f, 50);
         introPanel.addLabel("Collect keys to unlock exits.", game.getSkin(), "black", 1f, 50);
@@ -510,7 +494,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Panel pausePanel = new Panel(stage1, background, game);
         pausePanel.setSize(0.9f, 0.9f);
 
-        pausePanel.addLabel("Game Paused", game.getSkin(), "title", 0.5f, 80);
+        pausePanel.addLabel("Game Paused", game.getSkin(), "fraktur", 1, 80);
 
         pausePanel.addButton("Resume", game.getSkin(), new ChangeListener() {
             @Override
@@ -558,7 +542,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Panel optionPanel = new Panel(stage1, background, game);
         optionPanel.setSize(0.8f, 0.6f);
 
-        optionPanel.addLabel("Options", game.getSkin(), "title", 0.5f, 80);
+        optionPanel.addLabel("Options", game.getSkin(), "fraktur", 1, 80);
 
         // Add Music Volume Slider
         optionPanel.addSlider("Music Volume", 0, 1, game.getVolume(), 0.05f, game.getSkin(), "black",  new ChangeListener() {
@@ -607,7 +591,7 @@ public class GameScreen extends InputAdapter implements Screen {
         victoryPanel.setSize(0.8f, 0.6f);
         isPaused = true;
 
-        victoryPanel.addLabel("Victory!", game.getSkin(), "title", 0.5f, 80);
+        victoryPanel.addLabel("Victory!", game.getSkin(), "fraktur", 1, 80);
 
         String grade = calculateScore();
         String scoreText = "Score: " + grade + " (" + player.getCoins() + "/" + totalCoins + ")";

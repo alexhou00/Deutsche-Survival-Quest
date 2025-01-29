@@ -51,7 +51,7 @@ public class SelectLevelScreen implements Screen  {
         stage.addActor(table);
 
 
-        table.add(new Label("Select Your Level", game.getSkin(), "title")).padBottom(80).row();
+        table.add(new Label("Select The Level", game.getSkin(), "fraktur")).padBottom(40).row();
 
         buttons = new LinkedHashMap<>();
 

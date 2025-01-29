@@ -42,7 +42,7 @@ public class PauseScreen implements Screen {
         stage.addActor(table);
 
         // Add a label as a title
-        table.add(new Label("Game Paused", game.getSkin(), "title")).padBottom(80).row();
+        table.add(new Label("Game Paused", game.getSkin(), "fraktur")).padBottom(80).row();
 
         // Button dimensions
         final float BUTTON_WIDTH = 300f;
