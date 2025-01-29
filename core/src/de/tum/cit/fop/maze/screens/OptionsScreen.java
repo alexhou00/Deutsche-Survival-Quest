@@ -58,7 +58,7 @@ public class OptionsScreen implements Screen {
         buttons.put("Back", new TextButton("Back", skin));
 
         // Add header label
-        table.add(new Label("Options", skin, "title")).padBottom(80).row();
+        table.add(new Label("Options", skin, "fraktur")).padBottom(80).row();
 
         // Volume Slider for Music
         musicSlider = new Slider(0f, 1f, 0.05f, false, skin);

@@ -352,7 +352,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         String levelName = levels.getProperties("levelName"); // test
 
-        instructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.5f, 80);
+        instructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "fraktur", 0.5f, 80);
         String instructionsText1 = getInstructionsText1();
 
         Label.LabelStyle instructionsStyle2 = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
@@ -465,7 +465,7 @@ public class GameScreen extends InputAdapter implements Screen {
         introPanel.setSize(0.9f, 0.9f);
 
         String levelName = levels.getProperties("levelName");
-        introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "title", 0.5f, 20);
+        introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "fraktur", 0.5f, 20);
 
 //        String instructionsText = """
 //                Welcome TUM student!
@@ -510,7 +510,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Panel pausePanel = new Panel(stage1, background, game);
         pausePanel.setSize(0.9f, 0.9f);
 
-        pausePanel.addLabel("Game Paused", game.getSkin(), "title", 0.5f, 80);
+        pausePanel.addLabel("Game Paused", game.getSkin(), "fraktur", 0.5f, 80);
 
         pausePanel.addButton("Resume", game.getSkin(), new ChangeListener() {
             @Override
@@ -558,7 +558,7 @@ public class GameScreen extends InputAdapter implements Screen {
         Panel optionPanel = new Panel(stage1, background, game);
         optionPanel.setSize(0.8f, 0.6f);
 
-        optionPanel.addLabel("Options", game.getSkin(), "title", 0.5f, 80);
+        optionPanel.addLabel("Options", game.getSkin(), "fraktur", 0.5f, 80);
 
         // Add Music Volume Slider
         optionPanel.addSlider("Music Volume", 0, 1, game.getVolume(), 0.05f, game.getSkin(), "black",  new ChangeListener() {
@@ -607,7 +607,7 @@ public class GameScreen extends InputAdapter implements Screen {
         victoryPanel.setSize(0.8f, 0.6f);
         isPaused = true;
 
-        victoryPanel.addLabel("Victory!", game.getSkin(), "title", 0.5f, 80);
+        victoryPanel.addLabel("Victory!", game.getSkin(), "fraktur", 0.5f, 80);
 
         String grade = calculateScore();
         String scoreText = "Score: " + grade + " (" + player.getCoins() + "/" + totalCoins + ")";
