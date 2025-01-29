@@ -349,11 +349,9 @@ public class GameScreen extends InputAdapter implements Screen {
         Panel InstructionPanel = new Panel(stage1, background, game);
         InstructionPanel.setSize(0.9f, 0.9f);
 
-        String levelName = levels.getProperties("levelName");
+        String levelName = levels.getProperties("levelName"); // test
 
         InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.5f, 80);
-
-
 
         String instructionsText = """
                 Welcome TUM student!
