@@ -342,8 +342,10 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createInstructionPanel(){
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
-        Panel InstructionPanel = new Panel(stage1, background, game);
+        //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
+        NinePatchDrawable backgroundDrawable = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
+                86, 86, 98, 98);
+        Panel InstructionPanel = new Panel(stage1, backgroundDrawable, game);
         InstructionPanel.setSize(0.9f, 0.9f);
 
         String levelName = levels.getProperties("levelName"); // test
@@ -455,7 +457,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
     public void createIntroPanel(){
-        // TODO: KEEP THIS METHOD AND DELETE THE OTHER TWO
         NinePatchDrawable backgroundDrawable = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
                 86, 86, 98, 98);
         Panel introPanel = new Panel(stage1, backgroundDrawable, game);
