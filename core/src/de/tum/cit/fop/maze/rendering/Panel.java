@@ -59,6 +59,7 @@ public class Panel extends Actor{
         Label label = new Label(text, skin, styleName);
         label.getStyle().font.getData().setScale(scale);
         table.add(label).padBottom(padBottom).center().row();
+       label.setAlignment(Align.top);
     }
 
     public void addLabel (Label label, Float padBottom, Panel panel){

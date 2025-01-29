@@ -347,7 +347,10 @@ public class GameScreen extends InputAdapter implements Screen {
         InstructionPanel.setSize(0.9f, 0.9f);
 
         String levelName = levels.getProperties("levelName");
-        InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.9f, 80);
+
+        InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.5f, 80);
+
+
 
         String instructionsText = """
                 Welcome TUM student!
@@ -389,7 +392,7 @@ public class GameScreen extends InputAdapter implements Screen {
             InstructionPanel.setSize(0.9f, 0.9f);
 
             String levelName = levels.getProperties("levelName");
-            InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.9f, 80);
+            InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.5f, 80);
 
             String instructionsText = """
                 
