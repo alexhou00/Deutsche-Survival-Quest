@@ -324,14 +324,11 @@ public class GameScreen extends InputAdapter implements Screen {
             randomIndex = MathUtils.random(emptyTiles.size - 1);
             sectionIndex = getSectionIndex(emptyTiles.get(randomIndex), collectiblesToGenerate);
         } while (occupiedSectionIndexes.contains(sectionIndex));
-        //System.out.println(occupiedSectionIndexes.contains(sectionIndex));
+
         occupiedSectionIndexes.add(sectionIndex);
         for (int j=-1;j<=1;j+=2) occupiedSectionIndexes.add(new Position(sectionIndex.getTileX() + j, sectionIndex.getTileY(),TILES));//int[]{sectionIndex[0] + j, sectionIndex[1]});
         for (int j=-1;j<=1;j+=2) occupiedSectionIndexes.add(new Position(sectionIndex.getTileX(), sectionIndex.getTileY() + j,TILES));//int[]{sectionIndex[0],sectionIndex[1] + j});
 
-        //System.out.println(type.toString() + " at " + sectionIndex);
-        //for (var a : occupiedSectionIndexes) System.out.print( a.getTileX() + ", " +  a.getTileY() + ";  ");
-        //System.out.println();
         return randomIndex;
     }
 
@@ -345,215 +342,117 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createInstructionPanel(){
-
-          Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
+        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
         Panel InstructionPanel = new Panel(stage1, background, game);
         InstructionPanel.setSize(0.9f, 0.9f);
 
         String levelName = levels.getProperties("levelName"); // test
 
         InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.5f, 80);
-            String s = "";
-        switch (game.getGameLevel()) {
-                    case 1: {
-                        s = """
-                Welcome TUM student!
-                As you arrive in Germany for your studies in Heilbronn,
-                you will have to complete some challenges to settle in and start your studies.
-                You will start at the airport, then figure out how to use the public transportation,
-                which will be the Deutsche Bahn in this case,
-                complete your city registration, chill in a Brauerei,
-                and of course discover the beautiful Altstadt of Heilbronn:)
-               """;
-                        break;
-                    }
-            case 2:
-            {
-                 s = """
-                   You’ve made it out of the Frankfurt Airport! Good job!
-                   Now it is time to catch the train to your new apartment.
+        Label label = getLabelForInstructionsText1();
+
+        Label.LabelStyle instructionsStyle2 = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
+
+        InstructionPanel.addLabel(label,1f,InstructionPanel);
+
+        final int[] clickCount = {0};
+        InstructionPanel.addButton("Continue", game.getSkin(), new ChangeListener() {
+
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                clickCount[0]++;
+
+                String instructionsText2 = getLabelForInstructionsText2();
+
+                if (clickCount[0] == 1) {
+                    label.setText(instructionsText2);
+                }
+                if (clickCount[0] == 2) {
+                    createIntroPanel();
+                }
+            }}, 20);
+    }
+
+    private Label getLabelForInstructionsText1() {
+        String s = switch (game.getGameLevel()) {
+            case 1 -> """
+                    Welcome TUM student!
+                    As you arrive in Germany for your studies in Heilbronn,
+                    you will have to complete some challenges to settle in and start your studies.
+                    You will start at the airport, then figure out how to use the public transportation,
+                    which will be the Deutsche Bahn in this case,
+                    complete your city registration, chill in a Brauerei,
+                    and of course discover the beautiful Altstadt of Heilbronn:)
+                    """;
+            case 2 -> """
+                    You’ve made it out of the Frankfurt Airport! Good job!
+                    Now it is time to catch the train to your new apartment.
                     You must collect your Deutschland ticket and take the train to your new home
-                   """;
-                 break;
-            }
-
-            case 3:
-            {
-                s = """
-                        Home sweet home! You’ve now reached your neighbourhood in heilbronn.
-                         Look for your keys and find your home to continue your journey in Germany
-                     """;
-                break;
-            }
-            case 4:{
-                s = """
-                        You’re now all settled in and decided to go to the pub to meet some new people!
-                        """;
-                break;
-            }
-            case 5:{
-                s= """
-Time flies! It has now been a week since you arrived and you must now do your city registration. 
-To do so, you must collect all your documents and find the RatHaus. 
- """;
-                break;
-            }
-            case 6:{
-                s = """
-                        Welcome to the ratHaus! You are almost well settled here!
-                        All you have to do now is find the room (it is behind a grey door) for your termin!
-                        """;
-                break;
-
-            }
+                    """;
+            case 3 -> """
+                    Home sweet home! You’ve now reached your neighbourhood in heilbronn.
+                    Look for your keys and find your home to continue your journey in Germany
+                    """;
+            case 4 -> """
+                    You’re now all settled in and decided to go to the pub to meet some new people!
+                    """;
+            case 5 -> """
+                    Time flies! It has now been a week since you arrived and you must now do your city registration. 
+                    To do so, you must collect all your documents and find the RatHaus. 
+                    """;
+            case 6 -> """
+                    Welcome to the ratHaus! You are almost well settled here!
+                    All you have to do now is find the room (it is behind a grey door) for your termin!
+                    """;
+            default -> "";
         };
 
         Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
-//                InstructionPanel.addLabel(instructionsText, instructionsStyle, 80);
-        Label label = new Label(s, instructionsStyle);
-//
-
-          Label.LabelStyle instructionsStyle2 = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
-//            InstructionPanel.addLabel(instructionsText, instructionsStyle, 80);
-
-
-          InstructionPanel.addLabel(label,1f,InstructionPanel);
-
-          final int[] clickCount = {0};
-          InstructionPanel.addButton("Continue", game.getSkin(), new ChangeListener() {
-
-              @Override
-              public void changed(ChangeEvent event, Actor actor) {
-                  clickCount[0]++;
-
-                         String instructionsText2 = "";
-                         switch (game.getGameLevel()) {
-
-                             case 1 :{
-                                 instructionsText2 = """
-                During your journey, unfortunately,
-                not everything will be as easy...
-                 First of all, you will need to collect a key
-                  for each level to move on with your journey.
-                Also, you must remain alert, as there will be some traps,
-                enemies, and surprises set for you to keep you from completing your journey.
-                
-                Good Luck!!
-                
-                [Press any key to continue with level 1 instructions]; """;
-                             break; }
-
-                             case 2: {
-                                 instructionsText2 = """
-                          
-                        But since only ICEs are available for your journey, you still have to avoid the ticket controller.\s
-                          Stay clear from the infected trash and the angry passengers as well to prevent losing lives!
-                         """;
-                                 break;
-                             }
-                             case 3: {
-                                 instructionsText2 = """
-                      Since it is a sunday, the sound of your luggage is annoying your german neighbours.
-                      So be careful not to bump into them!
-                       As usual, avoid the trash on the floor and remember to collect pretzels to boost your energy.
-                      
-                      """; break;
-                             }
-                             case 4: {
-                                 instructionsText2= """
-                     However, the pub was filled with drunk people that you have to avoid.
-                      Look for your house keys and the backdoor so that you can return home!
-                     """;
-                                 break;
-                             }
-
-                             case 5: {
-                                 instructionsText2 = """
-                          Since you are now in the city centre,
-                           be careful of oncoming traffic and 
-                           not to bump into any trash cans on your way to the rathaus!
-                          
-                          """;
-                                 break;
-                             }
-
-                             case 6: {
-                                 instructionsText2 = """
-                          You must avoid the security who are asking people
-                          who do not have printed proof of their termin to leave.\s
-                          """;
-                                 break;
-                             }
-                         }
-                  if (clickCount[0] == 1) {
-                      label.setText(instructionsText2);}
-                     if (clickCount[0] == 2) {
-                         createIntroPanel();
-                     }
-
-
-
-              }
-          }, 20);
-
-
-
-//       InstructionPanel.addListener(ifSpaceKeyPressed(() -> {
-////         label.remove();
-////         InstructionPanel.addLabel(label2, 0.8f,InstructionPanel);
-//                 Label label2;
-//               if(label2==null)   {label.remove();
-//                   label2 = new Label(instructionsText, instructionsStyle);
-//                   InstructionPanel.addLabel(label2, 0.8f,InstructionPanel);}
-//
-//           };
-
-
+        return new Label(s, instructionsStyle);
     }
 
+    private String getLabelForInstructionsText2(){
 
-//    public void createInstructionPanel1(){
-//        if (game.getGameLevel() ==1 )  {Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
-//            Panel InstructionPanel = new Panel(stage1, background, game);
-//            InstructionPanel.setSize(0.9f, 0.9f);
-//
-//            String levelName = levels.getProperties("levelName");
-//            InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.5f, 80);
-//
-//            String instructionsText = """
-//
-//                During your journey, unfortunately,
-//                not everything will be as easy...
-//                 First of all, you will need to collect a key
-//                  for each level to move on with your journey.
-//                Also, you must remain alert, as there will be some traps,
-//                enemies, and surprises set for you to keep you from completing your journey.
-//
-//                Good Luck!!
-//
-//                [Press any key to continue with level 1 instructions]""";
-//
-//            Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
-////            InstructionPanel.addLabel(instructionsText, instructionsStyle, 80);
-//            Label label = new Label(instructionsText, instructionsStyle);
-//            InstructionPanel.addLabel(label, 0.8f,InstructionPanel);
-//
-//
-//
-//
-//            InstructionPanel.addButton("Continue", game.getSkin(), new ChangeListener() {
-//                @Override
-//                public void changed(ChangeEvent event, Actor actor) {
-//                    createIntroPanel();
-//                }
-//            }, 20);
-//
-//            InstructionPanel.addListener(ifSpaceKeyPressed(() -> {
-//                createIntroPanel();
-//            }));
-//
-//
-//        } }
+        String instructionsText2 = switch (game.getGameLevel()) {
+            case 1 -> """
+                            During your journey, unfortunately,
+                            not everything will be as easy...
+                             First of all, you will need to collect a key
+                              for each level to move on with your journey.
+                            Also, you must remain alert, as there will be some traps,
+                            enemies, and surprises set for you to keep you from completing your journey.
+                            
+                            Good Luck!!
+                            
+                            [Press any key to continue with level 1 instructions];
+                            """;
+            case 2 -> """
+                            But since only ICEs are available for your journey, you still have to avoid the ticket controller.\s
+                            Stay clear from the infected trash and the angry passengers as well to prevent losing lives!
+                            """;
+            case 3 -> """
+                            Since it is a sunday, the sound of your luggage is annoying your german neighbours.
+                            So be careful not to bump into them!
+                            As usual, avoid the trash on the floor and remember to collect pretzels to boost your energy.
+                            """;
+            case 4 -> """
+                            However, the pub was filled with drunk people that you have to avoid.
+                            Look for your house keys and the backdoor so that you can return home!
+                            """;
+            case 5 -> """
+                            Since you are now in the city centre,
+                            be careful of oncoming traffic and
+                            not to bump into any trash cans on your way to the Rathaus!
+                            """;
+            case 6 -> """
+                            You must avoid the security who are asking people
+                            who do not have printed proof of their termin to leave.\s
+                            """;
+            default -> "";
+        };
+        return instructionsText2;
+    }
+
 
     public void createIntroPanel(){
         // TODO: KEEP THIS METHOD AND DELETE THE OTHER TWO
@@ -654,13 +553,13 @@ To do so, you must collect all your documents and find the RatHaus.
         //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
         NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
                 86, 86, 98, 98);
-        Panel OptionPanel = new Panel(stage1, background, game);
-        OptionPanel.setSize(0.8f, 0.6f);
+        Panel optionPanel = new Panel(stage1, background, game);
+        optionPanel.setSize(0.8f, 0.6f);
 
-        OptionPanel.addLabel("Options", game.getSkin(), "title", 0.5f, 80);
+        optionPanel.addLabel("Options", game.getSkin(), "title", 0.5f, 80);
 
         // Add Music Volume Slider
-        OptionPanel.addSlider("Music Volume", 0, 2, game.getVolume(), 0.01f, game.getSkin(), new ChangeListener() {
+        optionPanel.addSlider("Music Volume", 0, 2, game.getVolume(), 0.01f, game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 float value = ((Slider) actor).getValue();
@@ -670,7 +569,7 @@ To do so, you must collect all your documents and find the RatHaus.
         });
 
 
-        OptionPanel.addSlider("Sound Effects Volume", 0, 2, game.getSoundManager().getVolume(), 0.01f, game.getSkin(), new ChangeListener() {
+        optionPanel.addSlider("Sound Effects Volume", 0, 2, game.getSoundManager().getVolume(), 0.01f, game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 float value2 = ((Slider) actor).getValue();
@@ -681,7 +580,7 @@ To do so, you must collect all your documents and find the RatHaus.
         });
 
 
-        OptionPanel.addButton("Mute / Unmute" , game.getSkin(), new ChangeListener() {
+        optionPanel.addButton("Mute / Unmute" , game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 boolean isMuted = !game.isMuted();
@@ -690,10 +589,10 @@ To do so, you must collect all your documents and find the RatHaus.
             }
         }, 4);
 
-        OptionPanel.addButton("Back", game.getSkin(), new ChangeListener() {
+        optionPanel.addButton("Back", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                OptionPanel.clear();
+                optionPanel.clear();
                 createPausePanel();
         } } , 4);
     }
