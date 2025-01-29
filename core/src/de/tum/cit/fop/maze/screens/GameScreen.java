@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -30,9 +31,9 @@ import de.tum.cit.fop.maze.rendering.SpotlightEffect;
 import de.tum.cit.fop.maze.tiles.TileType;
 import de.tum.cit.fop.maze.util.Position;
 
-import javax.swing.event.ChangeEvent;
 import java.util.*;
 
+import static de.tum.cit.fop.maze.rendering.Panel.getNinePatchDrawableFromPath;
 import static de.tum.cit.fop.maze.rendering.Panel.ifSpaceKeyPressed;
 import static de.tum.cit.fop.maze.tiles.TileType.GROUND;
 import static de.tum.cit.fop.maze.util.Constants.*;
@@ -340,8 +341,9 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createIntroPanel(){
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
-        Panel introPanel = new Panel(stage1, background, game);
+        NinePatchDrawable backgroundDrawable = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
+                86, 86, 98, 98);
+        Panel introPanel = new Panel(stage1, backgroundDrawable, game);
         introPanel.setSize(0.9f, 0.9f);
 
         String levelName = levels.getProperties("levelName");
@@ -435,7 +437,6 @@ public class GameScreen extends InputAdapter implements Screen {
         Panel OptionPanel = new Panel(stage1, background, game);
         OptionPanel.setSize(0.8f, 0.6f);
 
-;
         OptionPanel.addLabel("Options", game.getSkin(), "title", 0.5f, 80);
 
         // Add Music Volume Slider
