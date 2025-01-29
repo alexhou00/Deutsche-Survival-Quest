@@ -345,7 +345,7 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createInstructionPanel(){
-      if (game.getGameLevel() ==1 )  {
+
           Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
         Panel InstructionPanel = new Panel(stage1, background, game);
         InstructionPanel.setSize(0.9f, 0.9f);
@@ -353,8 +353,10 @@ public class GameScreen extends InputAdapter implements Screen {
         String levelName = levels.getProperties("levelName"); // test
 
         InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.5f, 80);
-
-        String instructionsText = """
+            String s = "";
+        switch (game.getGameLevel()) {
+                    case 1: {
+                        s = """
                 Welcome TUM student!
                 As you arrive in Germany for your studies in Heilbronn,
                 you will have to complete some challenges to settle in and start your studies.
@@ -362,30 +364,54 @@ public class GameScreen extends InputAdapter implements Screen {
                 which will be the Deutsche Bahn in this case,
                 complete your city registration, chill in a Brauerei,
                 and of course discover the beautiful Altstadt of Heilbronn:)
-                
                """;
+                        break;
+                    }
+            case 2:
+            {
+                 s = """
+                   You’ve made it out of the Frankfurt Airport! Good job!
+                   Now it is time to catch the train to your new apartment.
+                    You must collect your Deutschland ticket and take the train to your new home
+                   """;
+                 break;
+            }
+
+            case 3:
+            {
+                s = """
+                        Home sweet home! You’ve now reached your neighbourhood in heilbronn.
+                         Look for your keys and find your home to continue your journey in Germany
+                     """;
+                break;
+            }
+            case 4:{
+                s = """
+                        You’re now all settled in and decided to go to the pub to meet some new people!
+                        """;
+                break;
+            }
+            case 5:{
+                s= """
+Time flies! It has now been a week since you arrived and you must now do your city registration. 
+To do so, you must collect all your documents and find the RatHaus. 
+ """;
+                break;
+            }
+            case 6:{
+                s = """
+                        Welcome to the ratHaus! You are almost well settled here!
+                        All you have to do now is find the room (it is behind a grey door) for your termin!
+                        """;
+                break;
+
+            }
+        };
 
         Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
 //                InstructionPanel.addLabel(instructionsText, instructionsStyle, 80);
-        Label label = new Label(instructionsText, instructionsStyle);
-//        label.setWrap(true);
-//        label.setAlignment(Align.center);
-//        label.setWidth(InstructionPanel.getWidth());
-
-
-
-          String instructionsText2 = """
-                
-                During your journey, unfortunately,
-                not everything will be as easy...
-                 First of all, you will need to collect a key
-                  for each level to move on with your journey.
-                Also, you must remain alert, as there will be some traps,
-                enemies, and surprises set for you to keep you from completing your journey.
-                
-                Good Luck!!
-                
-                [Press any key to continue with level 1 instructions]""";
+        Label label = new Label(s, instructionsStyle);
+//
 
           Label.LabelStyle instructionsStyle2 = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
 //            InstructionPanel.addLabel(instructionsText, instructionsStyle, 80);
@@ -399,9 +425,68 @@ public class GameScreen extends InputAdapter implements Screen {
               @Override
               public void changed(ChangeEvent event, Actor actor) {
                   clickCount[0]++;
-                     if (clickCount[0] == 1) {
-                         label.setText(instructionsText2);
-                     }
+
+                         String instructionsText2 = "";
+                         switch (game.getGameLevel()) {
+
+                             case 1 :{
+                                 instructionsText2 = """
+                During your journey, unfortunately,
+                not everything will be as easy...
+                 First of all, you will need to collect a key
+                  for each level to move on with your journey.
+                Also, you must remain alert, as there will be some traps,
+                enemies, and surprises set for you to keep you from completing your journey.
+                
+                Good Luck!!
+                
+                [Press any key to continue with level 1 instructions]; """;
+                             break; }
+
+                             case 2: {
+                                 instructionsText2 = """
+                          
+                        But since only ICEs are available for your journey, you still have to avoid the ticket controller.\s
+                          Stay clear from the infected trash and the angry passengers as well to prevent losing lives!
+                         """;
+                                 break;
+                             }
+                             case 3: {
+                                 instructionsText2 = """
+                      Since it is a sunday, the sound of your luggage is annoying your german neighbours.
+                      So be careful not to bump into them!
+                       As usual, avoid the trash on the floor and remember to collect pretzels to boost your energy.
+                      
+                      """; break;
+                             }
+                             case 4: {
+                                 instructionsText2= """
+                     However, the pub was filled with drunk people that you have to avoid.
+                      Look for your house keys and the backdoor so that you can return home!
+                     """;
+                                 break;
+                             }
+
+                             case 5: {
+                                 instructionsText2 = """
+                          Since you are now in the city centre,
+                           be careful of oncoming traffic and 
+                           not to bump into any trash cans on your way to the rathaus!
+                          
+                          """;
+                                 break;
+                             }
+
+                             case 6: {
+                                 instructionsText2 = """
+                          You must avoid the security who are asking people
+                          who do not have printed proof of their termin to leave.\s
+                          """;
+                                 break;
+                             }
+                         }
+                  if (clickCount[0] == 1) {
+                      label.setText(instructionsText2);}
                      if (clickCount[0] == 2) {
                          createIntroPanel();
                      }
@@ -424,7 +509,7 @@ public class GameScreen extends InputAdapter implements Screen {
 //           };
 
 
-    } }
+    }
 
 
 //    public void createInstructionPanel1(){
@@ -1227,7 +1312,7 @@ public class GameScreen extends InputAdapter implements Screen {
     // Helper method to calculate segments needed automatically
     private static void drawCircularSector(ShapeRenderer shapeRenderer, Color color, float x, float y, float radius, float angle){
         // the estimation of: "the number of segments", needed for a smooth an arc, provided by LibGDX, just sucks
-        int segments = Math.max(1, (int)((angle / (360.0f/(18 * radius))))); // arc length = 2πr ∝ r
+        int segments = max(1, (int)((angle / (360.0f/(18 * radius))))); // arc length = 2πr ∝ r
         shapeRenderer.set(ShapeRenderer.ShapeType.Filled); // filled by default
         shapeRenderer.setColor(color);
         shapeRenderer.arc(x, y, radius, 90 - angle, angle, segments); // Draw arc clockwise
@@ -1401,16 +1486,16 @@ public class GameScreen extends InputAdapter implements Screen {
             maxZoomTilesCount = (int) max(MIN_ZOOM_TILES_COUNT,  horizontalTilesCount * 1.2);
         // Calculate how many tiles are visible horizontally and vertically based on the current screen dimensions.
         // Math.max is to prevent NaN when the window is minimized
-        float numTilesOnScreenWidth = (float) Math.max(Gdx.graphics.getWidth(), MIN_WINDOW_WIDTH) / TILE_SCREEN_SIZE;
-        float numTilesOnScreenHeight = (float) Math.max(Gdx.graphics.getHeight(), MIN_WINDOW_HEIGHT) / TILE_SCREEN_SIZE;
+        float numTilesOnScreenWidth = (float) max(Gdx.graphics.getWidth(), MIN_WINDOW_WIDTH) / TILE_SCREEN_SIZE;
+        float numTilesOnScreenHeight = (float) max(Gdx.graphics.getHeight(), MIN_WINDOW_HEIGHT) / TILE_SCREEN_SIZE;
 
         // Adjusted for the screen's aspect ratio (16:9 as a reference). (which means 16:9 is the aspect ratio that can see the most tiles)
         // We take the larger dimension (either width or adjusted height) as the constraint.
-        float minZoomLevel = 1.0f * MIN_ZOOM_TILES_COUNT / Math.max(
+        float minZoomLevel = 1.0f * MIN_ZOOM_TILES_COUNT / max(
                 numTilesOnScreenWidth,
                 numTilesOnScreenHeight * 16 / 9 // Adjust height for 16:9 aspect ratio.
         );
-        float maxZoomLevel = 1.0f * maxZoomTilesCount / Math.max(
+        float maxZoomLevel = 1.0f * maxZoomTilesCount / max(
                 numTilesOnScreenWidth,
                 numTilesOnScreenHeight * 16 / 9 // Adjust height for 16:9 aspect ratio.
         );
