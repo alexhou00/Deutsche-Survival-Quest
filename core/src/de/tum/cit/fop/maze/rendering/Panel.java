@@ -21,6 +21,7 @@ import de.tum.cit.fop.maze.MazeRunnerGame;
 import de.tum.cit.fop.maze.game_objects.Player;
 import de.tum.cit.fop.maze.level.LevelManager;
 
+import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.getWorldCoordinateInPixels;
 
 public class Panel extends Actor{
@@ -74,7 +75,7 @@ public class Panel extends Actor{
     }
 
 
-    public void addButton(String buttonText, Skin skin, ChangeListener listener, float padBottom) {
+    public void addButton(String buttonText, Skin skin, ChangeListener listener) {
         skin.get(Label.LabelStyle.class).font.getData().setScale(1); // set the scale back
         TextButton button = new TextButton(buttonText, skin);
         button.addListener(listener);
@@ -104,7 +105,7 @@ public class Panel extends Actor{
         });
 
 
-        table.add(button).padBottom(padBottom).center().row();
+        table.add(button).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padTop(BUTTON_PADDING).center().row();
     }
 
     public void addListener(InputListener listener) {

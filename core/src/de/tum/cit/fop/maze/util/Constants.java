@@ -20,6 +20,10 @@ public class Constants {
     public static int verticalTilesCount = 1; // number of tiles on the height
     public static final int TILE_SCREEN_SIZE = 100;
 
+    public static final float BUTTON_WIDTH = 300f; // Button width
+    public static final float BUTTON_HEIGHT = 67;
+    public static final float BUTTON_PADDING = 10f; // Vertical padding
+
     public static int getWorldWidth() {
         return horizontalTilesCount * TILE_SCREEN_SIZE;
     }

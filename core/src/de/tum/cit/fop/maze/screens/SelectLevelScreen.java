@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static de.tum.cit.fop.maze.util.Constants.TOTAL_LEVELS;
+import static de.tum.cit.fop.maze.util.Constants.*;
 
 public class SelectLevelScreen implements Screen  {
 
@@ -69,7 +69,7 @@ public class SelectLevelScreen implements Screen  {
 
                 }
             });
-            table.add(buttons.get("Level " + i)).padTop(5).row();
+            table.add(buttons.get("Level " + i)).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padTop(BUTTON_PADDING).row();
         }
 
 
