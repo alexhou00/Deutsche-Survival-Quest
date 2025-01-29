@@ -477,9 +477,11 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createPausePanel() {
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
+        //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
+        NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/pause.png"),
+                45+17, 45+17, 45+37, 45+37);
         Panel pausePanel = new Panel(stage1, background, game);
-        pausePanel.setSize(1f, 1f);
+        pausePanel.setSize(0.9f, 0.9f);
 
         pausePanel.addLabel("Game Paused", game.getSkin(), "title", 0.5f, 80);
 
@@ -523,7 +525,9 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createOptionPanel() {
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
+        //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
+        NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
+                86, 86, 98, 98);
         Panel OptionPanel = new Panel(stage1, background, game);
         OptionPanel.setSize(0.8f, 0.6f);
 
@@ -567,7 +571,9 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createVictoryPanel() {
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/victory.png")));
+        //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/victory.png")));
+        NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/victory.png"),
+                50, 50, 50, 50);
         Panel victoryPanel = new Panel(stage1, background, game);
         victoryPanel.setSize(0.8f, 0.6f);
         isPaused = true;
