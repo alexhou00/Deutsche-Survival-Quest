@@ -24,13 +24,13 @@ import static de.tum.cit.fop.maze.util.Constants.*;
 public class SelectLevelScreen implements Screen  {
 
     private final Stage stage;
-    private MazeRunnerGame game;
+    private final MazeRunnerGame game;
     private final Map<String, TextButton> buttons;
-    private Texture backgroundTexture;
+    private final Texture backgroundTexture;
     private MenuScreen menuScreen;
-    private GameScreen gameScreen;
+    private final GameScreen gameScreen;
     private GameOverScreen gameOverScreen;
-    private String previousScreen;
+    private final String previousScreen;
 
     public SelectLevelScreen(MazeRunnerGame game, String previousScreen, GameScreen gameScreen) {
         this.game = game;
@@ -69,7 +69,7 @@ public class SelectLevelScreen implements Screen  {
 
                 }
             });
-            table.add(buttons.get("Level " + i)).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padTop(BUTTON_PADDING).row();
+            table.add(buttons.get("Level " + i)).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
         }
 
 

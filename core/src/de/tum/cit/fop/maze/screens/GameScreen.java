@@ -347,20 +347,20 @@ public class GameScreen extends InputAdapter implements Screen {
         //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
         NinePatchDrawable backgroundDrawable = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
                 86, 86, 98, 98);
-        Panel InstructionPanel = new Panel(stage1, backgroundDrawable, game);
-        InstructionPanel.setSize(0.9f, 0.9f);
+        Panel instructionPanel = new Panel(stage1, backgroundDrawable, game);
+        instructionPanel.setSize(0.9f, 0.9f);
 
         String levelName = levels.getProperties("levelName"); // test
 
-        InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.5f, 80);
-        Label label = getLabelForInstructionsText1();
+        instructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.5f, 80);
+        String instructionsText1 = getInstructionsText1();
 
         Label.LabelStyle instructionsStyle2 = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
 
-        InstructionPanel.addLabel(label,1f,InstructionPanel);
+        Label label = instructionPanel.addLabel(instructionsText1, game.getSkin(), "black" , 1f, 20);
 
         final int[] clickCount = {0};
-        InstructionPanel.addButton("Continue", game.getSkin(), new ChangeListener() {
+        instructionPanel.addButton("Continue", game.getSkin(), new ChangeListener() {
 
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -377,7 +377,7 @@ public class GameScreen extends InputAdapter implements Screen {
             }});
     }
 
-    private Label getLabelForInstructionsText1() {
+    private String getInstructionsText1() {
         String s = switch (game.getGameLevel()) {
             case 1 -> """
                     Welcome TUM student!
@@ -412,7 +412,7 @@ public class GameScreen extends InputAdapter implements Screen {
         };
 
         Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
-        return new Label(s, instructionsStyle);
+        return s;
     }
 
     private String getLabelForInstructionsText2(){
@@ -465,7 +465,7 @@ public class GameScreen extends InputAdapter implements Screen {
         introPanel.setSize(0.9f, 0.9f);
 
         String levelName = levels.getProperties("levelName");
-        introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "title", 0.5f, 80);
+        introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "title", 0.5f, 20);
 
 //        String instructionsText = """
 //                Welcome TUM student!
@@ -483,9 +483,9 @@ public class GameScreen extends InputAdapter implements Screen {
 //        Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
 //        introPanel.addLabel(instructionsText, instructionsStyle, 80);
 
-        introPanel.addLabel("Move using W, A, S, D keys.", game.getSkin(), 1f, 50);
-        introPanel.addLabel("Collect keys to unlock exits.", game.getSkin(), 1f, 50);
-        introPanel.addLabel("Avoid enemies and traps!", game.getSkin(), 1f, 50);
+        introPanel.addLabel("Move using W, A, S, D keys.", game.getSkin(), "black", 1f, 50);
+        introPanel.addLabel("Collect keys to unlock exits.", game.getSkin(), "black", 1f, 50);
+        introPanel.addLabel("Avoid enemies and traps!", game.getSkin(), "black", 1f, 50);
 
         introPanel.addButton("Start now", game.getSkin(), new ChangeListener() {
             @Override
@@ -500,8 +500,7 @@ public class GameScreen extends InputAdapter implements Screen {
             currentTutorialStage = TutorialStage.EXIT_ARROW;
         }));
 
-        Label.LabelStyle continueStyle = new Label.LabelStyle(game.getSkin().get(Label.LabelStyle.class).font, Color.GRAY);
-        introPanel.addLabel("[OR PRESS SPACE BAR TO CONTINUE]", continueStyle, 80);
+        introPanel.addLabel("[OR PRESS SPACE BAR TO SKIP]", game.getSkin(), "black", 1, 80);
     }
 
     public void createPausePanel() {
@@ -633,7 +632,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         if (isTutorial) return;
 
-        victoryPanel.addLabel("[OR PRESS SPACE BAR TO CONTINUE]", game.getSkin(), "default", 1f, 40);
+        victoryPanel.addLabel("[OR PRESS SPACE BAR TO CONTINUE]", game.getSkin(), "black", 1f, 40);
 
         victoryPanel.addListener(ifSpaceKeyPressed(() -> victoryPanel.proceedToNextLevel(game)));
     }

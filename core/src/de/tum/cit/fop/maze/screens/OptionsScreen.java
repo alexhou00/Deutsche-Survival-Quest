@@ -73,8 +73,8 @@ public class OptionsScreen implements Screen {
         table.add(soundSlider).width(300).padBottom(20).row();
 
         // Add buttons (Mute, Back) under the sliders
-        table.add(buttons.get("Mute")).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padTop(BUTTON_PADDING).row();
-        table.add(buttons.get("Back")).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padTop(BUTTON_PADDING).row();
+        table.add(buttons.get("Mute")).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
+        table.add(buttons.get("Back")).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
 
         // Add listener to musicSlider
         musicSlider.addListener(new ChangeListener() {
