@@ -125,6 +125,31 @@ public class Panel extends Actor{
         };
     }
 
+    public static InputListener ifSpaceKeyPressedAndReleased(Runnable action) {
+        return new InputListener() {
+            private boolean isPressed = false;
+
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.SPACE) {
+                    isPressed = true; // Mark as pressed
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean keyUp(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.SPACE && isPressed) {
+                    isPressed = false; // Reset the flag
+                    action.run(); // Run the action only after release
+                    return true;
+                }
+                return false;
+            }
+        };
+    }
+
 
     public void proceedToGame(MazeRunnerGame game, Player player, LevelManager levels) {
         this.getTable().remove(); // Remove the panel and start the game

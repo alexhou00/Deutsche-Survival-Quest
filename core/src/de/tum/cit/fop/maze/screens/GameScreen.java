@@ -34,8 +34,7 @@ import de.tum.cit.fop.maze.util.Position;
 
 import java.util.*;
 
-import static de.tum.cit.fop.maze.rendering.Panel.getNinePatchDrawableFromPath;
-import static de.tum.cit.fop.maze.rendering.Panel.ifSpaceKeyPressed;
+import static de.tum.cit.fop.maze.rendering.Panel.*;
 import static de.tum.cit.fop.maze.tiles.TileType.GROUND;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
@@ -380,9 +379,7 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         }, 20);
 
-       InstructionPanel.addListener(ifSpaceKeyPressed(() -> {
-          createInstructionPanel1();
-        }));
+       InstructionPanel.addListener(ifSpaceKeyPressedAndReleased(this::createInstructionPanel1));
 
 
     } }
@@ -425,7 +422,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 }
             }, 20);
 
-            InstructionPanel.addListener(ifSpaceKeyPressed(() -> {
+            InstructionPanel.addListener(ifSpaceKeyPressedAndReleased(() -> {
                 createIntroPanel();
             }));
 
@@ -433,6 +430,7 @@ public class GameScreen extends InputAdapter implements Screen {
         } }
 
     public void createIntroPanel(){
+        // TODO: KEEP THIS METHOD AND DELETE THE OTHER TWO
         NinePatchDrawable backgroundDrawable = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
                 86, 86, 98, 98);
         Panel introPanel = new Panel(stage1, backgroundDrawable, game);
@@ -469,7 +467,7 @@ public class GameScreen extends InputAdapter implements Screen {
             }
         }, 20);
 
-        introPanel.addListener(ifSpaceKeyPressed(() -> {
+        introPanel.addListener(ifSpaceKeyPressedAndReleased(() -> {
             introPanel.proceedToGame(game, player, levels);
             currentTutorialStage = TutorialStage.EXIT_ARROW;
         }));
@@ -601,7 +599,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         victoryPanel.addLabel("[OR PRESS SPACE BAR TO CONTINUE]", game.getSkin(), "default", 1f, 40);
 
-        victoryPanel.addListener(ifSpaceKeyPressed(() -> victoryPanel.proceedToNextLevel(game)));
+        victoryPanel.addListener(ifSpaceKeyPressedAndReleased(() -> victoryPanel.proceedToNextLevel(game)));
     }
 
     /**
