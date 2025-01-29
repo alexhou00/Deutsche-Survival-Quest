@@ -25,16 +25,16 @@ public class OptionsScreen implements Screen {
     private final Stage stage;
     private final MazeRunnerGame game;
     private final Map<String, TextButton> buttons;
-    private Texture backgroundTexture;
-    private Skin skin;
+    private final Texture backgroundTexture;
+    private final Skin skin;
     private MenuScreen menuScreen;
     private GameScreen gameScreen;
     private GameOverScreen gameOverScreen;
     private OptionsScreen optionsScreen;
 
     // Sliders for music and sound
-    private Slider musicSlider;
-    private Slider soundSlider;
+    private final Slider musicSlider;
+    private final Slider soundSlider;
 
     public OptionsScreen(MazeRunnerGame game) {
         this.game = game;
@@ -52,7 +52,7 @@ public class OptionsScreen implements Screen {
 
         buttons = new HashMap<>();
         buttons.put("Volume", new TextButton("Volume", skin));
-        buttons.put("Mute", new TextButton("Mute / Unmute", skin));
+        buttons.put("Mute", new TextButton("Mute", skin));
         buttons.put("Back", new TextButton("Back", skin));
 
         // Add header label
@@ -100,6 +100,7 @@ public class OptionsScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 boolean isMuted = !game.isMuted();
                 game.muteAll(isMuted);
+                buttons.get("Mute").setText((isMuted) ? "Unmute" : "Mute");
                 Gdx.app.log("OptionsScreen", "Mute toggled");
             }
         });
