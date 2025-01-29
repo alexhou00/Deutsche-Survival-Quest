@@ -51,7 +51,6 @@ public class ChasingEnemy extends Character {
     protected final int enemyIndex;
 
     protected float speakingElapsedTime; // Tracks time for the speech bubble's state
-    //private boolean isSpeakingActive; // Indicates if the speaking is active
     protected int speechTextIndex;
     public final float SPEAKING_ACTIVE_DURATION = MathUtils.random(3f, 5f); // Duration for which the portal is active
     protected final float SPEAKING_CYCLE_DURATION = MathUtils.random(10f, 30f); // Total duration of a cycle (inactive + active)
@@ -80,14 +79,10 @@ public class ChasingEnemy extends Character {
         this.detectionRadius = 400f; // Default detection radius
         this.isChasing = false;
         this.randomMoveCooldown = RANDOM_MOVE_TIME;
-        //this.randomTargetX = x; // Initial random target position
-        //this.randomTargetY = y;
-        //this.player = player;
         this.enemyIndex = enemyIndex;
 
         this.speakingElapsedTime = 0;
 
-        // Load the enemy's texture
         this.enemyTexture = textureRegion; // Texture("mobs.png"); // Make sure the path matches your assets folder
         this.alertSymbolTexture = new TextureRegion(new Texture(Gdx.files.internal("original/objects.png")), 32, 130, 13, 12);
         this.game = game;
@@ -119,7 +114,6 @@ public class ChasingEnemy extends Character {
         if (game.getGameScreen() != null && game.getGameScreen().isTutorial())
             ENEMY_BASE_SPEED = 100;
 
-        // rectangle.set();
         // Check if the player is within the detection radius
         if (isPlayerWithinDetectionRadius(player, detectionRadius) && damageTimes < MAX_DAMAGE_TIMES) {
             // If the player is within the detection radius, chase the player
@@ -131,11 +125,11 @@ public class ChasingEnemy extends Character {
                 else{
                     game.getWarningMusic().play();
                 }
-
             }
+
             isChasing = true;
             chase(player, delta); // Call the chase method
-            //Gdx.app.log("Enemy", "Chasing the player");
+
         } else {
             // If the player is outside the detection radius, move randomly
             if (!isPlayerWithinDetectionRadius(player, detectionRadius)) // if player isn't close enough anymore
@@ -183,9 +177,6 @@ public class ChasingEnemy extends Character {
             damageCooldown = DAMAGE_COOLDOWN_TIME; // Reset the cooldown
             damageTimes++;
             System.out.println("Attack! The enemy touched the player! Player loses 1 life.");
-            //System.out.println("this.hitbox: " + this.getHitbox());
-            //System.out.println("player.hitbox: " + player.getHitbox());
-            //stepBack(player);
         }
     }
 
@@ -204,7 +195,6 @@ public class ChasingEnemy extends Character {
         float dx = player.getX() - x;
         float dy = player.getY() - y;
         float distanceSquared = dx * dx + dy * dy;
-        //Gdx.app.log("enemy", "detect radius; distance Squared: " + distanceSquared);
         return distanceSquared <= radius * radius;
     }
 
@@ -228,6 +218,20 @@ public class ChasingEnemy extends Character {
 
     }
 
+    /**
+     * Handles the cooldown period for the enemy after taking damage. During the cooldown,
+     * the enemy either moves away from the player or faces the player, depending on the
+     * remaining cooldown time.
+     *
+     * If the cooldown time is greater than half the cooldown duration, the enemy temporarily
+     * moves away from the player. If the cooldown is still active but less than half the time,
+     * the enemy faces the player without moving.
+     *
+     * @param player The player object, used to determine the relative position for movement.
+     * @param delta The time in seconds since the last frame, used for movement calculations.
+     * @return True if the enemy has completed its action during the cooldown (either moving or facing the player).
+     *         False if the enemy is still chasing the player and should continue processing.
+     */
     protected boolean handleCooldown(Player player, float delta) {
         if (damageCooldown > DAMAGE_COOLDOWN_TIME * (1 - 1 / 2f)) { // leave for a while (1/2 of the cooldown time)
             // Move away temporarily
@@ -292,6 +296,20 @@ public class ChasingEnemy extends Character {
         setDirection();
     }
 
+    /**
+     * Sets the direction of the character based on its velocity (velX, velY).
+     * The method updates the previous direction based on the relative magnitudes
+     * of the X and Y velocities. It determines the primary direction (horizontal or vertical)
+     * and updates the `previousDirection` accordingly. Additionally, it stores the current
+     * velocities in `previousVelX` and `previousVelY` for reference.
+     *
+     * The method checks which velocity (X or Y) is greater in absolute value:
+     * - If the X velocity is greater, it sets the direction to either `right` or `left` depending on the sign of `velX`.
+     * - If the Y velocity is greater, it sets the direction to either `up` or `down` depending on the sign of `velY`.
+     *
+     * The `previousDirection` reflects the last movement direction, while `previousVelX` and `previousVelY`
+     * store the last known velocities.
+     */
     public void setDirection(){
         if (abs(velX) > abs(velY)){
             previousDirection = (velX > 0) ? Direction.right : Direction.left;
@@ -310,10 +328,6 @@ public class ChasingEnemy extends Character {
      */
     @Override
     protected boolean canMoveTo(float x, float y){
-        /*if (MathUtils.clamp(x, hitboxWidthOnScreen / 2 + 1 , getWorldWidth() - hitboxWidthOnScreen / 2) - 1 != x ||
-                MathUtils.clamp(y, hitboxHeightOnScreen / 2 + 1, getWorldHeight() - hitboxHeightOnScreen / 2 - 1) != y){
-            return false;
-        }*/
         if (isTouchingTraps()) return false;
 
         if (isTouchingOtherEnemies()) return false;
@@ -333,7 +347,6 @@ public class ChasingEnemy extends Character {
         Array<Trap> traps = levels.traps;
 
         // Check for collision with traps
-
         for (Trap trap : iterate(traps)) {
             if (trap.isTouching(this)) {
                 System.out.println("A chasing enemy has hit a trap :O00");
@@ -390,6 +403,17 @@ public class ChasingEnemy extends Character {
         return false;
     }
 
+    /**
+     * Checks if the current enemy is touching any other enemy in the game.
+     * It iterates over all the chasing enemies and checks if the current enemy
+     * is in contact with another enemy, excluding itself. If a collision is detected,
+     * the method logs the event and returns `true`. If no collisions are found, it returns `false`.
+     *
+     * This method is used to determine if the enemy is in close proximity or overlapping
+     * with any other chasing enemies, which may affect the game's behavior (e.g., movement, interactions).
+     *
+     * @return True if the current enemy is touching another enemy, otherwise false.
+     */
     protected boolean isTouchingOtherEnemies(){
         for (ChasingEnemy enemy : iterate(levels.chasingEnemies)) {
             if (!enemy.equals(this) && enemy.isTouching(this)) {
@@ -452,15 +476,6 @@ public class ChasingEnemy extends Character {
         return previousDirection;
     }
 
-    //TODO decide on do we need this
-    protected boolean isTouchingTrap() {
-        for (Trap trap : iterate(levels.traps)) {
-            if (trap.isTouching(this)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * Method to get the player instance (should be implemented to return a reference to the player).
@@ -479,12 +494,36 @@ public class ChasingEnemy extends Character {
         if (alertTime>0 && isChasing) batch.draw(alertSymbolTexture, x - 13 * 2, y + heightOnScreen / 1.5f, 13 * 4, 12 * 4);
     }
 
+    /**
+     * Handles the bounce-back behavior of the enemy when a collision occurs.
+     * The method adjusts the velocity in both the X and Y directions by calling
+     * the `bounceVelocity` method. This simulates the enemy being "bounced back"
+     * from the collision, typically reversing its direction or reducing its speed
+     * depending on the implementation of `bounceVelocity`.
+     *
+     * This method is typically used when the enemy collides with an obstacle or another object,
+     * and needs to move away or change direction in response to the collision.
+     *
+     * @param source The object that caused the collision, which may influence the bounce behavior.
+     */
     @Override
     public void bounceBack(GameObject source){
         velX = bounceVelocity(velX);
         velY = bounceVelocity(velY);
     }
 
+    /**
+     * Makes the enemy face the player based on their relative position.
+     * The method calculates the direction vector between the enemy and the player,
+     * determining which axis (horizontal or vertical) has the largest difference in position.
+     * Based on this, the enemy's previous direction is updated to face the player.
+     *
+     * If the player is not assigned (`null`), the method returns immediately without doing anything.
+     *
+     * This method is used to adjust the enemy's facing direction to better align with the player’s position.
+     *
+     * @see Direction for available directions (right, left, up, down)
+     */
     protected void faceThePlayer(){
         if (player == null) {
             return; // No player to face
@@ -506,6 +545,19 @@ public class ChasingEnemy extends Character {
         }
     }
 
+    /**
+     * Updates the speaking state of the enemy based on the elapsed time.
+     *
+     * This method increments the `speakingElapsedTime` by the delta time, and once it exceeds
+     * the speaking cycle duration, it resets the timer and selects a new speech string from a list
+     * of available options. The speech string is randomly selected from a set of predefined text
+     * associated with the enemy. If there is no text available, the enemy is marked as unable to speak.
+     *
+     * This method also manages the flag `canSpeak`, which indicates whether the enemy is currently
+     * allowed to speak based on the elapsed time and whether the selected speech text is empty.
+     *
+     * @param delta The time elapsed since the last frame, used to increment `speakingElapsedTime`.
+     */
     protected void updateSpeakingTime(float delta){
         speakingElapsedTime += delta;
         boolean emptyString = true;
@@ -524,8 +576,6 @@ public class ChasingEnemy extends Character {
 
     public String getSpeechText(){ // {levels.getProperties("speechEnemy" + getEnemyIndex() + 1), };
         String[] textToSelect = levels.getProperties("speechEnemy" + (getEnemyIndex() + 1)).split("\\|");
-        //int rnd = new Random().nextInt(textToSelect.length);
-        //System.out.println(rnd + " " + Arrays.toString(textToSelect));
         return textToSelect[speechTextIndex];
     }
 
