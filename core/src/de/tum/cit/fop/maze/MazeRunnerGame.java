@@ -18,6 +18,8 @@ import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 import java.util.HashMap;
 import java.util.Map;
 
+import static de.tum.cit.fop.maze.util.Constants.TOTAL_LEVELS;
+
 /**
  * The MazeRunnerGame class represents the core of the Maze Runner game.
  * It manages the screens and global resources like SpriteBatch and Skin.
@@ -565,9 +567,8 @@ public class MazeRunnerGame extends Game {
             //Gdx.app.log("MazeRunnerGame", "Player is at the exit and has the key.");
             player.hasReachedExit = true;
 
-            if (gameLevel == 6) {
+            if (gameLevel == TOTAL_LEVELS) {
                 goToVictoryScreen();
-
             }
 
             if (!gameScreen.isPaused()) {

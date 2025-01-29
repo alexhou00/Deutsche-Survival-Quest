@@ -41,8 +41,8 @@ public class VictoryScreen implements Screen {
         table.add(title).padBottom(80).row();
 
         Map<String, TextButton> buttons = new LinkedHashMap<>();
-        buttons.put("menuButton", new TextButton("Menu", game.getSkin()));
-        buttons.put("exitGame", new TextButton("Exit Game", game.getSkin()));
+        buttons.put("goToMenuButton", new TextButton("Menu", game.getSkin()));
+        buttons.put("exitGameButton", new TextButton("Exit Game", game.getSkin()));
 
         Gdx.app.log("VictoryScreen","VictoryScreen is created.");
 
