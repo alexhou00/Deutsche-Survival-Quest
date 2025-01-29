@@ -71,8 +71,6 @@ public class MazeRunnerGame extends Game {
     private float volume = 1.0f; // Default volume
     private boolean muted = false;
 
-    long keyCollectSoundId, hurtSoundId, runningSoundId, teleportSoundId;
-
     private final Map<String, Sound> sounds = new HashMap<>();
     private final Map<String, Long> soundIds = new HashMap<>();
 
@@ -100,7 +98,6 @@ public class MazeRunnerGame extends Game {
         skinCraft = new Skin(Gdx.files.internal("new-skin/craft-f-ui.json")); //new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         skinPlain = new Skin(Gdx.files.internal("plain-james/skin/plain-james-ui.json"));
         this.loadAnimation(); // Load character animation
-        
 
         backgroundTexture = new Texture("backgrounds/background.png");
 
@@ -109,9 +106,6 @@ public class MazeRunnerGame extends Game {
 
         soundManager = new SoundManager();
 
-        // Play some background music
-        // Background sound
-        //CHANGE BACKGROUND MUSIC
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("music/Bruno_Belotti_-_Nel_giardino_dello_Zar__Polka_Loop.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.setVolume(0.5f);
@@ -155,36 +149,28 @@ public class MazeRunnerGame extends Game {
         soundManager.addSoundEffect("hurt", Gdx.audio.newSound(Gdx.files.internal("sounds/01._damage_grunt_male.wav")));
         soundManager.addSoundEffect("teleport", Gdx.audio.newSound(Gdx.files.internal("sounds/teleport.wav")));
 
-        // Play all sounds and store their IDs
-        for (Map.Entry<String, Sound> entry : sounds.entrySet()) {
-            long soundId = entry.getValue().play(); // Play the sound
-            soundIds.put(entry.getKey(), soundId);  // Store the sound ID
-        }
-
         // Set the initial volume (e.g., 50%)
         float initialVolume = 0.5f;
         for (Map.Entry<String, Long> entry : soundIds.entrySet()) {
             sounds.get(entry.getKey()).setVolume(entry.getValue(), initialVolume); // Set volume for each sound
         }
 
-
         goToMenu(); // Navigate to the menu screen
         setVolume(volume);
-    }
-
-    public void adjustVolume(float newVolume) {
-        soundManager.setVolume(newVolume);
-    }
-
-    // Mute/unmute sound effects
-    public void toggleMute() {
-        soundManager.muteAll(!soundManager.isMuted()); // Toggle mute state
     }
 
     public SoundManager getSoundManager(){
         return soundManager;
     }
 
+    /**
+     * Sets the volume for all music tracks in the game.
+     * This method updates the volume for each music track in the music list
+     * by iterating through all music items and applying the given volume value.
+     *
+     * @param volume The desired volume level to set for all music tracks.
+     *               Should be a value between 0.0 (muted) and 1.0 (full volume).
+     */
     public void setVolume(float volume) {
         this.volume = volume;
 
@@ -192,46 +178,34 @@ public class MazeRunnerGame extends Game {
         for (Music music : musicList) {
             music.setVolume(volume);
         }
-
-        // Set volume for all sound effects
-        for (Map.Entry<String, Long> entry : soundIds.entrySet()) {
-            sounds.get(entry.getKey()).setVolume(entry.getValue(), volume);
-        }
     }
 
-
-    // Method to set volume for sound effects
-    public void setSoundEffectVolume(float volume) {
-        for (Map.Entry<String, Long> entry : soundIds.entrySet()) {
-            sounds.get(entry.getKey()).setVolume(entry.getValue(), volume);  // Adjust sound effect volume
-        }
-    }
-
-
-    public void selectLevel() {
-
-    }
-
+    /**
+     * Exits the game and terminates the application.
+     * This method first calls the LibGDX method to close the application,
+     * and then forces a termination of the Java process with {@link System#exit(int)}.
+     * The exit code -1 is used to indicate an abnormal termination.
+     *
+     * @see System#exit(int)
+     */
     public void exitGame(){
         Gdx.app.exit();
         System.exit(-1);
     }
 
-    /*public void setVolume(float volume) {
-        this.volume = volume;
-
-        for (Music music : musicList) {
-            music.setVolume(volume);
-        }
-    }*/
-
-    public long playSound(Sound sound) {
-        long soundId = sound.play(); // Set volume based on mute state
-        playingSoundIds.add(soundId); // Add soundId to the tracking list
-        return soundId; // Return the sound ID for tracking
-    }
-
-
+    /**
+     * Mutes or unmutes all game music.
+     *
+     * This method sets the volume of all music tracks to 0 (mute) or restores the original volume
+     * based on the provided {@code mute} parameter. The volume is adjusted for each music track in
+     * {@link #musicList} accordingly.
+     *
+     * @param mute A boolean indicating whether to mute or unmute the music:
+     *             - {@code true} will mute the music (set volume to 0.0f).
+     *             - {@code false} will restore the music to the original volume.
+     *
+     * @see Music#setVolume(float)
+     */
     public void muteAll(boolean mute) {
         this.muted = mute;
 
@@ -243,14 +217,31 @@ public class MazeRunnerGame extends Game {
         }
     }
 
+    /**
+     * Retrieves the current volume level.
+     *
+     * This method returns the volume level of the game music. If the music is muted, it returns 0.
+     * Otherwise, it returns the original volume level.
+     *
+     * @return The current volume level:
+     *         - 0 if the music is muted.
+     *         - The {@link #volume} value if the music is not muted.
+     */
     public float getVolume() {
         return muted ? 0 : volume;
     }
 
+    /**
+     * Checks whether the music is muted.
+     *
+     * This method returns the mute status of the game music. It returns `true` if the music is muted,
+     * and `false` if it is not muted.
+     *
+     * @return {@code true} if the music is muted, {@code false} if the music is not muted.
+     */
     public boolean isMuted() {
         return muted;
     }
-
 
 
     /**
@@ -278,41 +269,10 @@ public class MazeRunnerGame extends Game {
         }
     }
 
-    // Increase the volume by 0.1 for all music and sounds
-    public void increaseVolume() {
-        if (!muted) {
-            volume = Math.min(1.0f, volume + 0.1f); // Increase volume, clamp to max 1.0
-            updateVolumes(); // Apply the new volume to all music and sound effects
-        }
-    }
-
-    // Decrease the volume by 0.1 for all music and sounds
-    public void decreaseVolume() {
-        if (!muted) {
-            volume = Math.max(0.0f, volume - 0.1f); // Decrease volume, clamp to min 0.0
-            updateVolumes(); // Apply the new volume to all music and sound effects
-        }
-    }
-
-    // Update the volume of all music and sound effects
-    private void updateVolumes() {
-        // Apply volume to all music tracks
-        for (Music music : musicList) {
-            music.setVolume(volume); // Set volume for each music
-        }
-
-        // Apply volume to all sound effects
-        for (Sound sound : soundList) {
-           //muteall sound.setVolume(soundEffectHurt, 0.1f); // Set volume for each sound effect
-        }
-    }
-
     /**
      * Switches to the game screen.
      */
     public void goToGame(boolean tutorial) {
-        // this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
-
         if (!tutorial)
             gameLevel = (getGameLevel() == 0) ? 1 : getGameLevel();
         else
@@ -338,10 +298,28 @@ public class MazeRunnerGame extends Game {
         }
     }
 
+    /**
+     * Navigates to the main game screen.
+     * <p>
+     * This method is called when the player selects to start or resume the main game. It calls {@link #goToGame(boolean)}
+     * with the argument set to false, which indicates that the player is not entering the tutorial mode but the actual game.
+     * </p>
+     */
     public void goToGame(){
         goToGame(false);
     }
 
+    /**
+     * Navigates to the Game Over Screen and disposes of the current game and menu screens.
+     * <p>
+     * This method transitions to the {@link GameOverScreen} and ensures that the necessary resources are properly disposed
+     * of. It pauses the background music and pause music, then plays the game-over music. If any screens like the
+     * {@link GameScreen} or {@link MenuScreen} exist, they are disposed of to free up memory.
+     * </p>
+     * <p>
+     * Any exceptions encountered during the screen transition are caught and logged.
+     * </p>
+     */
     public void goToGameOverScreen() {
         Gdx.app.log("MazeRunner", "Navigating to Game Over Screen...");
 
@@ -375,6 +353,14 @@ public class MazeRunnerGame extends Game {
         }
     }
 
+    /**
+     * Navigates to the Victory Screen and disposes of the current game and menu screens.
+     * <p>
+     * This method handles the transition to the victory screen by setting the current screen to the {@link VictoryScreen}.
+     * It also disposes of the current {@link GameScreen}, {@link MenuScreen}, and {@link GameOverScreen}, if they exist,
+     * to free up resources and prevent memory leaks. Additionally, it pauses all music tracks.
+     * </p>
+     */
     public void goToVictoryScreen() {
         Gdx.app.log("MazeRunner", "Navigating to Victory Screen...");
 
@@ -414,7 +400,6 @@ public class MazeRunnerGame extends Game {
         int playerFrameHeight = 32;
 
         characterIdleRegion = new TextureRegion(walkSheet, 0, 0, playerFrameWidth, playerFrameHeight);
-        //createAnimation(walkSheet, 0.1f, 0, 0, playerFrameWidth, playerFrameHeight, 1, playerFrameWidth);
 
         characterAnimations = createDirectionalAnimations(walkSheet, false, 0.1f, 0, playerFrameWidth, playerFrameHeight, 4);
 
@@ -426,14 +411,8 @@ public class MazeRunnerGame extends Game {
         gesundheitskarteRegion = new TextureRegion(objectSheet, 224, 96, 32, 32);
     }
 
-
-
     public Music getBackgroundMusic() {
         return backgroundMusic;
-    }
-
-    public void setBackgroundMusic(Music backgroundMusic) {
-        this.backgroundMusic = backgroundMusic;
     }
 
     /**
@@ -457,33 +436,25 @@ public class MazeRunnerGame extends Game {
         }
     }
 
+    /**
+     * Mutes the background music by setting its volume to 0.
+     * This method is typically used to silence the background music in the game.
+     */
     public void muteBGM(){
         backgroundMusic.setVolume(0);
     }
+
+    /**
+     * Mutes the background music by setting its volume to 0.
+     * This method is typically used to silence the background music in the game.
+     */
     public void normalizeBGM(){
         backgroundMusic.setVolume(1f);
-    }
-
-    public enum skinType{
-        CRAFTACULAR,
-        PLAIN_JAMES
     }
 
     // Getter methods
     public Skin getSkin() {
         return skinCraft; // default skin
-    }
-
-    public Skin getSkin(skinType type) {
-        switch (type) {
-            case PLAIN_JAMES -> {
-                return skinPlain;
-            }
-            case CRAFTACULAR -> {
-                return skinCraft;
-            }
-        }
-        return null;
     }
 
     public Animation<TextureRegion> getCharacterDownAnimation() {
@@ -524,10 +495,6 @@ public class MazeRunnerGame extends Game {
 
     public Animation<TextureRegion> getPortalAnimation() { return portalAnimation; }
 
-    public Texture getBackgroundTexture() {
-        return backgroundTexture;
-    }
-
     public TextureRegion getGesundheitskarteRegion() {
         return gesundheitskarteRegion;
     }
@@ -536,32 +503,8 @@ public class MazeRunnerGame extends Game {
         return spriteBatch;
     }
 
-
-    /*public boolean isMuted() {
-        return isMuted;
-    }
-
-    public void setMuted(boolean muted) {
-        isMuted = muted;
-    }*/
     public GameScreen getGameScreen() {
         return gameScreen;
-    }
-
-    public MenuScreen getMenuScreen() {
-        return menuScreen;
-    }
-
-    public GameOverScreen getGameOverScreen() {
-        return gameOverScreen;
-    }
-
-    public Music getGameOverMusic() {
-        return gameOverMusic;
-    }
-
-    public Music getVictoryMusic() {
-        return victoryMusic;
     }
 
     public Sound getSoundEffectKey() {
@@ -576,9 +519,6 @@ public class MazeRunnerGame extends Game {
         return pauseMusic;
     }
 
-    public Music getMenuMusic() {
-        return menuMusic;
-    }
 
     public Music getVictorySoundEffect() {
         return victorySoundEffect;
@@ -600,10 +540,16 @@ public class MazeRunnerGame extends Game {
         return soundEffectPanting;
     }
 
-    public SelectLevelScreen getSelectLevelScreen() {
-        return new SelectLevelScreen(this, "Previous Screen", gameScreen);
-    }
-
+    /**
+     * Checks if the player has reached the exit and if the key has been collected.
+     *
+     * This method is called to verify if the player has reached the exit tile and
+     * possesses the key. If both conditions are met, the level is considered
+     * complete, and depending on whether it's the last level or not, the game either
+     * proceeds to the victory screen or pauses to show the victory panel.
+     *
+     * @param player The player object that is being checked for exit conditions.
+     */
     public void checkExitToNextLevel(Player player) {
         if (player.isCenterTouchingTile(Exit.class) &&
                 gameScreen != null && gameScreen.getKey().isCollected()){
@@ -626,6 +572,16 @@ public class MazeRunnerGame extends Game {
         }
     }
 
+    /**
+     * Starts the next level of the game by transitioning to a new game screen.
+     *
+     * This method is responsible for transitioning from the current level to the next
+     * by disposing of the current game screen, creating a new one, and resetting
+     * necessary states (such as the key collection status). It also ensures that the
+     * game is not paused for the new level.
+     *
+     * @see GameScreen The screen displayed during gameplay.
+     */
     public void startNextLevel() {
         Gdx.app.log("MazeRunnerGame", "Starting next level: " + (gameLevel));
 
@@ -645,31 +601,25 @@ public class MazeRunnerGame extends Game {
         gameScreen.setPaused(false);
     }
 
-    /*public void toggleMute() {
-        // Toggle mute
-        isMuted = !isMuted;
-        if (isMuted) {
-            setVolume(0f); // Mute the volume
-        } else {
-            setVolume(volume); // Restore previous volume
-        }
-    }
-
-    /public void setVolume(float newVolume) {
-        // Set the volume for the game (you can adjust music, sound, etc.)
-        if (newVolume == 0f) {
-            //volume = newVolume;
-        }
-
-        for (Music music : allMusicObjects) {
-            music.setVolume(newVolume);
-        }
-
-        for (Sound sound : allSoundObjects) {
-            sound.setVolume(newVolume);
-        }
-    }*/
-
+    /**
+     * Creates directional animations from a sprite sheet for a character or object.
+     * The sprite sheet is assumed to have frames laid out either in a single row
+     * (if `inOneRow` is true) or with each direction in separate rows (if `inOneRow` is false).
+     * The method extracts the appropriate texture regions, builds animations for
+     * each direction (down, up, left, right), and returns a map of animations.
+     *
+     * @param spriteSheet The texture containing all the sprite frames.
+     * @param inOneRow A boolean indicating whether all frames are on the same row
+     *                 (true) or each direction has its own row (false).
+     * @param frameDuration The duration of each frame in the animation.
+     * @param startY The Y offset on the sprite sheet where the frames begin.
+     * @param frameWidth The width of each frame in the sprite sheet.
+     * @param frameHeight The height of each frame in the sprite sheet.
+     * @param totalFrames The total number of frames for each direction.
+     *
+     * @return A map where the key is a direction ("down", "up", "left", "right")
+     *         and the value is the corresponding animation for that direction.
+     */
     public static Map<String, Animation<TextureRegion>> createDirectionalAnimations(
             Texture spriteSheet,
             boolean inOneRow, // are all the frames on the same row? Or is one row for one direction
@@ -714,6 +664,23 @@ public class MazeRunnerGame extends Game {
         return animations;
     }
 
+    /**
+     * Creates an animation from a sequence of frames on a sprite sheet.
+     * The frames are extracted based on the given parameters such as the starting
+     * position on the sheet, frame dimensions, and the number of frames to extract.
+     *
+     * @param sheet The texture containing the sprite sheet with all frames.
+     * @param frameDuration The duration each frame is displayed in the animation.
+     * @param startX The X offset on the sprite sheet where the frames begin.
+     * @param startY The Y offset on the sprite sheet where the frames begin.
+     * @param frameWidth The width of each frame in the sprite sheet.
+     * @param frameHeight The height of each frame in the sprite sheet.
+     * @param frameCount The total number of frames to be included in the animation.
+     * @param xIncrement The horizontal increment (in pixels) between each frame on the sprite sheet.
+     *
+     * @return An `Animation<TextureRegion>` object that represents the animation
+     *         created from the specified frames.
+     */
     public static Animation<TextureRegion> createAnimation(
             Texture sheet,
             float frameDuration,
