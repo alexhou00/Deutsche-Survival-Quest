@@ -61,11 +61,12 @@ public class Panel extends Actor{
         table.add(label).padBottom(padBottom).center().row();
     }
 
-    public void addLabel(String text, Skin skin, String styleName, float scale, float padBottom) {
+    public Label addLabel(String text, Skin skin, String styleName, float scale, float padBottom) {
         Label label = new Label(text, skin, styleName);
         label.getStyle().font.getData().setScale(scale);
         table.add(label).padBottom(padBottom).center().row();
-       label.setAlignment(Align.top);
+        label.setAlignment(Align.top);
+        return label;
     }
 
     public void addLabel (Label label, Float padBottom, Panel panel){
@@ -105,7 +106,7 @@ public class Panel extends Actor{
         });
 
 
-        table.add(button).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padTop(BUTTON_PADDING).center().row();
+        table.add(button).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).center().row();
     }
 
     public void addListener(InputListener listener) {
@@ -181,8 +182,8 @@ public class Panel extends Actor{
         table.add(muteCheckbox).padBottom(20).center().row();
     }
 
-    public void addSlider(String labelText, float minValue, float maxValue, float currentValue, float stepSize, Skin skin, ChangeListener listener) {
-        Label label = new Label(labelText, skin);
+    public void addSlider(String labelText, float minValue, float maxValue, float currentValue, float stepSize, Skin skin, String styleName, ChangeListener listener) {
+        Label label = new Label(labelText, skin, styleName);
         table.add(label).padBottom(20).center().row();
 
         Slider slider = new Slider(minValue, maxValue, stepSize, false, skin);

@@ -58,23 +58,23 @@ public class OptionsScreen implements Screen {
         buttons.put("Back", new TextButton("Back", skin));
 
         // Add header label
-        table.add(new Label("Options", skin, "title")).padBottom(80).row();
+        table.add(new Label("Options", skin, "fraktur")).padBottom(80).row();
 
         // Volume Slider for Music
-        musicSlider = new Slider(0f, 2f, 0.1f, false, skin);
+        musicSlider = new Slider(0f, 1f, 0.05f, false, skin);
         musicSlider.setValue(game.getVolume());
-        table.add(new Label("Music Volume", skin)).padBottom(10).row();
+        table.add(new Label("Music Volume", skin, "black")).padBottom(10).row();
         table.add(musicSlider).width(300).padBottom(20).row();
 
         // Volume Slider for Sound Effects
-        soundSlider = new Slider(0f, 2f, 0.1f, false, skin);
+        soundSlider = new Slider(0f, 1f, 0.05f, false, skin);
         soundSlider.setValue(game.getVolume());
-        table.add(new Label("Sound Effects Volume", skin)).padBottom(10).row();
+        table.add(new Label("Sound Effects Volume", skin, "black")).padBottom(10).row();
         table.add(soundSlider).width(300).padBottom(20).row();
 
         // Add buttons (Mute, Back) under the sliders
-        table.add(buttons.get("Mute")).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padTop(BUTTON_PADDING).row();
-        table.add(buttons.get("Back")).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padTop(BUTTON_PADDING).row();
+        table.add(buttons.get("Mute")).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
+        table.add(buttons.get("Back")).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
 
         // Add listener to musicSlider
         musicSlider.addListener(new ChangeListener() {

@@ -253,8 +253,6 @@ public class MazeRunnerGame extends Game {
 
 
 
-
-
     /**
      * Switches to the menu screen.
      */
