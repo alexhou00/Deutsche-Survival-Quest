@@ -34,6 +34,7 @@ import de.tum.cit.fop.maze.util.Position;
 import javax.swing.event.ChangeEvent;
 import java.util.*;
 
+import static com.badlogic.gdx.scenes.scene2d.ui.Table.Debug.actor;
 import static de.tum.cit.fop.maze.rendering.Panel.ifSpaceKeyPressed;
 import static de.tum.cit.fop.maze.tiles.TileType.GROUND;
 import static de.tum.cit.fop.maze.util.Constants.*;
@@ -369,32 +370,10 @@ public class GameScreen extends InputAdapter implements Screen {
 //        label.setWrap(true);
 //        label.setAlignment(Align.center);
 //        label.setWidth(InstructionPanel.getWidth());
-        InstructionPanel.addLabel(label,0.8f,InstructionPanel);
-
-        InstructionPanel.addButton("Continue", game.getSkin(), new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                createInstructionPanel1();
-            }
-        }, 20);
-
-       InstructionPanel.addListener(ifSpaceKeyPressed(() -> {
-          createInstructionPanel1();
-        }));
 
 
-    } }
 
-
-    public void createInstructionPanel1(){
-        if (game.getGameLevel() ==1 )  {Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
-            Panel InstructionPanel = new Panel(stage1, background, game);
-            InstructionPanel.setSize(0.9f, 0.9f);
-
-            String levelName = levels.getProperties("levelName");
-            InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.5f, 80);
-
-            String instructionsText = """
+          String instructionsText2 = """
                 
                 During your journey, unfortunately,
                 not everything will be as easy...
@@ -407,27 +386,88 @@ public class GameScreen extends InputAdapter implements Screen {
                 
                 [Press any key to continue with level 1 instructions]""";
 
-            Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
+          Label.LabelStyle instructionsStyle2 = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
 //            InstructionPanel.addLabel(instructionsText, instructionsStyle, 80);
-            Label label = new Label(instructionsText, instructionsStyle);
-            InstructionPanel.addLabel(label, 0.8f,InstructionPanel);
+
+
+          InstructionPanel.addLabel(label,1f,InstructionPanel);
+
+          final int[] clickCount = {0};
+          InstructionPanel.addButton("Continue", game.getSkin(), new ChangeListener() {
+
+              @Override
+              public void changed(ChangeEvent event, Actor actor) {
+                  clickCount[0]++;
+                     if (clickCount[0] == 1) {
+                         label.setText(instructionsText2);
+                     }
+                     if (clickCount[0] == 2) {
+                         createIntroPanel();
+                     }
 
 
 
-
-            InstructionPanel.addButton("Continue", game.getSkin(), new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    createIntroPanel();
-                }
-            }, 20);
-
-            InstructionPanel.addListener(ifSpaceKeyPressed(() -> {
-                createIntroPanel();
-            }));
+              }
+          }, 20);
 
 
-        } }
+
+//       InstructionPanel.addListener(ifSpaceKeyPressed(() -> {
+////         label.remove();
+////         InstructionPanel.addLabel(label2, 0.8f,InstructionPanel);
+//                 Label label2;
+//               if(label2==null)   {label.remove();
+//                   label2 = new Label(instructionsText, instructionsStyle);
+//                   InstructionPanel.addLabel(label2, 0.8f,InstructionPanel);}
+//
+//           };
+
+
+    } }
+
+
+//    public void createInstructionPanel1(){
+//        if (game.getGameLevel() ==1 )  {Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
+//            Panel InstructionPanel = new Panel(stage1, background, game);
+//            InstructionPanel.setSize(0.9f, 0.9f);
+//
+//            String levelName = levels.getProperties("levelName");
+//            InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.5f, 80);
+//
+//            String instructionsText = """
+//
+//                During your journey, unfortunately,
+//                not everything will be as easy...
+//                 First of all, you will need to collect a key
+//                  for each level to move on with your journey.
+//                Also, you must remain alert, as there will be some traps,
+//                enemies, and surprises set for you to keep you from completing your journey.
+//
+//                Good Luck!!
+//
+//                [Press any key to continue with level 1 instructions]""";
+//
+//            Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
+////            InstructionPanel.addLabel(instructionsText, instructionsStyle, 80);
+//            Label label = new Label(instructionsText, instructionsStyle);
+//            InstructionPanel.addLabel(label, 0.8f,InstructionPanel);
+//
+//
+//
+//
+//            InstructionPanel.addButton("Continue", game.getSkin(), new ChangeListener() {
+//                @Override
+//                public void changed(ChangeEvent event, Actor actor) {
+//                    createIntroPanel();
+//                }
+//            }, 20);
+//
+//            InstructionPanel.addListener(ifSpaceKeyPressed(() -> {
+//                createIntroPanel();
+//            }));
+//
+//
+//        } }
 
     public void createIntroPanel(){
         Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
