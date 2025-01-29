@@ -62,6 +62,7 @@ public class SelectLevelScreen implements Screen  {
                     game.setGameLevel(level);
                     game.goToGame();
                     game.getPauseMusic().pause();
+
                 }
             });
             table.add(buttons.get("Level " + i)).padTop(5).row();

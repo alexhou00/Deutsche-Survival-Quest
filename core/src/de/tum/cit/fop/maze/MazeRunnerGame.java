@@ -285,19 +285,19 @@ public class MazeRunnerGame extends Game {
      */
     public void goToGame(boolean tutorial) {
         // this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
-        if (gameScreen == null) {
-            if (!tutorial)
-                gameLevel = (getGameLevel() == 0) ? 1 : getGameLevel();
-            else
-                gameLevel = 0;
 
-            Gdx.app.log("MazeRunnerGame", "Go to Game, LEVEL: " + gameLevel);
-            gameScreen = new GameScreen(this);
-            gameOverMusic.pause();
-            pauseMusic.play();
-            menuMusic.pause();
-            backgroundMusic.play();
-        }
+        if (!tutorial)
+            gameLevel = (getGameLevel() == 0) ? 1 : getGameLevel();
+        else
+            gameLevel = 0;
+
+        Gdx.app.log("MazeRunnerGame", "Go to Game, LEVEL: " + gameLevel);
+        gameScreen = new GameScreen(this);
+        gameOverMusic.pause();
+        pauseMusic.play();
+        menuMusic.pause();
+        backgroundMusic.play();
+
         this.setScreen(gameScreen); // Set the current screen to MenuScreen
 
         if (menuScreen != null) {
