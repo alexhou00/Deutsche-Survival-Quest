@@ -561,7 +561,7 @@ public class GameScreen extends InputAdapter implements Screen {
         optionPanel.addLabel("Options", game.getSkin(), "title", 0.5f, 80);
 
         // Add Music Volume Slider
-        optionPanel.addSlider("Music Volume", 0, 2, game.getVolume(), 0.01f, game.getSkin(), new ChangeListener() {
+        optionPanel.addSlider("Music Volume", 0, 1, game.getVolume(), 0.05f, game.getSkin(), "black",  new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 float value = ((Slider) actor).getValue();
@@ -571,7 +571,7 @@ public class GameScreen extends InputAdapter implements Screen {
         });
 
 
-        optionPanel.addSlider("Sound Effects Volume", 0, 2, game.getSoundManager().getVolume(), 0.01f, game.getSkin(), new ChangeListener() {
+        optionPanel.addSlider("Sound Effects Volume", 0, 1, game.getSoundManager().getVolume(), 0.05f, game.getSkin(), "black", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 float value2 = ((Slider) actor).getValue();

@@ -182,8 +182,8 @@ public class Panel extends Actor{
         table.add(muteCheckbox).padBottom(20).center().row();
     }
 
-    public void addSlider(String labelText, float minValue, float maxValue, float currentValue, float stepSize, Skin skin, ChangeListener listener) {
-        Label label = new Label(labelText, skin);
+    public void addSlider(String labelText, float minValue, float maxValue, float currentValue, float stepSize, Skin skin, String styleName, ChangeListener listener) {
+        Label label = new Label(labelText, skin, styleName);
         table.add(label).padBottom(20).center().row();
 
         Slider slider = new Slider(minValue, maxValue, stepSize, false, skin);

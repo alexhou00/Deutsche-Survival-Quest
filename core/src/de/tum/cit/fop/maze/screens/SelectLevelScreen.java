@@ -85,7 +85,7 @@ public class SelectLevelScreen implements Screen  {
                 }
             }
         });
-        table.add(backButton).padTop(20).row();
+        table.add(backButton).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).padTop(20).row();
 
 
     }
