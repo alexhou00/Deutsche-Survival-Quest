@@ -18,7 +18,7 @@ import de.tum.cit.fop.maze.MazeRunnerGame;
 
 import java.util.*;
 
-import static de.tum.cit.fop.maze.util.Constants.iterate;
+import static de.tum.cit.fop.maze.util.Constants.*;
 
 /**
  * The MenuScreen class is responsible for displaying the main menu of the game.
@@ -62,14 +62,11 @@ public class MenuScreen implements Screen {
         stage.addActor(table); // Add the table to the stage
 
         // Add a label as a title
-        Label title = new Label("Deutsche Survival Quest", game.getSkin(), "title");
+        Label title = new Label("Deutsche Survival Quest", game.getSkin(), "fraktur");
         title.getStyle().font.getData().setScale(0.75f);
         table.add(title).padBottom(80).row();
 
         this.gameScreen = new GameScreen(game);
-
-        final float BUTTON_WIDTH = 300f; // Button width
-        final float BUTTON_PADDING = 10f; // Vertical padding
 
         buttons.put("startGameButton", new TextButton((game.getGameLevel()<=1?"Start Game":"Continue Game"), game.getSkin()));
         buttons.put("selectLevelButton", new TextButton("Select Level", game.getSkin()));
@@ -82,7 +79,7 @@ public class MenuScreen implements Screen {
         // Add buttons to the table with padding
         for (Map.Entry<String, TextButton> entry : buttons.entrySet()) {
             TextButton button = entry.getValue();
-            table.add(button).width(BUTTON_WIDTH).padBottom(BUTTON_PADDING).row();
+            table.add(button).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
         }
 
         // Set up listeners

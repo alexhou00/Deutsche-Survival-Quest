@@ -20,6 +20,8 @@ import de.tum.cit.fop.maze.rendering.Panel;
 import java.util.HashMap;
 import java.util.Map;
 
+import static de.tum.cit.fop.maze.util.Constants.*;
+
 public class OptionsScreen implements Screen {
 
     private final Stage stage;
@@ -71,8 +73,8 @@ public class OptionsScreen implements Screen {
         table.add(soundSlider).width(300).padBottom(20).row();
 
         // Add buttons (Mute, Back) under the sliders
-        table.add(buttons.get("Mute")).width(300).padBottom(20).row();
-        table.add(buttons.get("Back")).width(300).padBottom(20).row();
+        table.add(buttons.get("Mute")).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padTop(BUTTON_PADDING).row();
+        table.add(buttons.get("Back")).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padTop(BUTTON_PADDING).row();
 
         // Add listener to musicSlider
         musicSlider.addListener(new ChangeListener() {

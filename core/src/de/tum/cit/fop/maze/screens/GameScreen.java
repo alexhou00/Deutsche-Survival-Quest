@@ -218,7 +218,9 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(stage1);
         //Gdx.app.log("Size" ,  horizontalTilesCount + "x" + verticalTilesCount);
 
-        this.totalCoins = 5;
+        if (!isTutorial)
+            this.totalCoins = 5;
+        else this.totalCoins = 1;
 
         this.selectLevelScreen = new SelectLevelScreen(game);
     }
@@ -372,7 +374,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 if (clickCount[0] == 2) {
                     createIntroPanel();
                 }
-            }}, 20);
+            }});
     }
 
     private Label getLabelForInstructionsText1() {
@@ -491,7 +493,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 introPanel.proceedToGame(game, player, levels);
                 currentTutorialStage = TutorialStage.EXIT_ARROW;
             }
-        }, 20);
+        });
 
         introPanel.addListener(ifSpaceKeyPressed(() -> {
             introPanel.proceedToGame(game, player, levels);
@@ -518,14 +520,14 @@ public class GameScreen extends InputAdapter implements Screen {
                 game.resume();
                 isPaused = false;
             }
-        }, 4);
+        });
 
         pausePanel.addButton("Options", game.getSkin(), new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 pausePanel.clear();
                 createOptionPanel();
             }
-        }, 4);
+        });
 
         pausePanel.addButton("Select Level", game.getSkin(), new ChangeListener() {
             @Override
@@ -533,21 +535,21 @@ public class GameScreen extends InputAdapter implements Screen {
                 selectLevelScreen.goToSelectLevelScreen();
 
             }
-        }, 4);
+        });
 
         pausePanel.addButton("Back to Menu", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.goToMenu();
             }
-        }, 4);
+        });
 
         pausePanel.addButton("Exit Game", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.exitGame();
             }
-        }, 4);
+        });
     }
 
     public void createOptionPanel() {
@@ -588,14 +590,14 @@ public class GameScreen extends InputAdapter implements Screen {
                 game.muteAll(isMuted);
                 Gdx.app.log("OptionsScreen", "Mute toggled");
             }
-        }, 4);
+        });
 
         optionPanel.addButton("Back", game.getSkin(), new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 optionPanel.clear();
                 createPausePanel();
-        } } , 4);
+        }});
     }
 
     public void createVictoryPanel() {
@@ -619,7 +621,7 @@ public class GameScreen extends InputAdapter implements Screen {
                 public void changed(ChangeEvent event, Actor actor) {
                     victoryPanel.proceedToNextLevel(game);
                 }
-            }, 10);
+            });
         }
 
         victoryPanel.addButton("Back to Menu", game.getSkin(), new ChangeListener() {
@@ -627,7 +629,7 @@ public class GameScreen extends InputAdapter implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 game.goToMenu();
             }
-        }, 10);
+        });
 
         if (isTutorial) return;
 

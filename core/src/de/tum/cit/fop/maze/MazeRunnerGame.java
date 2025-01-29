@@ -97,7 +97,7 @@ public class MazeRunnerGame extends Game {
         //Gdx.app.setLogLevel(Application.LOG_ERROR);
 
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
-        skinCraft = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
+        skinCraft = new Skin(Gdx.files.internal("new-skin/craft-f-ui.json")); //new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         skinPlain = new Skin(Gdx.files.internal("plain-james/skin/plain-james-ui.json"));
         this.loadAnimation(); // Load character animation
         
