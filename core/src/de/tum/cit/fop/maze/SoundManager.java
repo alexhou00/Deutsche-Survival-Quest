@@ -65,6 +65,7 @@ public class SoundManager {
         }
     }
 
+
     /**
      * Adjusts the volume of the sound effects based on the mute state.
      *

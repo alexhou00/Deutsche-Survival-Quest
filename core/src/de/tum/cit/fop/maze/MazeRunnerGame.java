@@ -197,6 +197,7 @@ public class MazeRunnerGame extends Game {
         }
     }
 
+
     // Method to set volume for sound effects
     public void setSoundEffectVolume(float volume) {
         for (Map.Entry<String, Long> entry : soundIds.entrySet()) {
