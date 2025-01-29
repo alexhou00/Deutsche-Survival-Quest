@@ -32,8 +32,6 @@ public abstract class GameObject {
         this.hitboxHeight = hitboxHeight;
         this.widthOnScreen = widthOnScreen;
         this.heightOnScreen = heightOnScreen;
-        //this.hitboxWidthOnScreen = widthOnScreen * hitboxWidth / width;
-        //this.hitboxHeightOnScreen = heightOnScreen * hitboxHeight / height;
         this.hitbox = new Rectangle(x - getHitboxWidthOnScreen() / 2, y - getHitboxHeightOnScreen() / 2, getHitboxWidthOnScreen(), getHitboxHeightOnScreen());
     }
 
@@ -89,16 +87,8 @@ public abstract class GameObject {
         return widthOnScreen;
     }
 
-    public void setWidthOnScreen(float widthOnScreen) {
-        this.widthOnScreen = widthOnScreen;
-    }
-
     public float getHeightOnScreen() {
         return heightOnScreen;
-    }
-
-    public void setHeightOnScreen(float heightOnScreen) {
-        this.heightOnScreen = heightOnScreen;
     }
 
     public float getHitboxWidthOnScreen() {
@@ -132,6 +122,12 @@ public abstract class GameObject {
         return y - heightOnScreen / 2;
     }
 
+    /**
+     * Checks if this object is touching another {@link GameObject} by determining if their hitboxes overlap.
+     *
+     * @param other The {@link GameObject} to check for collision with.
+     * @return {@code true} if the hitboxes of both objects overlap, indicating a collision; {@code false} otherwise.
+     */
     public boolean isTouching(GameObject other) {
         return this.getHitbox().overlaps(other.getHitbox());
     }
