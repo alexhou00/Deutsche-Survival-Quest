@@ -156,13 +156,13 @@ Deutsche Survival Quest offers pixel perfect collision with objects
 
 * Level 2: Player must get his Deutschlandticket to catch his train.
 
-* Level 3: Player must find the key to exit bar.
+* Level 3: Player must find the key to enter his house
 
-* Level 4: 
+* Level 4: Player must find the key to exit bar.
 
-* Level 5: Player must get his documents to regşster in the Rathaus.
+* Level 5: Player must get his documents and the rathaus to register in the Rathaus.
 
-* Level 6:
+* Level 6: Player must find the room for his appointment 
 
 **Obstacles**:
 * Traps: 
@@ -259,6 +259,28 @@ Requirements: enemies and boostups
 tum : finding etze
 
 ## Features
+
+For our features, we incorporated both static and dynamic obstacles that are unique to each level. For instance, to fit the story
+line, we have ticket controllers as our dynamic obstacles. Any collision with the obstacles would result in a decrease in health level,
+that could ultimately lead to losing in the game if all 5 hearts are used up. 
+
+Aside from that, we also have a tutorial page with an animated and interactive display on the rules of the game. This would allow user to 
+quickly learn how to play the game. The spotlight effect we employed makes the tutorial easier to follow as it brings the attention of the 
+user to the specific variable. 
+
+The user also have control over the other interfaces in the game such as sounds and music, with the choice to adjust the volume based on their liking 
+the slider, and an option to completely mute them. 
+
+the options to switch between levels 
+talk about the traps 
+the portal 
+
+
+
+
+
+
+
 
 Dynamic obstacles - cars/horse/ trolley/ german neighbour/ smoking teenagers/ a bear (in berlin) a golden lion (munich)   etc / train controller reappearing - will take away one ticket. Once all 5 tickets are taken away then restart level  (or maybe the player has to collect his Deutschlandticket first at the levels where there are ticket guys) (maybe there’s a chance of your ticket not working?)
 
