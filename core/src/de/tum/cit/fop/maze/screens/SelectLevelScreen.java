@@ -24,15 +24,19 @@ import static de.tum.cit.fop.maze.util.Constants.*;
 public class SelectLevelScreen implements Screen  {
 
     private final Stage stage;
-    MazeRunnerGame game;
+    private MazeRunnerGame game;
     private final Map<String, TextButton> buttons;
-    Texture backgroundTexture;
-    MenuScreen menuScreen;
-    GameScreen gameScreen;
-    GameOverScreen gameOverScreen;
+    private Texture backgroundTexture;
+    private MenuScreen menuScreen;
+    private GameScreen gameScreen;
+    private GameOverScreen gameOverScreen;
+    private String previousScreen;
 
-    public SelectLevelScreen(MazeRunnerGame game) {
+    public SelectLevelScreen(MazeRunnerGame game, String previousScreen, GameScreen gameScreen) {
         this.game = game;
+        this.previousScreen = previousScreen;
+        this.gameScreen = gameScreen;
+
         var camera = new OrthographicCamera();
         camera.update();
         this.show();
@@ -67,6 +71,23 @@ public class SelectLevelScreen implements Screen  {
             });
             table.add(buttons.get("Level " + i)).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padTop(BUTTON_PADDING).row();
         }
+
+
+        TextButton backButton = new TextButton("Back", game.getSkin());
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if ("Menu".equals(previousScreen)) {
+                    game.setScreen(new MenuScreen(game)); // Go back to MenuScreen
+                    game.getPauseMusic().pause();
+                } else if ("Pause".equals(previousScreen)) {
+                    game.setScreen(gameScreen); // Go back to GameScreen (PauseWindow)
+                }
+            }
+        });
+        table.add(backButton).padTop(20).row();
+
+
     }
 
     public void goToSelectLevelScreen() {

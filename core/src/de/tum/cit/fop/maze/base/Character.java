@@ -103,17 +103,19 @@ public abstract class Character extends GameObject {
     }
 
 
+    /**
+     * Checks whether a given point, with an applied offset, is within an instance of a specific class.
+     *
+     * @param x          The x-coordinate of the point in world space.
+     * @param y          The y-coordinate of the point in world space.
+     * @param offsetX    The horizontal offset applied to the point.
+     * @param offsetY    The vertical offset applied to the point.
+     * @param objectClass The class type to check the tile instance against.
+     * @return {@code true} if the point is within an instance of the specified class and collides with the tile, {@code false} otherwise.
+     */
     protected boolean isPointWithinInstanceOf(float x, float y, float offsetX, float offsetY, Class<?> objectClass) {
         int tileX = (int) ((x + offsetX) / TILE_SCREEN_SIZE);
         int tileY = (int) ((y + offsetY) / TILE_SCREEN_SIZE);
-        // if the tile at position (tileX, tileY) is an instance of the objectClass (e.g., Wall) AND
-        // if the point (x+offsetX, y+offsetY) is inside this tile
-        //if (isTileInstanceOf(tileX, tileY, SpeedBoost.class) && tiles.getTileOnMap(tileX, tileY).)
-        // && tiles.getTileOnMap(tileX, tileY).getHitbox().contains(x+offsetX, y+offsetY)
-        /*Gdx.app.log("Player",
-                    "Player's " +
-                            ((offsetX > 0) ? "right" : "left") + "-" + ((offsetY > 0) ? "upper" : "lower") +
-                            " corner collided with tile at position " + tileX + ", " + tileY);*/
         return isTileInstanceOf(tileX, tileY, objectClass) && levels.getTileOnMap(tileX, tileY).isCollidingPoint(x + offsetX, y + offsetY);
     }
 
@@ -160,17 +162,13 @@ public abstract class Character extends GameObject {
     public float getLives() {
         return lives;
     }
+
     public void setLives(float lives) {
         this.lives = lives;
     }
 
-
     public float getVelX() {
         return velX;
-    }
-
-    public void setVelX(float velX) {
-        this.velX = velX;
     }
 
     public float getVelY() {
@@ -185,15 +183,17 @@ public abstract class Character extends GameObject {
         return speed;
     }
 
-    public void setSpeed(float speed) {
-        this.speed = speed;
-    }
-
     public SpeechBubble getSpeechBubble() {
         return speechBubble;
     }
 
 
+    /**
+     * Displays a normal speech bubble with the given text at the entity's position.
+     *
+     * @param text  The text to be displayed in the speech bubble.
+     * @param batch The {@link SpriteBatch} used for rendering the speech bubble. Must not be {@code null}.
+     */
     // Normal Speech Bubble
     public void say(String text, SpriteBatch batch) {
         if ( (batch != null)/*speechCooldown > 0*/){
@@ -201,7 +201,16 @@ public abstract class Character extends GameObject {
         }
 
     }
-
+    /**
+     * Displays a normal speech bubble with the given text at the entity's position.
+     * Supports an optional typewriter effect that gradually reveals the text over time.
+     *
+     * @param text            The full text to be displayed in the speech bubble.
+     * @param batch           The {@link SpriteBatch} used for rendering the speech bubble. Must not be {@code null}.
+     * @param typewriterEffect If {@code true}, the text is revealed progressively based on the timer and interval.
+     * @param timer           The elapsed time used to determine how much of the text should be revealed.
+     * @param interval        The time interval controlling the speed of the typewriter effect.
+     */
     // Normal Speech Bubble
     public void say(String text, SpriteBatch batch, boolean typewriterEffect, float timer, float interval) {
         if (typewriterEffect){
@@ -210,54 +219,71 @@ public abstract class Character extends GameObject {
         else say(text, batch);
     }
 
+    /**
+     * Displays a multi-edged speech bubble to represent a loud message (scream) at the entity's position.
+     *
+     * @param text  The text to be displayed in the speech bubble.
+     * @param batch The {@link SpriteBatch} used for rendering the speech bubble. Must not be {@code null}.
+     */
     // Multi-edged Speech Bubble for a message out loud
     public void scream(String text, SpriteBatch batch) {
         speechBubble.render(batch, text, x, y, getHeightOnScreen() / 2, SpeechBubble.BubbleType.SCREAM);
     }
 
+    /**
+     * Displays a cloud-shaped speech bubble to represent a thought at the entity's position.
+     *
+     * @param text  The text to be displayed in the thought bubble.
+     * @param batch The {@link SpriteBatch} used for rendering the thought bubble. Must not be {@code null}.
+     */
     // Cloud-shaped Speech Bubble for thoughts
     public void think(String text, SpriteBatch batch) {
         speechBubble.render(batch, text, x, y, getHeightOnScreen() / 2, SpeechBubble.BubbleType.THOUGHT);
     }
 
+    /**
+     * Calculates the bounce velocity after a collision, assuming an elastic collision with an infinitely massive object.
+     *
+     * @param v1 The initial velocity before the bounce.
+     * @return The velocity after the bounce. If the initial velocity is greater than 50 in magnitude,
+     *         it is simply negated; otherwise, it is negated and multiplied by 5 to enhance the bounce effect.
+     */
     public static float bounceVelocity(float v1){
         // assuming m2 is Infinite and the collision is elastic
         return (abs(v1) > 50) ? -v1 : -v1*5; // if not fast enough, times 5
     }
 
+    /**
+     * Calculates the bounce velocity after an elastic collision between two objects of equal mass.
+     *
+     * @param v1 The velocity of the current object before the collision.
+     * @param v2 The velocity of the other object before the collision.
+     * @return The velocity after the bounce. If the absolute value of the computed velocity is greater than 50,
+     *         it is returned as is; otherwise, it is amplified by a factor of 5 to enhance the bounce effect.
+     */
     public static float bounceVelocity(float v1, float v2) {
         // v1 is the velocity of this, v2 is the velocity of the other
         // assuming m1 and m2 are the same mass, and the collision is elastic
-        //System.out.println(v1 + " " + v2);
-        float vc = (v1+v2)/2f;
-        //System.out.println("Vc: " + vc);
-        float vf = 2 * vc - v1;
-        return (abs(vf) > 50) ? vf : vf*5;
+        float vc = (v1+v2)/2f;//vc is the mass center
+        float vf = 2 * vc - v1;//final velocity
+        return (abs(vf) > 50) ? vf : vf*5;//abs = absolute velocity
     }
 
+    /**
+     * Applies a bounce effect when this object collides with another {@link GameObject}.
+     * If the source object is a {@link Character}, an elastic collision calculation is used
+     * considering both objects' velocities. Otherwise, a simple bounce is applied.
+     *
+     * @param source The {@link GameObject} that this object is bouncing off.
+     */
     public void bounceBack(GameObject source){
         if (source instanceof Character){
             velX = bounceVelocity(velX, ((Character) source).getVelX());
             velY = bounceVelocity(velY, ((Character) source).getVelY());
         }
         else {
-            //isInvulnerable = true;
-            //targetVelX = (abs(targetVelX) > 50) ? -targetVelX : -targetVelX*5/*(((targetVelX>0) ? 1 : -1) * -500)*/;
-            velX = bounceVelocity(velX)/*(((velX>0) ? 1 : -1) * -500)*/;
-            //targetVelY = (abs(targetVelY) > 50) ? -targetVelY : -targetVelY*5/*(((targetVelY>0) ? 1 : -1) * -500)*/;
-            velY = bounceVelocity(velY)/*(((velY>0) ? 1 : -1) * -500)*/;
-        }
-    }
-
-    protected void stepBack(GameObject from) {
-        float overlapX = this.getHitbox().x - from.getHitbox().x;
-        float overlapY = this.getHitbox().y - from.getHitbox().y;
-
-        // Push the character away from the other based on overlap
-        if (Math.abs(overlapX) > Math.abs(overlapY)) {
-            x += overlapX > 0 ? Math.abs(overlapX) : -Math.abs(overlapX);
-        } else {
-            y += overlapY > 0 ? Math.abs(overlapY) : -Math.abs(overlapY);
+            velX = bounceVelocity(velX);
+            velY = bounceVelocity(velY);
         }
     }
 }

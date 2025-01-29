@@ -19,6 +19,34 @@ public class BFSChasingEnemy extends ChasingEnemy {
     private final Random random;
     private final List<int[]> shuffledDirections;
 
+    /**
+     * Constructs a new BFSChasingEnemy object, initializing its properties and setting up the enemy's behavior.
+     * This constructor sets the detection radius, random seed, and initializes the movement directions with
+     * randomness for exploration. It also calls the superclass constructor to initialize shared attributes.
+     *
+     * @param textureRegion   The texture region to represent the enemy's appearance.
+     * @param tileX           The initial X coordinate of the enemy in the grid (tile-based system).
+     * @param tileY           The initial Y coordinate of the enemy in the grid (tile-based system).
+     * @param width           The width of the enemy's hitbox in pixels.
+     * @param height          The height of the enemy's hitbox in pixels.
+     * @param hitboxWidth     The width of the enemy's hitbox on the screen.
+     * @param hitboxHeight    The height of the enemy's hitbox on the screen.
+     * @param widthOnScreen   The width of the enemy on the screen in world units.
+     * @param heightOnScreen  The height of the enemy on the screen in world units.
+     * @param lives           The number of lives the enemy has.
+     * @param levels          The LevelManager responsible for managing levels in the game.
+     * @param game            The main game instance.
+     * @param enemyIndex      The unique index of the enemy, used for identifying the enemy in a collection.
+     *
+     * Initializes the enemy with the following properties:
+     * <ul>
+     *     <li>Detection radius is set to 600 units.</li>
+     *     <li>Random seed is generated using the object's hash code and the enemy's tile position to ensure
+     *         randomness based on its location.</li>
+     *     <li>Movement directions (right, left, up, down) are defined and shuffled to introduce unpredictability
+     *         in exploration patterns.</li>
+     * </ul>
+     */
     public BFSChasingEnemy(TextureRegion textureRegion, int tileX, int tileY, int width, int height, int hitboxWidth, int hitboxHeight,
                            float widthOnScreen, float heightOnScreen, float lives, LevelManager levels, MazeRunnerGame game, int enemyIndex) {
         super(textureRegion, tileX, tileY, width, height, hitboxWidth, hitboxHeight, widthOnScreen, heightOnScreen, lives, levels, game, enemyIndex);
@@ -106,17 +134,23 @@ public class BFSChasingEnemy extends ChasingEnemy {
                     System.out.println("Towards Target Moved Away from Other enemies because of touching...");
                 }
             }
-
-            //return !isTouchingOtherEnemies();
             return true;
-            //
+
         }
         return false; // No valid path
     }
 
+    /**
+     * Finds the shortest path from the current position to the player's position using Breadth-First Search (BFS).
+     * This method returns a list of positions representing the path from the current location to the target (player) location.
+     * If no path is found, it returns null.
+     *
+     * @param playerX The X-coordinate of the player's position in world coordinates.
+     * @param playerY The Y-coordinate of the player's position in world coordinates.
+     * @return A list of positions representing the path from the current position to the player's position, or null if no path is found.
+     */
     private List<Position> findPathTo(float playerX, float playerY) {
         if (player == null) return null;
-        //Gdx.app.log("BFS Enemy", "Finding path to player...");
 
         Position start = getTilePosition(x, y);
         Position goal = getTilePosition(playerX, playerY);
@@ -129,9 +163,7 @@ public class BFSChasingEnemy extends ChasingEnemy {
         visited.add(start);
 
         while (!queue.isEmpty()) {
-            //Gdx.app.log("BFS Enemy", "Queue is not empty");
             Position current = queue.poll();
-            //Gdx.app.log("BFS", "Current position: " + current);
 
             if (current.equals(goal)) {
                 // Path found
@@ -140,14 +172,10 @@ public class BFSChasingEnemy extends ChasingEnemy {
             }
 
             for (Position neighbor : getNeighbors(current)) {
-                //Gdx.app.log("BFS", "Going to neighbor: " + neighbor);
                 if (!visited.contains(neighbor)) {
                     queue.add(neighbor);
                     visited.add(neighbor);
                     cameFrom.put(neighbor, current);
-                    //Gdx.app.log("BFS", "Current position: " + current);
-                    //Gdx.app.log("BFS", "Queue size: " + queue.size());
-                    //Gdx.app.log("BFS", "Visited: " + visited.size());
                 }
             }
         }
@@ -155,6 +183,14 @@ public class BFSChasingEnemy extends ChasingEnemy {
         return null; // No path found
     }
 
+    /**
+     * Returns a list of neighboring positions for a given position based on valid movement directions.
+     * It checks adjacent tiles in all four cardinal directions (up, down, left, right), ensuring they are within bounds
+     * and walkable.
+     *
+     * @param position The current position for which the neighbors are being calculated.
+     * @return A list of valid neighboring positions that are walkable and within the grid boundaries.
+     */
     private List<Position> getNeighbors(Position position) {
         List<Position> neighbors = new ArrayList<>();
 
@@ -172,6 +208,14 @@ public class BFSChasingEnemy extends ChasingEnemy {
         return neighbors;
     }
 
+    /**
+     * Checks if a tile at the specified coordinates (x, y) is walkable.
+     * The tile is considered walkable if its type is not a wall or trap.
+     *
+     * @param x The X-coordinate of the tile on the map.
+     * @param y The Y-coordinate of the tile on the map.
+     * @return True if the tile is walkable (not a wall or trap), false otherwise.
+     */
     private boolean isTileWalkable(int x, int y) {
         try {
             TileType tileType = levels.getTileEnumOnMap(x, y);
@@ -183,6 +227,18 @@ public class BFSChasingEnemy extends ChasingEnemy {
         }
     }
 
+
+    /**
+     * Reconstructs the path from the start position to the goal position using the "cameFrom" map,
+     * which tracks the positions visited during pathfinding.
+     * The method follows the trail back from the goal to the start, and then reverses the list
+     * to provide the path in the correct order.
+     *
+     * @param cameFrom A map that tracks the previous position for each visited position.
+     * @param start The starting position from which the pathfinding began.
+     * @param goal The goal position that the pathfinding tried to reach.
+     * @return A list of positions representing the path from the start to the goal, in the correct order.
+     */
     private List<Position> reconstructPath(Map<Position, Position> cameFrom, Position start, Position goal) {
         List<Position> path = new ArrayList<>();
         Position current = goal;
@@ -216,10 +272,6 @@ public class BFSChasingEnemy extends ChasingEnemy {
         while (!queue.isEmpty()) {
             Position current = queue.poll();
             int currentDistance = distances.get(current);
-            /*if (currentDistance > detectionDistance) {
-                return super.isPlayerWithinDetectionRadius(player, radius);
-            }*/
-
             if (current.equals(goal)) {
                 return currentDistance <= detectionDistance; // Check if the player is within 10 tiles
             }
@@ -252,30 +304,20 @@ public class BFSChasingEnemy extends ChasingEnemy {
 
     }
 
-    final float DIRECTION_CHANGE_COOLDOWN = 0.05f; // Adjust as needed
     static float directionChangeTimer = 0; // Tracks time since last direction change
 
     @Override
     public void setDirection(){
         directionChangeTimer += Gdx.graphics.getDeltaTime();
 
-        /*if (!isChasing && directionChangeTimer < DIRECTION_CHANGE_COOLDOWN){
-            System.out.println(this + " returned");
-            return;
-        }*/
-
         if (abs(velX) > abs(velY)){
-                //abs(velX) > ENEMY_BASE_SPEED / 5 &&
-                //abs(((velX * velX) + (velY * velY)) - (previousVelX * previousVelX) + (previousVelY * previousVelY)) > 1000)
-
             previousDirection = (velX > 0) ? Direction.right : Direction.left;
-
         }
+
         if (abs(velY) > abs(velX) &&
                 //abs(velY) > ENEMY_BASE_SPEED / 5 &&
                 abs(((velX * velX) + (velY * velY)) - (previousVelX * previousVelX) + (previousVelY * previousVelY)) > 1000){
             previousDirection = (velY > 0) ? Direction.up : Direction.down;
-
         }
 
         directionChangeTimer = 0;
