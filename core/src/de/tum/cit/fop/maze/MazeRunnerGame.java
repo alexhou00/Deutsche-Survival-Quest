@@ -18,6 +18,8 @@ import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 import java.util.HashMap;
 import java.util.Map;
 
+import static de.tum.cit.fop.maze.util.Constants.TOTAL_LEVELS;
+
 /**
  * The MazeRunnerGame class represents the core of the Maze Runner game.
  * It manages the screens and global resources like SpriteBatch and Skin.
@@ -285,19 +287,19 @@ public class MazeRunnerGame extends Game {
      */
     public void goToGame(boolean tutorial) {
         // this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
-        if (gameScreen == null) {
-            if (!tutorial)
-                gameLevel = (getGameLevel() == 0) ? 1 : getGameLevel();
-            else
-                gameLevel = 0;
 
-            Gdx.app.log("MazeRunnerGame", "Go to Game, LEVEL: " + gameLevel);
-            gameScreen = new GameScreen(this);
-            gameOverMusic.pause();
-            pauseMusic.play();
-            menuMusic.pause();
-            backgroundMusic.play();
-        }
+        if (!tutorial)
+            gameLevel = (getGameLevel() == 0) ? 1 : getGameLevel();
+        else
+            gameLevel = 0;
+
+        Gdx.app.log("MazeRunnerGame", "Go to Game, LEVEL: " + gameLevel);
+        gameScreen = new GameScreen(this);
+        gameOverMusic.pause();
+        pauseMusic.play();
+        menuMusic.pause();
+        backgroundMusic.play();
+
         this.setScreen(gameScreen); // Set the current screen to MenuScreen
 
         if (menuScreen != null) {
@@ -565,9 +567,8 @@ public class MazeRunnerGame extends Game {
             //Gdx.app.log("MazeRunnerGame", "Player is at the exit and has the key.");
             player.hasReachedExit = true;
 
-            if (gameLevel == 6) {
+            if (gameLevel == TOTAL_LEVELS) {
                 goToVictoryScreen();
-
             }
 
             if (!gameScreen.isPaused()) {
