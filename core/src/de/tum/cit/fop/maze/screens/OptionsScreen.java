@@ -89,7 +89,7 @@ public class OptionsScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 float volume = soundSlider.getValue();
-                //game.setSoundEffectsVolume(volume);
+                game.getSoundManager().setVolume(volume);
                 Gdx.app.log("OptionsScreen", "Sound Effects Volume changed: " + volume);
             }
         });

@@ -82,7 +82,7 @@ public class Portal extends StaticObject {
                 game.getSoundEffectTeleport().pause();
             }
             else if (!game.isMuted()){
-                game.getSoundEffectTeleport().play();
+                game.getSoundEffectTeleport().play(game.getSoundManager().getVolume());
             }
 
             // Teleport the player to the entrance position (assuming levels.entrance is initialized)
