@@ -47,7 +47,8 @@ public class MazeRunnerGame extends Game {
     private SpriteBatch spriteBatch;
 
     // UI Skin
-    private Skin skin;
+    private Skin skinCraft;
+    private Skin skinPlain;
 
     // Character animation downwards
     public Map<String, Animation<TextureRegion>> characterAnimations;
@@ -94,7 +95,8 @@ public class MazeRunnerGame extends Game {
         //Gdx.app.setLogLevel(Application.LOG_ERROR);
 
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
-        skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
+        skinCraft = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
+        skinPlain = new Skin(Gdx.files.internal("plain-james/skin/plain-james-ui.json"));
         this.loadAnimation(); // Load character animation
         
 
@@ -419,7 +421,8 @@ public class MazeRunnerGame extends Game {
         getScreen().hide(); // Hide the current screen
         getScreen().dispose(); // Dispose the current screen
         spriteBatch.dispose(); // Dispose the spriteBatch
-        skin.dispose(); // Dispose the skin
+        skinCraft.dispose(); // Dispose the skin
+        skinPlain.dispose();
 
         for (Music music : musicList) {
             music.dispose();
@@ -438,9 +441,26 @@ public class MazeRunnerGame extends Game {
         backgroundMusic.setVolume(1f);
     }
 
+    public enum skinType{
+        CRAFTACULAR,
+        PLAIN_JAMES
+    }
+
     // Getter methods
     public Skin getSkin() {
-        return skin;
+        return skinPlain;
+    }
+
+    public Skin getSkin(skinType type) {
+        switch (type) {
+            case PLAIN_JAMES -> {
+                return skinPlain;
+            }
+            case CRAFTACULAR -> {
+                return skinCraft;
+            }
+        }
+        return null;
     }
 
     public Animation<TextureRegion> getCharacterDownAnimation() {
