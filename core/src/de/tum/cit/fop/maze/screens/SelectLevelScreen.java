@@ -70,7 +70,9 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
          Gdx.app.log("SelectLevelScreen", "Level 1 selected");
          game.setGameLevel(1);
          //game.goToGame();
-         game.setScreen(new GameScreen(game));
+         game.goToGame();
+         game.getPauseMusic().pause();
+         //game.setScreen(new GameScreen(game));
      }
  });
  buttons.get("Level 2").addListener(new ChangeListener() {
@@ -79,7 +81,9 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
          Gdx.app.log("SelectLevelScreen", "Level 2 selected");
          game.setGameLevel(2);
          //game.goToGame();
-         game.setScreen(new GameScreen(game));
+         game.goToGame();
+         game.getPauseMusic().pause();
+         //game.setScreen(new GameScreen(game));
 
      }
  });
@@ -89,7 +93,9 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
          Gdx.app.log("SelectLevelScreen", "Level 3 selected");
          game.setGameLevel(3);
          //game.goToGame();
-         game.setScreen(new GameScreen(game));
+         game.goToGame();
+         game.getPauseMusic().pause();
+         //game.setScreen(new GameScreen(game));
      }
  });
  buttons.get("Level 4").addListener(new ChangeListener() {
@@ -98,7 +104,9 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
          Gdx.app.log("SelectLevelScreen", "Level 4 selected");
          game.setGameLevel(4);
          //game.goToGame();
-         game.setScreen(new GameScreen(game));
+         game.goToGame();
+         game.getPauseMusic().pause();
+         //game.setScreen(new GameScreen(game));
      }
  });
  buttons.get("Level 5").addListener(new ChangeListener() {
@@ -107,7 +115,9 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
          Gdx.app.log("SelectLevelScreen", "Level 5 selected");
          game.setGameLevel(5);
          //game.goToGame();
-         game.setScreen(new GameScreen(game));
+         game.goToGame();
+         game.getPauseMusic().pause();
+         //game.setScreen(new GameScreen(game));
      }
  });
  buttons.get("Level 6").addListener(new ChangeListener() {
@@ -116,7 +126,9 @@ Gdx.app.log("SelectLevelScreen", "screen created ");
          Gdx.app.log("SelectLevelScreen", "Level 6 selected");
          game.setGameLevel(6);
          //game.goToGame();
-         game.setScreen(new GameScreen(game));
+         game.goToGame();
+         game.getPauseMusic().pause();
+         //game.setScreen(new GameScreen(game));
      }
  });
  table.add(buttons.get("Level 1")).padTop(5).row();
