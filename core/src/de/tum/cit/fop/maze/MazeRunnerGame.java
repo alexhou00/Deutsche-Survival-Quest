@@ -473,7 +473,7 @@ public class MazeRunnerGame extends Game {
 
     // Getter methods
     public Skin getSkin() {
-        return skinPlain;
+        return skinCraft; // default skin
     }
 
     public Skin getSkin(skinType type) {
