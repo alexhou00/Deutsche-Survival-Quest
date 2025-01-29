@@ -13,7 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -30,10 +32,11 @@ import de.tum.cit.fop.maze.rendering.SpotlightEffect;
 import de.tum.cit.fop.maze.tiles.TileType;
 import de.tum.cit.fop.maze.util.Position;
 
-import javax.swing.event.ChangeEvent;
 import java.util.*;
 
+import static com.badlogic.gdx.scenes.scene2d.ui.Table.Debug.actor;
 import static de.tum.cit.fop.maze.rendering.Panel.ifSpaceKeyPressed;
+import static de.tum.cit.fop.maze.rendering.Panel.*;
 import static de.tum.cit.fop.maze.tiles.TileType.GROUND;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
@@ -157,7 +160,8 @@ public class GameScreen extends InputAdapter implements Screen {
             default -> tiledMap = levels.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
         }
 
-        createIntroPanel();
+//        createIntroPanel();
+        createInstructionPanel();
 
         // Initialize the key. Only after we lod the tiled map, we can access the key's position
         Position keyPosition = levels.getKeyTilePosition().convertTo(PIXELS);
@@ -344,29 +348,157 @@ public class GameScreen extends InputAdapter implements Screen {
         return new Position((float) (position.getTileX() / sectionWidth), (float) (position.getTileY() / sectionHeight), TILES);
     }
 
-    public void createIntroPanel(){
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
-        Panel introPanel = new Panel(stage1, background, game);
-        introPanel.setSize(0.9f, 0.9f);
+    public void createInstructionPanel(){
+      if (game.getGameLevel() ==1 )  {
+          Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
+        Panel InstructionPanel = new Panel(stage1, background, game);
+        InstructionPanel.setSize(0.9f, 0.9f);
 
-        String levelName = levels.getProperties("levelName");
-        introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "title", 0.5f, 80);
+        String levelName = levels.getProperties("levelName"); // test
+
+        InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.5f, 80);
 
         String instructionsText = """
                 Welcome TUM student!
-                As you arrive in Germany for your studies in Heilbronn, you will have to complete some challenges to settle in and start your studies. \
-                You will start at the airport, then figure out how to use the public transportation, which will be the Deutsche Bahn in this case, \
-                complete your city registration, chill in a Brauerei, and of course discover the beautiful Altstadt of Heilbronn:)
+                As you arrive in Germany for your studies in Heilbronn,
+                you will have to complete some challenges to settle in and start your studies.
+                You will start at the airport, then figure out how to use the public transportation,
+                which will be the Deutsche Bahn in this case,
+                complete your city registration, chill in a Brauerei,
+                and of course discover the beautiful Altstadt of Heilbronn:)
                 
-                During your journey, unfortunately, not everything will be as easy... First of all, you will need to collect a key for each level to move on with your journey. \
-                Also, you must remain alert, as there will be some traps, enemies, and surprises set for you to keep you from completing your journey.
+               """;
+
+        Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
+//                InstructionPanel.addLabel(instructionsText, instructionsStyle, 80);
+        Label label = new Label(instructionsText, instructionsStyle);
+//        label.setWrap(true);
+//        label.setAlignment(Align.center);
+//        label.setWidth(InstructionPanel.getWidth());
+
+
+
+          String instructionsText2 = """
+                
+                During your journey, unfortunately,
+                not everything will be as easy...
+                 First of all, you will need to collect a key
+                  for each level to move on with your journey.
+                Also, you must remain alert, as there will be some traps,
+                enemies, and surprises set for you to keep you from completing your journey.
                 
                 Good Luck!!
                 
                 [Press any key to continue with level 1 instructions]""";
 
-        Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
-        introPanel.addLabel(instructionsText, instructionsStyle, 80);
+          Label.LabelStyle instructionsStyle2 = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
+//            InstructionPanel.addLabel(instructionsText, instructionsStyle, 80);
+
+
+          InstructionPanel.addLabel(label,1f,InstructionPanel);
+
+          final int[] clickCount = {0};
+          InstructionPanel.addButton("Continue", game.getSkin(), new ChangeListener() {
+
+              @Override
+              public void changed(ChangeEvent event, Actor actor) {
+                  clickCount[0]++;
+                     if (clickCount[0] == 1) {
+                         label.setText(instructionsText2);
+                     }
+                     if (clickCount[0] == 2) {
+                         createIntroPanel();
+                     }
+
+
+
+              }
+          }, 20);
+
+
+
+//       InstructionPanel.addListener(ifSpaceKeyPressed(() -> {
+////         label.remove();
+////         InstructionPanel.addLabel(label2, 0.8f,InstructionPanel);
+//                 Label label2;
+//               if(label2==null)   {label.remove();
+//                   label2 = new Label(instructionsText, instructionsStyle);
+//                   InstructionPanel.addLabel(label2, 0.8f,InstructionPanel);}
+//
+//           };
+
+
+    } }
+
+
+//    public void createInstructionPanel1(){
+//        if (game.getGameLevel() ==1 )  {Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
+//            Panel InstructionPanel = new Panel(stage1, background, game);
+//            InstructionPanel.setSize(0.9f, 0.9f);
+//
+//            String levelName = levels.getProperties("levelName");
+//            InstructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "title", 0.5f, 80);
+//
+//            String instructionsText = """
+//
+//                During your journey, unfortunately,
+//                not everything will be as easy...
+//                 First of all, you will need to collect a key
+//                  for each level to move on with your journey.
+//                Also, you must remain alert, as there will be some traps,
+//                enemies, and surprises set for you to keep you from completing your journey.
+//
+//                Good Luck!!
+//
+//                [Press any key to continue with level 1 instructions]""";
+//
+//            Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
+////            InstructionPanel.addLabel(instructionsText, instructionsStyle, 80);
+//            Label label = new Label(instructionsText, instructionsStyle);
+//            InstructionPanel.addLabel(label, 0.8f,InstructionPanel);
+//
+//
+//
+//
+//            InstructionPanel.addButton("Continue", game.getSkin(), new ChangeListener() {
+//                @Override
+//                public void changed(ChangeEvent event, Actor actor) {
+//                    createIntroPanel();
+//                }
+//            }, 20);
+//
+//            InstructionPanel.addListener(ifSpaceKeyPressed(() -> {
+//                createIntroPanel();
+//            }));
+//
+//
+//        } }
+
+    public void createIntroPanel(){
+        // TODO: KEEP THIS METHOD AND DELETE THE OTHER TWO
+        NinePatchDrawable backgroundDrawable = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
+                86, 86, 98, 98);
+        Panel introPanel = new Panel(stage1, backgroundDrawable, game);
+        introPanel.setSize(0.9f, 0.9f);
+
+        String levelName = levels.getProperties("levelName");
+        introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "title", 0.5f, 80);
+
+//        String instructionsText = """
+//                Welcome TUM student!
+//                As you arrive in Germany for your studies in Heilbronn, you will have to complete some challenges to settle in and start your studies. \
+//                You will start at the airport, then figure out how to use the public transportation, which will be the Deutsche Bahn in this case, \
+//                complete your city registration, chill in a Brauerei, and of course discover the beautiful Altstadt of Heilbronn:)
+//
+//                During your journey, unfortunately, not everything will be as easy... First of all, you will need to collect a key for each level to move on with your journey. \
+//                Also, you must remain alert, as there will be some traps, enemies, and surprises set for you to keep you from completing your journey.
+//
+//                Good Luck!!
+//
+//                [Press any key to continue with level 1 instructions]""";
+//
+//        Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
+//        introPanel.addLabel(instructionsText, instructionsStyle, 80);
 
         introPanel.addLabel("Move using W, A, S, D keys.", game.getSkin(), 1f, 50);
         introPanel.addLabel("Collect keys to unlock exits.", game.getSkin(), 1f, 50);
@@ -390,9 +522,11 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createPausePanel() {
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
+        //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
+        NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/pause.png"),
+                45+17, 45+17, 45+37, 45+37);
         Panel pausePanel = new Panel(stage1, background, game);
-        pausePanel.setSize(1f, 1f);
+        pausePanel.setSize(0.9f, 0.9f);
 
         pausePanel.addLabel("Game Paused", game.getSkin(), "title", 0.5f, 80);
 
@@ -436,11 +570,12 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createOptionPanel() {
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
+        //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
+        NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
+                86, 86, 98, 98);
         Panel OptionPanel = new Panel(stage1, background, game);
         OptionPanel.setSize(0.8f, 0.6f);
 
-;
         OptionPanel.addLabel("Options", game.getSkin(), "title", 0.5f, 80);
 
         // Add Music Volume Slider
@@ -483,7 +618,9 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void createVictoryPanel() {
-        Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/victory.png")));
+        //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/victory.png")));
+        NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/victory.png"),
+                50, 50, 50, 50);
         Panel victoryPanel = new Panel(stage1, background, game);
         victoryPanel.setSize(0.8f, 0.6f);
         isPaused = true;
