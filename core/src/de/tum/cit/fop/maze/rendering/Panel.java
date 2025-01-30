@@ -105,7 +105,7 @@ public class Panel extends Actor{
                 long currentTime = System.currentTimeMillis();
                 if (!playing && (currentTime - lastPlayTime > cooldown) && !game.isMuted()) {
                     Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/click-button-131479.mp3"));
-                    sound.play(1F);
+                    sound.play(game.getVolume());
                     playing = true;
                     lastPlayTime = currentTime;
                 }
