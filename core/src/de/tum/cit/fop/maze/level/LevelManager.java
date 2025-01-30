@@ -350,9 +350,18 @@ public class LevelManager {
                         int worldX = chasingEnemyPosition.getTileX();
                         int worldY = chasingEnemyPosition.getTileY();
                         int enemyIndex = getEnemyIndex(tileValue);
-                        chasingEnemies.add(new BFSChasingEnemy(tileRegion, worldX, worldY,
-                                TILE_SIZE, TILE_SIZE, 10, 16, 64, 64,
-                                3, this, game, enemyIndex));
+                        String nonBFSEnemy = getProperties("nonBFSEnemyTypes");
+                        if (!nonBFSEnemy.isEmpty() && Integer.parseInt(nonBFSEnemy) == getEnemyIndex(tileValue) + 1){
+                            // create normal enemy if in the properties file, it says "non BFS"
+                            chasingEnemies.add(new ChasingEnemy(tileRegion, worldX, worldY,
+                                    TILE_SIZE, TILE_SIZE, 10, 16, 64, 64,
+                                    3, this, game, enemyIndex));
+                        }
+                        else { // BFS enemy
+                            chasingEnemies.add(new BFSChasingEnemy(tileRegion, worldX, worldY,
+                                    TILE_SIZE, TILE_SIZE, 10, 16, 64, 64,
+                                    3, this, game, enemyIndex));
+                        }
                     }
                     else { // if it is neither a trap nor a key, which is the default one
 
