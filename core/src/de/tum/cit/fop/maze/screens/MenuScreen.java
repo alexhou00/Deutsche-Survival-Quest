@@ -63,7 +63,7 @@ public class MenuScreen implements Screen {
 
         // Add a label as a title
         Label title = new Label("Deutsche Survival Quest", game.getSkin(), "fraktur");
-        title.getStyle().font.getData().setScale(0.75f);
+        title.getStyle().font.getData().setScale(1);
         table.add(title).padBottom(80).row();
 
         this.gameScreen = new GameScreen(game);
