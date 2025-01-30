@@ -9,8 +9,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
@@ -370,6 +372,7 @@ public class GameScreen extends InputAdapter implements Screen {
                     label.setText(instructionsText2);
                 }
                 if (clickCount[0] == 2) {
+                    instructionPanel.getTable().remove();
                     createIntroPanel();
                 }
             }});
@@ -377,15 +380,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private String getInstructionsText1() {
         String s = switch (game.getGameLevel()) {
-            case 1 -> """
-                    Welcome TUM student!
-                    As you arrive in Germany for your studies in Heilbronn,
-                    you will have to complete some challenges to settle in and start your studies.
-                    You will start at the airport, then figure out how to use the public transportation,
-                    which will be the Deutsche Bahn in this case, discover
-                    the beautiful Altstadt of Heilbronn and chill in an old Brauerei. Anddd, of course don't forget to 
-                    navigate your way in the city and register yourself:)
-                    """;
+            case 1 -> levels.getProperties("instructionsText1");
             case 2 -> """
                     You’ve made it out of the Stuttgart Airport! Good job!
                     Now it is time to catch the train to your new apartment.
@@ -595,7 +590,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         String grade = calculateScore();
         String scoreText = "Score: " + grade + " (" + player.getCoins() + "/" + totalCoins + ")";
-        if (!isTutorial) victoryPanel.addLabel(scoreText, game.getSkin(), 1f, 40);
+        if (!isTutorial) victoryPanel.addLabel(scoreText, game.getSkin(), "black", 1f, 40);
 
         System.out.println("Game Level: " + game.getGameLevel());
         if (game.getGameLevel() != 0) { // if is not tutorial
@@ -1338,20 +1333,39 @@ public class GameScreen extends InputAdapter implements Screen {
         hudCamera.setToOrtho(false, width, height); // Adjust HUD camera to new screen size
         moveCamera();
         player.resume();
-        for (var panel : iterate(stage1.getActors())){
-            if (panel instanceof Panel){
-                float widthRatio = ((Panel) panel).getWidthRatio();
-                float heightRatio = ((Panel) panel).getHeightRatio();
-                panel.setSize(Gdx.graphics.getWidth() * widthRatio,Gdx.graphics.getHeight() * heightRatio);
-                panel.setPosition(Gdx.graphics.getWidth() * (1-widthRatio)/2, Gdx.graphics.getHeight() * (1-heightRatio)/2);
-            } else { // default size
-                panel.setSize(Gdx.graphics.getWidth() * 0.8f,Gdx.graphics.getHeight() * 0.8f);
-                panel.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.1f);
-            }
 
-        }
+        resizePanels();
+
         stage1.getViewport().update(width, height, true); // This keeps the stage's coordinate system consistent.
         Gdx.input.setInputProcessor(inputMultiplexer);
+    }
+
+    public void resizePanels(){
+        for (var actor : iterate(stage1.getActors())){
+            if (actor instanceof Panel panel){
+                Gdx.app.log("Resize", "actor is a panel");
+                float widthRatio = (panel).getWidthRatio();
+                float heightRatio = (panel).getHeightRatio();
+                panel.setSize(Gdx.graphics.getWidth() * widthRatio,Gdx.graphics.getHeight() * heightRatio);
+                panel.setPosition(Gdx.graphics.getWidth() * (1-widthRatio)/2, Gdx.graphics.getHeight() * (1-heightRatio)/2);
+            }
+            else if (actor instanceof Table table){
+                actor.setSize(Gdx.graphics.getWidth() * 0.8f,Gdx.graphics.getHeight() * 0.8f);
+                actor.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.1f);
+
+                for (Cell<?> cell : iterate(table.getCells())) {
+                    Actor cellActor = cell.getActor();
+                    if (cellActor instanceof Label) {
+                        cell.width(Gdx.graphics.getWidth() * 0.6f * 0.9f); // Adjust width dynamically
+                    }
+                }
+            }
+            else { // default size
+                Gdx.app.log("Resize", "actor is not a panel: "+ actor.toString());
+                actor.setSize(Gdx.graphics.getWidth() * 0.8f,Gdx.graphics.getHeight() * 0.8f);
+                actor.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.1f);
+            }
+        }
     }
 
     /**

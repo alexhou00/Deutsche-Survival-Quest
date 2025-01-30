@@ -5,6 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -45,9 +47,23 @@ public class Panel extends Actor{
     public void setSize(float widthRatio, float heightRatio) { // 0~1
         this.widthRatio = widthRatio;
         this.heightRatio = heightRatio;
+
+        float newWidth = Gdx.graphics.getWidth() * widthRatio;
+        float newHeight = Gdx.graphics.getHeight() * heightRatio;
+
         // Set in the middle, "ratio" is the ratio of the length to the entire window
-        table.setSize(Gdx.graphics.getWidth() * widthRatio, Gdx.graphics.getHeight() * heightRatio);
+        table.setSize(newWidth, newHeight);
         table.setPosition(Gdx.graphics.getWidth() * (1-widthRatio)/2, Gdx.graphics.getHeight() * (1-heightRatio)/2); // left-bottom corner
+
+        // Update label widths to match new panel width
+        for (Cell<?> cell : iterate(table.getCells())) {
+            Actor actor = cell.getActor();
+            if (actor instanceof Label) {
+                cell.width(newWidth * 0.9f); // Adjust width dynamically
+            }
+        }
+
+        table.invalidate(); // Force table layout update
     }
 
     public void addLabel(String text, Label.LabelStyle style, float padBottom) {
@@ -64,16 +80,13 @@ public class Panel extends Actor{
     public Label addLabel(String text, Skin skin, String styleName, float scale, float padBottom) {
         Label label = new Label(text, skin, styleName);
         label.getStyle().font.getData().setScale(scale);
-        table.add(label).padBottom(padBottom).center().row();
+        label.setWrap(true);
+        label.setWidth(100);
+        table.add(label).width(getPanelWidth() * 0.9f).padBottom(padBottom).center().row();
         label.setAlignment(Align.top);
         return label;
     }
 
-    public void addLabel (Label label, Float padBottom, Panel panel){
-        table.add(label).padBottom(padBottom).center().row();
-        label.setAlignment(Align.center);
-
-    }
 
 
     public void addButton(String buttonText, Skin skin, ChangeListener listener) {
@@ -228,4 +241,29 @@ public class Panel extends Actor{
         NinePatch ninePatch = new NinePatch(new TextureRegion(new Texture(imageInternalPath)), left, right, top, bottom);
         return new NinePatchDrawable(ninePatch);
     }
+
+    public float getPanelWidth(){
+        Gdx.app.log("Panel", "width: " + widthRatio * Gdx.graphics.getWidth());
+        return 0.6f * Gdx.graphics.getWidth();
+    }
+
+    public float getPanelHeight(){
+        return heightRatio * Gdx.graphics.getHeight();
+    }
+
+    /**
+     * Calculates the width of a single letter using the specified font.
+     *
+     * @param font   The font to use for calculating the width.
+     * @param letter The letter whose width is to be calculated.
+     * @return The width of the letter.
+     */
+    public float getLetterWidth(BitmapFont font, String letter){
+        GlyphLayout layout = new GlyphLayout(font, letter);
+        float adjust = switch (letter.charAt(0)){
+            default -> 0;
+        };
+        return Math.max(layout.width + adjust, layout.width); // width of letter "m"
+    }
+
 }
