@@ -127,8 +127,9 @@ public class MazeRunnerGame extends Game {
         gameOverMusic.setLooping(true);
         musicList.add(gameOverMusic);
 
-        //victoryMusic = Gdx.audio.newMusic(Gdx.files.internal("A cup of tea.mp3"));
-        //victoryMusic.setLooping(true);
+        victoryMusic = Gdx.audio.newMusic(Gdx.files.internal("music/victoryMusic.ogg"));
+        victoryMusic.setLooping(true);
+        musicList.add(victoryMusic);
 
         victorySoundEffect = Gdx.audio.newMusic(Gdx.files.internal("sounds/Lively Meadow Victory Fanfare.mp3"));
         musicList.add(victorySoundEffect);
@@ -261,6 +262,7 @@ public class MazeRunnerGame extends Game {
         menuMusic.play();
         victorySoundEffect.pause();
         gameOverMusic.pause();
+        victoryMusic.pause();
 
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
@@ -287,6 +289,7 @@ public class MazeRunnerGame extends Game {
         pauseMusic.play();
         menuMusic.pause();
         backgroundMusic.play();
+        victoryMusic.pause();
 
         this.setScreen(gameScreen); // Set the current screen to MenuScreen
 
@@ -337,6 +340,7 @@ public class MazeRunnerGame extends Game {
             this.setScreen(gameOverScreen);
             backgroundMusic.pause();
             pauseMusic.pause();
+            victoryMusic.pause();
             gameOverMusic.play();
 
             // Dispose of other screens if necessary
@@ -388,6 +392,7 @@ public class MazeRunnerGame extends Game {
         menuMusic.pause();
         gameOverMusic.pause();
         backgroundMusic.pause();
+        victoryMusic.play();
     }
 
 
