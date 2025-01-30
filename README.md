@@ -77,7 +77,9 @@ MazeRunnerGame
 ```
 
 ## UML Diagram
-`<put our UML-Diagramm here>`
+
+
+![UML Diagram](assets/UML%20diagram/maze.png)
 
 
 ## Instructions
