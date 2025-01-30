@@ -66,18 +66,9 @@ public class Panel extends Actor{
 
     }
 
-    public void addLabel(String text, Label.LabelStyle style, float padBottom) {
-        Label label = new Label(text, style);
-        table.add(label).padBottom(padBottom).center().row();
-    }
-
-    public void addLabel(String text, Skin skin, float scale, float padBottom) {
-        Label label = new Label(text, skin);
-        label.getStyle().font.getData().setScale(scale);
-        table.add(label).padBottom(padBottom).center().row();
-    }
-
     public Label addLabel(String text, Skin skin, String styleName, float scale, float padBottom) {
+        if (styleName.equals("fraktur"))
+            text = text.replaceAll("s$", "\\$"); //replace an "s" at the end of a word with "$" (to show the round S in Fraktur
         Label label = new Label(text, skin, styleName);
         label.getStyle().font.getData().setScale(scale);
         label.setWrap(true);

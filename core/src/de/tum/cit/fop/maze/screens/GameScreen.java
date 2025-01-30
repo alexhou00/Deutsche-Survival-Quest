@@ -398,6 +398,7 @@ public class GameScreen extends InputAdapter implements Screen {
         introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "fraktur", 1, 40);
 
         introPanel.addLabel("Move using W, A, S, D or arrow keys.", game.getSkin(), "black", 1f, 20);
+        introPanel.addLabel("Hold Shift key to sprint.", game.getSkin(), "black", 1f, 20);
         introPanel.addLabel("Collect the key to unlock exits.", game.getSkin(), "black", 1f, 20);
         introPanel.addLabel("Avoid enemies and traps!", game.getSkin(), "black", 1f, 20);
 
