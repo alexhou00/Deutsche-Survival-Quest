@@ -119,6 +119,9 @@ src/de/tum/cit/fop/maze/
 ## Instructions
 **How to run the game**?
 * For Windows/Linux:
+Run game on the upper right hand side should be clicked, and then edit configurations should be selected. Afterward,
+*Build and Run* should be found, then  *-XstartOnFirstThread* should be removed from VM options.
+
 
 * For Mac:
 Run game on the upper right hand side should be clicked, and then edit configurations should be selected. Afterward,
@@ -129,15 +132,20 @@ Run game on the upper right hand side should be clicked, and then edit configura
 
 **How to Play**:
 
+* Select "How to Play" button to have a tutorial session, where the game mechanics are introduced.
+
+* Select "Start Game" button  continue with Level 1.
+
+* Select "Options" button to adjust the game audio.
+
+* Select "Exit Game" button to quit the game.
+
 * Character Movement: Press "WASD" or Arrow Keys to move the character.
 
 * Press *Shift* to speed up.
 
-* To Pause the game, *ESCAPE* key must be pressed and to resume, either the *ENTER* key or the *Resume* button on pause window should be pressed.
-
-* m to mute
-* 
-
+* To Pause the game, *ESCAPE* key must be pressed and to resume, the *ENTER*, and *SPACE* keys, or the *Resume* button on pause window should be pressed.
+* When game is "paused", *ESCAPE* key is pressed, an additional in-game menu, which has the similar functionality to the main menu.
 
 
 ## Game UI
@@ -186,7 +194,7 @@ Whether they progress on to the next level, however, is independent on the point
 * It can also speed up but only for a limited amount of time when the shift 
 button is pressed
 
-* Stamina: Our player can run // seconds, which can be tracked by the stamina wheel. The amount of time doubles with 
+* Stamina: Our player can run 10 seconds, which can be tracked by the stamina wheel. The amount of time doubles with 
 collecting boost-up potion
 
 **Collision**:
@@ -195,13 +203,17 @@ Deutsche Survival Quest offers pixel perfect collision with objects
 
 **Collectables**:
 
-* Lives: *hearts* and  *health insurance card*, provides the player additional lives when collected.
+* Lives: *hearts*, *pretzels*, and  *health insurance card*, provides the player additional lives when collected.
 
-* Boost-ups: power potion (adds stamina), pretzel.
+* Boost-ups: power potion (adds stamina).
 
 * Points: amount of *coins* collected determines the score.
 
 **Exit to Next Level with the Key**:
+
+* Deutsche Survival Quest offers unique key designs at each level, which align with the map's theme and conceptually ties
+levels that come after each other.
+
 * Level 1: Player must claim his luggage and can earn bonus points on the way.
 
 * Level 2: Player must get his Deutschlandticket to catch his train.
@@ -217,30 +229,50 @@ Deutsche Survival Quest offers pixel perfect collision with objects
 **Obstacles**:
 * Traps: 
 
-* Chasing enemies (dynamic object):
+* Very *intelligent* Chasing enemies (dynamic object): They detect the player when the player enters the detection radius, and starts
+chasing player until the player either gets out from the detections radius or 
 
 * Portal: When collision between the player and portal occurs, the player is sent back to the location of the entrance. 
 
 **Communication and Information**:
 
 * Panels:
+
   * Introduction Panel: brief explanation of game/levels structure
   * Pause Panel: Allows to go back to the main menu, 
-  * Options Panel
-  * victory Panel
+  * Options Panel: Allows to adjust the game's music and sound effects 
+  * Victory Panel: Displays if the level is successfully completed and the score of the player.
 
 * Speech Bubble:
-  * Chasing enemies intterract with the player through the speech bubbles. It either shows when the player is within the
+
+  * Chasing enemies interact with the player through the speech bubbles. It either shows when the player is within the
   detection radius of the chasing enemy, or displays level specific chasing enemy text
 
 **Screens**: 
 
-**Tutorial**:
+* Game Screen: holds the game logic 
+* Main Screen:
+* Select Level Screen : allows to play a specific level, with the selection of "Back" button, it allows return to
+the screen or panel it was accessed.
+* Game Over Screen: only gets displayed when the player losses all his lives.
+* Victory Screen: only gets displayed when the game is successfully completed, when Level 6 key is collected and 
+exit is reached
+
 
 **Spotlight Effect**:
 
+* Deutsche Survival Quest uses spotlight effect during the tutorial to introduce the game features.
+
 **Custom util class: Position**:
 Contributes converting the units
+
+**Sound Manager Class**:
+Allows to better handle sound, as they do not have the same methods with the Music class.
+
+### Tutorial
+
+* Tutorial can be accessed through *How to Play* on the main menu screen. The tutorial is a smaller map based on 
+the Level 1 map. Here, the main game features and instructions are introduced.
 
 
 ## Credits
@@ -275,7 +307,7 @@ The tile sets of Deutsche Survival Quest has been created by modifying the follo
   Available at https://www.vecteezy.com/vector-art/39841555-black-plastic-trash-bag-or-garbage-junk-container-with-red-rubber-ties-pixel-bit-retro-game-styled-vector-illustration-drawing-simple-flat-cartoon-drawing.
 - Beer bottle create by collaborapix (Collaborapix Studio).
   Available at https://www.vecteezy.com/vector-art/32858114-pixel-art-illustration-beer-bottle-pixelated-beer-beer-bottle-icon-pixelated-for-the-pixel-art-game-and-icon-for-website-and-video-game-old-school-retro.
-  
+
 
 ### Music
 - Background Music by Bruno Belotti (Submitted by qubodup).
@@ -285,7 +317,6 @@ The tile sets of Deutsche Survival Quest has been created by modifying the follo
   Available at https://opengameart.org/sites/default/files/A%20cup%20of%20tea_0.mp3
 - Game Over Music by Cleyton R. Xavier
  
-
 
 ### Sound Effects
 - Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=14658">freesound_community</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=14658">Pixabay</a>
