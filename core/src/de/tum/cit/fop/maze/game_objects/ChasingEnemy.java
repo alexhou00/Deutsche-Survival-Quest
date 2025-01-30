@@ -153,7 +153,6 @@ public class ChasingEnemy extends Character {
                 Gdx.app.log("Enemy", "Reset cooldown");
             }
             moveTowardsTarget(delta); // Gradually move towards the random target
-            //Gdx.app.log("Enemy", "Move Randomly");
         }
 
         // Check for collision between the enemy and the player
@@ -176,7 +175,7 @@ public class ChasingEnemy extends Character {
             //bounceBack(player);
             damageCooldown = DAMAGE_COOLDOWN_TIME; // Reset the cooldown
             damageTimes++;
-            System.out.println("Attack! The enemy touched the player! Player loses 1 life.");
+            Gdx.app.log("Enemy", "Attack! The enemy touched the player! Player loses 1 life.");
         }
     }
 
@@ -237,9 +236,9 @@ public class ChasingEnemy extends Character {
             // Move away temporarily
             targetX = x + (x - player.getX()) * 5000;
             targetY = y + (y - player.getY()) * 5000;
-            System.out.println("Going away...");
+            Gdx.app.debug("ChasingEnemy", "Going away...");
             moveTowardsTarget(delta);
-            System.out.println("Moved away from the target.");
+            Gdx.app.debug("ChasingEnemy", "Moved away from the target.");
             return true; // Stop further processing
         }
         else if (damageCooldown > 0) {
@@ -271,7 +270,6 @@ public class ChasingEnemy extends Character {
         velX = (float) (Math.tanh(dirX)) * ENEMY_BASE_SPEED; // tanh is between 1~-1 and preserves the sign. it looks like something like this: ___/‾‾‾
         velY = (float) (Math.tanh(dirY)) * ENEMY_BASE_SPEED;
 
-        //Gdx.app.log("Enemy Move", "velocity: " + velocityX + ", " + velocityY);
         // Predict new position
         float newX = x + velX * delta * 2;
         float newY = y + velY * delta * 2;
@@ -349,7 +347,7 @@ public class ChasingEnemy extends Character {
         // Check for collision with traps
         for (Trap trap : iterate(traps)) {
             if (trap.isTouching(this)) {
-                System.out.println("A chasing enemy has hit a trap :O00");
+                Gdx.app.log("ChasingEnemy", "A chasing enemy has hit a trap :O00");
                 // step back to original
                 stepBackABit(delta, trap);
             }
@@ -529,7 +527,7 @@ public class ChasingEnemy extends Character {
             return; // No player to face
         }
 
-        System.out.println("facing the player");
+        Gdx.app.log("ChasingEnemy", "facing the player");
 
         // Calculate direction vector from enemy to player
         float dx = player.getX() - x;
@@ -565,7 +563,7 @@ public class ChasingEnemy extends Character {
         if (speakingElapsedTime >= SPEAKING_CYCLE_DURATION) {
             speakingElapsedTime -= SPEAKING_CYCLE_DURATION; // Reset to start a new cycle
             String[] textToSelect = levels.getProperties("speechEnemy" + (getEnemyIndex() + 1)).split("\\|");
-            System.out.println(Arrays.toString(textToSelect));
+            Gdx.app.debug("Enemy Speech", Arrays.toString(textToSelect));
             if (textToSelect.length != 0) emptyString = false;
             speechTextIndex = new Random(System.nanoTime()).nextInt(textToSelect.length);
         }

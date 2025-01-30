@@ -93,7 +93,7 @@ public class Player extends Character {
     public void setPosition(float tileX, float tileY) {
         // Ensure the position is valid and does not cause out-of-bounds issues.
         if (!canMoveTo(tileX, tileY)) {
-            System.out.println("Invalid position: Cannot move to " + tileX + ", " + tileY);
+            Gdx.app.log("Player", "Invalid position: Cannot move to " + tileX + ", " + tileY);
             return; // Prevent setting invalid position.
         }
 
@@ -102,7 +102,7 @@ public class Player extends Character {
         this.y = MathUtils.clamp(tileY, getHitboxHeightOnScreen() / 2, getWorldHeight() - getHitboxHeightOnScreen() / 2);
 
         // Optionally, print debug information
-        System.out.println("Player position updated to: (" + this.x + ", " + this.y + ")");
+        Gdx.app.log("Player", "Player position updated to: (" + this.x + ", " + this.y + ")");
 
         // Reset movement-related flags and velocities to prevent inconsistencies.
         velX = 0;
@@ -313,7 +313,7 @@ public class Player extends Character {
             if (trap.isTouching(this)) {
                 if (!isHurt){
                     loseLives(trap.getDamage(), trap);
-                    System.out.println("Be careful!! You hit a trap:O");
+                    Gdx.app.log("Player", "Be careful!! You hit a trap:O");
                     break;
                 }
                 else{ // is hurt, prevent player from going through a trap, when, for example, an enemy attacks that force the player to step back
@@ -409,10 +409,10 @@ public class Player extends Character {
         }
 
         if (lives <= 0){
-            System.out.println("GAME OVER!! You used all of your lives:'(");
+            Gdx.app.log("Player", "GAME OVER!! You used all of your lives:'(");
         }
         else{
-            System.out.println("You got " + amount + " amount of damage! Remaining lives: " + lives);
+            Gdx.app.log("Player", "You got " + amount + " amount of damage! Remaining lives: " + lives);
         }
 
         isHurt = true;
