@@ -421,21 +421,21 @@ public class GameScreen extends InputAdapter implements Screen {
             case 1 -> """
                             During your journey, unfortunately,
                             not everything will be as easy...
-                             First of all, you will need to collect a key
-                              for each level to move on with your journey.
+                            First of all, you will need to collect a key
+                            for each level to move on with your journey.
                             Also, you must remain alert, as there will be some traps,
                             enemies, and surprises set for you to keep you from completing your journey.
                             
                             Good Luck!!
                             
-                            [Press any key to continue with level 1 instructions];
+                            [Press the button to continue with level 1 instructions];
                             """;
             case 2 -> """
                             But since only ICEs are available for your journey, you still have to avoid the ticket controller.\s
                             Stay clear from the infected trash and the angry passengers as well to prevent losing lives!
                             """;
             case 3 -> """
-                            Since it is a sunday, the sound of your luggage is annoying your german neighbours.
+                            Since it is a Sunday, the sound of your luggage is annoying your german neighbours.
                             So be careful not to bump into them!
                             As usual, avoid the trash on the floor and remember to collect pretzels to boost your energy.
                             """;
@@ -450,7 +450,7 @@ public class GameScreen extends InputAdapter implements Screen {
                             """;
             case 6 -> """
                             You must avoid the security who are asking people
-                            who do not have printed proof of their termin to leave.\s
+                            who do not have printed proof of their Termin to leave.\s
                             """;
             default -> "";
         };
