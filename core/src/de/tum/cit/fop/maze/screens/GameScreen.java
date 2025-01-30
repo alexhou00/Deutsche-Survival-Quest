@@ -1298,7 +1298,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
 
-        if (!isPaused && !isTutorial && levels.isProperties("timer")){
+        if (!isPaused && !isTutorial && levels.isProperties("timer") &&
+                currentTutorialStage.getStageOrder() >= TutorialStage.EXIT_ARROW.getStageOrder()){
             timer -= (Gdx.graphics.getDeltaTime());
             if (timer <= 0){
                 game.goToGameOverScreen();
