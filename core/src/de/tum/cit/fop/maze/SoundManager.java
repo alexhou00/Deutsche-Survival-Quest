@@ -50,16 +50,6 @@ public class SoundManager {
     }
 
     /**
-     * Mutes or unmutes all sound effects.
-     *
-     * @param mute true to mute, false to unmute.
-     */
-    public void muteAll(boolean mute) {
-        this.muted = mute;
-        setVolume(this.soundCurrentVolume); // Update volume based on mute state
-    }
-
-    /**
      * Returns the current volume level.
      *
      * @return The current sound effects volume.
@@ -68,12 +58,4 @@ public class SoundManager {
         return soundCurrentVolume;
     }
 
-    /**
-     * Checks if the sound effects are currently muted.
-     *
-     * @return true if muted, false otherwise.
-     */
-    public boolean isMuted() {
-        return muted;
-    }
 }
