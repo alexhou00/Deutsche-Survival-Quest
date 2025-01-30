@@ -10,7 +10,8 @@ his train and safely arrive in Heilbronn. He needs to be careful, as there are s
 After a long journey to Heilbronn, our player needs to relax, hence he visits the *Altstadt* to see the city and get his house keys.When he is already there, he decides to head to a *Brauerei* have to have a couple of drinks.
 But would the player keep an eye on his new keys? 
 
-When our player finally catches his breath and rest a bit, he needs to go down town to register himself in the Rathaus. However, he completely forgot that traffic and order in Germany is quite different from his hometown. Would it bee a smooth journey to navigate through the city?
+When our player finally catches his breath and rest a bit, he needs to go down town to register himself in the Rathaus. 
+However, he completely forgot that traffic and order in Germany is quite different from his hometown. Would it bee a smooth journey to navigate through the city?
 When our player successfully navigates through the city and finds the Rathaus, he needs to register himself to finally start his studies!!! 
 
 ## Table of Contents 
@@ -70,7 +71,7 @@ MazeRunnerGame
 │   ├── Constants (Holds game-wide constants like screen size and tile size)
 │   └── Position (Handles x, y coordinates and movement logic)
 │
-├── MazeRunnerGame ()
+├── MazeRunnerGame (Includes all of the imported media)
 │
 └── SoundManager (Manages Sounds)
 
@@ -148,7 +149,7 @@ to finish the game quick, he must avoid the portal. There are also traps every l
 In Deutsche Survival Quest, there are total of *5* coins that are randomly generated on each map.
 The player gets a score form A to F in the end of each successfully completed level, based on amount of coins collected. 
 Whether they progress on to the next level, however, is independent on the points they earn but rather dependent on the
- the collection of keys and finding the exit.
+the collection of keys and finding the exit.
 
 
 **Player's Movement**:
@@ -190,10 +191,11 @@ levels that come after each other.
 * Level 6: Player must find waiting number for his appointment 
 
 **Obstacles**:
-* Traps: 
+* Traps: damages the player by 1 hear
 
 * Very *intelligent* Chasing enemies (dynamic object): They detect the player when the player enters the detection radius, and starts
-chasing player until the player either gets out from the detections radius or 
+chasing player until the player either gets out from the detections radius or the cooldown period is reached. Damages the player
+by one heart.
 
 * Portal: When collision between the player and portal occurs, the player is sent back to the location of the entrance. 
 
@@ -214,7 +216,8 @@ chasing player until the player either gets out from the detections radius or
 **Screens**: 
 
 * Game Screen: holds the game logic 
-* Main Screen:
+* Menu Screen: is the main menu of the game. It allows to access the tutorial, start game, select levels, options, and 
+quit game
 * Select Level Screen : allows to play a specific level, with the selection of "Back" button, it allows return to
 the screen or panel it was accessed.
 * Game Over Screen: only gets displayed when the player losses all his lives.
@@ -285,6 +288,8 @@ The tile sets of Deutsche Survival Quest has been created by modifying the follo
 - Pause Music 
   Available at https://opengameart.org/sites/default/files/A%20cup%20of%20tea_0.mp3
 - Game Over Music by Cleyton R. Xavier
+- Victory Music by spuispuin
+  Available at https://opengameart.org/content/won-orchestral-winning-jingle.
  
 
 ### Sound Effects
@@ -318,8 +323,6 @@ The tile sets of Deutsche Survival Quest has been created by modifying the follo
 - [berin.bueyuekboduk@tum.de](mailto:berin.bueyuekboduk@tum.de)
 - [jenchien.hou@tum.de](mailto:jenchien.hou@tum.de)
 - [go36yev@mytum.de](mailto:go36yev@mytum.de)
-
-
 
 
 
