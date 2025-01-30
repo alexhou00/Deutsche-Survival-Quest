@@ -401,7 +401,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         String levelName = levels.getProperties("levelName"); // test
 
-        instructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "fraktur", 1, 40);
+        instructionPanel.addLabel((levelName.isEmpty()) ? "Introduction" : levelName, game.getSkin(), "fraktur", 1, 40);
         String instructionsText1 = getInstructionsText1();
 
         Label label = instructionPanel.addLabel(instructionsText1, game.getSkin(), "black" , 1f, 20);
