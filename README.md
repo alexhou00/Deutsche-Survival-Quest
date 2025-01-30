@@ -309,6 +309,11 @@ The tile sets of Deutsche Survival Quest has been created by modifying the follo
   Available at https://www.vecteezy.com/vector-art/32858114-pixel-art-illustration-beer-bottle-pixelated-beer-beer-bottle-icon-pixelated-for-the-pixel-art-game-and-icon-for-website-and-video-game-old-school-retro.
 
 
+### Backgrounds:
+* Game Over Background created by Dionysus.
+  Available at https://www.stockvault.net/photo/284807/dark-red-stains-on-crimson-background-watercolor-effect.
+
+
 ### Music
 - Background Music by Bruno Belotti (Submitted by qubodup).
   Available at https://opengameart.org/content/cheerful-3-nel-giardino-dello-zar-polka-loop.
