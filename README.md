@@ -13,10 +13,12 @@ When our player successfully navigates through the city and finds the Rathaus, h
 
 ## Table of Contents 
 
-* Deutsche Survival Quest (introduction)
 * Code Structure
-* directory Structure
-* 
+* Directory Structure
+* UML Diagram
+* Instructions
+* Features
+* Credits
 
 
 ### Code Structure
@@ -28,10 +30,11 @@ MazeRunnerGame
 │   └── Character (Extends GameObject, represents moving entities like Player and chasing enemies)
 │
 ├── Game Objects (Specific Game Objects and Collectibles)
-│   ├── Player (Extends Character, represents the player-controlled entity)
+│   ├── BFSChasingEnemy (Specialized path finding Breadth-First Search algorithm that extends Chasing Enemy)
 │   ├── ChasingEnemy (Extends Character, AI-driven enemy)
 │   ├── Key (Extends Collectibles, used to unlock exits)
 │   ├── Collectibles (Base class for items that can be collected)
+│   ├── Player (Extends Character, represents the player-controlled entity)
 │   ├── Portal (Teleports the player to the entrance)
 │   └── Trap (Causes the player to lose a life upon collision)
 │
@@ -72,6 +75,7 @@ src/de/tum/cit/fop/maze/
 │   └── StaticObject.java
 │
 ├── game_objects/
+│   ├── BFSChasingEnemy
 │   ├── ChasingEnemy.java
 │   ├── Collectibles.java
 │   ├── Key.java
@@ -123,21 +127,42 @@ Run game on the upper right hand side should be clicked, and then edit configura
 * be typed to the newly opened text field. When these steps are completed, the game ready to run. Have fun!
 
 
+**How to Play**:
 
-* WASD or Arrow Keys to move
+* Character Movement: Press "WASD" or Arrow Keys to move the character.
+
+* Press *Shift* to speed up.
 
 * To Pause the game, *ESCAPE* key must be pressed and to resume, either the *ENTER* key or the *Resume* button on pause window should be pressed.
 
-* enter or "resume" button on the pause screen to resume game
-
 * m to mute
+* 
 
-* Press *Shift* to speed up
+
 
 ## Game UI
 maybe show some images of the gameplay here
 
 ## Features
+
+### Overview
+- For our features, we incorporated both static and dynamic obstacles that are unique to each level. For instance, to fit the story
+line, we have ticket controllers as our dynamic obstacles. Any collision with the obstacles would result in a decrease in health level,
+that could ultimately lead to losing in the game if all 5 hearts are used up.
+
+- Aside from that, we also have a tutorial page with an animated and interactive display on the rules of the game. This would allow user to
+quickly learn how to play the game. The spotlight effect we employed makes the tutorial easier to follow as it brings the attention of the
+user to the specific variable.
+
+- The user also have control over the other interfaces in the game such as sounds and music, with the choice to adjust the volume based on their liking
+the slider, and an option to completely mute them. They are also able to choose which level they would want to skip to using the "Select Level" function
+in the menu and pause screen.
+
+- For our surprise element, we have a portal that teleports the user back to the starting point. In order for the user
+to finish the game quick, he must avoid the portal. There are also traps every level such as glass bottles that would lower the health of the user.
+
+
+###  Detailed
 
 **View**:
 * View Point :Deutsche Survival Quest is a 2D game with a third person view.
@@ -157,10 +182,12 @@ Whether they progress on to the next level, however, is independent on the point
 
 **Player's Movement**:
 * Our player's can move smoothly towards four directions and diagonally
+
 * It can also speed up but only for a limited amount of time when the shift 
 button is pressed
 
-* Stamina
+* Stamina: Our player can run // seconds, which can be tracked by the stamina wheel. The amount of time doubles with 
+collecting boost-up potion
 
 **Collision**:
 Deutsche Survival Quest offers pixel perfect collision with objects
@@ -168,16 +195,18 @@ Deutsche Survival Quest offers pixel perfect collision with objects
 
 **Collectables**:
 
-* Lives: hearts and  health insurance card, provides the player additional lives when collected.
+* Lives: *hearts* and  *health insurance card*, provides the player additional lives when collected.
 
 * Boost-ups: power potion (adds stamina), pretzel.
+
+* Points: amount of *coins* collected determines the score.
 
 **Exit to Next Level with the Key**:
 * Level 1: Player must claim his luggage and can earn bonus points on the way.
 
 * Level 2: Player must get his Deutschlandticket to catch his train.
 
-* Level 3: Player must find the key to enter his house
+* Level 3: Player must claim his house keys
 
 * Level 4: Player must find the key to exit bar.
 
@@ -190,20 +219,27 @@ Deutsche Survival Quest offers pixel perfect collision with objects
 
 * Chasing enemies (dynamic object):
 
-* Portal:
+* Portal: When collision between the player and portal occurs, the player is sent back to the location of the entrance. 
 
 **Communication and Information**:
+
 * Panels:
   * Introduction Panel: brief explanation of game/levels structure
-  * Pause Panel: 
+  * Pause Panel: Allows to go back to the main menu, 
+  * Options Panel
+  * victory Panel
+
 * Speech Bubble:
-  *
+  * Chasing enemies intterract with the player through the speech bubbles. It either shows when the player is within the
+  detection radius of the chasing enemy, or displays level specific chasing enemy text
 
 **Screens**: 
 
-**Spotlight Effect**
+**Tutorial**:
 
-**Custom util class: Position**
+**Spotlight Effect**:
+
+**Custom util class: Position**:
 Contributes converting the units
 
 
@@ -225,6 +261,20 @@ The tile sets of Deutsche Survival Quest has been created by modifying the follo
   Available at: https://opengameart.org/content/3x3-minimal.
   License Type: CC0 1.0 Universal https://creativecommons.org/publicdomain/zero/1.0/.
   Key: created by djvstock available at <a href="https://www.vecteezy.com/vector-art/10968271-paper-sheet-pixel">paper sheet pixel Vectors by Vecteezy</a>. 
+
+### Keys
+- Luggage (Level 1) created by Bekzod Shoyakubov.
+  Available at https://www.vecteezy.com/vector-art/5146448-suitcase-pixel-art.
+- Document (Level 5) created by djvstock (Diana Johanna Velasquez).
+  Available at https://www.vecteezy.com/vector-art/10968271-paper-sheet-pixel.
+
+### Obstacles 
+- Trash can created by djvstock (Diana Johanna Velasquez).
+  Available at https://www.vecteezy.com/vector-art/10968225-trash-can-pixel.
+- Trash bag created by amandalamsyah (Kwee Amanda Alamsyah).
+  Available at https://www.vecteezy.com/vector-art/39841555-black-plastic-trash-bag-or-garbage-junk-container-with-red-rubber-ties-pixel-bit-retro-game-styled-vector-illustration-drawing-simple-flat-cartoon-drawing.
+- Beer bottle create by collaborapix (Collaborapix Studio).
+  Available at https://www.vecteezy.com/vector-art/32858114-pixel-art-illustration-beer-bottle-pixelated-beer-beer-bottle-icon-pixelated-for-the-pixel-art-game-and-icon-for-website-and-video-game-old-school-retro.
   
 
 ### Music
@@ -264,31 +314,6 @@ The tile sets of Deutsche Survival Quest has been created by modifying the follo
 - [jenchien.hou@tum.de](mailto:jenchien.hou@tum.de)
 - [go36yev@mytum.de](mailto:go36yev@mytum.de)
 
-
-
-## Some draft.....
-Deutsche Survival Quest (German Assimilation Game) (sorting trash/ fighting german neighbours/ a maze leading to the Rathaus and the documents are the boosters, enemy is the bahnhof enjoyers and the DB delays) - different cities as different levels (1. Munich, 2. Heilbronn 3.Berlin 4. Frankfurt) (random DB cancellation force the player to restart level)
-Finding luggage at the airport while racing against time (before the train leaves) (
-
-Key - documents that can be collected at the Burgeramt to unlock next level/ train ticket/ health insurance/
-
-
-## Features
-
-For our features, we incorporated both static and dynamic obstacles that are unique to each level. For instance, to fit the story
-line, we have ticket controllers as our dynamic obstacles. Any collision with the obstacles would result in a decrease in health level,
-that could ultimately lead to losing in the game if all 5 hearts are used up. 
-
-Aside from that, we also have a tutorial page with an animated and interactive display on the rules of the game. This would allow user to 
-quickly learn how to play the game. The spotlight effect we employed makes the tutorial easier to follow as it brings the attention of the 
-user to the specific variable. 
-
-The user also have control over the other interfaces in the game such as sounds and music, with the choice to adjust the volume based on their liking 
-the slider, and an option to completely mute them. They are also able to choose which level they would want to skip to using the "Select Level" function 
-in the menu and pause screen.
-
-For our surprise element, we have a portal that teleports the user back to the starting point. In order for the user
-to finish the game quick, he must avoid the portal. There are also traps every level such as glass bottles that would lower the health of the user. 
 
 
 
