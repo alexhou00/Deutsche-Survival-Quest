@@ -78,7 +78,10 @@ MazeRunnerGame
 ```
 
 ## UML Diagram
-`<put our UML-Diagramm here>`
+
+
+![UML Diagram](assets/UML%20diagram/maze.png)
+
 
 
 ## Instructions
@@ -185,7 +188,7 @@ levels that come after each other.
 
 * Level 5: Player must get his documents and the rathaus to register in the Rathaus.
 
-* Level 6: Player must find the room for his appointment 
+* Level 6: Player must find waiting number for his appointment 
 
 **Obstacles**:
 * Traps: damages the player by 1 hear
