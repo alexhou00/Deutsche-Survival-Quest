@@ -1,15 +1,17 @@
 # Deutsche Survival Quest
 
 "Deutsche Survival Quest" is created by java and is inspired by *The Maze Runner*. It is created by using libGDX framework.
-The main Purpose is to collect the key and finding the exit to the next level. Game is successfully completed when all of the levels
+The main goal of the game is to collect the key and finding the exit to enter the next level. The game is successfully completed when all of the levels
 are completed without loosing all of the lives. 
 
 "Deutsche Survival Quest" depicts the story of an international student who has arrived to Germany for his studies. He
 first lands to Stuttgart Airport, claims his luggage to get to his train. Our player needs to find his *Deutschlandticket* in order to get on
 his train and safely arrive in Heilbronn. He needs to be careful, as there are strict ticket control personal in alert and also a lot of objects that are dangerous for his health.
-After a long journey to Heilbronn, our player needs to relax, hence he visits the *Altstadt* to see the city and then a *Brauerei* have to have a couple of drinks. When our player finally catches his breath and rest a bit, he needs to go down town to
-register himself in the Rathaus. However, he completely forgot that traffic and order in Germany is quite different from his hometown. Would it bee a smooth journey to navigate through the city?
-When our player successfully navigates through the city and finds the Rathaus, he needs to register himself to seamlessly start his studies!!! 
+After a long journey to Heilbronn, our player needs to relax, hence he visits the *Altstadt* to see the city and get his house keys.When he is already there, he decides to head to a *Brauerei* have to have a couple of drinks.
+But would the player keep an eye on his new keys? 
+
+When our player finally catches his breath and rest a bit, he needs to go down town to register himself in the Rathaus. However, he completely forgot that traffic and order in Germany is quite different from his hometown. Would it bee a smooth journey to navigate through the city?
+When our player successfully navigates through the city and finds the Rathaus, he needs to register himself to finally start his studies!!! 
 
 ## Table of Contents 
 
@@ -32,84 +34,46 @@ MazeRunnerGame
 ├── Game Objects (Specific Game Objects and Collectibles)
 │   ├── BFSChasingEnemy (Specialized path finding Breadth-First Search algorithm that extends Chasing Enemy)
 │   ├── ChasingEnemy (Extends Character, AI-driven enemy)
-│   ├── Key (Extends Collectibles, used to unlock exits)
 │   ├── Collectibles (Base class for items that can be collected)
+│   ├── Key (Extends Collectibles, used to unlock exits)
 │   ├── Player (Extends Character, represents the player-controlled entity)
 │   ├── Portal (Teleports the player to the entrance)
 │   └── Trap (Causes the player to lose a life upon collision)
 │
 ├── Level (Tile System)
-│   └── Tiles (Manages tile properties and interactions)
+│   └── LevelManager (Manages tile and level properties and interactions)
 │
 ├── Rendering (Graphics and Effects)
 │   ├── ElementRenderer (Responsible for rendering game objects)
 │   ├── Panel (Manages UI components like pause and victory panels)
-│   ├── SpeechBubble (Displays dialogues or reactions)
-│   └── SpotlightEffect (Creates a visual effect for lighting)
+│   ├── ResizeableTable (Manages the ratios of the content within the Ppanels (on tables))
+│   ├── SpeechBubble (Displays dialogues or reactions of characters)
+│   └── SpotlightEffect (Creates a visual effect for lighting and adds shadows on everything else)
 │
 ├── Screens (Game Screens for Navigation)
 │   ├── GameOverScreen (Shown after the player loses all their lives)
 │   ├── GameScreen (Main gameplay screen)
 │   ├── MenuScreen (Initial menu interface)
-│   └── SelectLevelScreen (Allows level selection)
+│   ├── OptionsScreen (Allows audio adjustments)
+│   ├── SelectLevelScreen (Allows level selection)
+│   └── VictoryScreen (Displays if the game is succsessfully completed)
 │
 ├── Tiles (Special Tile Types in the Maze)
-│   ├── Tile (Base class for all tiles)
-│   ├── Wall (Non-passable tile)
 │   ├── Entrance (Starting point for the player)
 │   ├── Exit (Goal for the player to reach)
-│   └── SpeedBoost (Tile that increases player speed temporarily)
+│   ├── SpeedBoost (Tile that increases player speed temporarily)
+│   ├── Tile (Base class for all tiles)
+│   ├── TileType (Enum that holds all the tile types)
+│   └── Wall (Non-passable tile)
 │
 ├── Utility (Helpers and Constants)
 │   ├── Constants (Holds game-wide constants like screen size and tile size)
 │   └── Position (Handles x, y coordinates and movement logic)
+│
+├── MazeRunnerGame ()
+│
+└── SoundManager (Manages Sounds)
 
-```
-
-#### Directory Structure
-```
-src/de/tum/cit/fop/maze/
-├── base/
-│   ├── Character.java
-│   ├── GameObject.java
-│   └── StaticObject.java
-│
-├── game_objects/
-│   ├── BFSChasingEnemy
-│   ├── ChasingEnemy.java
-│   ├── Collectibles.java
-│   ├── Key.java
-│   ├── Player.java
-│   ├── Portal.java
-│   └── Trap.java
-│
-├── level/
-│   └── Tiles.java
-│
-├── rendering/
-│   ├── ElementRenderer.java
-│   ├── Panel.java
-│   ├── SpeechBubble.java
-│   └── SpotlightEffect.java
-│
-├── screens/
-│   ├── GameOverScreen.java
-│   ├── GameScreen.java
-│   ├── MenuScreen.java
-│   └── SelectLevelScreen.java
-│
-├── tiles/
-│   ├── Entrance.java
-│   ├── Exit.java
-│   ├── SpeedBoost.java
-│   ├── Tile.java
-│   └── Wall.java
-│
-├── util/
-│   ├── Constants.java
-│   └── Position.java
-│
-└── MazeRunnerGame.java
 ```
 
 ## UML Diagram
@@ -146,10 +110,6 @@ Run game on the upper right hand side should be clicked, and then edit configura
 
 * To Pause the game, *ESCAPE* key must be pressed and to resume, the *ENTER*, and *SPACE* keys, or the *Resume* button on pause window should be pressed.
 * When game is "paused", *ESCAPE* key is pressed, an additional in-game menu, which has the similar functionality to the main menu.
-
-
-## Game UI
-maybe show some images of the gameplay here
 
 ## Features
 
