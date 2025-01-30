@@ -344,6 +344,11 @@ The tile sets of Deutsche Survival Quest has been created by modifying the follo
   Available at https://opengameart.org/content/lively-meadow-victory-fanfare-and-song.
   License type: Attribution 3.0 Unported https://creativecommons.org/licenses/by/3.0/.
 
+### Fonts
+- **Mainz Fraktur** by _Peter Wiegel_<br>
+  A Fraktur-style font released in 2010 under the Open Font License (OFL).
+  Available at: https://www.fontasy.de/font-937-mainzerfraktur.php?lang=de<br>
+  License: Open Font License (OFL)
 
 ## Contact
 - [berin.bueyuekboduk@tum.de](mailto:berin.bueyuekboduk@tum.de)
