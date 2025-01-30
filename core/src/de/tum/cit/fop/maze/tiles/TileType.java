@@ -6,6 +6,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * Enum representing different types of tiles in a game.
+ * Each tile type can have a basic ID and optionally one or two additional ranges of IDs to represent different variants of the tile.
+ */
 // Enum with constructor and ID parameter
 public enum TileType{
     // Each TileType is defined with its basic ID, and optionally a range of IDs for special cases.
@@ -35,6 +39,13 @@ public enum TileType{
     private final Integer secondId2;    // A second starting ID range (optional, for multiple ranges).
     private final Integer finalId2;     // A second ending ID range (optional).
 
+    /**
+     * Constructor for tile types with one additional range of IDs.
+     *
+     * @param basicId  The basic ID of the tile type.
+     * @param secondId The starting ID of the additional range.
+     * @param finalId  The ending ID of the additional range.
+     */
     // Constructor for types with one range of additional IDs.
     TileType(int basicId, Integer secondId, Integer finalId) {
         this.basicId = basicId;
@@ -44,6 +55,11 @@ public enum TileType{
         this.finalId2 = null;
     }
 
+    /**
+     * Constructor for tile types with only a basic ID.
+     *
+     * @param basicId The basic ID of the tile type.
+     */
     // Constructor for types with only a basic ID.
     TileType(int basicId) {
         this.basicId = basicId;
@@ -53,6 +69,15 @@ public enum TileType{
         this.finalId2 = null;
     }
 
+    /**
+     * Constructor for tile types with two additional ranges of IDs.
+     *
+     * @param basicId   The basic ID of the tile type.
+     * @param secondId  The starting ID of the first additional range.
+     * @param finalId   The ending ID of the first additional range.
+     * @param secondId2 The starting ID of the second additional range.
+     * @param finalId2  The ending ID of the second additional range.
+     */
     // Constructor for types with two ranges of additional IDs.
     TileType(int basicId, Integer secondId, Integer finalId, Integer secondId2, Integer finalId2) {
         this.basicId = basicId;
@@ -81,6 +106,11 @@ public enum TileType{
         return finalId;
     }
 
+    /**
+     * Combines the basic ID and all additional ID ranges into a Set of integers.
+     *
+     * @return A Set containing all IDs associated with this tile type.
+     */
     // Combines all ID ranges into a Set of integers.
     public Set<Integer> getAll() {
         if (secondId2 != null && finalId2 != null && getSecond() != null && getFinal() != null) { // like wall

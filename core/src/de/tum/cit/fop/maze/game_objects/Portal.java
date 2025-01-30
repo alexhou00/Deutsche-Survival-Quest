@@ -10,7 +10,7 @@ import de.tum.cit.fop.maze.level.LevelManager;
 
 import static de.tum.cit.fop.maze.util.Position.getWorldCoordinateInPixels;
 
-/** The third obstacle, rather than static traps & enemies, it must be something ingenious. Use your imagination and experience in videogames.*/
+/** The third obstacle, rather than static traps & enemies, it must be something ingenious. Use your imagination and experience in video games.*/
 public class Portal extends StaticObject {
     private float elapsedTime; // Tracks time for the portal's state
     private boolean isActive; // Indicates if the portal is active
@@ -118,6 +118,13 @@ public class Portal extends StaticObject {
         System.out.println("Portal initialized: isActive=" + isActive + ", elapsedTime=" + elapsedTime);
     }
 
+    /**
+     * Renders the game object on the screen using the specified sprite batch and texture frame.
+     * The object is only rendered if it is marked as active.
+     *
+     * @param batch The {@link SpriteBatch} used to draw the texture frame.
+     * @param frame The {@link TextureRegion} representing the image to render.
+     */
     public void render(SpriteBatch batch, TextureRegion frame){
         if (isActive) {
             batch.draw(frame, getX() - getWidthOnScreen() / 2, getY() - getHeightOnScreen() / 2, getWidthOnScreen(), getHeightOnScreen());

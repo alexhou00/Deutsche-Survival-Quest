@@ -89,6 +89,10 @@ public class SpotlightEffect extends ApplicationAdapter {
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
+    /**
+     * Disposes of the resources used by this object, including the SpriteBatch and textures.
+     * This is called to free up memory and resources when they are no longer needed.
+     */
     @Override
     public void dispose() {
         batch.dispose();

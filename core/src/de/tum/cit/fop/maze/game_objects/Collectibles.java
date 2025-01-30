@@ -51,6 +51,15 @@ public class Collectibles extends GameObject {
         this.game = game;
     }
 
+    /**
+     * Initializes the collectable item with a reference to the player and a sound effect.
+     *
+     * This method sets the player reference, allowing the collectable to interact with the player,
+     * and assigns a sound effect that plays when the item is collected.
+     *
+     * @param player The player who can collect this item.
+     * @param soundEffect The sound effect to be played upon collection.
+     */
     public void init(Player player, Sound soundEffect) {
         this.player = player;
         this.soundEffectCollect = soundEffect;

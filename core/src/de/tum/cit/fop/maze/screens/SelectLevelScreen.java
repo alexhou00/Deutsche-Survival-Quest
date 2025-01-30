@@ -21,17 +21,28 @@ import java.util.Map;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 
+/**
+ * The SelectLevelScreen class represents the screen where the player selects a level to play.
+ * It contains UI elements like buttons for each level and a back button. The screen also handles
+ * the transition between different screens, such as the main menu and the game screen.
+ */
 public class SelectLevelScreen implements Screen  {
 
     private final Stage stage;
     private final MazeRunnerGame game;
     private final Map<String, TextButton> buttons;
     private final Texture backgroundTexture;
-    private MenuScreen menuScreen;
     private final GameScreen gameScreen;
-    private GameOverScreen gameOverScreen;
     private final String previousScreen;
 
+    /**
+     * Constructs the SelectLevelScreen.
+     * Initializes the screen with a camera, viewport, background texture, buttons, and the UI table.
+     *
+     * @param game          The main game instance.
+     * @param previousScreen The name of the previous screen to navigate back to.
+     * @param gameScreen    The current game screen to return to if the player comes from the pause screen.
+     */
     public SelectLevelScreen(MazeRunnerGame game, String previousScreen, GameScreen gameScreen) {
         this.game = game;
         this.previousScreen = previousScreen;
@@ -51,7 +62,7 @@ public class SelectLevelScreen implements Screen  {
         stage.addActor(table);
 
 
-        table.add(new Label("Select Your Level", game.getSkin(), "title")).padBottom(80).row();
+        table.add(new Label("Select The Level", game.getSkin(), "fraktur")).padBottom(40).row();
 
         buttons = new LinkedHashMap<>();
 
@@ -69,6 +80,7 @@ public class SelectLevelScreen implements Screen  {
 
                 }
             });
+            buttons.get("Level " + i).addListener(game.getButtonSoundListener());
             table.add(buttons.get("Level " + i)).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
         }
 
@@ -85,41 +97,27 @@ public class SelectLevelScreen implements Screen  {
                 }
             }
         });
+        backButton.addListener(game.getButtonSoundListener());
         table.add(backButton).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).padTop(20).row();
 
 
     }
 
-    public void goToSelectLevelScreen() {
-        // this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
-        if (gameScreen == null) {
-            // TODO: this will be changed in the future once we can select our own levels
-          game.setScreen(this);
-        }
-        // Set the current screen to MenuScreen
-
-        if (menuScreen != null) {
-            menuScreen.dispose(); // Dispose the menu screen if it exists
-            menuScreen = null;
-        }
-
-        if (gameOverScreen != null) {
-            gameOverScreen.dispose(); // Dispose the menu screen if it exists
-            gameOverScreen = null;
-        }
-
-        if (gameScreen != null){
-            gameScreen.dispose();
-            game.setScreen(this);
-        }
-    }
-
-
+    /**
+     * Called when the screen is shown. Sets the input processor to the stage so it can capture
+     * input events such as button presses.
+     */
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
     }
 
+    /**
+     * Called every frame to render the screen. Clears the screen, draws the background,
+     * and updates the stage to render all UI components and buttons.
+     *
+     * @param delta The time in seconds since the last frame. Used to update animations or movements.
+     */
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -129,6 +127,13 @@ public class SelectLevelScreen implements Screen  {
         stage.draw();
     }
 
+
+    /**
+     * Called when the screen is resized. It updates the viewport of the stage to fit the new window dimensions.
+     *
+     * @param width  The new width of the window.
+     * @param height The new height of the window.
+     */
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true); // Update the stage viewport on resize

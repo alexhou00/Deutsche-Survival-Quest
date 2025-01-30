@@ -17,6 +17,8 @@ import de.tum.cit.fop.maze.MazeRunnerGame;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static de.tum.cit.fop.maze.util.Constants.*;
+
 public class GameOverScreen implements Screen {
 
     private final Stage stage;
@@ -46,20 +48,18 @@ public class GameOverScreen implements Screen {
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
         stage = new Stage(viewport, game.getSpriteBatch()); // Create a stage for UI elements
 
-        backgroundTexture = new Texture("backgrounds/background.png");
+        backgroundTexture = new Texture("backgrounds/game_over.png");
 
         Table table = new Table(); // Create a table for layout
         table.setFillParent(true); // Make the table fill the stage
         stage.addActor(table); // Add the table to the stage
 
         // Add a label as a title
-        Label title = new Label("Game Over", game.getSkin(), "title");
-        title.getStyle().font.getData().setScale(0.75f);
+        Label title = new Label("Game Over", game.getSkin(), "fraktur-white");
+        title.getStyle().font.getData().setScale(1);
         table.add(title).padBottom(80).row();
 
-        // Add buttons for restarting or exiting the game
-        final float BUTTON_WIDTH = 300f;
-        final float BUTTON_PADDING = 10f; // Vertical padding
+        // Add buttons for restarting or exiting
 
         buttons = new LinkedHashMap<>();
         buttons.put("restartButton", new TextButton("Restart Level", game.getSkin()));
@@ -70,7 +70,8 @@ public class GameOverScreen implements Screen {
         // Add buttons to the table with padding
         for (Map.Entry<String, TextButton> entry : buttons.entrySet()) {
             TextButton button = entry.getValue();
-            table.add(button).width(BUTTON_WIDTH).padBottom(BUTTON_PADDING).row();
+            button.addListener(game.getButtonSoundListener());
+            table.add(button).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
         }
 
 
@@ -118,8 +119,6 @@ public class GameOverScreen implements Screen {
 
         // Draw a simple label for debugging
         game.getSpriteBatch().begin();//BEGİN priteBatch EVERYTİME YOU WANNA DRAW
-        //BitmapFont font = new BitmapFont();
-        //font.draw(game.getSpriteBatch(), "Game Over", Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2);
         game.getSpriteBatch().end();//YOU NEED TO END EVERYTHİME YOU WANNA FİNİSH PUTTİNG STH ON THE SECREEN
 
         // Update and draw the stage (buttons should be visible)

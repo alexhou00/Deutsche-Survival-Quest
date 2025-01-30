@@ -6,21 +6,21 @@ filter: Linear, Linear
 repeat: none
 armor
   rotate: false
-  xy: 404, 131
+  xy: 1, 3
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
 armor-bg
   rotate: false
-  xy: 1673, 1883
+  xy: 27, 29
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
 cell
   rotate: false
-  xy: 1184, 1428
+  xy: 2031, 2029
   size: 11, 11
   split: 4, 4, 4, 4
   orig: 11, 11
@@ -28,14 +28,14 @@ cell
   index: -1
 craftacular-mockup
   rotate: false
-  xy: 650, 1343
+  xy: 1679, 1715
   size: 325, 325
   orig: 325, 325
   offset: 0, 0
   index: -1
 cursor
   rotate: false
-  xy: 1699, 1921
+  xy: 2006, 2009
   size: 18, 6
   split: 0, 17, 0, 5
   orig: 18, 6
@@ -43,63 +43,63 @@ cursor
   index: -1
 dirt
   rotate: false
-  xy: 516, 1189
+  xy: 1879, 1281
   size: 146, 146
   orig: 146, 146
   offset: 0, 0
   index: -1
 font-bold-export
   rotate: false
-  xy: 977, 1441
+  xy: 1679, 1429
   size: 224, 227
   orig: 224, 227
   offset: 0, 0
   index: -1
 font-export
   rotate: false
-  xy: 977, 1234
+  xy: 1672, 1222
   size: 205, 205
   orig: 205, 205
   offset: 0, 0
   index: -1
 font-title-export
   rotate: false
-  xy: 1, 1337
+  xy: 1, 1393
   size: 647, 647
   orig: 647, 647
   offset: 0, 0
   index: -1
 heart
   rotate: false
-  xy: 1943, 1941
+  xy: 1949, 1688
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
 heart-bg
   rotate: false
-  xy: 1968, 1966
+  xy: 1905, 1635
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
 meat
   rotate: false
-  xy: 812, 1312
+  xy: 561, 1362
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
 meat-bg
   rotate: false
-  xy: 1, 8
+  xy: 516, 1317
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
 scroll-bg
   rotate: false
-  xy: 664, 1195
+  xy: 1879, 1133
   size: 146, 146
   split: 0, 0, 14, 14
   pad: 0, 0, 0, 1
@@ -108,7 +108,7 @@ scroll-bg
   index: -1
 scroll-horizontal
   rotate: false
-  xy: 404, 107
+  xy: 1567, 1345
   size: 1, 22
   split: 0, 0, 0, 0
   orig: 1, 22
@@ -116,7 +116,7 @@ scroll-horizontal
   index: -1
 scroll-knob-horizontal
   rotate: false
-  xy: 46, 48
+  xy: 1672, 1504
   size: 5, 22
   split: 0, 4, 0, 4
   pad: 1, 0, 0, 0
@@ -125,7 +125,7 @@ scroll-knob-horizontal
   index: -1
 scroll-knob-vertical
   rotate: false
-  xy: 1165, 1832
+  xy: 1949, 1708
   size: 22, 5
   split: 0, 4, 0, 4
   pad: 0, 0, 0, 0
@@ -134,7 +134,7 @@ scroll-knob-vertical
   index: -1
 scroll-vertical
   rotate: false
-  xy: 516, 1186
+  xy: 1905, 1655
   size: 22, 1
   split: 0, 0, 0, 0
   orig: 22, 1
@@ -142,7 +142,7 @@ scroll-vertical
   index: -1
 slider
   rotate: false
-  xy: 1, 84
+  xy: 1164, 1314
   size: 372, 65
   split: 7, 7, 7, 11
   pad: 0, 0, 3, 3
@@ -151,7 +151,7 @@ slider
   index: -1
 slider-knob
   rotate: false
-  xy: 375, 84
+  xy: 1538, 1314
   size: 27, 65
   split: 7, 7, 7, 11
   orig: 27, 65
@@ -159,7 +159,7 @@ slider-knob
   index: -1
 text-field
   rotate: false
-  xy: 1673, 1929
+  xy: 1679, 1658
   size: 268, 55
   split: 3, 3, 3, 3
   pad: 4, 4, 4, 4
@@ -168,7 +168,7 @@ text-field
   index: -1
 tooltip
   rotate: false
-  xy: 1943, 1961
+  xy: 2006, 2017
   size: 23, 23
   split: 8, 8, 9, 8
   pad: 7, 7, 8, 7
@@ -177,7 +177,7 @@ tooltip
   index: -1
 underline
   rotate: false
-  xy: 835, 1334
+  xy: 1672, 1495
   size: 5, 7
   split: 2, 2, 0, 6
   pad: 0, 0, 0, 6
@@ -186,14 +186,14 @@ underline
   index: -1
 white
   rotate: false
-  xy: 664, 1192
+  xy: 1973, 1712
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 window
   rotate: false
-  xy: 1, 39
+  xy: 516, 1348
   size: 43, 43
   split: 16, 16, 16, 16
   pad: 13, 13, 13, 13
@@ -202,21 +202,21 @@ window
   index: -1
 xp
   rotate: false
-  xy: 812, 1332
+  xy: 561, 1382
   size: 21, 9
   orig: 21, 9
   offset: 0, 0
   index: -1
 xp-bg
   rotate: false
-  xy: 1, 28
+  xy: 516, 1337
   size: 21, 9
   orig: 21, 9
   offset: 0, 0
   index: -1
 button-9
   rotate: false
-  xy: 650, 1670
+  xy: 1, 49
   size: 512, 156
   split: 30, 30, 30, 30
   pad: 0, 0, 0, 0
@@ -225,7 +225,7 @@ button-9
   index: -1
 button
   rotate: false
-  xy: 650, 1670
+  xy: 1, 49
   size: 512, 156
   split: 30, 30, 30, 30
   pad: 0, 0, 0, 0
@@ -234,7 +234,7 @@ button
   index: -1
 button-9-disabled
   rotate: false
-  xy: 650, 1828
+  xy: 650, 1884
   size: 513, 156
   split: 0, 0, 0, 0
   orig: 513, 156
@@ -242,7 +242,7 @@ button-9-disabled
   index: -1
 button-disabled
   rotate: false
-  xy: 650, 1828
+  xy: 650, 1884
   size: 513, 156
   split: 30, 30, 30, 30
   pad: 0, 0, 0, 0
@@ -251,7 +251,7 @@ button-disabled
   index: -1
 button-9-hoover
   rotate: false
-  xy: 1, 1179
+  xy: 1, 1235
   size: 513, 156
   split: 30, 30, 30, 30
   pad: 0, 0, 0, 0
@@ -260,7 +260,7 @@ button-9-hoover
   index: -1
 button-hoover
   rotate: false
-  xy: 1, 1179
+  xy: 1, 1235
   size: 513, 156
   split: 30, 30, 30, 30
   pad: 0, 0, 0, 0
@@ -269,7 +269,7 @@ button-hoover
   index: -1
 button-hover
   rotate: false
-  xy: 1, 1179
+  xy: 1, 1235
   size: 513, 156
   split: 30, 30, 30, 30
   pad: 0, 0, 0, 0
@@ -278,7 +278,7 @@ button-hover
   index: -1
 slider-horizontal
   rotate: false
-  xy: 46, 72
+  xy: 1567, 1369
   size: 20, 10
   split: 4, 4, 4, 4
   pad: 1, 2, 2, 2
@@ -287,36 +287,43 @@ slider-horizontal
   index: -1
 slider-knob-p
   rotate: false
-  xy: 1673, 1903
+  xy: 1, 23
   size: 24, 24
   split: 0, 0, 0, 0
   orig: 24, 24
   offset: 0, 0
   index: -1
-Bertholdr Mainzer Fraktur_0
+Bertholdr Mainzer Fraktur(1)_0
   rotate: false
-  xy: 1, 665
+  xy: 650, 1370
   size: 512, 512
   orig: 512, 512
   offset: 0, 0
   index: -1
-fraktur
+Bertholdr Mainzer Fraktur(1)_1
   rotate: false
-  xy: 1, 665
+  xy: 1165, 1528
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+Bertholdr Mainzer Fraktur_0
+  rotate: false
+  xy: 1, 721
   size: 512, 512
   orig: 512, 512
   offset: 0, 0
   index: -1
 Bertholdr Mainzer Fraktur_1
   rotate: false
-  xy: 1, 151
+  xy: 1, 207
   size: 512, 512
   orig: 512, 512
   offset: 0, 0
   index: -1
 Minecraft-Seven_v2(1)
   rotate: false
-  xy: 1165, 1839
+  xy: 1164, 1381
   size: 506, 145
   orig: 506, 145
   offset: 0, 0

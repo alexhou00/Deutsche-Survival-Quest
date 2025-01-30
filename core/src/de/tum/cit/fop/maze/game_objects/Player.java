@@ -74,7 +74,7 @@ public class Player extends Character {
         this.gameScreen = gameScreen;
         this.game = gameScreen.game;
         this.stamina = maxStamina; // Initialize stamina to max
-        if (levels.isCameraAngled()){
+        if (levels.isCameraAngled()) {
             this.hitboxHeight /= 2;
         }
 
@@ -83,6 +83,13 @@ public class Player extends Character {
 
     }
 
+    /**
+     * Sets the player's position on the game world grid while ensuring
+     * it remains within valid boundaries and does not enter restricted areas.
+     *
+     * @param tileX The target x-coordinate (tile-based).
+     * @param tileY The target y-coordinate (tile-based).
+     */
     public void setPosition(float tileX, float tileY) {
         // Ensure the position is valid and does not cause out-of-bounds issues.
         if (!canMoveTo(tileX, tileY)) {
@@ -179,15 +186,13 @@ public class Player extends Character {
         boolean canMoveHorizontally = canMoveTo(newXTest, y);
         boolean canMoveVertically = canMoveTo(x, newYTest);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.K)){
+        handleCheatCode();
+        if (isGodMode){
             canMoveHorizontally = true;
             canMoveVertically = true;
-            targetVelX *= 4;
-            targetVelY *= 4;
-            lives = 5;
+            targetVelX *= 5;
+            targetVelY *= 5;
         }
-
-
 
         if (canBoost && boostPressed && speed > SPEED_THRESHOLD && !game.isMuted()){
             game.getSoundEffectRunning().setVolume(0.5f);
@@ -198,8 +203,6 @@ public class Player extends Character {
             game.getSoundEffectRunning().pause();
 
         }
-
-
 
         // both hor. and ver. are pressed -> move diagonally
         // Adjust speed for diagonal movement (moving diagonally should divide the speed by sqrt(2))
@@ -306,7 +309,6 @@ public class Player extends Character {
         Array<Trap> traps = levels.traps;
 
         // Check for collision with traps
-
         for (Trap trap : iterate(traps)) {
             if (trap.isTouching(this)) {
                 if (!isHurt){
@@ -330,6 +332,11 @@ public class Player extends Character {
         }
     }
 
+    /**
+     * Checks if the player is colliding with any portals and handles teleportation accordingly.
+     *
+     * @param portals An array of {@link Portal} objects to check for collisions.
+     */
     public void checkPortalCollisions(Array<Portal> portals) {
         for (Portal portal : iterate(portals)) {
             if (isTouching(portal)) {
@@ -346,6 +353,52 @@ public class Player extends Character {
         }
     }
 
+    private final Array<Integer> cheatCodeSequence = new Array<>();
+    private static final int[] CHEAT_CODE = {
+            Input.Keys.L, Input.Keys.T, Input.Keys.L, Input.Keys.B,
+            Input.Keys.R, Input.Keys.T, Input.Keys.R, Input.Keys.B
+    };
+    private boolean isGodMode = false;
+
+    private void handleCheatCode(){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.L) || Gdx.input.isKeyJustPressed(Input.Keys.T) ||
+                Gdx.input.isKeyJustPressed(Input.Keys.B) || Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+
+            cheatCodeSequence.add(Gdx.input.isKeyJustPressed(Input.Keys.L) ? Input.Keys.L :
+                    (Gdx.input.isKeyJustPressed(Input.Keys.T) ? Input.Keys.T :
+                            (Gdx.input.isKeyJustPressed(Input.Keys.B) ? Input.Keys.B :
+                                    Input.Keys.R)));
+
+            // Keep only the last 8 keys
+            if (cheatCodeSequence.size > CHEAT_CODE.length) {
+                cheatCodeSequence.removeIndex(0);
+            }
+
+            // Check if the sequence matches
+            if (cheatCodeSequence.size == CHEAT_CODE.length) {
+                boolean matched = true;
+                for (int i = 0; i < CHEAT_CODE.length; i++) {
+                    if (!cheatCodeSequence.get(i).equals(CHEAT_CODE[i])) {
+                        matched = false;
+                        break;
+                    }
+                }
+                if (matched) {
+                    Gdx.app.log("player", "Cheat mode activated!");
+                    lives = 999;
+                    isGodMode = true;
+                }
+            }
+        }
+    }
+
+    /**
+     * Reduces the player's lives when they take damage and plays a sound effect if not muted.
+     * If the player's lives reach zero, the game ends.
+     *
+     * @param amount The amount of damage the player takes.
+     * @param source The {@link GameObject} that caused the damage.
+     */
     public void loseLives(float amount, GameObject source){//or damage idk
         lives -= amount;
         if (!game.isMuted()){
@@ -394,19 +447,28 @@ public class Player extends Character {
 
         super.update(delta); // still need to update everything that a character should
     }
-    /**
-     * Resets the player's position to the start position.
-     */
-    public void resetToStartPosition() {
-        hitbox.setPosition(levels.entrance.getTileX(), levels.entrance.getTileY());
-    }
 
+    /**
+     * Checks whether this game object is within a specified radius of another game object.
+     * Uses the squared distance formula to avoid unnecessary square root calculations.
+     *
+     * @param object The {@link GameObject} to compare distance with.
+     * @param radius The distance threshold to check proximity.
+     * @return {@code true} if the object is within the given radius, otherwise {@code false}.
+     */
     public boolean isCloseTo(GameObject object, float radius){
         float dx = (object.getX() - x);
         float dy = (object.getY() - y);
         return dx * dx + dy * dy <= radius * radius;
     }
 
+    /**
+     * Checks if this game object is within a specified radius of any trap.
+     * Returns the first trap found within the radius or {@code null} if no trap is nearby.
+     *
+     * @param radius The distance threshold to check proximity.
+     * @return The first {@link Trap} found within the given radius, or {@code null} if none are close.
+     */
     public Trap isCloseToTraps(float radius){
         for (Trap trap : iterate(levels.traps)){
             float dx = (trap.getX() - x);
@@ -418,6 +480,13 @@ public class Player extends Character {
         return null;
     }
 
+    /**
+     * Checks if this game object is within a specified radius of any chasing enemy.
+     * Returns the first enemy found within the radius or {@code null} if no enemy is nearby.
+     *
+     * @param radius The distance threshold to check proximity.
+     * @return The first {@link ChasingEnemy} found within the given radius, or {@code null} if none are close.
+     */
     public ChasingEnemy isCloseToEnemies(float radius){
         for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
             float dx = (enemy.getX() - x);
@@ -429,6 +498,13 @@ public class Player extends Character {
         return null;
     }
 
+    /**
+     * Checks if this game object is within a specified radius of any collectible item.
+     * Returns the first collectible found within the radius or {@code null} if none are nearby.
+     *
+     * @param radius The distance threshold to check proximity.
+     * @return The first {@link Collectibles} found within the given radius, or {@code null} if none are close.
+     */
     public Collectibles isCloseToCollectibles(float radius){
         for (Collectibles collectible : iterate(gameScreen.getCollectibles())){
             float dx = (collectible.getX() - x);
@@ -440,6 +516,13 @@ public class Player extends Character {
         return null;
     }
 
+    /**
+     * Checks if this game object is within a specified radius of any active portal.
+     * Returns the first active portal found within the radius or {@code null} if none are nearby.
+     *
+     * @param radius The distance threshold to check proximity.
+     * @return The first {@link Portal} found within the given radius and is active, or {@code null} if none are close.
+     */
     public Portal isCloseToPortals(float radius){
         for (Portal portal : iterate(gameScreen.getPortals())){
             float dx = (portal.getX() - x);
@@ -465,10 +548,6 @@ public class Player extends Character {
         return isMoving;
     }
 
-    public void setMoving(boolean moving) {
-        isMoving = moving;
-    }
-
     public boolean isHurt() {
         return isHurt;
     }
@@ -479,10 +558,6 @@ public class Player extends Character {
 
     public float getStamina() {
         return stamina;
-    }
-
-    public void setPaused(boolean paused){
-        this.paused = paused;
     }
 
     public int getCoins() {
@@ -507,6 +582,10 @@ public class Player extends Character {
 
     @Override
     public Rectangle getHitbox() {
+        if (levels.isCameraAngled()){
+            // hitbox height is already divided by 2
+            return hitbox.set(x - getHitboxWidthOnScreen() / 2, y - getHitboxHeightOnScreen(), getHitboxWidthOnScreen(), getHitboxHeightOnScreen());
+        }
         return super.getHitbox();
     }
 }

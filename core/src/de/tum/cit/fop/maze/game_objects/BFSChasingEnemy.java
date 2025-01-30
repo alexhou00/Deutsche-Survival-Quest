@@ -75,6 +75,8 @@ public class BFSChasingEnemy extends ChasingEnemy {
         alertTime -= delta;
 
         if (handleCooldown(player, delta)) return;
+        if (!super.isPlayerWithinDetectionRadius(player, detectionRadius)) // if the player is not even in the radius, just don't find path
+            return;
 
         // Find the path to the player using BFS
         List<Position> path = findPathTo(player.getX(), player.getY());
@@ -98,7 +100,7 @@ public class BFSChasingEnemy extends ChasingEnemy {
 
                 List<Position> alternativePath = findPathTo(altX, altY);
                 if (!reachedAlternative && processPath(alternativePath, delta)){
-                    Gdx.app.log("BFS alt", "Alternative path found, chasing...");
+                    //Gdx.app.debug("BFS alt", "Alternative path found, chasing...");
                     return;
                 }
 
@@ -167,7 +169,7 @@ public class BFSChasingEnemy extends ChasingEnemy {
 
             if (current.equals(goal)) {
                 // Path found
-                Gdx.app.log("BFS", "Path found");
+                //Gdx.app.log("BFS", "Path found");
                 return reconstructPath(cameFrom, start, goal);
             }
 

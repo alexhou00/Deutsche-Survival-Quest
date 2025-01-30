@@ -11,6 +11,9 @@ import com.badlogic.gdx.math.MathUtils;
 
 import static de.tum.cit.fop.maze.util.Constants.getWorldWidth;
 
+/**
+ * A class to represent a speech bubble with customizable text, appearance, and duration.
+ */
 public class SpeechBubble {
     private final Texture texture;
     private final TextureRegion speechTailRegion;
@@ -37,6 +40,9 @@ public class SpeechBubble {
     private static final int CAPITAL_LETTER_OE = 214;
     private static final int CAPITAL_LETTER_UE = 220;
 
+    /**
+     * Constructs a SpeechBubble with the necessary textures, font, and configurations.
+     */
     public SpeechBubble() {
         this.texture = new Texture(Gdx.files.internal("original/objects.png"));
         this.speechTailRegion = new TextureRegion(texture, 192, 224, 16, 24);
@@ -63,7 +69,6 @@ public class SpeechBubble {
         this.letterWidth = new float[256]; // extended-ascii to include letters like ä, ö, ü
         for (int i = ' '; i<='ü'; i++){
             letterWidth[i] = getLetterWidth(font, Character.toString((char) i));
-            //System.out.println(Character.toString(i)+ ": " + letterWidth[i]);
         }
     }
 
@@ -113,8 +118,6 @@ public class SpeechBubble {
 
         // Render the 9-patch
         float cornerSize = 14 * scale;
-         //centerWidth = bubbleWidth - 2 * cornerSize;  // (textWidth + padding * 2) - 2 * 14 * scale
-         //centerHeight = bubbleHeight - 2 * cornerSize;
 
         textWidth = Math.max(textWidth, cornerSize * 2);
         bubbleWidth = (textWidth + paddingX * 2);

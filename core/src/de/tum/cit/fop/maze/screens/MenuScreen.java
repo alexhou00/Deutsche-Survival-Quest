@@ -5,7 +5,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -52,10 +51,8 @@ public class MenuScreen implements Screen {
 
         selectLevelScreen = new SelectLevelScreen(game, "previous screen", gameScreen);
         optionsScreen = new OptionsScreen(game);
-
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
         stage = new Stage(viewport, game.getSpriteBatch()); // Create a stage for UI elements
-
         backgroundTexture = new Texture("backgrounds/background.png");
 
         table.setFillParent(true); // Make the table fill the stage
@@ -63,7 +60,7 @@ public class MenuScreen implements Screen {
 
         // Add a label as a title
         Label title = new Label("Deutsche Survival Quest", game.getSkin(), "fraktur");
-        title.getStyle().font.getData().setScale(0.75f);
+        title.getStyle().font.getData().setScale(1);
         table.add(title).padBottom(80).row();
 
         this.gameScreen = new GameScreen(game);
@@ -79,6 +76,7 @@ public class MenuScreen implements Screen {
         // Add buttons to the table with padding
         for (Map.Entry<String, TextButton> entry : buttons.entrySet()) {
             TextButton button = entry.getValue();
+            button.addListener(game.getButtonSoundListener());
             table.add(button).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
         }
 
@@ -128,6 +126,13 @@ public class MenuScreen implements Screen {
         Gdx.app.log("MenuScreen", "ChangeListener is added.");
     }
 
+    /**
+     * The render method is called every frame to update and draw the menu screen.
+     * It clears the screen, renders the background texture, and draws the UI elements
+     * contained in the stage. It also updates and draws the stage to reflect any changes.
+     *
+     * @param delta The time in seconds since the last frame. Used to update animations or movements.
+     */
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear the screen
@@ -141,6 +146,14 @@ public class MenuScreen implements Screen {
         stage.draw(); // Draw the stage
     }
 
+    /**
+     * Called when the window is resized. It updates the viewport and adjusts button scaling
+     * and placement to ensure the UI elements remain properly positioned and scaled
+     * according to the new window size.
+     *
+     * @param width  The new width of the window.
+     * @param height The new height of the window.
+     */
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true); // Update the stage viewport on resize
@@ -161,12 +174,19 @@ public class MenuScreen implements Screen {
         }
     }
 
+    /**
+     * Called when the screen is disposed of. It disposes of the stage to free up resources.
+     */
     @Override
     public void dispose() {
         // Dispose of the stage when screen is disposed
         stage.dispose();
     }
 
+    /**
+     * Called when the screen is shown. Sets the input processor so the stage can receive
+     * input events, such as button presses.
+     */
     @Override
     public void show() {
         // Set the input processor so the stage can receive input events

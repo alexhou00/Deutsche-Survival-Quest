@@ -22,6 +22,10 @@ import java.util.Map;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 
+/**
+ * Represents the Options screen in the MazeRunner game. This screen allows the user to adjust settings such as
+ * music volume, sound effects volume, and mute/unmute options. It also provides navigation back to the main menu.
+ */
 public class OptionsScreen implements Screen {
 
     private final Stage stage;
@@ -38,6 +42,11 @@ public class OptionsScreen implements Screen {
     private final Slider musicSlider;
     private final Slider soundSlider;
 
+    /**
+     * Constructs the OptionsScreen for the MazeRunner game.
+     *
+     * @param game The game instance used to control the game state and settings.
+     */
     public OptionsScreen(MazeRunnerGame game) {
         this.game = game;
         var camera = new OrthographicCamera();
@@ -58,7 +67,7 @@ public class OptionsScreen implements Screen {
         buttons.put("Back", new TextButton("Back", skin));
 
         // Add header label
-        table.add(new Label("Options", skin, "fraktur")).padBottom(80).row();
+        table.add(new Label("Option$", skin, "fraktur")).padBottom(80).row();
 
         // Volume Slider for Music
         musicSlider = new Slider(0f, 1f, 0.05f, false, skin);
@@ -73,6 +82,8 @@ public class OptionsScreen implements Screen {
         table.add(soundSlider).width(300).padBottom(20).row();
 
         // Add buttons (Mute, Back) under the sliders
+        buttons.get("Mute").addListener(game.getButtonSoundListener());
+        buttons.get("Back").addListener(game.getButtonSoundListener());
         table.add(buttons.get("Mute")).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
         table.add(buttons.get("Back")).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
 
@@ -116,6 +127,9 @@ public class OptionsScreen implements Screen {
         });
     }
 
+    /**
+     * Navigates to the options screen, ensuring that the previous screen (if any) is disposed of.
+     */
     public void goToOptionsScreen() {
         if (optionsScreen == null) {
             game.setScreen(this); // Set current screen to OptionsScreen
@@ -138,11 +152,19 @@ public class OptionsScreen implements Screen {
         }
     }
 
+    /**
+     * Called when the screen is shown. This sets the input processor to the stage.
+     */
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
     }
 
+    /**
+     * Renders the options screen, including background and UI elements.
+     *
+     * @param delta The time elapsed since the last render call.
+     */
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -155,7 +177,12 @@ public class OptionsScreen implements Screen {
         stage.draw();
     }
 
-    @Override
+    /**
+     * Resizes the viewport to fit the new screen dimensions.
+     *
+     * @param width  The new width of the screen.
+     * @param height The new height of the screen.
+     */@Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
     }

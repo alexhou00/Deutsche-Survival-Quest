@@ -36,10 +36,6 @@ public class Key extends StaticObject {
         this.game = game;
     }
 
-    public boolean collisionWithPlayer(Player player) {
-        return this.getHitbox().overlaps(player.getHitbox());
-    }
-
     /**
      * Marks the key as collected and prints a message to the console.
      * Note that the key should be checked if collected at first by checking if touching player in some other places
@@ -57,19 +53,10 @@ public class Key extends StaticObject {
     }
 
     /**
-     * Resets the key to its original position and marks it as uncollected.
+     * Checks whether the key has been collected.
+     *
+     * @return {@code true} if the key has been collected, {@code false} otherwise.
      */
-    public void returnToPosition() {
-        setPosition(x, y);
-        setCollected(false); // Reset the collected status
-        System.out.println("Key returned to original position: (" + x + ", " + y + ")");
-    }
-
-    public void setPosition(float x, float y) {
-        this.x = x;
-        this.y = y;
-    }
-
     public boolean isCollected() {
         return isCollected;
     }
@@ -82,17 +69,5 @@ public class Key extends StaticObject {
      */
     public void setCollected(boolean collected) {
         isCollected = collected;
-    }
-
-    public void renderTheKey(SpriteBatch spriteBatch, Texture keyTexture) {
-        if (!isCollected) {
-            spriteBatch.draw(
-                    keyTexture,
-                    getX(),
-                    getY(),
-                    getWidthOnScreen(),
-                    getHeightOnScreen()
-            );
-        }
     }
 }
