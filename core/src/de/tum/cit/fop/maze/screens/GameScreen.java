@@ -1298,15 +1298,15 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
 
-        if (!isPaused && !isTutorial && game.getGameLevel() ==6){
+        if (!isPaused && !isTutorial && levels.isProperties("timer")){
             timer -= (Gdx.graphics.getDeltaTime());
-            if(timer <=0 ){
+            if (timer <= 0){
                 game.goToGameOverScreen();
             }
         }
 
-        if (game.getGameLevel() ==6){
-            String time = "time : " + timer;
+        if (levels.isProperties("timer")){
+            String time = "Time : " + (float)Math.round(timer * 100f) / 100f; // round to 2nd digit
             font.draw(game.getSpriteBatch(), time, 20, Gdx.graphics.getHeight() - 120);
         }
         game.getSpriteBatch().end();
