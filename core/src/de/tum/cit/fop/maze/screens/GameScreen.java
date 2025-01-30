@@ -15,10 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -384,29 +382,31 @@ public class GameScreen extends InputAdapter implements Screen {
                     As you arrive in Germany for your studies in Heilbronn,
                     you will have to complete some challenges to settle in and start your studies.
                     You will start at the airport, then figure out how to use the public transportation,
-                    which will be the Deutsche Bahn in this case,
-                    complete your city registration, chill in a Brauerei,
-                    and of course discover the beautiful Altstadt of Heilbronn:)
+                    which will be the Deutsche Bahn in this case, discover
+                    the beautiful Altstadt of Heilbronn and chill in an old Brauerei. Anddd, of course don't forget to 
+                    navigate your way in the city and register yourself:)
                     """;
             case 2 -> """
-                    You’ve made it out of the Frankfurt Airport! Good job!
+                    You’ve made it out of the Stuttgart Airport! Good job!
                     Now it is time to catch the train to your new apartment.
-                    You must collect your Deutschland ticket and take the train to your new home
+                    You must collect your Deutschlandticket and take the train to your new home! Be careful though, the
+                    ticket you have might not be valid :O
                     """;
             case 3 -> """
-                    Home sweet home! You’ve now reached your neighbourhood in heilbronn.
+                    Home sweet home! You’ve now reached your city Heilbronn and decided to explore the Altstadt.
                     Look for your keys and find your home to continue your journey in Germany
                     """;
             case 4 -> """
-                    You’re now all settled in and decided to go to the pub to meet some new people!
+                    Time flies! You spent almost the whole day in Altstadt. You’re now tired and decided to go to the pub 
+                    to meet some new people! 
                     """;
             case 5 -> """
-                    Time flies! It has now been a week since you arrived and you must now do your city registration. 
-                    To do so, you must collect all your documents and find the RatHaus. 
+                    Oops... When you were on your was to Rathaus, a strong wind came out of no where and blew your documenets away!
+                    Hurry up and find them before your Termin!!! 
                     """;
             case 6 -> """
-                    Welcome to the ratHaus! You are almost well settled here!
-                    All you have to do now is find the room (it is behind a grey door) for your termin!
+                    Welcome to the Rathaus! You are almost well settled here!
+                    All you have to do now is to find the room (it is behind a grey door) and show up for your Termin!
                     """;
             default -> "";
         };
