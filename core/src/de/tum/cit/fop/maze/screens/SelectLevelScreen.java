@@ -31,7 +31,6 @@ public class SelectLevelScreen implements Screen  {
     private final Stage stage;
     private final MazeRunnerGame game;
     private final Map<String, TextButton> buttons;
-    private final Texture backgroundTexture;
     private final GameScreen gameScreen;
     private final String previousScreen;
 
@@ -54,8 +53,6 @@ public class SelectLevelScreen implements Screen  {
 
         Viewport viewport = new ScreenViewport(camera);
         stage = new Stage (viewport, game.getSpriteBatch());
-
-        backgroundTexture = new Texture("backgrounds/background.png");
 
         Table table = new Table();
         table.setFillParent(true);

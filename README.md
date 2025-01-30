@@ -1,15 +1,18 @@
 # Deutsche Survival Quest
 
 "Deutsche Survival Quest" is created by java and is inspired by *The Maze Runner*. It is created by using libGDX framework.
-The main Purpose is to collect the key and finding the exit to the next level. Game is successfully completed when all of the levels
+The main goal of the game is to collect the key and finding the exit to enter the next level. The game is successfully completed when all of the levels
 are completed without loosing all of the lives. 
 
 "Deutsche Survival Quest" depicts the story of an international student who has arrived to Germany for his studies. He
 first lands to Stuttgart Airport, claims his luggage to get to his train. Our player needs to find his *Deutschlandticket* in order to get on
 his train and safely arrive in Heilbronn. He needs to be careful, as there are strict ticket control personal in alert and also a lot of objects that are dangerous for his health.
-After a long journey to Heilbronn, our player needs to relax, hence he visits the *Altstadt* to see the city and then a *Brauerei* have to have a couple of drinks. When our player finally catches his breath and rest a bit, he needs to go down town to
-register himself in the Rathaus. However, he completely forgot that traffic and order in Germany is quite different from his hometown. Would it bee a smooth journey to navigate through the city?
-When our player successfully navigates through the city and finds the Rathaus, he needs to register himself to seamlessly start his studies!!! 
+After a long journey to Heilbronn, our player needs to relax, hence he visits the *Altstadt* to see the city and get his house keys.When he is already there, he decides to head to a *Brauerei* have to have a couple of drinks.
+But would the player keep an eye on his new keys? 
+
+When our player finally catches his breath and rest a bit, he needs to go down town to register himself in the Rathaus. 
+However, he completely forgot that traffic and order in Germany is quite different from his hometown. Would it bee a smooth journey to navigate through the city?
+When our player successfully navigates through the city and finds the Rathaus, he needs to register himself to finally start his studies!!! 
 
 ## Table of Contents 
 
@@ -32,84 +35,46 @@ MazeRunnerGame
 ├── Game Objects (Specific Game Objects and Collectibles)
 │   ├── BFSChasingEnemy (Specialized path finding Breadth-First Search algorithm that extends Chasing Enemy)
 │   ├── ChasingEnemy (Extends Character, AI-driven enemy)
-│   ├── Key (Extends Collectibles, used to unlock exits)
 │   ├── Collectibles (Base class for items that can be collected)
+│   ├── Key (Extends Collectibles, used to unlock exits)
 │   ├── Player (Extends Character, represents the player-controlled entity)
 │   ├── Portal (Teleports the player to the entrance)
 │   └── Trap (Causes the player to lose a life upon collision)
 │
 ├── Level (Tile System)
-│   └── Tiles (Manages tile properties and interactions)
+│   └── LevelManager (Manages tile and level properties and interactions)
 │
 ├── Rendering (Graphics and Effects)
 │   ├── ElementRenderer (Responsible for rendering game objects)
 │   ├── Panel (Manages UI components like pause and victory panels)
-│   ├── SpeechBubble (Displays dialogues or reactions)
-│   └── SpotlightEffect (Creates a visual effect for lighting)
+│   ├── ResizeableTable (Manages the ratios of the content within the Ppanels (on tables))
+│   ├── SpeechBubble (Displays dialogues or reactions of characters)
+│   └── SpotlightEffect (Creates a visual effect for lighting and adds shadows on everything else)
 │
 ├── Screens (Game Screens for Navigation)
 │   ├── GameOverScreen (Shown after the player loses all their lives)
 │   ├── GameScreen (Main gameplay screen)
 │   ├── MenuScreen (Initial menu interface)
-│   └── SelectLevelScreen (Allows level selection)
+│   ├── OptionsScreen (Allows audio adjustments)
+│   ├── SelectLevelScreen (Allows level selection)
+│   └── VictoryScreen (Displays if the game is succsessfully completed)
 │
 ├── Tiles (Special Tile Types in the Maze)
-│   ├── Tile (Base class for all tiles)
-│   ├── Wall (Non-passable tile)
 │   ├── Entrance (Starting point for the player)
 │   ├── Exit (Goal for the player to reach)
-│   └── SpeedBoost (Tile that increases player speed temporarily)
+│   ├── SpeedBoost (Tile that increases player speed temporarily)
+│   ├── Tile (Base class for all tiles)
+│   ├── TileType (Enum that holds all the tile types)
+│   └── Wall (Non-passable tile)
 │
 ├── Utility (Helpers and Constants)
 │   ├── Constants (Holds game-wide constants like screen size and tile size)
 │   └── Position (Handles x, y coordinates and movement logic)
+│
+├── MazeRunnerGame (Includes all of the imported media)
+│
+└── SoundManager (Manages Sounds)
 
-```
-
-#### Directory Structure
-```
-src/de/tum/cit/fop/maze/
-├── base/
-│   ├── Character.java
-│   ├── GameObject.java
-│   └── StaticObject.java
-│
-├── game_objects/
-│   ├── BFSChasingEnemy
-│   ├── ChasingEnemy.java
-│   ├── Collectibles.java
-│   ├── Key.java
-│   ├── Player.java
-│   ├── Portal.java
-│   └── Trap.java
-│
-├── level/
-│   └── Tiles.java
-│
-├── rendering/
-│   ├── ElementRenderer.java
-│   ├── Panel.java
-│   ├── SpeechBubble.java
-│   └── SpotlightEffect.java
-│
-├── screens/
-│   ├── GameOverScreen.java
-│   ├── GameScreen.java
-│   ├── MenuScreen.java
-│   └── SelectLevelScreen.java
-│
-├── tiles/
-│   ├── Entrance.java
-│   ├── Exit.java
-│   ├── SpeedBoost.java
-│   ├── Tile.java
-│   └── Wall.java
-│
-├── util/
-│   ├── Constants.java
-│   └── Position.java
-│
-└── MazeRunnerGame.java
 ```
 
 ## UML Diagram
@@ -147,10 +112,6 @@ Run game on the upper right hand side should be clicked, and then edit configura
 * To Pause the game, *ESCAPE* key must be pressed and to resume, the *ENTER*, and *SPACE* keys, or the *Resume* button on pause window should be pressed.
 * When game is "paused", *ESCAPE* key is pressed, an additional in-game menu, which has the similar functionality to the main menu.
 
-
-## Game UI
-maybe show some images of the gameplay here
-
 ## Features
 
 ### Overview
@@ -185,7 +146,7 @@ to finish the game quick, he must avoid the portal. There are also traps every l
 In Deutsche Survival Quest, there are total of *5* coins that are randomly generated on each map.
 The player gets a score form A to F in the end of each successfully completed level, based on amount of coins collected. 
 Whether they progress on to the next level, however, is independent on the points they earn but rather dependent on the
- the collection of keys and finding the exit.
+the collection of keys and finding the exit.
 
 
 **Player's Movement**:
@@ -227,10 +188,11 @@ levels that come after each other.
 * Level 6: Player must find the room for his appointment 
 
 **Obstacles**:
-* Traps: 
+* Traps: damages the player by 1 hear
 
 * Very *intelligent* Chasing enemies (dynamic object): They detect the player when the player enters the detection radius, and starts
-chasing player until the player either gets out from the detections radius or 
+chasing player until the player either gets out from the detections radius or the cooldown period is reached. Damages the player
+by one heart.
 
 * Portal: When collision between the player and portal occurs, the player is sent back to the location of the entrance. 
 
@@ -251,7 +213,8 @@ chasing player until the player either gets out from the detections radius or
 **Screens**: 
 
 * Game Screen: holds the game logic 
-* Main Screen:
+* Menu Screen: is the main menu of the game. It allows to access the tutorial, start game, select levels, options, and 
+quit game
 * Select Level Screen : allows to play a specific level, with the selection of "Back" button, it allows return to
 the screen or panel it was accessed.
 * Game Over Screen: only gets displayed when the player losses all his lives.
@@ -272,7 +235,8 @@ Allows to better handle sound, as they do not have the same methods with the Mus
 ### Tutorial
 
 * Tutorial can be accessed through *How to Play* on the main menu screen. The tutorial is a smaller map based on 
-the Level 1 map. Here, the main game features and instructions are introduced.
+the Level 1 map. Here, the main game features and instructions are introduced. The tutorial is also interactive,
+enabling users to play the game but with more guidance.
 
 
 ## Credits
@@ -312,7 +276,7 @@ The tile sets of Deutsche Survival Quest has been created by modifying the follo
 ### Backgrounds:
 * Game Over Background created by Dionysus.
   Available at https://www.stockvault.net/photo/284807/dark-red-stains-on-crimson-background-watercolor-effect.
-
+* Houses tiles from Victory Background by Risa Athene
 
 ### Music
 - Background Music by Bruno Belotti (Submitted by qubodup).
@@ -321,6 +285,8 @@ The tile sets of Deutsche Survival Quest has been created by modifying the follo
 - Pause Music 
   Available at https://opengameart.org/sites/default/files/A%20cup%20of%20tea_0.mp3
 - Game Over Music by Cleyton R. Xavier
+- Victory Music by spuispuin
+  Available at https://opengameart.org/content/won-orchestral-winning-jingle.
  
 
 ### Sound Effects
@@ -354,8 +320,6 @@ The tile sets of Deutsche Survival Quest has been created by modifying the follo
 - [berin.bueyuekboduk@tum.de](mailto:berin.bueyuekboduk@tum.de)
 - [jenchien.hou@tum.de](mailto:jenchien.hou@tum.de)
 - [go36yev@mytum.de](mailto:go36yev@mytum.de)
-
-
 
 
 
