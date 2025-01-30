@@ -543,6 +543,10 @@ public class Player extends Character {
 
     @Override
     public Rectangle getHitbox() {
+        if (levels.isCameraAngled()){
+            // hitbox height is already divided by 2
+            return hitbox.set(x - getHitboxWidthOnScreen() / 2, y - getHitboxHeightOnScreen(), getHitboxWidthOnScreen(), getHitboxHeightOnScreen());
+        }
         return super.getHitbox();
     }
 }
