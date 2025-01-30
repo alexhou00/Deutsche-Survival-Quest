@@ -34,8 +34,6 @@ import de.tum.cit.fop.maze.util.Position;
 
 import java.util.*;
 
-import static com.badlogic.gdx.scenes.scene2d.ui.Table.Debug.actor;
-import static de.tum.cit.fop.maze.rendering.Panel.ifSpaceKeyPressed;
 import static de.tum.cit.fop.maze.rendering.Panel.*;
 import static de.tum.cit.fop.maze.tiles.TileType.GROUND;
 import static de.tum.cit.fop.maze.util.Constants.*;
@@ -352,14 +350,14 @@ public class GameScreen extends InputAdapter implements Screen {
 
         String levelName = levels.getProperties("levelName"); // test
 
-        instructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "fraktur", 1, 80);
+        instructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "fraktur", 1, 50);
         String instructionsText1 = getInstructionsText1();
 
         Label.LabelStyle instructionsStyle2 = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
 
         Label label = instructionPanel.addLabel(instructionsText1, game.getSkin(), "black" , 1f, 20);
 
-        final int[] clickCount = {0};
+        final int[] clickCount = {0}; // has to be an array
         instructionPanel.addButton("Continue", game.getSkin(), new ChangeListener() {
 
             @Override
@@ -369,6 +367,9 @@ public class GameScreen extends InputAdapter implements Screen {
                 String instructionsText2 = getLabelForInstructionsText2();
 
                 if (clickCount[0] == 1) {
+                    if (instructionsText2.isEmpty()) {
+                        clickCount[0]++;
+                    }
                     label.setText(instructionsText2);
                 }
                 if (clickCount[0] == 2) {
@@ -379,77 +380,14 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     private String getInstructionsText1() {
-        String s = switch (game.getGameLevel()) {
-            case 1 -> levels.getProperties("instructionsText1");
-            case 2 -> """
-                    You’ve made it out of the Stuttgart Airport! Good job!
-                    Now it is time to catch the train to your new apartment.
-                    You must collect your Deutschlandticket and take the train to your new home! Be careful though, the
-                    ticket you have might not be valid :O
-                    """;
-            case 3 -> """
-                    Home sweet home! You’ve now reached your city Heilbronn and decided to explore the Altstadt.
-                    Look for your keys and find your home to continue your journey in Germany
-                    """;
-            case 4 -> """
-                    Time flies! You spent almost the whole day in Altstadt. You’re now tired and decided to go to the pub 
-                    to meet some new people! 
-                    """;
-            case 5 -> """
-                    Oops... When you were on your was to Rathaus, a strong wind came out of no where and blew your documenets away!
-                    Hurry up and find them before your Termin!!! 
-                    """;
-            case 6 -> """
-                    Welcome to the Rathaus! You are almost well settled here!
-                    All you have to do now is to find the room (it is behind a grey door) and show up for your Termin!
-                    """;
-            default -> "";
-        };
-
+        String s = levels.getProperties("instructionsText1");
         Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
-        return s;
+        return s.replace("\\n", "\n");
     }
 
     private String getLabelForInstructionsText2(){
-
-        String instructionsText2 = switch (game.getGameLevel()) {
-            case 1 -> """
-                            During your journey, unfortunately,
-                            not everything will be as easy...
-                            First of all, you will need to collect a key
-                            for each level to move on with your journey.
-                            Also, you must remain alert, as there will be some traps,
-                            enemies, and surprises set for you to keep you from completing your journey.
-                            
-                            Good Luck!!
-                            
-                            [Press the button to continue with level 1 instructions];
-                            """;
-            case 2 -> """
-                            But since only ICEs are available for your journey, you still have to avoid the ticket controller.\s
-                            Stay clear from the infected trash and the angry passengers as well to prevent losing lives!
-                            """;
-            case 3 -> """
-                            Since it is a Sunday, the sound of your luggage is annoying your german neighbours.
-                            So be careful not to bump into them!
-                            As usual, avoid the trash on the floor and remember to collect pretzels to boost your energy.
-                            """;
-            case 4 -> """
-                            However, the pub was filled with drunk people that you have to avoid.
-                            Look for your house keys and the backdoor so that you can return home!
-                            """;
-            case 5 -> """
-                            Since you are now in the city centre,
-                            be careful of oncoming traffic and
-                            not to bump into any trash cans on your way to the Rathaus!
-                            """;
-            case 6 -> """
-                            You must avoid the security who are asking people
-                            who do not have printed proof of their Termin to leave.\s
-                            """;
-            default -> "";
-        };
-        return instructionsText2;
+        String s = levels.getProperties("instructionsText2");
+        return s.replace("\\n", "\n");
     }
 
 
@@ -457,14 +395,14 @@ public class GameScreen extends InputAdapter implements Screen {
         NinePatchDrawable backgroundDrawable = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
                 86, 86, 98, 98);
         Panel introPanel = new Panel(stage1, backgroundDrawable, game);
-        introPanel.setSize(0.9f, 0.9f);
+        introPanel.setSize(0.8f, 0.8f);
 
         String levelName = levels.getProperties("levelName");
         introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "fraktur", 1, 20);
 
-        introPanel.addLabel("Move using W, A, S, D keys.", game.getSkin(), "black", 1f, 50);
-        introPanel.addLabel("Collect keys to unlock exits.", game.getSkin(), "black", 1f, 50);
-        introPanel.addLabel("Avoid enemies and traps!", game.getSkin(), "black", 1f, 50);
+        introPanel.addLabel("Move using W, A, S, D keys.", game.getSkin(), "black", 1f, 20);
+        introPanel.addLabel("Collect keys to unlock exits.", game.getSkin(), "black", 1f, 20);
+        introPanel.addLabel("Avoid enemies and traps!", game.getSkin(), "black", 1f, 20);
 
         introPanel.addButton("Start now", game.getSkin(), new ChangeListener() {
             @Override
@@ -479,7 +417,8 @@ public class GameScreen extends InputAdapter implements Screen {
             currentTutorialStage = TutorialStage.EXIT_ARROW;
         }));
 
-        introPanel.addLabel("[OR PRESS SPACE BAR TO SKIP]", game.getSkin(), "black", 1, 80);
+        if (game.getGameLevel() == 1)
+            introPanel.addLabel("[OR YOU CAN ALWAYS PRESS SPACE BAR TO SKIP]", game.getSkin(), "black", 1, 0);
     }
 
     public void createPausePanel() {
