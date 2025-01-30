@@ -76,11 +76,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
     // Show all the variables in the bottom-left corner here
     // Variables to show, stored in a map (LinkedHashMap preserves the order)
-    Map<String, Float> variablesToShow = new LinkedHashMap<>();
-    InputMultiplexer inputMultiplexer = new InputMultiplexer();
+    private Map<String, Float> variablesToShow = new LinkedHashMap<>();
+    private InputMultiplexer inputMultiplexer = new InputMultiplexer();
 
-    Animation<TextureRegion> playerAnimation;
-    Animation<TextureRegion> enemyAnimation;
+    private Animation<TextureRegion> playerAnimation;
+    private Animation<TextureRegion> enemyAnimation;
 
     // Timer to track how long the stamina bar should stay visible after refill
     private static final float STAMINA_DISPLAY_TIME = 1f; // Duration to show stamina bar in seconds
@@ -93,9 +93,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private final SelectLevelScreen selectLevelScreen;
     private final TooltipManager tooltipManager;
-
-    private Slider volumeSlider;
-
 
 
     /**
@@ -120,8 +117,6 @@ public class GameScreen extends InputAdapter implements Screen {
         Viewport viewport1 = new ScreenViewport(hudCamera);
         stage1 = new Stage(viewport1, game.getSpriteBatch());
 
-
-
         // We use an InputMultiplexer instead of only stage or "this",
         // since both stage1 (for intro panel) and the GameScreen (for scrolling) handle inputs
         inputMultiplexer.addProcessor(stage1); // the stage is for the intro panel
@@ -133,10 +128,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
-
-        //game.setMuted(false);
         shapeRenderer = new ShapeRenderer();
-
         tooltipManager = new TooltipManager();
 
         // initialize game world elements
@@ -152,12 +144,8 @@ public class GameScreen extends InputAdapter implements Screen {
                 isTutorial = true;
                 tiledMap = levels.loadTiledMap("maps/level-0-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             }
-            //case 3 -> tiledMap = levels.loadTiledMap("maps/level-3-map.properties", Gdx.files.internal("tilesets/level3_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
-            //case 4 -> tiledMap = levels.loadTiledMap("maps/level-4-map.properties", Gdx.files.internal("tilesets/level4_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
             default -> tiledMap = levels.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
         }
-
-//        createIntroPanel();
         createInstructionPanel();
 
         // Initialize the key. Only after we lod the tiled map, we can access the key's position
@@ -214,7 +202,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
         this.pause(false); // pause the game but don't create a pause panel
         Gdx.input.setInputProcessor(stage1);
-        //Gdx.app.log("Size" ,  horizontalTilesCount + "x" + verticalTilesCount);
 
         if (!isTutorial)
             this.totalCoins = 5;
@@ -247,6 +234,16 @@ public class GameScreen extends InputAdapter implements Screen {
         generateCollectibles(emptyTiles, Collectibles.Type.STAMINA, 1, 32,16,22, 2.5f);
     }
 
+    /**
+     * Retrieves all empty tile positions from the level map.
+     *
+     * <p>This method iterates through the tile map of the given {@link LevelManager}
+     * and collects positions where the tile is either {@code GROUND} or {@code null}.
+     * These positions represent areas where no obstacles are present.</p>
+     *
+     * @param levels The {@link LevelManager} instance containing the tile map.
+     * @return An {@link Array} of {@link Position} objects representing empty tiles.
+     */
     private static Array<Position> getEmptyTiles(LevelManager levels) {
         Array<Position> emptyTiles = new Array<>();
         for (int x = 0; x < levels.getTileEnumOnMap().length; x++) {
@@ -298,6 +295,21 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+    /**
+     * Generates a specified number of portals at random empty tile positions.
+     *
+     * <p>This method selects random positions from the provided list of empty tiles
+     * and places portal objects at those locations. Each selected position is removed
+     * from the list to prevent duplicate portal placement.</p>
+     *
+     * @param emptyTiles     An {@link Array} of {@link Position} objects representing available empty tiles.
+     * @param numberToGenerate The number of portals to generate.
+     * @param width         The width of the portal in pixels.
+     * @param height        The height of the portal in pixels.
+     * @param hitboxWidth   The width of the portal's hitbox.
+     * @param hitboxHeight  The height of the portal's hitbox.
+     * @param sizeOnScreen  The size of the portal as it appears on the screen.
+     */
     private void generatePortals(Array<Position> emptyTiles, int numberToGenerate, int width, int height, int hitboxWidth, int hitboxHeight, float sizeOnScreen) {
         int portalsToGenerate = min(numberToGenerate, emptyTiles.size);
 
@@ -315,6 +327,19 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
 
+    /**
+     * Finds a random index in the list of empty tiles while ensuring that no duplicate sections are selected.
+     *
+     * <p>This method selects a random position from the provided list of empty tiles and ensures that
+     * the section containing the selected tile is not already occupied. Once a valid section is found,
+     * it marks the surrounding tiles as occupied to avoid overlapping collectible placements.</p>
+     *
+     * @param emptyTiles             An {@link Array} of {@link Position} objects representing available empty tiles.
+     * @param collectiblesToGenerate The total number of collectibles to generate.
+     * @param occupiedSectionIndexes A {@link List} of {@link Position} objects representing sections that are already occupied.
+     * @param type                   The type of collectible being placed.
+     * @return The randomly selected index from the empty tiles.
+     */
     public int findRandomIndex(Array<Position> emptyTiles, int collectiblesToGenerate, List<Position> occupiedSectionIndexes, Collectibles.Type type){
         // prevent duplicate sections
         int randomIndex;
@@ -332,6 +357,17 @@ public class GameScreen extends InputAdapter implements Screen {
         return randomIndex;
     }
 
+    /**
+     * Determines the section index for a given position based on the number of collectibles to generate.
+     *
+     * <p>This method divides the game map into sections and calculates which section a given position belongs to.
+     * The number of sections is determined dynamically based on the number of collectibles, ensuring
+     * collectibles are evenly distributed across the map.</p>
+     *
+     * @param position               The {@link Position} of the tile whose section index is to be found.
+     * @param collectiblesToGenerate The number of collectibles to generate, which affects the section size.
+     * @return A {@link Position} representing the section index (normalized to a grid) where the tile is located.
+     */
     public Position getSectionIndex(Position position, int collectiblesToGenerate) {
         int mapWidth = horizontalTilesCount;
         int mapHeight = verticalTilesCount;
@@ -341,8 +377,18 @@ public class GameScreen extends InputAdapter implements Screen {
         return new Position((float) (position.getTileX() / sectionWidth), (float) (position.getTileY() / sectionHeight), TILES);
     }
 
+    /**
+     * Creates and displays an instruction panel with introductory game information about the storyline and the level.
+     *
+     * <p>The panel features a background image, a title, and a multi-step instruction sequence that updates
+     * when the "Continue" button is clicked. The panel disappears after two clicks, transitioning to the
+     * introduction panel.</p>
+     *
+     * <p>The first set of instructions is retrieved from {@link #getInstructionsText1()}, and upon clicking
+     * the "Continue" button, the text updates to the second set of instructions from {@link #getLabelForInstructionsText2()}.
+     * If the second set is empty, the panel closes immediately.</p>
+     */
     public void createInstructionPanel(){
-        //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
         NinePatchDrawable backgroundDrawable = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
                 86, 86, 98, 98);
         Panel instructionPanel = new Panel(stage1, backgroundDrawable, game, 0.8f, 0.8f);
@@ -377,17 +423,50 @@ public class GameScreen extends InputAdapter implements Screen {
             }});
     }
 
+    /**
+     * Retrieves the first set of instructional text for the level.
+     *
+     * <p>This method fetches the instructional text stored in the level properties under the key
+     * <code>"instructionsText1"</code> and replaces any escaped newline characters (<code>"\n"</code>)
+     * with actual newlines for proper formatting.</p>
+     *
+     * @return The formatted instructional text for the level.
+     */
     private String getInstructionsText1() {
         String s = levels.getProperties("instructionsText1");
         return s.replace("\\n", "\n");
     }
 
+    /**
+     * Retrieves the second set of instructional text for the level.
+     *
+     * <p>This method fetches the instructional text stored in the level properties under the key
+     * <code>"instructionsText2"</code> and replaces any escaped newline characters (<code>"\n"</code>)
+     * with actual newlines for proper formatting.</p>
+     *
+     * @return The formatted second instructional text for the level.
+     */
     private String getLabelForInstructionsText2(){
         String s = levels.getProperties("instructionsText2");
         return s.replace("\\n", "\n");
     }
 
 
+    /**
+     * Creates and displays the introduction panel with game general instructions.
+     *
+     * <p>This method initializes a panel with a background image and provides introductory
+     * instructions for the player, including movement controls, objectives, and hazards to avoid.
+     * The player can start the game by clicking the "Start now" button or pressing the space bar.</p>
+     *
+     * <ul>
+     *     <li>Displays the level name if available; otherwise, shows "Game Instructions".</li>
+     *     <li>Lists movement controls, key collection mechanics, and enemy/trap avoidance.</li>
+     *     <li>Allows progression by clicking the "Start now" button or pressing space.</li>
+     * </ul>
+     *
+     * <p>If the game is on level 1, an additional label informs the player that they can skip using the space bar.</p>
+     */
     public void createIntroPanel(){
         NinePatchDrawable backgroundDrawable = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
                 86, 86, 98, 98);
@@ -418,8 +497,23 @@ public class GameScreen extends InputAdapter implements Screen {
             introPanel.addLabel("[OR YOU CAN ALWAYS PRESS SPACE BAR TO SKIP]", game.getSkin(), "black", 1, 0);
     }
 
+    /**
+     * Creates and displays the pause panel in the game.
+     *
+     * <p>This method initializes a pause menu panel with a background image and multiple
+     * interactive buttons that allow the player to resume, access options, select a level,
+     * return to the main menu, or exit the game.</p>
+     *
+     * <ul>
+     *     <li>Displays a "Game Paused" label.</li>
+     *     <li>Provides a "Resume" button to continue the game.</li>
+     *     <li>Includes an "Options" button to navigate to the options panel.</li>
+     *     <li>Offers a "Select Level" button to change levels.</li>
+     *     <li>Allows returning to the main menu with the "Back to Menu" button.</li>
+     *     <li>Provides an "Exit Game" button to quit the game.</li>
+     * </ul>
+     */
     public void createPausePanel() {
-        //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
         NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/pause.png"),
                 45+17, 45+17, 45+37, 45+37);
         Panel pausePanel = new Panel(stage1, background, game, 0.9f, 0.9f);
@@ -466,8 +560,22 @@ public class GameScreen extends InputAdapter implements Screen {
         });
     }
 
+    /**
+     * Creates and displays the options panel in the game.
+     *
+     * <p>This method initializes an options menu where players can adjust
+     * music and sound effects volume, mute/unmute sounds, and return to the
+     * pause menu.</p>
+     *
+     * <ul>
+     *     <li>Displays an "Options" label.</li>
+     *     <li>Provides a slider to adjust the music volume.</li>
+     *     <li>Provides a slider to adjust the sound effects volume.</li>
+     *     <li>Includes a "Mute / Unmute" button to toggle sound settings.</li>
+     *     <li>Offers a "Back" button to return to the pause menu.</li>
+     * </ul>
+     */
     public void createOptionPanel() {
-        //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
         NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
                 86, 86, 98, 98);
         Panel optionPanel = new Panel(stage1, background, game, 0.8f, 0.8f);
@@ -514,8 +622,22 @@ public class GameScreen extends InputAdapter implements Screen {
         }});
     }
 
-    public void createVictoryPanel() {
-        //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/victory.png")));
+    /**
+     * Creates and displays the victory panel when the player wins a level.
+     *
+     * <p>This method initializes a victory panel that shows the player's success,
+     * their score, and provides options for advancing to the next level or returning
+     * to the main menu.</p>
+     *
+     * <ul>
+     *     <li>Displays a "Victory!" label.</li>
+     *     <li>Shows the player's score with the number of collected coins and the total coins.</li>
+     *     <li>If not in tutorial mode, shows the "Next Level" button to proceed to the next level.</li>
+     *     <li>Includes a "Back to Menu" button to return to the main menu.</li>
+     *     <li>In tutorial mode, pressing space proceeds to the next level.</li>
+     *     <li>If not in tutorial mode, displays a prompt to press space to continue.</li>
+     * </ul>
+     */public void createVictoryPanel() {
         NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/victory.png"),
                 50, 50, 50, 50);
         Panel victoryPanel = new Panel(stage1, background, game, 0.8f, 0.6f);
@@ -612,28 +734,6 @@ public class GameScreen extends InputAdapter implements Screen {
         return true; // Return true to indicate the event was handled
     }
 
-    /**
-     * Creates a single-pixel Drawable object with a solid color.
-     *
-     * @param color the color of the drawable pixel
-     * @return a Drawable object filled with the specified color
-     */
-    private Drawable createSolidColorDrawable(Color color) {
-        // Create a Pixmap with the solid color
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(color);
-        pixmap.fill();
-
-        // Create a Texture from the Pixmap
-        Texture texture = new Texture(pixmap);
-
-        // Clean up the Pixmap
-        pixmap.dispose();
-
-        // Return a Drawable
-        return new TextureRegionDrawable(texture);
-    }
-
 
     /**
      * Handles user input for something throughout the whole game, like zooming and muting.
@@ -653,7 +753,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Handle Mute
         if (Gdx.input.isKeyJustPressed(Input.Keys.M)) { // Press 'M' to mute/unmute
-            //game.setMuted(!game.isMuted());
             if (game.isMuted()) {
                 game.muteBGM();
             } else {
@@ -663,6 +762,27 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+    /**
+     * Renders the game screen during each frame update.
+     *
+     * <p>This method is responsible for handling the game's visual rendering, updating game logic,
+     * and handling player input during the game. It also manages rendering of game elements such
+     * as the player, enemies, collectibles, portals, and UI elements like the HUD, pause, and tutorial panels.</p>
+     *
+     * <ul>
+     *     <li>Checks for game over conditions and proceeds accordingly.</li>
+     *     <li>Clears the screen and updates the camera view.</li>
+     *     <li>Handles movement and animation logic, including sinusoidal animations for moving text.</li>
+     *     <li>Manages player input for movement, actions, and interactions.</li>
+     *     <li>Updates all game entities (player, enemies, collectibles, portals) each frame.</li>
+     *     <li>Draws game elements such as the map border, traps, collectibles, portals, and enemies.</li>
+     *     <li>Renders additional game HUD elements like stamina, tutorial tooltips, and the HUD.</li>
+     *     <li>Handles smooth zoom transitions and camera movements.</li>
+     *     <li>Controls rendering of UI panels (pause, tutorial, etc.) and HUD overlays.</li>
+     * </ul>
+     *
+     * @param delta The time (in seconds) since the last frame was rendered, used for smooth animations and timing.
+     */
     // Screen interface methods with necessary functionality
     @Override
     public void render(float delta) {
@@ -678,7 +798,6 @@ public class GameScreen extends InputAdapter implements Screen {
             game.goToGameOverScreen();  // Trigger game over screen
             return;
         }
-
 
         ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
         camera.update(); // Update the camera
@@ -720,7 +839,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
         game.getSpriteBatch().begin();
         renderTrap();
-        // renderText((float) (0 + Math.sin(sinusInput) * 100), (float) (750 + Math.cos(sinusInput) * 100), "Press ESC to go to menu");
         renderCollectibles();
         renderPortal();
         renderChasingEnemy();
@@ -757,34 +875,10 @@ public class GameScreen extends InputAdapter implements Screen {
         this.isPaused = paused;
     }
 
-
-
-    private void update(float delta) {
-        if (!isPaused) {
-            // Update characters
-            player.update(delta);
-
-            // Update enemies
-            for (ChasingEnemy enemy : iterate(levels.chasingEnemies)) {
-                enemy.update(delta);
-            }
-
-            // Update timer
-           // gameTimer += delta;
-        }
-    }
-
     /**
      * Draws a thick border around the tiled map using shapeRenderer
      */
     public void drawMapBorder() {
-        // if (mapTiles.isEmpty()) return;
-
-        // Set up ShapeRenderer to match game world projection
-        //shapeRenderer.setProjectionMatrix(game.getSpriteBatch().getProjectionMatrix());
-
-        // Begin drawing with filled shapes for the border
-        //shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.GRAY); // Set border color
 
         // Draw top border (horizontal)
@@ -798,9 +892,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Draw right border (vertical)
         shapeRenderer.rect(getWorldWidth() , -TILE_SIZE, TILE_SIZE, (getWorldHeight() + (2*TILE_SIZE)));
-
-        // End drawing the border
-        //shapeRenderer.end();
     }
 
     /**
@@ -833,7 +924,6 @@ public class GameScreen extends InputAdapter implements Screen {
         // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
-        //game.getSpriteBatch().draw(game.getBackgroundTexture(), 0, 0);
         game.getSpriteBatch().end();
 
         // mapRenderer use another rendering batch, so we have to end the ones first, render the map, and then begin our spriteBatch again outside of this function
@@ -841,11 +931,6 @@ public class GameScreen extends InputAdapter implements Screen {
         // this adds a darker shade to it, like night effect
         //mapRenderer.getBatch().setColor(0.5f, 0.5f, 0.5f, 1);
         mapRenderer.render(); // mapRenderer renders the map, also the layers or so the tiles
-    }
-
-    private void renderText(float textX, float textY, String text) {
-        // Render the text
-        font.draw(game.getSpriteBatch(), text, textX, textY);
     }
 
     /**
@@ -902,6 +987,24 @@ public class GameScreen extends InputAdapter implements Screen {
         if (angle > 0) hudObjectRenderer.drawArrow(game.getSpriteBatch(), angle, player.getX(), player.getY());
 
     }
+
+
+    /**
+     * Renders the tooltip message near the player's position.
+     *
+     * <p>This method checks if there is a message to display and, if so, calculates the appropriate
+     * position for the tooltip based on the player's current position and the camera's view. It then
+     * draws the message on the screen at the clamped position, ensuring it stays within the screen bounds.</p>
+     *
+     * <ul>
+     *     <li>Position of the tooltip is calculated based on the player's position.</li>
+     *     <li>The tooltip is clamped to ensure it stays within the screen boundaries.</li>
+     *     <li>Uses a batch and font renderer to display the tooltip message.</li>
+     * </ul>
+     *
+     * @see TooltipManager
+     * @see Player
+     */
     private void renderTooltip(){
         if (tooltipManager.message != null) {
             float tooltipX = player.getX() + 50;//camera.position.x - 100; // Adjust to center near camera
@@ -937,9 +1040,26 @@ public class GameScreen extends InputAdapter implements Screen {
                 collectible.render(game.getSpriteBatch(), game.getStaminaPotionAnimation().getKeyFrame(sinusInput/1.5f, true));
             }
         }
-        //System.out.println("collectable rendered ");
-
     }
+
+    /**
+     * Renders all the portals in the game, drawing them with an animation effect.
+     *
+     * <p>This method iterates through all the active portals and renders them to the screen. Each portal
+     * is drawn with an animation frame that cycles based on the game's sinus input, creating a dynamic visual
+     * effect for the portals.</p>
+     *
+     * <ul>
+     *     <li>Each portal is rendered with an animation frame retrieved from the portal's animation sequence.</li>
+     *     <li>The frame used is based on the sinus input, which creates a smooth, dynamic animation.</li>
+     *     <li>The method uses the game's sprite batch to draw the portal images.</li>
+     * </ul>
+     *
+     * @see Portal
+     * @see Game
+     * @see SpriteBatch
+     * @see Animation
+     */
     private void renderPortal(){
         for (Portal portal : iterate(portals)) {
             portal.render(game.getSpriteBatch(), game.getPortalAnimation().getKeyFrame(sinusInput/1.5f, true));
@@ -1008,17 +1128,6 @@ public class GameScreen extends InputAdapter implements Screen {
             key.setY(player.getY() - 10);
             keyScale = 0.5f;
         }
-            //return;
-        // else the key is not collected, render the key:
-
-        /* uncomment this when the key's position should be regularly updated. i.e., the key is dynamic
-        //get our key position and render the key there
-        Position keyPosition = levels.getKeyTilePosition();
-        // convert key's tile position to pixel coordinates for rendering
-        keyPosition = keyPosition.convertTo(PIXELS);
-        key.setX(keyPosition.getX());
-        key.setY(keyPosition.getY());*/
-
         game.getSpriteBatch().draw(
                 keyRegion,
                 key.getOriginX(),
@@ -1043,6 +1152,21 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+    /**
+     * Spawns a new portal in the game by generating a portal at a random empty tile.
+     *
+     * <p>This method first retrieves a list of empty tiles on the map, then generates a portal at one of these
+     * empty tiles. The portal's position, size, and hitbox dimensions are specified in the method's parameters.</p>
+     *
+     * <ul>
+     *     <li>The method uses {@link #getEmptyTiles(LevelManager)} to get a list of empty tiles.</li>
+     *     <li>The portal is generated using {@link #generatePortals(Array, int, int, int, int, int, float)}.</li>
+     *     <li>A message is logged to the console when the portal is spawned and when it has been successfully generated.</li>
+     * </ul>
+     *
+     * @see #getEmptyTiles(LevelManager)
+     * @see #generatePortals(Array, int, int, int, int, int, float)
+     */
     private void spawnPortal() {
         System.out.println("Spawning portal...");
         Array<Position> emptyTiles = getEmptyTiles(levels);
@@ -1054,17 +1178,7 @@ public class GameScreen extends InputAdapter implements Screen {
      * Renders chasing enemies with appropriate animations based on their movement direction.
      */
     private void renderChasingEnemy(){
-        //chasingEnemy.draw(game.getSpriteBatch());
         for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){ // for (ChasingEnemy enemy : levels.chasingEnemies)
-
-            /*if (abs(enemy.getVelX()) > abs(enemy.getVelY())){ // x velocity > y velocity -> either left or right
-                if (enemy.getVelX() < 0) enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("left");
-                else enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("right");
-            }
-            else { // v_y > v_x
-                if (enemy.getVelY() < 0) enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("down");
-                else enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("up");
-            }*/
             switch (enemy.getPreviousDirection()){
                 case up -> enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("up");
                 case down -> enemyAnimation = levels.getEnemyAnimations(enemy.getEnemyIndex()).get("down");
@@ -1082,7 +1196,6 @@ public class GameScreen extends InputAdapter implements Screen {
      */
     private void renderStamina(){
         float currentStamina = player.getStamina();
-        //if (currentStamina >= Player.maxStamina) return;
 
         Gdx.gl.glLineWidth((int)(5f / camera.zoom)); // Set line width for better visibility
         int staminaRadius = 12;
@@ -1090,9 +1203,6 @@ public class GameScreen extends InputAdapter implements Screen {
         float offsetY = player.getHitboxHeightOnScreen() / 2 + 5;
         float staminaX = player.getX() + offsetX;// + staminaRadius / 2;
         float staminaY = player.getY() + offsetY;// - staminaRadius;
-        //shapeRenderer.setProjectionMatrix(camera.combined);
-        //shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
 
         if (currentStamina >= Player.maxStamina) {
             // Start the timer if stamina is full
@@ -1121,10 +1231,24 @@ public class GameScreen extends InputAdapter implements Screen {
         // Draw the stamina arc
         float angle = (player.getStamina() / Player.maxStamina) * 360f; // Calculate the angle based on stamina
         drawCircularSector(shapeRenderer, Color.LIME, staminaX, staminaY, staminaRadius, angle);
-
-        //shapeRenderer.end();
     }
 
+    /**
+     * Draws a filled circular sector (a portion of a circle) on the screen using the given parameters.
+     *
+     * <p>The method estimates the number of segments required to draw a smooth arc based on the specified
+     * radius and angle. It uses a formula where the arc length is proportional to the radius. This helps
+     * ensure that the drawn arc appears smooth, regardless of the sector's size.</p>
+     *
+     * <p>If the angle is exactly 360 degrees, the method draws an additional small strip to fill any potential gap.</p>
+     *
+     * @param shapeRenderer The {@link ShapeRenderer} used to draw the sector.
+     * @param color The {@link Color} to fill the sector.
+     * @param x The x-coordinate of the center of the circle.
+     * @param y The y-coordinate of the center of the circle.
+     * @param radius The radius of the circle.
+     * @param angle The angle of the sector in degrees, where 360 is a full circle.
+     */
     // Helper method to calculate segments needed automatically
     private static void drawCircularSector(ShapeRenderer shapeRenderer, Color color, float x, float y, float radius, float angle){
         // the estimation of: "the number of segments", needed for a smooth an arc, provided by LibGDX, just sucks
@@ -1139,7 +1263,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
 
     /**
-     * Renders the Heads-Up Display (HUD), including player stats and health.
+     * Renders the Heads-Up Display (HUD), including player health and collected coins.
      */
     private void renderHUD() {
         game.getSpriteBatch().setProjectionMatrix(hudCamera.combined); // HUD uses its own camera so that it does not follow the player and the position is fixed on the screen.
@@ -1151,11 +1275,9 @@ public class GameScreen extends InputAdapter implements Screen {
         variablesToShow.put("player.speed", player.getSpeed());
         variablesToShow.put("camera zoom", camera.zoom);
         variablesToShow.put("player.stamina", player.getStamina());
-        //drawVariables(variablesToShow);
 
         game.getSpriteBatch().end();
 
-        // hudObjectRenderer use another rendering batch, so we have to end the batch first, and start it again
         game.getSpriteBatch().begin();
         hudObjectRenderer.drawHearts(game.getSpriteBatch(), player.getLives(), 20, Gdx.graphics.getHeight() - 26f - 20, 32, 2);
 
@@ -1165,27 +1287,6 @@ public class GameScreen extends InputAdapter implements Screen {
         String keyStatus = key.isCollected() ? "Key Collected!" : "Find The Key!";
         font.draw(game.getSpriteBatch(), keyStatus, 20, Gdx.graphics.getHeight() - 80);
 
-
-        /* Health bar
-        // Draw health bar
-        float healthBarWidth = 180f;
-        float healthBarHeight = 20f;
-        float healthBarX = 128f;
-        float healthBarY = windowHeight - 104f;
-        float healthPercentage = (float) player.getLives() / MAX_PLAYER_LIVES;
-
-        shapeRenderer.setProjectionMatrix(hudCamera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        // Background bar
-        shapeRenderer.setColor(Color.DARK_GRAY);
-        shapeRenderer.rect(healthBarX, healthBarY, healthBarWidth, healthBarHeight);
-
-        // Foreground bar
-        shapeRenderer.setColor(Color.RED);
-        shapeRenderer.rect(healthBarX, healthBarY, healthBarWidth * healthPercentage, healthBarHeight);
-
-        shapeRenderer.end();*/
         game.getSpriteBatch().end();
     }
 
@@ -1276,18 +1377,20 @@ public class GameScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
+    /**
+     * Resizes and repositions all actors within the `stage1` based on the current screen size.
+     * Actors that are instances of {@link ResizeableTable} are resized and repositioned according to
+     * their specified width and height ratios. For other actors, the default size and position are applied.
+     *
+     * <p>This method ensures that panels and their contents scale dynamically based on the screen resolution.
+     * For `ResizeableTable`, each cell's width is also adjusted to ensure proper layout, with some padding applied
+     * to label cells to prevent overflow.</p>
+     *
+     * <p>The resizing mechanism accounts for both the width and height ratios of the panels, adjusting their size
+     * and position relative to the screen dimensions.</p>
+     */
     public void resizePanels(){
         for (var actor : iterate(stage1.getActors())){
-            // what is stored in the stage is actually the panels' tables
-
-            /*if (actor instanceof Panel panel){
-                Gdx.app.log("Resize", "actor is a panel");
-                float widthRatio = (panel).getWidthRatio();
-                float heightRatio = (panel).getHeightRatio();
-                panel.init(Gdx.graphics.getWidth() * widthRatio,Gdx.graphics.getHeight() * heightRatio);
-                panel.setPosition(Gdx.graphics.getWidth() * (1-widthRatio)/2, Gdx.graphics.getHeight() * (1-heightRatio)/2);
-            }
-            else */
             if (actor instanceof ResizeableTable table){ // this is the case...
                 float w = table.getWidthRatio();
                 float h = table.getHeightRatio();
@@ -1341,9 +1444,26 @@ public class GameScreen extends InputAdapter implements Screen {
         );
         // Clamp the target zoom level to ensure it remains within the calculated bounds.
         targetZoom = MathUtils.clamp(targetZoom, minZoomLevel, maxZoomLevel);
-        //targetZoom = MathUtils.clamp(targetZoom, 0.8f, 1.3f);
     }
 
+    /**
+     * Checks the current tutorial stage and updates the tutorial task accordingly.
+     * Based on the player's progress, it determines which task the player is on
+     * (moving, collecting the key, or reaching the exit) and displays the appropriate tooltip
+     * with a helpful message to guide the player through the tutorial.
+     *
+     * <p>The method also triggers a spotlight effect and updates the tutorial stage
+     * to reflect the current task:</p>
+     * <ul>
+     *     <li>Moves: Displays a message prompting the player to move using WASD or arrow keys,
+     *     and provides a sprinting tip.</li>
+     *     <li>Key: Displays a message prompting the player to find and collect the key.</li>
+     *     <li>Exit: Displays a message instructing the player to go to the exit to complete the level.</li>
+     * </ul>
+     *
+     * <p>This method is called periodically to track the player's progression through the tutorial
+     * and provide dynamic feedback during gameplay.</p>
+     */
     private void checkTutorialTasks() {
         if (!player.hasMoved) {
             currentTutorialStage = TutorialStage.MOVE;
@@ -1358,16 +1478,35 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
-    //private String currentTooltipMessage;
-    //private float tooltipTimer = 0f;
-    //private static final float TOOLTIP_MAX_DURATION = 3f; // Maximum duration in seconds
 
-    private void showTooltip(String message) {
-        // Remove any existing tooltip
-        Gdx.app.log("Tooltip", "text changed to: " + message);
-        tooltipManager.message = message;
-    }
-
+    /**
+     * Checks various game events related to the player's proximity to important objects
+     * and triggers spotlight effects with corresponding messages to guide the player.
+     * The method detects the player's closeness to different interactive objects such as:
+     * key, portals, traps, enemies, and collectibles. When the player is near any of these objects,
+     * it displays a spotlight effect and a tooltip with helpful information.
+     *
+     * <p>Proximity thresholds for triggering events are defined as:</p>
+     * <ul>
+     *     <li>Key: 150 units</li>
+     *     <li>Portal: 200 units</li>
+     *     <li>Trap: 170 units</li>
+     *     <li>Enemy: 230 units</li>
+     *     <li>Collectible: 110 units</li>
+     * </ul>
+     *
+     * <p>The method handles the following events:</p>
+     * <ul>
+     *     <li>If the player is close to the key, it triggers a spotlight effect and provides a message about the key.</li>
+     *     <li>If the player is close to a portal, it triggers a spotlight effect and provides a warning about the portal.</li>
+     *     <li>If the player is close to a trap, it triggers a spotlight effect and provides a warning about the trap.</li>
+     *     <li>If the player is close to an enemy, it triggers a spotlight effect and provides a message about the enemy.</li>
+     *     <li>If the player is close to a collectible, it triggers a spotlight effect and provides information about the collectible.</li>
+     * </ul>
+     *
+     * <p>The spotlight effect draws attention to the relevant object and provides the player with useful guidance
+     * to help them interact with objects in the game.</p>
+     */
     private void checkForSpotlightEvents() {
         if (!player.hasMoved) return;
 
@@ -1393,7 +1532,6 @@ public class GameScreen extends InputAdapter implements Screen {
             return;
         }
 
-
         // Example: Detect proximity to an enemy
         ChasingEnemy enemy = player.isCloseToEnemies(230);
         if (enemy != null){
@@ -1413,6 +1551,21 @@ public class GameScreen extends InputAdapter implements Screen {
         //tooltipManager.timer = 0f; // If none of the cases. Reset the timer
     }
 
+    /**
+     * Triggers a spotlight effect at the specified position and radius, and displays a tooltip message to guide the player.
+     * The spotlight effect is drawn to emphasize an important object or event, and a message is shown to the player
+     * to provide information about it.
+     *
+     * <p>If the tooltip timer has reached the maximum allowed duration, the method will not trigger the spotlight effect
+     * or display a message.</p>
+     *
+     * @param x        The x-coordinate of the spotlight center.
+     * @param y        The y-coordinate of the spotlight center.
+     * @param radius   The radius of the spotlight effect, which defines the area of focus.
+     * @param message  The message to be displayed along with the spotlight effect, providing guidance to the player.
+     *
+     * <p>Note: This method assumes the existence of a TooltipManager instance to handle the display of messages.</p>
+     */
     private void triggerSpotlight(float x, float y, float radius, String message) {
         //setPaused(true); // Pause the game
         if (tooltipManager.timer >= TooltipManager.TOOLTIP_DURATION) return;
@@ -1420,8 +1573,15 @@ public class GameScreen extends InputAdapter implements Screen {
         tooltipManager.show(message); // Display a message
     }
 
-    private void updateTutorial(float delta){
-
+    /**
+     * Updates the tutorial progression, managing different stages of the tutorial and guiding the player through them.
+     * The tutorial stages include instructions on movement, zoom, pausing, and interacting with key game elements such as the exit and key collection.
+     *
+     * <p>The method handles the rendering of spotlight effects, displaying messages through tooltips, and checking for user input
+     * (e.g., pressing the Enter key to proceed or the Esc key to pause) in order to move through the tutorial stages.</p>
+     *
+     * @param delta The time in seconds since the last frame, used for updating the tutorial elements over time.
+     */private void updateTutorial(float delta){
         switch (currentTutorialStage) {
             case EXIT_ARROW -> {
                 renderSpotlightEffect(hudObjectRenderer.getArrowRotatedX(), hudObjectRenderer.getArrowRotatedY(), 20, 1, 1);
@@ -1434,7 +1594,6 @@ public class GameScreen extends InputAdapter implements Screen {
                 if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
                     currentTutorialStage = TutorialStage.ZOOM;
                     this.resume();
-                    //showTooltip("Use WASD or arrow keys to move.");
                 }
             }
             case ZOOM -> {
@@ -1443,7 +1602,6 @@ public class GameScreen extends InputAdapter implements Screen {
                 for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
                     enemy.pause();
                 }
-                //this.pause(false);
 
                 if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
                     currentTutorialStage = TutorialStage.ESC_PAUSE;
@@ -1471,6 +1629,10 @@ public class GameScreen extends InputAdapter implements Screen {
         tooltipManager.update(delta);
     }
 
+    /**
+     * Enum representing the various stages of the tutorial in the game. Each stage has an associated order that defines the
+     * progression of the tutorial. The stages range from introductory instructions to gameplay-related tasks.
+     */
     public enum TutorialStage {
         INTRO       (0),
         EXIT_ARROW  (1),
@@ -1484,10 +1646,20 @@ public class GameScreen extends InputAdapter implements Screen {
 
         private final int stageOrder;
 
+        /**
+         * Constructor for the TutorialStage enum.
+         *
+         * @param stageOrder The order in which this tutorial stage occurs.
+         */
         TutorialStage(int stageOrder){
             this.stageOrder = stageOrder;
         }
 
+        /**
+         * Gets the order of this tutorial stage.
+         *
+         * @return The stage order as an integer, where a lower number represents an earlier stage.
+         */
         public int getStageOrder() {
             return stageOrder;
         }
@@ -1495,6 +1667,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private TutorialStage currentTutorialStage = TutorialStage.INTRO;
 
+    /**
+     * Manages the display of tooltips in the game. The tooltip system is responsible for showing messages to the player,
+     * with a time limit for how long each message remains visible on the screen. The tooltip is hidden after a set duration,
+     * or it can be manually hidden based on the tutorial stage or other conditions.
+     */
     private class TooltipManager {
         private String message;
         private float timer;
@@ -1502,11 +1679,24 @@ public class GameScreen extends InputAdapter implements Screen {
 
         private final SpriteBatch batch = new SpriteBatch();
 
+        /**
+         * Displays a new tooltip message. The message is shown on the screen for a limited time.
+         * If the message does not contain the word "enemy", the timer is reset.
+         *
+         * @param message The message to be displayed in the tooltip.
+         */
         public void show(String message) {
             this.message = message;
             if (!message.contains("enemy")) this.timer = 0f;
         }
 
+        /**
+         * Updates the tooltip's state. The timer increases as time passes, and when the timer exceeds the tooltip duration,
+         * the message is hidden. Additionally, if the tutorial has progressed beyond the "MOVE" stage, the message is cleared
+         * after the set duration.
+         *
+         * @param delta The time in seconds since the last frame, used to update the timer.
+         */
         public void update(float delta) {
             if (message != null) timer += delta;
             if (currentTutorialStage.getStageOrder() > TutorialStage.MOVE.getStageOrder()
@@ -1533,6 +1723,7 @@ public class GameScreen extends InputAdapter implements Screen {
             game.getBackgroundMusic().pause();
             game.getPauseMusic().play();
         }
+
         player.pause();
         for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
             enemy.pause();
@@ -1540,7 +1731,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
         if (createPausePanel) createPausePanel(); // Show the pause panel
 
-        //inputMultiplexer.addProcessor(stage1);
         if (!isTutorial)
             Gdx.input.setInputProcessor(stage1); // Set input processor to stage1 (pause menu)
         else Gdx.input.setInputProcessor(inputMultiplexer);
@@ -1580,13 +1770,10 @@ public class GameScreen extends InputAdapter implements Screen {
         }
 
         stage1.clear(); // Clear the pause panel from the screen
-        //inputMultiplexer.removeProcessor(stage1);
     }
 
     @Override
     public void show() {
-      //  createPausePanel();
-       // Gdx.input.setInputProcessor(stage1);
     }
 
     @Override
@@ -1603,32 +1790,6 @@ public class GameScreen extends InputAdapter implements Screen {
         // disposing all disposables (such as Stage, Skin, Texture ... etc)
         stage1.dispose();
         shader.dispose();
-    }
-
-
-    /**
-     * Draws a list of variables and their values on the HUD.
-     * Used for debugging.
-     *
-     * @param variablesToShow A map of variable names and their corresponding values.
-     */
-    private void drawVariables(Map<String, Float> variablesToShow) {
-        SpriteBatch hudBatch = game.getSpriteBatch();
-
-        final float BORDER_OFFSET = 20;
-        final float Y_OFFSET = 30;
-
-        int currentLine = 0;
-        for (Map.Entry<String, Float> entry : variablesToShow.entrySet()) {
-            String varName = entry.getKey();
-            float displayedValue = entry.getValue();
-            font.draw(hudBatch, String.format("%s: %.2f", varName, displayedValue), BORDER_OFFSET, BORDER_OFFSET + variablesToShow.size() * Y_OFFSET - Y_OFFSET * currentLine);
-            currentLine++;
-        }
-    }
-
-    public OrthographicCamera getCamera() {
-        return camera;
     }
 
     public Key getKey() {
