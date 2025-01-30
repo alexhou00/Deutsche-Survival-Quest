@@ -140,7 +140,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
         isTutorial = false;
         TiledMap tiledMap;
-        System.out.println("Game Level upon creation of GameScreen: " + game.getGameLevel());
+        Gdx.app.log("Constructor GameScreen", "Game Level upon creation of GameScreen: " + game.getGameLevel());
         switch (game.getGameLevel()) {
             case 1,2,3,4,5 -> tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_obstacles.png").path());
             case 6 -> tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
@@ -163,7 +163,6 @@ public class GameScreen extends InputAdapter implements Screen {
         keyRegion = levels.getTileset()[TileType.KEY.getId()];
 
         collectibles = new Array<>();
-        //System.out.println(Arrays.deepToString(levels.getTileEnumOnMap()));
         spawnCollectibles();
 
         portals = new Array<>();
@@ -327,7 +326,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
             // Generate a portal at the selected position
             portals.add(new Portal(levels, x, y, width, height, hitboxWidth, hitboxHeight, sizeOnScreen, sizeOnScreen, game));
-            System.out.println("Portal Position: " + x + ", " + y);
+            Gdx.app.log("Generate Portals", "Portal Position: " + x + ", " + y);
         }
     }
 
@@ -656,7 +655,7 @@ public class GameScreen extends InputAdapter implements Screen {
         String scoreText = "Score: " + grade + " (" + player.getCoins() + "/" + totalCoins + ")";
         if (!isTutorial) victoryPanel.addLabel(scoreText, game.getSkin(), "black", 1f, 40);
 
-        System.out.println("Game Level: " + game.getGameLevel());
+        Gdx.app.log("Victory", "Game Level: " + game.getGameLevel());
         if (game.getGameLevel() != 0) { // if is not tutorial
             victoryPanel.addButton("Next Level", game.getSkin(), new ChangeListener() {
                 @Override
@@ -1174,10 +1173,10 @@ public class GameScreen extends InputAdapter implements Screen {
      * @see #generatePortals(Array, int, int, int, int, int, float)
      */
     private void spawnPortal() {
-        System.out.println("Spawning portal...");
+        Gdx.app.log("GameScreen", "Spawning portal...");
         Array<Position> emptyTiles = getEmptyTiles(levels);
         generatePortals(emptyTiles, 1, 64, 64, 48, 48, 96);
-        System.out.println("Portals generated: " + portals.size);
+        Gdx.app.log("GameScreen", "Portals generated: " + portals.size);
     }
 
     /**
@@ -1790,7 +1789,6 @@ public class GameScreen extends InputAdapter implements Screen {
         for (ChasingEnemy enemy : iterate(levels.chasingEnemies)){
             enemy.resume();
         }
-
         stage1.clear(); // Clear the pause panel from the screen
     }
 
