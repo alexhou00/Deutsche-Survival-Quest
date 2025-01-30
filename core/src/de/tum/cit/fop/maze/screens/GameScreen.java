@@ -1310,7 +1310,7 @@ public class GameScreen extends InputAdapter implements Screen {
             font.draw(game.getSpriteBatch(), time, 20, Gdx.graphics.getHeight() - 120);
         }
         game.getSpriteBatch().end();
-    }
+    } // timer is only activated and visible at level 6
 
     /**
      * Renders a spotlight effect at the specified position
