@@ -235,7 +235,8 @@ Allows to better handle sound, as they do not have the same methods with the Mus
 ### Tutorial
 
 * Tutorial can be accessed through *How to Play* on the main menu screen. The tutorial is a smaller map based on 
-the Level 1 map. Here, the main game features and instructions are introduced.
+the Level 1 map. Here, the main game features and instructions are introduced. The tutorial is also interactive,
+enabling users to play the game but with more guidance.
 
 
 ## Credits
@@ -275,7 +276,7 @@ The tile sets of Deutsche Survival Quest has been created by modifying the follo
 ### Backgrounds:
 * Game Over Background created by Dionysus.
   Available at https://www.stockvault.net/photo/284807/dark-red-stains-on-crimson-background-watercolor-effect.
-
+* Houses tiles from Victory Background by Risa Athene
 
 ### Music
 - Background Music by Bruno Belotti (Submitted by qubodup).
