@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
@@ -28,6 +27,7 @@ import de.tum.cit.fop.maze.game_objects.*;
 import de.tum.cit.fop.maze.level.LevelManager;
 import de.tum.cit.fop.maze.rendering.ElementRenderer;
 import de.tum.cit.fop.maze.rendering.Panel;
+import de.tum.cit.fop.maze.rendering.ResizeableTable;
 import de.tum.cit.fop.maze.rendering.SpotlightEffect;
 import de.tum.cit.fop.maze.tiles.TileType;
 import de.tum.cit.fop.maze.util.Position;
@@ -345,15 +345,13 @@ public class GameScreen extends InputAdapter implements Screen {
         //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
         NinePatchDrawable backgroundDrawable = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
                 86, 86, 98, 98);
-        Panel instructionPanel = new Panel(stage1, backgroundDrawable, game);
-        instructionPanel.setSize(0.9f, 0.9f);
+        Panel instructionPanel = new Panel(stage1, backgroundDrawable, game, 0.8f, 0.8f);
+        instructionPanel.init();
 
         String levelName = levels.getProperties("levelName"); // test
 
-        instructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "fraktur", 1, 50);
+        instructionPanel.addLabel((levelName.isEmpty()) ? "introduction" : levelName, game.getSkin(), "fraktur", 1, 40);
         String instructionsText1 = getInstructionsText1();
-
-        Label.LabelStyle instructionsStyle2 = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
 
         Label label = instructionPanel.addLabel(instructionsText1, game.getSkin(), "black" , 1f, 20);
 
@@ -381,7 +379,6 @@ public class GameScreen extends InputAdapter implements Screen {
 
     private String getInstructionsText1() {
         String s = levels.getProperties("instructionsText1");
-        Label.LabelStyle instructionsStyle = new Label.LabelStyle(new BitmapFont(), Color.DARK_GRAY);
         return s.replace("\\n", "\n");
     }
 
@@ -394,11 +391,11 @@ public class GameScreen extends InputAdapter implements Screen {
     public void createIntroPanel(){
         NinePatchDrawable backgroundDrawable = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
                 86, 86, 98, 98);
-        Panel introPanel = new Panel(stage1, backgroundDrawable, game);
-        introPanel.setSize(0.8f, 0.8f);
+        Panel introPanel = new Panel(stage1, backgroundDrawable, game, 0.8f, 0.8f);
+        introPanel.init();
 
         String levelName = levels.getProperties("levelName");
-        introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "fraktur", 1, 20);
+        introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "fraktur", 1, 40);
 
         introPanel.addLabel("Move using W, A, S, D keys.", game.getSkin(), "black", 1f, 20);
         introPanel.addLabel("Collect keys to unlock exits.", game.getSkin(), "black", 1f, 20);
@@ -425,8 +422,8 @@ public class GameScreen extends InputAdapter implements Screen {
         //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/pause.png")));
         NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/pause.png"),
                 45+17, 45+17, 45+37, 45+37);
-        Panel pausePanel = new Panel(stage1, background, game);
-        pausePanel.setSize(0.9f, 0.9f);
+        Panel pausePanel = new Panel(stage1, background, game, 0.9f, 0.9f);
+        pausePanel.init();
 
         pausePanel.addLabel("Game Paused", game.getSkin(), "fraktur", 1, 80);
 
@@ -473,8 +470,8 @@ public class GameScreen extends InputAdapter implements Screen {
         //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/introduction.png")));
         NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/introduction.png"),
                 86, 86, 98, 98);
-        Panel optionPanel = new Panel(stage1, background, game);
-        optionPanel.setSize(0.8f, 0.6f);
+        Panel optionPanel = new Panel(stage1, background, game, 0.8f, 0.8f);
+        optionPanel.init();
 
         optionPanel.addLabel("Options", game.getSkin(), "fraktur", 1, 80);
 
@@ -521,8 +518,8 @@ public class GameScreen extends InputAdapter implements Screen {
         //Drawable background = new TextureRegionDrawable(new TextureRegion(new Texture("backgrounds/victory.png")));
         NinePatchDrawable background = getNinePatchDrawableFromPath(Gdx.files.internal("backgrounds/victory.png"),
                 50, 50, 50, 50);
-        Panel victoryPanel = new Panel(stage1, background, game);
-        victoryPanel.setSize(0.8f, 0.6f);
+        Panel victoryPanel = new Panel(stage1, background, game, 0.8f, 0.6f);
+        victoryPanel.init();
         isPaused = true;
 
         victoryPanel.addLabel("Victory!", game.getSkin(), "fraktur", 1, 80);
@@ -1281,21 +1278,26 @@ public class GameScreen extends InputAdapter implements Screen {
 
     public void resizePanels(){
         for (var actor : iterate(stage1.getActors())){
-            if (actor instanceof Panel panel){
+            // what is stored in the stage is actually the panels' tables
+
+            /*if (actor instanceof Panel panel){
                 Gdx.app.log("Resize", "actor is a panel");
                 float widthRatio = (panel).getWidthRatio();
                 float heightRatio = (panel).getHeightRatio();
-                panel.setSize(Gdx.graphics.getWidth() * widthRatio,Gdx.graphics.getHeight() * heightRatio);
+                panel.init(Gdx.graphics.getWidth() * widthRatio,Gdx.graphics.getHeight() * heightRatio);
                 panel.setPosition(Gdx.graphics.getWidth() * (1-widthRatio)/2, Gdx.graphics.getHeight() * (1-heightRatio)/2);
             }
-            else if (actor instanceof Table table){
-                actor.setSize(Gdx.graphics.getWidth() * 0.8f,Gdx.graphics.getHeight() * 0.8f);
-                actor.setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.1f);
+            else */
+            if (actor instanceof ResizeableTable table){ // this is the case...
+                float w = table.getWidthRatio();
+                float h = table.getHeightRatio();
+                actor.setSize(Gdx.graphics.getWidth() * w,Gdx.graphics.getHeight() * h);
+                actor.setPosition(Gdx.graphics.getWidth() * (1-w)/2, Gdx.graphics.getHeight() * (1-h)/2);
 
                 for (Cell<?> cell : iterate(table.getCells())) {
                     Actor cellActor = cell.getActor();
                     if (cellActor instanceof Label) {
-                        cell.width(Gdx.graphics.getWidth() * 0.6f * 0.9f); // Adjust width dynamically
+                        cell.width(Gdx.graphics.getWidth() * w * 0.8f * 0.9f); // Adjust width dynamically // 0.9 is the padding
                     }
                 }
             }

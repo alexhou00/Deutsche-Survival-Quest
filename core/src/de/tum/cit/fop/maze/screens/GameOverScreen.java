@@ -17,6 +17,8 @@ import de.tum.cit.fop.maze.MazeRunnerGame;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static de.tum.cit.fop.maze.util.Constants.*;
+
 public class GameOverScreen implements Screen {
 
     private final Stage stage;
@@ -57,9 +59,7 @@ public class GameOverScreen implements Screen {
         title.getStyle().font.getData().setScale(1);
         table.add(title).padBottom(80).row();
 
-        // Add buttons for restarting or exiting the game
-        final float BUTTON_WIDTH = 300f;
-        final float BUTTON_PADDING = 10f; // Vertical padding
+        // Add buttons for restarting or exiting
 
         buttons = new LinkedHashMap<>();
         buttons.put("restartButton", new TextButton("Restart Level", game.getSkin()));
@@ -70,7 +70,7 @@ public class GameOverScreen implements Screen {
         // Add buttons to the table with padding
         for (Map.Entry<String, TextButton> entry : buttons.entrySet()) {
             TextButton button = entry.getValue();
-            table.add(button).width(BUTTON_WIDTH).padBottom(BUTTON_PADDING).row();
+            table.add(button).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
         }
 
 
