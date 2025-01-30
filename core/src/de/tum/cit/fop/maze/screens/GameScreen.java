@@ -141,14 +141,15 @@ public class GameScreen extends InputAdapter implements Screen {
         isTutorial = false;
         TiledMap tiledMap;
         Gdx.app.log("Constructor GameScreen", "Game Level upon creation of GameScreen: " + game.getGameLevel());
-        switch (game.getGameLevel()) {
-            case 1,2,3,4,5 -> tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_obstacles.png").path());
-            case 6 -> tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
-            case 0 -> {
-                isTutorial = true;
-                tiledMap = levels.loadTiledMap("maps/level-0-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
-            }
-            default -> tiledMap = levels.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+        if (game.getGameLevel() <= TOTAL_LEVELS){
+            tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_obstacles.png").path());
+        }
+        else if (game.getGameLevel() == 0){
+            isTutorial = true;
+            tiledMap = levels.loadTiledMap("maps/level-0-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
+        }
+        else{
+            tiledMap = levels.loadTiledMap("maps/level-1-map.properties", Gdx.files.internal("tilesets/level1_tileset.png").path(), Gdx.files.internal("tilesets/level1_obstacles.png").path());
         }
         createInstructionPanel();
 
