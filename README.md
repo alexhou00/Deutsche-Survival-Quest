@@ -5,13 +5,18 @@ The main Purpose is to collect the key and finding the exit to the next level. G
 are completed without loosing all of the lives. 
 
 "Deutsche Survival Quest" depicts the story of an international student who has arrived to Germany for his studies. He
-first lands to Stuttgart Airports, claims his luggage to get to his train. Our player needs to find his *Deutschlandticket* in order to get on
+first lands to Stuttgart Airport, claims his luggage to get to his train. Our player needs to find his *Deutschlandticket* in order to get on
 his train and safely arrive in Heilbronn. He needs to be careful, as there are strict ticket control personal in alert and also a lot of objects that are dangerous for his health.
-After a long journey to Heilbronn, our player needs to relax, hence he visits the *Altstadt* to have a couple of drinks. When our player finally catches his breath and rest a bit, he needs to go down town to
+After a long journey to Heilbronn, our player needs to relax, hence he visits the *Altstadt* to see the city and then a *Brauerei* have to have a couple of drinks. When our player finally catches his breath and rest a bit, he needs to go down town to
 register himself in the Rathaus. However, he completely forgot that traffic and order in Germany is quite different from his hometown. Would it bee a smooth journey to navigate through the city?
 When our player successfully navigates through the city and finds the Rathaus, he needs to register himself to seamlessly start his studies!!! 
 
 ## Table of Contents 
+
+* Deutsche Survival Quest (introduction)
+* Code Structure
+* directory Structure
+* 
 
 
 ### Code Structure
@@ -106,8 +111,18 @@ src/de/tum/cit/fop/maze/
 ## UML Diagram
 `<put our UML-Diagramm here>`
 
+
 ## Instructions
-* How to run the game?
+**How to run the game**?
+* For Windows/Linux:
+
+* For Mac:
+Run game on the upper right hand side should be clicked, and then edit configurations should be selected. Afterward,
+*Build and Run* should be found on the newly opened window and *Modify Options*, which is aligned to the right side of 
+*Build and Run* should be clicked. Then, *Add VM Options* should be selected and the text *-XstartOnFirstThread* should 
+* be typed to the newly opened text field. When these steps are completed, the game ready to run. Have fun!
+
+
 
 * WASD or Arrow Keys to move
 
@@ -257,12 +272,6 @@ Finding luggage at the airport while racing against time (before the train leave
 
 Key - documents that can be collected at the Burgeramt to unlock next level/ train ticket/ health insurance/
 
-bank account/ permanent residence
-
-
-Requirements: enemies and boostups
-
-tum : finding etze
 
 ## Features
 
