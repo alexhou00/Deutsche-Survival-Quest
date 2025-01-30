@@ -133,7 +133,7 @@ public class BFSChasingEnemy extends ChasingEnemy {
                     targetX = x + (x - enemy.getX()) * 5000;
                     targetY = y + (y - enemy.getY()) * 5000;
                     moveTowardsTarget(delta);
-                    System.out.println("Towards Target Moved Away from Other enemies because of touching...");
+                    Gdx.app.debug("BFS Enemy", "Towards Target Moved Away from Other enemies because of touching...");
                 }
             }
             return true;
@@ -169,7 +169,7 @@ public class BFSChasingEnemy extends ChasingEnemy {
 
             if (current.equals(goal)) {
                 // Path found
-                //Gdx.app.log("BFS", "Path found");
+                Gdx.app.debug("BFS", "Path found");
                 return reconstructPath(cameFrom, start, goal);
             }
 
@@ -289,7 +289,6 @@ public class BFSChasingEnemy extends ChasingEnemy {
 
         // The Player is out of range (somewhere in the wall, or on the tile that has parts of walls on it
         // or surrounded by walls
-        //Gdx.app.log("BFS Enemy", "detect cc");
         Position playerPosition = getTilePosition(player.getX(), player.getY());
         if (levels.getTileEnumOnMap(playerPosition.getTileX(), playerPosition.getTileY()).equals(TileType.WALL)) {
             //return super.isPlayerWithinDetectionRadius(player, radius);

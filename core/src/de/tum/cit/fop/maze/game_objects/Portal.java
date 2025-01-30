@@ -115,7 +115,7 @@ public class Portal extends StaticObject {
         //this enables the portal to access the player's properties or perform actions on the player, like teleporting them to an entrance
         this.isActive = initialState;
         this.elapsedTime = initialElapsedTime % cycleDuration; // Ensure elapsedTime stays within the cycle
-        System.out.println("Portal initialized: isActive=" + isActive + ", elapsedTime=" + elapsedTime);
+        Gdx.app.log("Portals", "Portal initialized: isActive=" + isActive + ", elapsedTime=" + elapsedTime);
     }
 
     /**

@@ -49,7 +49,7 @@ public class Key extends StaticObject {
         if (!game.isMuted()){
             game.getSoundEffectKey().play(game.getSoundManager().getVolume());
         }
-        System.out.println("Key collected!"); // Debug message
+        Gdx.app.log("Key", "Key collected!"); // Debug message
     }
 
     /**
