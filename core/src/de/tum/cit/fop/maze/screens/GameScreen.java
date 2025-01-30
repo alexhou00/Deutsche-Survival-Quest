@@ -141,7 +141,7 @@ public class GameScreen extends InputAdapter implements Screen {
         isTutorial = false;
         TiledMap tiledMap;
         Gdx.app.log("Constructor GameScreen", "Game Level upon creation of GameScreen: " + game.getGameLevel());
-        if (game.getGameLevel() <= TOTAL_LEVELS){
+        if (game.getGameLevel() <= TOTAL_LEVELS && game.getGameLevel() > 0){
             tiledMap = levels.loadTiledMap("maps/level-"+game.getGameLevel()+"-map.properties", Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_tileset.png").path(), Gdx.files.internal("tilesets/level"+ game.getGameLevel()+"_obstacles.png").path());
         }
         else if (game.getGameLevel() == 0){
