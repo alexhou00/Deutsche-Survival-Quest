@@ -1835,4 +1835,8 @@ public class GameScreen extends InputAdapter implements Screen {
     public TutorialStage getCurrentTutorialStage() {
         return currentTutorialStage;
     }
+
+    public float getCountdownTimer() {
+        return timer;
+    }
 }

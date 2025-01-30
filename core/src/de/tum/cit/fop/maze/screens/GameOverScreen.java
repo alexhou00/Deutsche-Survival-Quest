@@ -55,7 +55,9 @@ public class GameOverScreen implements Screen {
         stage.addActor(table); // Add the table to the stage
 
         // Add a label as a title
-        Label title = new Label("Game Over", game.getSkin(), "fraktur-white");
+        Label title = new Label("Game Over" , game.getSkin(), "fraktur-white");
+        if (game.getGameScreen().levels.isProperties("timer") && game.getGameScreen().getCountdownTimer() <= 0)
+            title.setText("Time'$ Up!");
         title.getStyle().font.getData().setScale(1);
         table.add(title).padBottom(80).row();
 
