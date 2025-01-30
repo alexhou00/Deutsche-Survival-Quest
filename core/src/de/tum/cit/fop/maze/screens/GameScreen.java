@@ -86,6 +86,10 @@ public class GameScreen extends InputAdapter implements Screen {
     private static final float STAMINA_DISPLAY_TIME = 1f; // Duration to show stamina bar in seconds
     private float staminaTimer = STAMINA_DISPLAY_TIME; // set the timer to max first to prevent from showing at the very beginning
 
+    private static final float TIMER = 180f;
+    private float timer = TIMER;
+
+
     private boolean isPaused;
     private boolean isTutorial;
 
@@ -1263,6 +1267,9 @@ public class GameScreen extends InputAdapter implements Screen {
         }
     }
 
+//       }
+
+
 
     /**
      * Renders the Heads-Up Display (HUD), including player health and collected coins.
@@ -1289,6 +1296,19 @@ public class GameScreen extends InputAdapter implements Screen {
         String keyStatus = key.isCollected() ? "Key Collected!" : "Find The Key!";
         font.draw(game.getSpriteBatch(), keyStatus, 20, Gdx.graphics.getHeight() - 80);
 
+
+
+        if (!isPaused && !isTutorial && game.getGameLevel() ==6){
+            timer -= (Gdx.graphics.getDeltaTime());
+            if(timer <=0 ){
+                game.goToGameOverScreen();
+            }
+        }
+
+        if (game.getGameLevel() ==6){
+            String time = "time : " + timer;
+            font.draw(game.getSpriteBatch(), time, 20, Gdx.graphics.getHeight() - 120);
+        }
         game.getSpriteBatch().end();
     }
 
