@@ -65,7 +65,7 @@ public class GameScreen extends InputAdapter implements Screen {
     private final Player player;
     public LevelManager levels; // Tile system for the map
     private final Key key;
-    TextureRegion keyRegion;
+    private final TextureRegion keyRegion;
     private final Array<Collectibles> collectibles;
     private final Array<Portal> portals;
 
@@ -397,8 +397,8 @@ public class GameScreen extends InputAdapter implements Screen {
         String levelName = levels.getProperties("levelName");
         introPanel.addLabel((levelName.isEmpty()) ? "Game Instructions" : levelName, game.getSkin(), "fraktur", 1, 40);
 
-        introPanel.addLabel("Move using W, A, S, D keys.", game.getSkin(), "black", 1f, 20);
-        introPanel.addLabel("Collect keys to unlock exits.", game.getSkin(), "black", 1f, 20);
+        introPanel.addLabel("Move using W, A, S, D or arrow keys.", game.getSkin(), "black", 1f, 20);
+        introPanel.addLabel("Collect the key to unlock exits.", game.getSkin(), "black", 1f, 20);
         introPanel.addLabel("Avoid enemies and traps!", game.getSkin(), "black", 1f, 20);
 
         introPanel.addButton("Start now", game.getSkin(), new ChangeListener() {
@@ -1593,13 +1593,12 @@ public class GameScreen extends InputAdapter implements Screen {
     public void hide() {
     }
 
-    // TODO: Remember to dispose of any textures you create when you're done with them to prevent memory leaks.
     @Override
     public void dispose() {
         font.dispose();
         //shapeRenderer.dispose();
         // i think we shouldn't even dispose the shapeRenderer, right? (else the program will exit unexpectedly)
-        mapRenderer.dispose();
+        //mapRenderer.dispose();
         hudObjectRenderer.dispose();
         // disposing all disposables (such as Stage, Skin, Texture ... etc)
         stage1.dispose();

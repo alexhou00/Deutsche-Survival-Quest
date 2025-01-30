@@ -17,6 +17,8 @@ import de.tum.cit.fop.maze.MazeRunnerGame;
 
 import java.util.*;
 
+import static de.tum.cit.fop.maze.util.Constants.*;
+
 public class VictoryScreen implements Screen {
     private final Stage stage;
     private final MazeRunnerGame game;
@@ -45,12 +47,10 @@ public class VictoryScreen implements Screen {
 
         Gdx.app.log("VictoryScreen","VictoryScreen is created.");
 
-        final float BUTTON_WIDTH = 300f;
-        final float BUTTON_PADDING = 10f;
 
         for (Map.Entry<String, TextButton> entry : buttons.entrySet()) {
             TextButton button = entry.getValue();
-            table.add(button).width(BUTTON_WIDTH).padBottom(BUTTON_PADDING).row();
+            table.add(button).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
         }
 
         buttons.get("goToMenuButton").addListener(new ChangeListener() {
@@ -68,6 +68,7 @@ public class VictoryScreen implements Screen {
                 game.exitGame();
             }
         });
+
     }
 
 
