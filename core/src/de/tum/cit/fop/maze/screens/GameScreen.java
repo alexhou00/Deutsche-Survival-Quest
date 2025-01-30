@@ -76,8 +76,8 @@ public class GameScreen extends InputAdapter implements Screen {
 
     // Show all the variables in the bottom-left corner here
     // Variables to show, stored in a map (LinkedHashMap preserves the order)
-    private Map<String, Float> variablesToShow = new LinkedHashMap<>();
-    private InputMultiplexer inputMultiplexer = new InputMultiplexer();
+    private final Map<String, Float> variablesToShow = new LinkedHashMap<>();
+    private final InputMultiplexer inputMultiplexer = new InputMultiplexer();
 
     private Animation<TextureRegion> playerAnimation;
     private Animation<TextureRegion> enemyAnimation;
@@ -225,8 +225,9 @@ public class GameScreen extends InputAdapter implements Screen {
         // to find all "OTHER" tiles
         Array<Position> emptyTiles = getEmptyTiles(levels);
 
-        generateCollectibles(emptyTiles, Collectibles.Type.HEART, 3, 16, 11, 11, 2.5f);
-        generateCollectibles(emptyTiles, Collectibles.Type.PRETZEL, 3, 32,28, 27,72/28f);
+        int numberOfHearts = (int) (sqrt(horizontalTilesCount * verticalTilesCount) / 10);
+        generateCollectibles(emptyTiles, Collectibles.Type.HEART, numberOfHearts, 16, 11, 11, 2.5f);
+        generateCollectibles(emptyTiles, Collectibles.Type.PRETZEL, numberOfHearts, 32,28, 27,72/28f);
         generateCollectibles(emptyTiles, Collectibles.Type.GESUNDHEITSKARTE, 1, 32,27,18,72/28f);
 
         generateCollectibles(emptyTiles, Collectibles.Type.COIN, 5, 16,11, 11,2.5f);
