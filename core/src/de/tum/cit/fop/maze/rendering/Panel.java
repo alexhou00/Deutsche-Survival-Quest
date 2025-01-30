@@ -26,6 +26,11 @@ import de.tum.cit.fop.maze.level.LevelManager;
 import static de.tum.cit.fop.maze.util.Constants.*;
 import static de.tum.cit.fop.maze.util.Position.getWorldCoordinateInPixels;
 
+/**
+ * Represents a UI panel in the game.
+ * This panel can be used to display game information like stats, scores, etc.
+ * It uses a Table to organize UI elements, which are then added to the Stage.
+ */
 public class Panel extends Actor{
     private final Table table;
     private final Stage stage;
@@ -33,6 +38,14 @@ public class Panel extends Actor{
     private float heightRatio;
     private final MazeRunnerGame game;
 
+    /**
+     * Constructs a panel with a background and adds it to the given stage.
+     * Sets the default width and height ratios for the panel.
+     *
+     * @param stage The stage to which the panel will be added
+     * @param background The background drawable for the panel
+     * @param game The game instance this panel is a part of
+     */
     public Panel(Stage stage, Drawable background, MazeRunnerGame game) {
 
         table = new Table();
@@ -44,6 +57,13 @@ public class Panel extends Actor{
         this.game = game;
     }
 
+    /**
+     * Sets the size of the panel based on the specified width and height ratios.
+     * The panel is centered in the middle of the screen.
+     *
+     * @param widthRatio The width ratio (0 to 1) relative to screen width
+     * @param heightRatio The height ratio (0 to 1) relative to screen height
+     */
     public void setSize(float widthRatio, float heightRatio) { // 0~1
         this.widthRatio = widthRatio;
         this.heightRatio = heightRatio;
@@ -66,17 +86,16 @@ public class Panel extends Actor{
         table.invalidate(); // Force table layout update
     }
 
-    public void addLabel(String text, Label.LabelStyle style, float padBottom) {
-        Label label = new Label(text, style);
-        table.add(label).padBottom(padBottom).center().row();
-    }
-
-    public void addLabel(String text, Skin skin, float scale, float padBottom) {
-        Label label = new Label(text, skin);
-        label.getStyle().font.getData().setScale(scale);
-        table.add(label).padBottom(padBottom).center().row();
-    }
-
+    /**
+     * Adds a label to the panel.
+     *
+     * @param text The text to display on the label
+     * @param skin The skin to use for the label
+     * @param styleName The style of the label
+     * @param scale The scale factor for the font
+     * @param padBottom The padding at the bottom of the label
+     * @return The created label
+     */
     public Label addLabel(String text, Skin skin, String styleName, float scale, float padBottom) {
         Label label = new Label(text, skin, styleName);
         label.getStyle().font.getData().setScale(scale);
@@ -89,6 +108,13 @@ public class Panel extends Actor{
 
 
 
+    /**
+     * Adds a button to the panel with a listener that plays a sound on hover.
+     *
+     * @param buttonText The text on the button
+     * @param skin The skin to use for the button
+     * @param listener The listener to handle button click events
+     */
     public void addButton(String buttonText, Skin skin, ChangeListener listener) {
         skin.get(Label.LabelStyle.class).font.getData().setScale(1); // set the scale back
         TextButton button = new TextButton(buttonText, skin);
@@ -122,6 +148,11 @@ public class Panel extends Actor{
         table.add(button).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).center().row();
     }
 
+    /**
+     * Adds a listener to the stage for input events.
+     *
+     * @param listener The listener to add to the stage
+     */
     public void addListener(InputListener listener) {
         stage.addListener(listener);
     }
@@ -140,32 +171,15 @@ public class Panel extends Actor{
         };
     }
 
-    public static InputListener ifSpaceKeyPressedAndReleased(Runnable action) {
-        return new InputListener() {
-            private boolean isPressed = false;
 
-            @Override
-            public boolean keyDown(InputEvent event, int keycode) {
-                if (keycode == Input.Keys.SPACE) {
-                    isPressed = true; // Mark as pressed
-                    return true;
-                }
-                return false;
-            }
-
-            @Override
-            public boolean keyUp(InputEvent event, int keycode) {
-                if (keycode == Input.Keys.SPACE && isPressed) {
-                    isPressed = false; // Reset the flag
-                    action.run(); // Run the action only after release
-                    return true;
-                }
-                return false;
-            }
-        };
-    }
-
-
+    /**
+     * Proceeds to the game and removes the panel from the stage.
+     * Sets the player's position at the entrance of the level.
+     *
+     * @param game The game instance
+     * @param player The player instance
+     * @param levels The level manager to access the level entrance
+     */
     public void proceedToGame(MazeRunnerGame game, Player player, LevelManager levels) {
         this.getTable().remove(); // Remove the panel and start the game
         game.resume();
@@ -173,28 +187,29 @@ public class Panel extends Actor{
                 getWorldCoordinateInPixels(levels.entrance.getTileY()));
     }
 
+    /**
+     * Proceeds to the next level by incrementing the game level and stopping victory sound.
+     *
+     * @param game The game instance
+     */
     public void proceedToNextLevel(MazeRunnerGame game){
         game.setGameLevel(game.getGameLevel() + 1);
         game.getVictorySoundEffect().stop();
         game.startNextLevel();
     }
 
-    public void addVolumeControl(Skin skin, ChangeListener sliderListener, ChangeListener muteListener) {
-        Label volumeLabel = new Label("Volume", skin);
-        table.add(volumeLabel).padBottom(20).center().row();
-
-        // Slider for volume
-        Slider volumeSlider = new Slider(0, 2, 0.01f, false, skin);
-        volumeSlider.setValue(1); // Default volume
-        volumeSlider.addListener(sliderListener);
-        table.add(volumeSlider).padBottom(20).center().row();
-
-        // Mute checkbox
-        CheckBox muteCheckbox = new CheckBox("Mute-Unmute", skin);
-        muteCheckbox.addListener(muteListener);
-        table.add(muteCheckbox).padBottom(20).center().row();
-    }
-
+    /**
+     * Adds a slider to the panel with the specified properties.
+     *
+     * @param labelText The label text for the slider
+     * @param minValue The minimum value of the slider
+     * @param maxValue The maximum value of the slider
+     * @param currentValue The current value of the slider
+     * @param stepSize The step size for the slider
+     * @param skin The skin to use for the slider
+     * @param styleName The style name for the slider
+     * @param listener The listener to handle slider changes
+     */
     public void addSlider(String labelText, float minValue, float maxValue, float currentValue, float stepSize, Skin skin, String styleName, ChangeListener listener) {
         Label label = new Label(labelText, skin, styleName);
         table.add(label).padBottom(20).center().row();
@@ -210,11 +225,19 @@ public class Panel extends Actor{
         table.add(slider).padBottom(20).center().row();
     }
 
+    /**
+     * Clears all elements from the panel and removes it from the stage.
+     */
     public void clear() {
         table.clear();
         table.remove();
     }
 
+    /**
+     * Gets the table used to layout the panel's UI elements.
+     *
+     * @return The table
+     */
     public Table getTable() {
         return table;
     }
@@ -227,43 +250,30 @@ public class Panel extends Actor{
         return heightRatio;
     }
 
-    public void addSlider(Skin skin, ChangeListener listener, float minValue, float maxValue, float currentValue) {
-        Slider slider = new Slider(minValue, maxValue, 0.01f, false, skin);
-        slider.setValue(currentValue);
-        slider.addListener(listener);
-        table.add(slider).padBottom(20).center().row();
-    }
 
-    public void addSlider(String soundEffectsVolume, int i, int i1, float v, float volume, ChangeListener optionsScreen, int i2) {
-    }
-
+    /**
+     * Creates a NinePatchDrawable from a specified image path and patch parameters.
+     *
+     * @param imageInternalPath The internal path to the image
+     * @param left The left padding of the patch
+     * @param right The right padding of the patch
+     * @param top The top padding of the patch
+     * @param bottom The bottom padding of the patch
+     * @return The NinePatchDrawable created from the image
+     */
     public static NinePatchDrawable getNinePatchDrawableFromPath(FileHandle imageInternalPath, int left, int right, int top, int bottom){
         NinePatch ninePatch = new NinePatch(new TextureRegion(new Texture(imageInternalPath)), left, right, top, bottom);
         return new NinePatchDrawable(ninePatch);
     }
 
-    public float getPanelWidth(){
+    /**
+     * Gets the width of the panel based on the current width ratio.
+     *
+     * @return The panel's width
+     */public float getPanelWidth(){
         Gdx.app.log("Panel", "width: " + widthRatio * Gdx.graphics.getWidth());
         return 0.6f * Gdx.graphics.getWidth();
     }
 
-    public float getPanelHeight(){
-        return heightRatio * Gdx.graphics.getHeight();
-    }
-
-    /**
-     * Calculates the width of a single letter using the specified font.
-     *
-     * @param font   The font to use for calculating the width.
-     * @param letter The letter whose width is to be calculated.
-     * @return The width of the letter.
-     */
-    public float getLetterWidth(BitmapFont font, String letter){
-        GlyphLayout layout = new GlyphLayout(font, letter);
-        float adjust = switch (letter.charAt(0)){
-            default -> 0;
-        };
-        return Math.max(layout.width + adjust, layout.width); // width of letter "m"
-    }
 
 }

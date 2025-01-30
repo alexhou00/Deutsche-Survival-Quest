@@ -37,10 +37,32 @@ public class ElementRenderer {
         arrow = new Sprite(arrowRegion);
     }
 
+    /**
+     * Extracts a specific heart icon from a texture using the provided x-coordinate.
+     * <p>
+     * This method extracts a portion of the given texture at the specified x-coordinate. It assumes
+     * that the heart icon is positioned at a fixed height and width within the texture.
+     * </p>
+     *
+     * @param texture The texture from which the heart icon will be extracted.
+     * @param x The x-coordinate on the texture where the heart icon starts.
+     * @return A {@link TextureRegion} representing the extracted heart icon from the texture.
+     */
     private TextureRegion extractHeart(Texture texture, int x) {
         return new TextureRegion(texture, x, 2, 14, 13);
     }
 
+    /**
+     * Extracts a specific coin icon from a texture using the provided x-coordinate.
+     * <p>
+     * This method extracts a portion of the given texture at the specified x-coordinate. It assumes
+     * that the coin icon is positioned at a fixed height and width within the texture.
+     * </p>
+     *
+     * @param texture The texture from which the coin icon will be extracted.
+     * @param x The x-coordinate on the texture where the coin icon starts.
+     * @return A {@link TextureRegion} representing the extracted coin icon from the texture.
+     */
     private TextureRegion extractCoin(Texture texture, int x) {
         return new TextureRegion(texture, x, 0, 14, 13);
     }
@@ -85,18 +107,6 @@ public class ElementRenderer {
             }
         }
     }
-
-    /*public void drawCoins(SpriteBatch batch, int collectedCoins, int totalCoins, float startX, float startY, float spacing, float scale) {
-        // Draw collected coins
-        for (int i = 0; i < collectedCoins; i++) {
-            batch.draw(coinRegion, startX + i * spacing, startY, 14 * scale, 14 * scale);
-        }
-
-        // Draw empty coins (optional for total coin display)
-        for (int i = collectedCoins; i < totalCoins; i++) {
-            batch.draw(coinRegion, startX + i * spacing, startY, 14 * scale, 14 * scale);
-        }
-    }*/
 
     /**
      * Draws an arrow sprite at a specific position with a rotation.

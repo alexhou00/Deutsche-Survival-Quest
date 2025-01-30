@@ -27,19 +27,18 @@ import static de.tum.cit.fop.maze.util.Position.PositionUnit.*;
 /** this is like a TilesManager or ".properties" File Reader,
  * or more specifically, a LevelManager
  * It manages tile (and also other objects for the level) creation for each level
- */ // TODO: CLEAN UP THE CODE HERE
+ */
 public class LevelManager {
     public TiledMapTileLayer layer;
-
     private Position keyTilePosition;
     private final boolean cameraAngled = false;
     public Array<Trap> traps;
-
     public Array<ChasingEnemy> chasingEnemies;
     private final Map<Integer, Map<String, Animation<TextureRegion>>> enemiesAnimations; // Map of "enemy Animations", and an "enemy Animations" is a map of "enemy Animation"
 
     /** entrance tile, coordinates of the tile can be accessed through this */
     public Entrance entrance;
+
     /** exit tile, coordinates of the tile can be accessed through this */
     public Array<Exit> exits;
 
@@ -51,9 +50,7 @@ public class LevelManager {
 
     private static final Set<Integer> SPEED_BOOST = TileType.SPEED_BOOST.getAll();
     public static final Set<Integer> EXIT = TileType.EXIT.getAll();
-
     private TileType[][] tileEnumOnMap;
-
     private final MazeRunnerGame game;
 
     /**
@@ -63,7 +60,6 @@ public class LevelManager {
         keyTilePosition = null;
         entrance = null; //getEntrance();
         exits = new Array<>();
-
         traps = new Array<>();
         chasingEnemies = new Array<>();
         enemiesAnimations = new HashMap<>();
@@ -99,7 +95,6 @@ public class LevelManager {
         // Parse ".properties" file. The position of the key will also be handled here.
         ObjectMap<String, Array<Integer>> mapData = parsePropertiesFile(mapFilePath);
 
-
         // THIRD,
         // Put the tiles on the map. And if the tile is a trap/enemy, create a trap/enemy.
         return createTiledMap(mapData, horizontalTilesCount, verticalTilesCount);
@@ -112,8 +107,6 @@ public class LevelManager {
     private TextureRegion[] loadTileSheet(String tileSheetPath, String ObstacleSheetPath) {
         var tileSheet = new Texture(tileSheetPath);//represents the main tile sheet image.
         var obstacleSheet = new Texture(ObstacleSheetPath);//represents the main tile sheet image.
-        //var enemySheet = new Texture(Gdx.files.internal("characters/mob_guy.png"));
-        //Calculates how many tiles (tileCols and tileRows) can fit horizontally and vertically in the tile sheet, assuming each tile has a fixed size (TILE_SIZE).
         int tileCols = tileSheet.getWidth() / TILE_SIZE;
         int tileRows = tileSheet.getHeight() / TILE_SIZE;
 
@@ -126,15 +119,13 @@ public class LevelManager {
         for (int y = 0; y < tileRows; y++) {
             for (int x = 0; x < tileCols; x++) {
                 int index = y * tileCols + x;
-
                 TextureRegion tileRegion;
-
-                //TextureRegion tileRegion;
                 // Load the TextureRegions from the sheets:
                 if (TRAP.getAll().contains(index)) {
                     int startX = (index == TRAP.getId()) ? 0: TRAP_SIZE * (index - TRAP.getSecond() + 1);
                     tileRegion = new TextureRegion(obstacleSheet, startX, 0, TRAP_SIZE, TRAP_SIZE);
                 }
+
                 else if (ENEMY.getAll().contains(index)) {
                     int startY = TRAP_SIZE + getEnemyIndex(index) * ENEMY_SIZE; //index == ENEMY_FIRST) ? 0: 16 * (index - ENEMY_SECOND + 1);
                     tileRegion = new TextureRegion(obstacleSheet, 0, startY, ENEMY_SIZE, ENEMY_SIZE);
@@ -182,19 +173,16 @@ public class LevelManager {
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
                 tileEnumOnMap[x][y] = TileType.WALL;
 
-
             return tile;
         }
+
         else if (index == ENTRANCE.getId()){
             entrance = new Entrance(tileRegion); // we create our Entrance instance here
             entrance.getProperties().put("type", "Entrance");
-
-
                 entrance.setTilePosition(new Position(x, y, TILES));
                 tileOnMap[x][y] = entrance;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
                 tileEnumOnMap[x][y] = ENTRANCE;
-
 
             return entrance;
         }
@@ -202,14 +190,11 @@ public class LevelManager {
             Exit exit = new Exit(tileRegion);
             exit.getProperties().put("type", "Exit");
 
-
                 exit.setTilePosition(new Position(x, y, TILES));
                 exits.add(exit);
                 tileOnMap[x][y] = exit;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
                 tileEnumOnMap[x][y] = TileType.EXIT;
-
-
 
             return exit;
         }
@@ -217,11 +202,9 @@ public class LevelManager {
             Tile tile = new Tile(tileRegion);
             tile.getProperties().put("type", "Trap");
 
-
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
                 tileEnumOnMap[x][y] = TileType.TRAP;
-
 
             return tile;
         }
@@ -240,18 +223,15 @@ public class LevelManager {
             Tile tile = new SpeedBoost(tileRegion);
             tile.getProperties().put("type", "Speed Boost");
 
-
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
                 tileEnumOnMap[x][y] = TileType.SPEED_BOOST;
-
 
             return tile;
         }
         else {
             Tile tile = new Tile(tileRegion);
             tile.getProperties().put("type", "");
-
 
                 tileOnMap[x][y] = tile;
                 tileOnMap[x][y].setTilePosition(new Position(x, y, TILES));
@@ -302,20 +282,11 @@ public class LevelManager {
                     }
                     if (verticalTilesCount < position.getTileY() + 1) verticalTilesCount = position.getTileY() + 1;
                 }
-                else{ // the key in the key-value is some other key like, "keyPosition". which allows us to place the key on float positions
-                    /*switch(key){
-                        case "keyPosition" -> keyTilePosition = stringToPosition(value, TILES).convertTo(PIXELS);
-                        case "angled" -> {
-                            if (Objects.equals(value, "true")) // null-safe equal
-                                cameraAngled = true;
-                        }
-                    }*/
+                else{
                     mapProperties.put(key, value);
                 }
-
-
-
             }
+
         } catch (IOException e) {
             Gdx.app.error("TileMapParser", String.valueOf(e));
         }
@@ -475,6 +446,17 @@ public class LevelManager {
         return tileset;
     }
 
+    /**
+     * Retrieves the position of the key tile in the map.
+     * <p>
+     * If the position of the key tile has not been set yet, this method checks the map's properties to
+     * retrieve the key position from the property "keyPosition". If the key position is found, it converts
+     * the position from tile coordinates to pixel coordinates. If no key position is found, it returns a default
+     * position (0,0) in tile coordinates.
+     * </p>
+     *
+     * @return The position of the key tile in pixel coordinates, or a default position (0, 0) if not set.
+     */
     public Position getKeyTilePosition() {
         if (keyTilePosition == null) {
             if (mapProperties.get("keyPosition") != null){
@@ -488,10 +470,17 @@ public class LevelManager {
         return keyTilePosition;
     }
 
-    public Tile[][] getTileOnMap() {
-        return tileOnMap;
-    }
-
+    /**
+     * Retrieves the tile at the specified position on the map.
+     * <p>
+     * Given the x and y coordinates, this method returns the tile at that position on the map.
+     * The coordinates are assumed to be within the bounds of the map.
+     * </p>
+     *
+     * @param x The x-coordinate of the tile on the map.
+     * @param y The y-coordinate of the tile on the map.
+     * @return The tile at the specified position on the map.
+     */
     public Tile getTileOnMap(int x, int y) {
         return tileOnMap[x][y];
     }
@@ -562,16 +551,52 @@ public class LevelManager {
         return isProperties("angled");
     }
 
+    /**
+     * Retrieves the animations for the enemy at the specified index.
+     * <p>
+     * Given the index of the enemy, this method returns the corresponding set of animations
+     * for that enemy. The animations are stored in a map where the keys represent the direction
+     * of the animations (e.g., "up", "down", "left", "right"), and the values are the
+     * corresponding animation frames.
+     * </p>
+     *
+     * @param index The index of the enemy whose animations are to be retrieved.
+     * @return A map of animations for the specified enemy. The map's keys are direction strings
+     *         ("up", "down", "left", "right") and the values are the corresponding animations.
+     */
     public Map<String, Animation<TextureRegion>> getEnemyAnimations(Integer index) {
         return enemiesAnimations.get(index);
     }
 
+    /**
+     * Returns the index of the enemy based on the tile value.
+     * <p>
+     * The method calculates the enemy's index based on the given tile value. If the tile value
+     * corresponds to the default (first type of) enemy, the index is 0. Otherwise, the index is
+     * calculated based on the difference between the tile value and a predefined value associated
+     * with the enemy types, adjusted accordingly.
+     * </p>
+     *
+     * @param tileValue The value of the tile, which determines which enemy is present.
+     * @return The index of the enemy based on the tile value. If the tile value matches the default
+     *         enemy type, the index is 0; otherwise, it calculates the index relative to other enemy types.
+     */
     public int getEnemyIndex(int tileValue){
         // starts from 0
         // if it's the default (first type of) enemy; the index is 0, else the index continues from tileset[150]
         return (tileValue == ENEMY.getId()) ? 0 : ((tileValue - ENEMY.getSecond()) + 1);
     }
 
+    /**
+     * Retrieves the value associated with the given key from the map of properties.
+     * <p>
+     * This method checks if the specified key exists in the properties map and returns its associated
+     * value. If the key does not exist, an empty string is returned.
+     * </p>
+     *
+     * @param key The key whose associated value is to be retrieved.
+     * @return The value associated with the specified key, or an empty string if the key does not exist.
+     */
     public String getProperties(String key){
         if (mapProperties.get(key) != null){
             return mapProperties.get(key);
@@ -579,6 +604,17 @@ public class LevelManager {
         else return "";
     }
 
+    /**
+     * Checks if the value associated with the given key is "true" in the map of properties.
+     * <p>
+     * This method retrieves the value associated with the specified key from the properties map
+     * and checks if the value is equal to the string "true". If the key does not exist or the
+     * value is not "true", the method returns false.
+     * </p>
+     *
+     * @param key The key whose associated value is to be checked.
+     * @return {@code true} if the value associated with the key is "true", otherwise {@code false}.
+     */
     public boolean isProperties(String key){
         if (mapProperties.get(key) != null){
             return Objects.equals(mapProperties.get(key), "true");

@@ -57,28 +57,12 @@ public class Tile extends StaticTiledMapTile{
     public void setTilePosition(Position tilePosition) {
         this.tilePosition = tilePosition.convertTo(Position.PositionUnit.TILES);
 
-        // debug, get the target tile we want to see
-        //boolean flag = tilePosition.equals(new Position(17,4, Position.PositionUnit.TILES)); // 16, 4
-
         // Set Hitbox upon updating its position
         tilePosition = tilePosition.convertTo(Position.PositionUnit.PIXELS);
         worldX = tilePosition.getX() - (float) TILE_SCREEN_SIZE / 2;
         worldY = tilePosition.getY() - TILE_SCREEN_SIZE / 2.0f;
 
         setHitPixmap();
-
-        /* debug message
-        if (flag){
-            printHitPixmap();
-        }
-         */
-    }
-
-    /**
-     * Prints the hit pixel map to the console for debugging purposes.
-     */
-    void printHitPixmap(){
-        printHitPixmap(hitPixmap);
     }
 
     /**

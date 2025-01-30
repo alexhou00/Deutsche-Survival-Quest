@@ -31,7 +31,6 @@ public class VictoryScreen implements Screen {
         this.show();
         Viewport viewport = new ScreenViewport(camera);
         this.stage = new Stage (viewport, game.getSpriteBatch());
-        //this.backgroundTexture = new Texture("background.png");
 
         Table table = new Table();
         table.setFillParent(true);
@@ -69,23 +68,17 @@ public class VictoryScreen implements Screen {
                 game.exitGame();
             }
         });
-
-
-
     }
 
 
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
-
     }
 
     @Override
     public void render(float v) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//        game.getSpriteBatch().begin();
-//        game.getSpriteBatch().end();
         game.getSpriteBatch().begin();
         game.getSpriteBatch().draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.getSpriteBatch().end();

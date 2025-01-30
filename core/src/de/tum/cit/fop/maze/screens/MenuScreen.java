@@ -52,10 +52,8 @@ public class MenuScreen implements Screen {
 
         selectLevelScreen = new SelectLevelScreen(game, "previous screen", gameScreen);
         optionsScreen = new OptionsScreen(game);
-
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
         stage = new Stage(viewport, game.getSpriteBatch()); // Create a stage for UI elements
-
         backgroundTexture = new Texture("backgrounds/background.png");
 
         table.setFillParent(true); // Make the table fill the stage
