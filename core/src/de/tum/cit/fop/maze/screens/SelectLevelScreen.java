@@ -69,6 +69,7 @@ public class SelectLevelScreen implements Screen  {
 
                 }
             });
+            buttons.get("Level " + i).addListener(game.getButtonSoundListener());
             table.add(buttons.get("Level " + i)).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
         }
 
@@ -85,6 +86,7 @@ public class SelectLevelScreen implements Screen  {
                 }
             }
         });
+        backButton.addListener(game.getButtonSoundListener());
         table.add(backButton).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).padTop(20).row();
 
 

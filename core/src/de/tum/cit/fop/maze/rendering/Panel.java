@@ -94,30 +94,7 @@ public class Panel extends Actor{
         TextButton button = new TextButton(buttonText, skin);
         button.addListener(listener);
 
-        button.addListener(new ClickListener() {
-            boolean playing = false;
-            long lastPlayTime = 0; // Store the last play time
-            final long cooldown = 350; // Cooldown in milliseconds
-
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                super.enter(event, x, y, pointer, fromActor);
-                long currentTime = System.currentTimeMillis();
-                if (!playing && (currentTime - lastPlayTime > cooldown) && !game.isMuted()) {
-                    Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/click-button-131479.mp3"));
-                    sound.play(game.getVolume());
-                    playing = true;
-                    lastPlayTime = currentTime;
-                }
-            }
-
-            @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                super.exit(event, x, y, pointer, toActor);
-                playing = false; // Reset the playing flag when exiting
-            }
-        });
-
+        button.addListener(game.getButtonSoundListener());
 
         table.add(button).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).center().row();
     }

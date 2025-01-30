@@ -8,7 +8,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.game_objects.Player;
 import de.tum.cit.fop.maze.screens.*;
@@ -700,5 +703,31 @@ public class MazeRunnerGame extends Game {
                     frameHeight));
         }
         return new Animation<>(frameDuration, frames);
+    }
+
+    public ClickListener getButtonSoundListener(){
+        return new ClickListener() {
+            boolean playing = false;
+            long lastPlayTime = 0; // Store the last play time
+            final long cooldown = 350; // Cooldown in milliseconds
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                super.enter(event, x, y, pointer, fromActor);
+                long currentTime = System.currentTimeMillis();
+                if (!playing && (currentTime - lastPlayTime > cooldown) && !isMuted()) {
+                    Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/click-button-131479.mp3"));
+                    sound.play(getVolume());
+                    playing = true;
+                    lastPlayTime = currentTime;
+                }
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                super.exit(event, x, y, pointer, toActor);
+                playing = false; // Reset the playing flag when exiting
+            }
+        };
     }
 }

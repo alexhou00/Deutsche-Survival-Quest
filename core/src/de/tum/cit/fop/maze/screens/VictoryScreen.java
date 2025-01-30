@@ -50,6 +50,7 @@ public class VictoryScreen implements Screen {
 
         for (Map.Entry<String, TextButton> entry : buttons.entrySet()) {
             TextButton button = entry.getValue();
+            button.addListener(game.getButtonSoundListener());
             table.add(button).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(BUTTON_PADDING).row();
         }
 
