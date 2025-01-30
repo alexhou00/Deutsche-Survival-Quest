@@ -160,7 +160,7 @@ public class GameScreen extends InputAdapter implements Screen {
         key = new Key(keyX, keyY, TILE_SIZE,TILE_SIZE,10,9,TILE_SCREEN_SIZE, TILE_SCREEN_SIZE, game);
         // After loading the tiles,
         // get the array of tiles from our tile generator: levels.getTileset()
-        // and then get the texture region where our key is at
+        // and then get the texture region where our key is at ... ?
         keyRegion = levels.getTileset()[TileType.KEY.getId()];
 
         collectibles = new Array<>();
