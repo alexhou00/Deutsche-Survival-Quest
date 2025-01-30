@@ -19,11 +19,21 @@ import java.util.*;
 
 import static de.tum.cit.fop.maze.util.Constants.*;
 
+/**
+ * The VictoryScreen class represents the screen displayed when the player successfully completes the game.
+ * It shows a victory message and provides options to either return to the main menu or exit the game.
+ */
 public class VictoryScreen implements Screen {
     private final Stage stage;
     private final MazeRunnerGame game;
     Texture backgroundTexture;
 
+    /**
+     * Constructs the VictoryScreen.
+     * Initializes the screen with a background, buttons for menu navigation, and listeners for button actions.
+     *
+     * @param game The main game instance.
+     */
     public VictoryScreen(MazeRunnerGame game) {
         this.game = game;
         backgroundTexture = new Texture("backgrounds/victorybackground.png");
@@ -73,11 +83,21 @@ public class VictoryScreen implements Screen {
     }
 
 
+    /**
+     * Called when the screen is shown. Sets the input processor to the stage so it can capture
+     * input events such as button presses.
+     */
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
     }
 
+    /**
+     * Called every frame to render the victory screen. Clears the screen, draws the background,
+     * updates the stage, and renders the UI elements.
+     *
+     * @param v The time in seconds since the last frame. Used to update animations or movements.
+     */
     @Override
     public void render(float v) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -88,6 +108,12 @@ public class VictoryScreen implements Screen {
         stage.draw();
     }
 
+    /**
+     * Called when the screen is resized. It updates the viewport of the stage to fit the new window dimensions.
+     *
+     * @param i   The new width of the window.
+     * @param i1  The new height of the window.
+     */
     @Override
     public void resize(int i, int i1) {
         stage.getViewport().update(i, i1, true);
