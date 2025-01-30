@@ -186,12 +186,12 @@ public class Player extends Character {
         boolean canMoveHorizontally = canMoveTo(newXTest, y);
         boolean canMoveVertically = canMoveTo(x, newYTest);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.K)){
+        handleCheatCode();
+        if (isGodMode){
             canMoveHorizontally = true;
             canMoveVertically = true;
-            targetVelX *= 4;
-            targetVelY *= 4;
-            lives = 5;
+            targetVelX *= 5;
+            targetVelY *= 5;
         }
 
         if (canBoost && boostPressed && speed > SPEED_THRESHOLD && !game.isMuted()){
@@ -348,6 +348,45 @@ public class Player extends Character {
                     break; // Prevent processing other portals this frame
                 } else {
                     Gdx.app.log("Player", "Portal is inactive. No teleportation.");
+                }
+            }
+        }
+    }
+
+    private final Array<Integer> cheatCodeSequence = new Array<>();
+    private static final int[] CHEAT_CODE = {
+            Input.Keys.L, Input.Keys.T, Input.Keys.L, Input.Keys.B,
+            Input.Keys.R, Input.Keys.T, Input.Keys.R, Input.Keys.B
+    };
+    private boolean isGodMode = false;
+
+    private void handleCheatCode(){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.L) || Gdx.input.isKeyJustPressed(Input.Keys.T) ||
+                Gdx.input.isKeyJustPressed(Input.Keys.B) || Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+
+            cheatCodeSequence.add(Gdx.input.isKeyJustPressed(Input.Keys.L) ? Input.Keys.L :
+                    (Gdx.input.isKeyJustPressed(Input.Keys.T) ? Input.Keys.T :
+                            (Gdx.input.isKeyJustPressed(Input.Keys.B) ? Input.Keys.B :
+                                    Input.Keys.R)));
+
+            // Keep only the last 8 keys
+            if (cheatCodeSequence.size > CHEAT_CODE.length) {
+                cheatCodeSequence.removeIndex(0);
+            }
+
+            // Check if the sequence matches
+            if (cheatCodeSequence.size == CHEAT_CODE.length) {
+                boolean matched = true;
+                for (int i = 0; i < CHEAT_CODE.length; i++) {
+                    if (!cheatCodeSequence.get(i).equals(CHEAT_CODE[i])) {
+                        matched = false;
+                        break;
+                    }
+                }
+                if (matched) {
+                    Gdx.app.log("player", "Cheat mode activated!");
+                    lives = 999;
+                    isGodMode = true;
                 }
             }
         }
