@@ -128,7 +128,7 @@ public class MazeRunnerGame extends Game {
         musicList.add(gameOverMusic);
 
         victoryMusic = Gdx.audio.newMusic(Gdx.files.internal("music/victoryMusic.ogg"));
-        victoryMusic.setLooping(true);
+        //victoryMusic.setLooping(true);
         musicList.add(victoryMusic);
 
         victorySoundEffect = Gdx.audio.newMusic(Gdx.files.internal("sounds/Lively Meadow Victory Fanfare.mp3"));
