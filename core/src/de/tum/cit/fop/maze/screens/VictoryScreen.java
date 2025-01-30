@@ -39,7 +39,7 @@ public class VictoryScreen implements Screen {
         stage.addActor(table);
 
         Label title = new Label("YOU WON!", game.getSkin(), "fraktur");
-        table.add(title).padBottom(80).row();
+        table.add(title).padBottom(160).row();
 
         Map<String, TextButton> buttons = new LinkedHashMap<>();
         buttons.put("goToMenuButton", new TextButton("Menu", game.getSkin()));

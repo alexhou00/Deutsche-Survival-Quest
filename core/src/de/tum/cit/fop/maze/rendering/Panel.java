@@ -184,7 +184,7 @@ public class Panel extends Actor{
         slider.setHeight(5); // Adjust the height of the slider to make it thinner
         slider.setWidth(Gdx.graphics.getWidth() * 0.6f); // Adjust the width of the slider to make it longer
 
-        table.add(slider).padBottom(20).center().row();
+        table.add(slider).width(300).padBottom(20).center().row();
     }
 
     public void clear() {
